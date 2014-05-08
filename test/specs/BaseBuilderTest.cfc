@@ -1,17 +1,15 @@
-component extends="coldbox.system.testing.BaseTestCase" {
+component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
-	this.loadColdbox = false;
-	
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 		new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
 	}
-	
+
 	function setup(){
 		ormService = getMockBox().createMock("cborm.model.BaseORMService")
 					.init();
-		mockEventHandler = getMockBox().createStub().$( "getEventManager", 
+		mockEventHandler = getMockBox().createStub().$( "getEventManager",
 			getMockBox().createStub().$( "processState" )
 		);
 		ormService.$( "getORMEventHandler", mockEventHandler );
@@ -26,7 +24,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 		test2 = ["1","2"];
 	}
-	
+
 	function testCreateCriteria(){
 
 		r = criteria.init( entityName="Role", ormService = ormService )
@@ -40,7 +38,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.withusers( criteria.LEFT_JOIN ).like("lastName","M%")
 			.list();
-			
+
 		assertEquals("Administrator", r[1].getRole() );
 		// No Joins
 		r = criteria.init( entityName="Role", ormService = ormService )
@@ -82,17 +80,17 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria
 			.withProjections(avg="lastLogin",rowCount=true,max="lastLogin")
 			.list();
-		
+
 		assertTrue( isArray( r ) );
-		
+
 		r = criteria
 			.withProjections(property="firstName,lastName")
 			.list();
-			
+
 		assertTrue( isArray( r ) );
-		
+
 		r = criteria
-			.withProjections( 
+			.withProjections(
 				detachedSQLProjection=[
 					criteria.createSubcriteria( "Role", "Role1" )
         			 .withProjections( count="Role1.role:Role" )
@@ -106,12 +104,12 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria.order("id");
 		r = criteria.order("id","desc");
 		r = criteria.order("id","desc",true);
-		
+
 		s = subCriteria.order("id");
 		s = subCriteria.order("id","desc");
 		s = subCriteria.order("id","desc",true);
 	}
-	
+
 	function testBetween(){
 		r = criteria.between("balance",500,1000);
 		s = subCriteria.between("balance",500,1000);
@@ -120,7 +118,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	function testEQ(){
 		r = criteria.eq("balance",500);
 		r = criteria.isEq("balance",500);
-		
+
 		s = subCriteria.eq("balance",500);
 		s = subCriteria.isEq("balance",500);
 	}
@@ -133,7 +131,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	function testGT(){
 		r = criteria.gt("balance",500);
 		r = criteria.isGT("balance",500);
-		
+
 		s = subCriteria.gt("balance",500);
 		s = subCriteria.isGT("balance",500);
 	}
@@ -146,7 +144,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	function testGE(){
 		r = criteria.ge("balance",500);
 		r = criteria.isGe("balance",500);
-		
+
 		s = subCriteria.ge("balance",500);
 		s = subCriteria.isGe("balance",500);
 	}
@@ -170,7 +168,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria.in("id",[1,2,3]);
 		r = criteria.in("id","1,2,3");
 		r = criteria.isIn("id","1,2,3");
-		
+
 		s = subCriteria.in("id",[1,2,3]);
 		s = subCriteria.in("id","1,2,3");
 		s = subCriteria.isIn("id","1,2,3");
@@ -197,7 +195,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	function testlT(){
 		r = criteria.lt("balance",500);
 		r = criteria.islt("balance",500);
-		
+
 		s = subCriteria.lt("balance",500);
 		s = subCriteria.islt("balance",500);
 	}
@@ -210,7 +208,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	function testle(){
 		r = criteria.le("balance",500);
 		r = criteria.isle("balance",500);
-		
+
 		s = subCriteria.le("balance",500);
 		s = subCriteria.isle("balance",500);
 	}
@@ -239,7 +237,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria.sizeEQ("comments",500);
 		s = subCriteria.sizeEQ("comments",500);
 	}
-	
+
 	function testsizeGT(){
 		r = criteria.sizeGT("comments",500);
 		s = subCriteria.sizeGT("comments",500);
@@ -290,7 +288,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r = criteria.add( criteria.restrictions.gt("salary",200) );
 		s = subCriteria.add( subCriteria.restrictions.gt("salary",200));
 	}
-	
+
 	function testGetSQL() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -306,46 +304,46 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// test it returns formatted sql
 		assertTrue( findNoCase( "<pre>", r.getSQL( formatSql=true ) ) );
 	}
-	
+
 	function testGetSqlLog() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
-		
+
 		assertIsArray( r.getSqlLog() );
 	}
-	
+
 	function testStartSqlLog() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.startSqlLog()
 			.like("u.lastName","M%");
-		
+
 		assertTrue( r.$getProperty( "sqlLoggerActive" ) );
 	}
-	
+
 	function testStopSqlLog() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.startSqlLog()
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%")
 			.stopSqlLog();
-		
+
 		assertFalse( r.$getProperty( "sqlLoggerActive" ) );
 	}
-	
+
 	function testLogSql() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%");
-			
+
 		r.logSql( "FullQuery" );
-		
+
 		assertIsArray( r.getSqlLog() );
 		assertTrue( arrayLen( r.getSqlLog() )==1 );
 		assertTrue( r.getSqlLog()[1].Type=="FullQuery" );
 	}
-	
+
 	function testCanLogSql() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -359,7 +357,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		r.stopSqlLog();
 		assertFalse( r.$getProperty( "sqlLoggerActive" ) );
 	}
-	
+
 	function testHasProjection() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -373,7 +371,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// with projection
 		assertTrue( r.hasProjection() );
 	}
-	
+
 	function testGetPositionalSQLParameterValues() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -384,7 +382,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// test it returns the number of param values we expect (1)
 		assertTrue( arrayLen( values )==1 );
 	}
-	
+
 	function testGetPositionalSQLParameterTypes() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -398,7 +396,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// if not simple, test that the result is an object
 		assertTrue( isObject( complexttypes[ 1 ] ) );
 	}
-	
+
 	function testGetPositionalSQLParameters() {
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -408,5 +406,5 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		assertIsArray( params );
 		// test it returns the number of param types we expect (1)
 		assertTrue( arrayLen( params )==1 );
-	}	
+	}
 }

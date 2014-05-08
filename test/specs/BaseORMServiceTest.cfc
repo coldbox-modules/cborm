@@ -103,6 +103,7 @@
 	}
 
 	function testisSessionDirty(){
+		ormService.clear();
 		assertFalse( ormservice.isSessionDirty() );
 		test = entityLoad("User",{firstName="Luis"},true);
 		test.setPassword('unit_tests');
@@ -206,17 +207,18 @@
 	}
 
 	function testDelete(){
-		cat = entityNew("Category");
+		var cat = entityNew("Category");
 		cat.setCategory('unitTest');
 		cat.setDescription('unitTest');
 		entitySave(cat);ORMFlush();
 
 		try{
-			test = entityLoad("Category",{category="unittest"}, true);
+			var test = entityLoad("Category",{category="unittest"} );
 			//debug(test);
-			ormservice.delete( test );
-			test = entityLoad("Category",{category="unittest"}, true);
-			assertTrue( isNull(test) );
+			ormservice.delete( test[1] );
+			ormservice.clear();
+			var test = entityLoad("Category",{category="unittest"} );
+			assertTrue( arrayLen(test) eq 0 );
 		}
 		catch(any e){
 			fail(e.detail & e.message);
@@ -259,9 +261,7 @@
 
 		try{
 			count=ormservice.deleteByID( "Category", cat.getCatID() );
-			debug(count);
-			test = entityLoad("Category",{category="unittest"}, true);
-			assertTrue( isNull(test) );
+			assertTrue( count gt 0 );
 		}
 		catch(any e){
 			fail(e.detail & e.message);
