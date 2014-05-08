@@ -25,6 +25,7 @@ component{
 
 	// Map CBORM
 	this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";
+	this.mappings[ "/root" ] = COLDBOX_APP_ROOT_PATH;
 
 	this.datasource = "coolblog";
 		this.ormEnabled = "true";
@@ -37,7 +38,7 @@ component{
 			cacheProvider = "ehcache",
 			flushAtRequestEnd = false,
 			eventhandling = true,
-			//eventHandler = "coldbox.system.orm.hibernate.WBEventHandler",
+			eventHandler = "cborm.model.EventHandler",
 			skipcfcWithError = true
 		};
 
@@ -51,6 +52,7 @@ component{
 
 	// request start
 	public boolean function onRequestStart(String targetPage){
+		ormReload();
 
 		// Bootstrap Reinit
 		if( not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit() ){

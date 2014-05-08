@@ -4,7 +4,7 @@
 **************************************************************************************
 */
 component{
-	this.name = "A TestBox Runner Suite " & hash( getCurrentTemplatePath() );
+	this.name = "CBORM Test Suite" & hash( getCurrentTemplatePath() );
 	// any other application.cfc stuff goes below:
 	this.sessionManagement = true;
 
@@ -13,6 +13,7 @@ component{
 	rootPath = REReplaceNoCase( this.mappings[ "/test" ], "test(\\|/)", "" );
 	this.mappings[ "/root" ]   = rootPath;
 	this.mappings[ "/cborm" ]   = rootPath & "/modules/cborm";
+	this.mappings[ "/cbvalidation" ]   = rootPath & "/modules/validation";
 
 	this.datasource = "coolblog";
 	this.ormEnabled = "true";
@@ -25,14 +26,15 @@ component{
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false,
 		eventhandling = true,
-		//eventHandler = "coldbox.system.orm.hibernate.WBEventHandler",
-		skipcfcWithError = true
+		eventHandler = "cborm.model.EventHandler",
+		skipcfcWithError = false
 	};
 
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
 
+		ormreload();
 		return true;
 	}
 }

@@ -1,6 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase"{
-
-	this.loadColdbox = false;
+component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function beforeTests(){
 		super.beforeTests();
@@ -13,8 +11,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
 		mockService = getMockBox().createEmptyMock( "cborm.model.BaseORMService" )
 			.$( "getORMEventHandler", mockEventHandler );
-
-		criteria.init( "Role", "Role", mockService );
+		criteria.init( "Role", "Role", new cborm.model.BaseORMService() );
 		orm = new cborm.model.util.ORMUtilFactory().getORMUtil();
 	}
 

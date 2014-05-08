@@ -1,12 +1,11 @@
-component extends="coldbox.system.testing.BaseTestCase"{
-	this.loadColdbox = false;
-	
+component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
+
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 		new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
 	}
-	
+
 	function setup(){
 		/**
 			mockController = getMockBox().createEmptyMock("coldbox.system.web.Controller");
@@ -16,10 +15,10 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		mockController.$("getLogBox", mockLogBox);
 		mockController.$("getCacheBox", "");
 		**/
-		
+
 		application.wirebox = new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
 		criteria   = getMockBox().createMock("cborm.model.CriteriaBuilder");
-		criteria.init("User");
+		criteria.init( entityName="User", ormService=new cborm.model.BaseORMService() );
 
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
@@ -64,11 +63,11 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	}
 
 	function testCount(){
-		criteria.init("User");
+		criteria.init( entityName="User", ormService=new cborm.model.BaseORMService() );
 		r = criteria.count();
 		count = new Query(datasource="coolblog", sql="select count(*) allCount from users").execute().getResult();
 		assertEquals( count.allCount , r );
-		
+
 		r = criteria.count("id");
 		assertEquals( count.allCount , r );
 	}
@@ -86,16 +85,16 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		r = criteria.list(timeout=2);
 		assertEquals( 1, arrayLen(r) );
 
-		criteria.init("User");
+		criteria.init( entityName="User", ormService=new cborm.model.BaseORMService() );
 		r = criteria.list(sortOrder="lastName asc, firstName desc");
 		assertTrue( arrayLen(r) );
 	}
-	
+
 	function testCreateSubcriteria(){
 		s = getMockBox().createMock("cborm.model.DetachedCriteriaBuilder");
 		assertTrue( isInstanceOf( s, "cborm.model.DetachedCriteriaBuilder" ) );
 	}
-	
+
 	function testConvertIDValueToJavaType(){
 
 		test = criteria.convertIDValueToJavaType(id=1);
@@ -104,7 +103,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		test = criteria.convertIDValueToJavaType(id=["1","2","3"]);
 		assertEquals( [1,2,3], test );
 	}
-	
+
 	function testConvertValueToJavaType(){
 
 		test = criteria.convertValueToJavaType(propertyName="id",value=testUserID);

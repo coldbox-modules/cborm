@@ -1,5 +1,4 @@
-﻿component extends="coldbox.system.testing.BaseTestCase"{
-	this.loadColdBox = false;
+﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function beforeTests(){
 		super.beforeTests();
@@ -49,8 +48,8 @@
 		assert( arrayLen( t ) , "Conditionals between");
 		t = activeUser.findByLastLoginBetween( "01/01/2008", "11/01/2008");
 		assert( isNull( t ) , "Conditionals between");
-		t = activeUser.findByLastLoginNotBetween( "01/01/2009", "01/01/2012");
-		assert( isNull( t ) , "Conditionals not between");
+		t = activeUser.findAllByLastLoginNotBetween( "01/01/2009", "01/01/2012");
+		assert( arrayLen( t ) , "Conditionals not between");
 		t = activeUser.findAllByLastNameInList( "Majano,Fernando");
 		assert( arrayLen( t ) , "Conditionals inList");
 		t = activeUser.findAllByLastNameInList( listToArray(  "Majano,Fernando" ));

@@ -17,6 +17,7 @@
 		}
 	},
 	"devdependencies" : {
-		"testbox" : ">1.1"		
+		"testbox" : ">1.1",
+		"cbvalidation" : ">1.0"		
 	}
 }

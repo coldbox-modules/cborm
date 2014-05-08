@@ -1,16 +1,14 @@
-﻿component extends="coldbox.system.testing.BaseTestCase"{
+﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
-	this.loadColdBox = false;
-	
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 		new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
 	}
-	
+
 	function setup(){
 		ormservice 	= getMockBox().createMock("cborm.model.BaseORMService");
-		mockEH 		= getMockBox().createMock("cborm.model.WBEventHandler");
+		mockEH 		= getMockBox().createMock("cborm.model.EventHandler");
 
 		// Mocks
 		ormservice.init();
@@ -23,12 +21,12 @@
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 		test2 = ["1","2"];
 	}
-	
+
 	function testCountByDynamically(){
 		// Test simple Equals
 		t = ormservice.countByLastName("User", "majano");
 		assert( 1 eq t, "CountBylastName" );
-		
+
 	}
 	function testFindByDynamically(){
 		// Test simple Equals
@@ -66,17 +64,17 @@
 		assert( arrayLen( t ) , "Conditionals inList");
 		t = ormservice.findAllByLastNameNotInList("User", listToArray(  "Majano,Fernando" ));
 		assert( arrayLen( t ) , "Conditionals NotinList");
-	}	
-	
+	}
+
 	function testFindByDynamicallyBadProperty(){
 		expectException("BaseORMService.InvalidEntityProperty");
 		t = ormservice.findByLastAndFirst("User");
-	}	
-	
+	}
+
 	function testFindByDynamicallyFailure(){
 		expectException("BaseORMService.HQLQueryException");
 		t = ormservice.findByLastName("User");
-	}	
+	}
 
 	function testExists(){
 		assertEquals( false, ormservice.exists("Category", "123") );
@@ -515,13 +513,12 @@
 	}
 
 	function testFindByExample(){
-		sample = entityLoad("Category",{category="Training"},true);
-		test = ormService.findByExample(sample,true);
-		assertEquals( 'Training', test.getCategory() );
+		var sample = entityLoad("Category",{category="Training"},true);
+		var testSample = ormService.findByExample(sample,true);
+		assertEquals( 'Training', testSample.getCategory() );
 
-		sample = entityLoad("Category",{category="Training"},true);
-		test = ormService.findByExample(sample);
-		//debug(test);
+		var sample = entityLoad("Category",{category="Training"},true);
+		var test = ormService.findByExample(sample);
 		assertEquals( 'Training', test[1].getCategory() );
 	}
 
@@ -599,7 +596,7 @@
 		test = ormservice.convertIDValueToJavaType(entityName="User",id=["1","2","3"]);
 		assertEquals( [1,2,3], test );
 	}
-	
+
 	function testConvertValueToJavaType(){
 
 		test = ormservice.convertValueToJavaType(entityName="User",propertyName="id",value=testUserID);
@@ -640,20 +637,20 @@
 	function testNewCriteria(){
 		c = ormservice.newCriteria("User");
 	}
-	
+
 	function testMerge(){
 		// loaded entity
 		test = entityLoad("User",{firstName="Luis"},true);
 		stats = ormservice.getSessionStatistics();
-		
+
 		ormclearSession();
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 0, stats.entityCount );
-		
+
 		test = ormservice.merge( test );
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 1, stats.entityCount );
 
-		
+
 	}
 }

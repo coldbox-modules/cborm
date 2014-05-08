@@ -154,6 +154,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	* Get ORM Util
 	*/
 	private function getORMUtil() {
+
 		return new cborm.model.util.ORMUtilFactory().getORMUtil();
 	}
 }

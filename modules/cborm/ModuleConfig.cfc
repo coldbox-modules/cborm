@@ -19,19 +19,6 @@ component {
 
 	function configure(){
 
-		// ORM Configuration
-		settings = {
-			// entity injection
-			injection = {
-				// enable it
-				enabled = true,
-				// the include list for injection
-				include = "",
-				// the exclude list for injection
-				exclude = ""
-			}
-		};
-
 		// Custom Declared Points
 		interceptorSettings = {
 			customInterceptionPoints = [
@@ -40,7 +27,7 @@ component {
 				"afterCriteriaBuilderCount",
 				// ORM Bridge Events
 				"ORMPostNew", "ORMPreLoad", "ORMPostLoad", "ORMPostDelete", "ORMPreDelete", "ORMPreUpdate", "ORMPostUpdate",
-				"ORMPreInsert", "ORMPostInsert", "ORMPreSave", "ORMPostSave"
+				"ORMPreInsert", "ORMPostInsert", "ORMPreSave", "ORMPostSave", "ORMPostFlush", "ORMPreFlush"
 			]
 		};
 
@@ -48,16 +35,26 @@ component {
 		interceptors = [
 		];
 
-		// Binder Mappings
-		// binder.map("Alias").to("#moduleMapping#.model.MyService");
-
 	}
 
 	/**
 	* Fired when the module is registered and activated.
 	*/
 	function onLoad(){
-
+		// Read parent application config
+		var oConfig = controller.getSetting( "ColdBoxConfig" );
+		// Default Config Structure
+		controller.setSetting( "orm", {
+			injection = {
+				enabled = true, include = "", exclude = ""
+			}
+		});
+		// Check if we have defined DSL first in application config
+		var ormDSL = oConfig.getPropertyMixin( "orm", "variables", structnew() );
+		// injection
+		if( structCount( ormDSL ) ){
+			structAppend( controller.getSetting( "orm" ).injection, ormDSL.injection, true);
+		}
 	}
 
 	/**
