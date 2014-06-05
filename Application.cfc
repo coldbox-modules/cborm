@@ -27,7 +27,17 @@ component{
 	this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";
 	this.mappings[ "/root" ] = COLDBOX_APP_ROOT_PATH;
 
-	this.datasource = "coolblog";
+	// application start
+	public boolean function onApplicationStart(){
+		application.cbBootstrap = new coldbox.system.Coldbox( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
+		application.cbBootstrap.loadColdbox();
+		return true;
+	}
+
+	// request start
+	public boolean function onRequestStart(String targetPage){
+
+		this.datasource = "coolblog";
 		this.ormEnabled = "true";
 
 		this.ormSettings = {
@@ -42,16 +52,6 @@ component{
 			skipcfcWithError = true
 		};
 
-
-	// application start
-	public boolean function onApplicationStart(){
-		application.cbBootstrap = new coldbox.system.Coldbox( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
-		application.cbBootstrap.loadColdbox();
-		return true;
-	}
-
-	// request start
-	public boolean function onRequestStart(String targetPage){
 		ormReload();
 
 		// Bootstrap Reinit
