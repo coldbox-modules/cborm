@@ -146,13 +146,26 @@ component accessors="true"{
 	* Join an association, assigning an alias to the joined association.
 	* @associationName The name of the association property
 	* @alias The alias to use for this association property on restrictions
-	* @jointType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	* @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	* @withClause The criteria to use with the join
 	*/
-	any function createAlias( required string associationName, required string alias, numeric joinType ){
+	any function createAlias( 
+		required string associationName, 
+		required string alias, 
+		numeric joinType,
+		any withClause
+	){
+		var hasJoinType = 	structKeyExists( arguments, "joinType" );
+		var hasWithClause = structKeyExists( arguments, "withClause" );
 		// No Join type
-		if( NOT structKeyExists(arguments,"joinType") ){
+		if( !hasJoinType ){
 			// create alias
-			nativeCriteria.createAlias( arguments.associationName, arguments.alias );
+			if( hasWithClause ) {
+				nativeCriteria.createAlias( arguments.associationName, arguments.alias, this.INNER_JOIN, arguments.withClause );
+			}
+			else {
+				nativeCriteria.createAlias( arguments.associationName, arguments.alias );
+			}
 
 			// announce
 			if( ORMService.getEventHandling() ){
@@ -165,7 +178,12 @@ component accessors="true"{
 			return this;
 		}
 		// With Join Type
-		nativeCriteria.createAlias( arguments.associationName, arguments.alias, arguments.joinType );
+		if( hasWithClause ) {
+			nativeCriteria.createAlias( arguments.associationName, arguments.alias, arguments.joinType, arguments.withClause );
+		}
+		else {
+			nativeCriteria.createAlias( arguments.associationName, arguments.alias, arguments.joinType );
+		}
 		
 		// announce
 		if( ORMService.getEventHandling() ){
@@ -177,34 +195,62 @@ component accessors="true"{
 
 		return this;
 	}
-	
+
 	/**
 	* Create a new Criteria, "rooted" at the associated entity and using an Inner Join
 	* @associationName The name of the association property to root the restrictions with
-	* @jointType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	* @alias The alias to use for this association property on restrictions
+	* @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	* @withClause The criteria to use with the join
 	*/
-	any function createCriteria(required string associationName,numeric joinType){
-		// No Join type
-		if( NOT structKeyExists(arguments,"joinType") ){
-			nativeCriteria = nativeCriteria.createCriteria( arguments.associationName );
-			// log sql if enabled
-			if( canLogSql() ) {
-				logSQL( "New Criteria" );
+	any function createCriteria(
+		required string associationName, 
+		string alias, 
+		numeric joinType,
+		any withClause
+	){
+		var hasAlias = 		structKeyExists( arguments, "alias" );
+		var hasJoinType = 	structKeyExists( arguments, "joinType" );
+		var hasWithClause = structKeyExists( arguments, "withClause" );
+		var defaultJoinType=this.INNER_JOIN;
+		// if no alias and only join type, special case
+		if( !hasAlias ) {	
+			if( hasJoinType ) {
+				nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
+				// announce
+				if( ORMService.getEventHandling() ){
+					variables.eventManager.processState( "onCriteriaBuilderAddition", {
+						"type" = "New Criteria w/Join Type",
+						"criteriaBuilder" = this
+					});
+				}
 			}
-			return this;
+			// no alias and no join type...simple association
+			else {
+				nativeCriteria = nativeCriteria.createCriteria( arguments.associationName );
+			}
 		}
-		
-		// With Join Type
-		nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
-		
-		// announce
+		// otherwise, require alias
+		if( hasAlias ) {
+			// if a join type is defined, override defaultJoinType
+			if( hasJoinType ) {
+				defaultJoinType = arguments.joinType;
+			}
+			// if we have a withClause, use full signature
+			if( hasWithClause ) {
+				nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.alias, defaultJoinType, arguments.withClause );
+			}
+			// ...otherwise, only assoicationName, alias, joinType
+			else {
+				nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.alias, defaultJoinType );
+			}
+		}
 		if( ORMService.getEventHandling() ){
 			variables.eventManager.processState( "onCriteriaBuilderAddition", {
-				"type" = "New Criteria w/Join Type",
+				"type" = "New Criteria",
 				"criteriaBuilder" = this
 			});
 		}
-
 		return this;
 	}
 	

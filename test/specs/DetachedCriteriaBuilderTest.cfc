@@ -6,12 +6,16 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
 	}
 	function setup(){
+		ormService = getMockBox().createMock("cborm.model.BaseORMService")
+					.init();
+		rootcriteria   = getMockBox().createMock("cborm.model.CriteriaBuilder");
+		rootcriteria.init( entityName="User", ORMService=ormService );
 		criteria   = getMockBox().createMock("cborm.model.DetachedCriteriaBuilder");
 		mockEventManager = getMockBox().createStub();
 		mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
 		mockService = getMockBox().createEmptyMock( "cborm.model.BaseORMService" )
 			.$( "getORMEventHandler", mockEventHandler );
-		criteria.init( "Role", "Role", new cborm.model.BaseORMService() );
+		criteria.init( "Role", "Role", ormService );
 		orm = new cborm.model.util.ORMUtilFactory().getORMUtil();
 	}
 
@@ -24,6 +28,68 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	function testGetNativeCriteria() {
 		criteria.withProjections( count="Role.role" );
 		assertTrue( isInstanceOf( criteria.getNativeCriteria(), "org.hibernate.impl.CriteriaImpl" ) );
+	}
+
+	function testCreateAlias(){
+		// just association and alias
+		r = rootcriteria.init( entityName="Role", ormService = ormService )
+			.add(
+                rootcriteria.createSubcriteria( "Role", "role" )
+                .withProjections( property="roleID" )
+                .createAlias( "users", "user" )
+                .like("user.lastName","M%")
+                .propertyIn( "roleID" )
+            )
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+
+		// association and alias and jointype
+		r = rootcriteria.init( entityName="Role", ormService = ormService )
+			.add(
+                rootcriteria.createSubcriteria( "Role", "role" )
+                .withProjections( property="roleID" )
+                .createAlias( "users", "user", rootcriteria.LEFT_JOIN )
+                .like("user.lastName","M%")
+                .propertyIn( "roleID" )
+            )
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+	}
+
+	function testCreateCriteria(){
+		// just association
+		r = rootcriteria.init( entityName="Role", ormService = ormService )
+			.add(
+                rootcriteria.createSubcriteria( "Role", "role" )
+                .withProjections( property="roleID" )
+                .createCriteria( "users" )
+                .like("lastName","M%")
+                .propertyIn( "roleID" )
+            )
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+		// association and join type
+		r = rootcriteria.init( entityName="Role", ormService = ormService )
+			.add(
+                rootcriteria.createSubcriteria( "Role", "role" )
+                .withProjections( property="roleID" )
+                .createCriteria( associationName="users", joinType=rootcriteria.LEFT_JOIN )
+                .like("lastName","M%")
+                .propertyIn( "roleID" )
+            )
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+		// association and join type and alias
+		r = rootcriteria.init( entityName="Role", ormService = ormService )
+			.add(
+                rootcriteria.createSubcriteria( "Role", "role" )
+                .withProjections( property="roleID" )
+                .createCriteria( associationName="users", alias="user", joinType=rootcriteria.LEFT_JOIN )
+                .like("user.lastName","M%")
+                .propertyIn( "roleID" )
+            )
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
 	}
 
 	// test missingmethod handler functions
