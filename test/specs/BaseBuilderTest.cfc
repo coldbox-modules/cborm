@@ -28,7 +28,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	function testCreateCriteria(){
 
 		r = criteria.init( entityName="Role", ormService = ormService )
-			.createCriteria("users", criteria.INNER_JOIN )
+			.createCriteria( associationName="users", joinType=criteria.INNER_JOIN )
 				.like("lastName","M%")
 			.list();
 
@@ -45,19 +45,56 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 			.withusers().like("lastName","M%")
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
+		// with alias
+		r = criteria.init( entityName="Role", ormService = ormService )
+			.createCriteria( associationName="users", alias="user" )
+			.like("user.lastName","M%")
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+		// with alias & join type
+		r = criteria.init( entityName="Role", ormService = ormService )
+			.createCriteria( associationName="users", alias="user", joinType=criteria.LEFT_JOIN )
+			.like("user.lastName","M%")
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+		// with alias & join type & withClause
+		r = criteria.init( entityName="Role", ormService = ormService )
+			.createCriteria( 
+				associationName="users", 
+				alias="user", 
+				joinType=criteria.LEFT_JOIN,
+				withClause=criteria.restrictions.like("user.lastName","M%")
+			)
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
 	}
 
 	function testCreateAlias(){
+		// with alias and join type
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%")
 			.list();
-
 		assertEquals("Administrator", r[1].getRole() );
-		// with join Type
+		// with alias,join type and withClause
+		r = criteria.init( entityName="Role", ormService = ormService )
+			.createAlias("users", "u", criteria.LEFT_JOIN, criteria.restrictions.like("u.lastName","M%") )
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+
+		// no join type
 		r = criteria.init( entityName="Role", ormService = ormService )
 			.createAlias("users","u")
 			.like("u.lastName","M%")
+			.list();
+		assertEquals("Administrator", r[1].getRole() );
+		// no join type, but withClause
+		r = criteria.init( entityName="Role", ormService = ormService )
+			.createAlias(
+				associationName="users",
+				alias="u",
+				withClause=criteria.restrictions.like("u.lastName","M%")
+			)
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 	}

@@ -77,4 +77,32 @@ component accessors="true" extends="cborm.model.BaseBuilder" {
 		// now that we have the sql string, we can create the sqlProjection
 		return this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
 	}
+
+	/**
+	* Join an association, assigning an alias to the joined association.
+	* @associationName The name of the association property
+	* @alias The alias to use for this association property on restrictions
+	* @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	*/
+	public any function createAlias( required string associationName, required string alias, numeric joinType=this.INNER_JOIN ) {
+		return super.createAlias( arguments.associationName, arguments.alias, arguments.joinType );
+	}
+	/**
+	* Create a new Criteria, "rooted" at the associated entity and using an Inner Join
+	* @associationName The name of the association property to root the restrictions with
+	* @alias The alias to use for this association property on restrictions
+	* @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	*/
+	public any function createCriteria( required string associationName, string alias, numeric joinType=this.INNER_JOIN ) {
+		if( structKeyExists( arguments, "alias" ) ) {
+			return super.createCriteria( 
+				associationName=arguments.associationName, 
+				alias=arguments.alias, 
+				joinType=arguments.joinType 
+			);
+		}
+		else {
+			return super.createCriteria( associationName=arguments.associationName, joinType=arguments.joinType );
+		}
+	}
 }
