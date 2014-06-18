@@ -3,7 +3,7 @@
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
+		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 
 	function setup(){
@@ -71,7 +71,6 @@
 	function testIsValid(){
 		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
 		mockValidationManager = new cbvalidation.model.ValidationManager();
-		mockValidationManager.setResourceBundle('');
 		mockValidationManager.setWireBox( mockWireBox );
 		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( mockValidationManager );
 

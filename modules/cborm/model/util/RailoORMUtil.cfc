@@ -10,7 +10,15 @@ This implementation supports multiple DSNs for ORM a-la Adobe ColdFusion 9
 
 ----------------------------------------------------------------------->
 */
-component implements="cborm.model.util.IORMUtil" extends="cborm.model.util.ORMUtilSupport"{
+component extends="cborm.model.util.ORMUtilSupport" implements="cborm.model.util.IORMUtil" {
 
-
+	/**
+	* Get hibernate session object
+	* @override
+	*/
+	public any function getSession( string datasource ){
+		if( StructKeyExists( arguments,"datasource" ) )
+			return ORMGetSession( arguments.datasource );
+		return ORMGetSession();
+	}
 }

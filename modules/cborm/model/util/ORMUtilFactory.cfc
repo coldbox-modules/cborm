@@ -13,19 +13,30 @@ A simple factory to return the right ORM utility according to CFML engine
 import cborm.model.util.*;
 
 component{
-	
+
 	public any function getORMUtil() {
-		switch( getPlatform() ) {
-			case "ColdFusion Server":
-				return new CFORMUtil();
-				break;
-			default:
-				return new ORMUtil();
-		}
+		// Adobe ColdFusion
+		if( getPlatform() == "ColdFusion Server" )
+			return new CFORMUtil();
+		// Railo >= 4.3 MultiDatasource Support
+		if( getRailoVersion() >= "4.3.0.000" )
+			return new RailoORMUtil();
+		// Railo >= 4.3
+		return new ORMUtil();
 	}
-	
+
+	/**
+	* Get platform name
+	*/
 	private string function getPlatform() {
 		return server.coldfusion.productname;
+	}
+
+	/**
+	* Get railo version
+	*/
+	private string function getRailoVersion() {
+		return server.railo.version;
 	}
 
 }

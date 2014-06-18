@@ -5,7 +5,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
+		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 	
 	function setup(){

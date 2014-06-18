@@ -12,8 +12,8 @@
 	],
 	"testbox" 	: {
 		"runner" : {
-			"cf10" 	: "http://cf10cboxdev.jfetmac/codedepot/cbox-javaloader/test/runner.cfm",
-			"railo" : "http://railocboxdev.jfetmac/codedepot/cbox-javaloader/test/runner.cfm" 
+			"cf10" 	: "http://cf10cboxdev.jfetmac/codedepot/cbox-javaloader/tests/runner.cfm",
+			"railo" : "http://railocboxdev.jfetmac/codedepot/cbox-javaloader/tests/runner.cfm" 
 		}
 	},
 	"devdependencies" : {

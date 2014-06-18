@@ -3,7 +3,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
+		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 
 	function setup(){
@@ -16,7 +16,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		mockController.$("getCacheBox", "");
 		**/
 
-		application.wirebox = new coldbox.system.ioc.Injector(binder="test.resources.WireBox");
+		application.wirebox = new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 		criteria   = getMockBox().createMock("cborm.model.CriteriaBuilder");
 		criteria.init( entityName="User", ormService=new cborm.model.BaseORMService() );
 

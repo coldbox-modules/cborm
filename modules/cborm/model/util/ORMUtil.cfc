@@ -6,35 +6,53 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author      :	Luis Majano & Mike McKellip
 Description :
 
-This ORM utility implementation is for engines that do NOT support multiple dsn's
+This is the Railo < 4.3.000 implementation for single datasource support
 
 ----------------------------------------------------------------------->
 */
 component implements="cborm.model.util.IORMUtil"{
 
-	public void function flush(string datasource) {
+	/**
+	* Flush a datasource
+	*/
+	public void function flush( string datasource ){
 		ORMFlush();
 	}
 
-	public any function getSession(string datasource) {
+	/**
+	* Get session
+	*/
+	public any function getSession( string datasource ){
 		return ORMGetSession();
 	}
 
-	public any function getSessionFactory(string datasource) {
+	/**
+	* Get session factory
+	*/
+	public any function getSessionFactory( string datasource ){
 		return ORMGetSessionFactory();
 	}
 
-	public void function clearSession(string datasource) {
+	/**
+	* Clear a session
+	*/
+	public void function clearSession( string datasource ){
 		ORMClearSession();
 	}
 
-	public void function closeSession(string datasource) {
+	/**
+	* Close a session
+	*/
+	public void function closeSession( string datasource ){
 		ORMCloseSession();
 	}
 
+	/**
+	* Evict queries
+	*/
 	public void function evictQueries(string cachename, string datasource) {
-		if(StructKeyExists(arguments,"cachename"))
-			ORMEvictQueries(arguments.cachename);
+		if( StructKeyExists( arguments,"cachename") )
+			ORMEvictQueries( arguments.cachename );
 		else
 			ORMEvictQueries();
 	}
