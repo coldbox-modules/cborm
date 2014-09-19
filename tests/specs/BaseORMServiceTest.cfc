@@ -7,8 +7,8 @@
 	}
 
 	function setup(){
-		ormservice 	= getMockBox().createMock("cborm.model.BaseORMService");
-		mockEH 		= getMockBox().createMock("cborm.model.EventHandler");
+		ormservice 	= getMockBox().createMock("cborm.models.BaseORMService");
+		mockEH 		= getMockBox().createMock("cborm.models.EventHandler");
 
 		// Mocks
 		ormservice.init();
@@ -121,7 +121,7 @@
 
 	function testNew(){
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("postNew");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
 
@@ -138,7 +138,7 @@
 
 	function testNewWithProperties(){
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("postNew");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
 		// Test Porperties
@@ -150,7 +150,7 @@
 
 	function testNewWithEvents(){
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("postNew");
 		ormService.setEventHandling( true );
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
@@ -163,7 +163,7 @@
 
 	function testGet(){
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("postNew");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
 
@@ -323,7 +323,7 @@
 	function testSave(){
 
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("preSave");
 		mockEventHandler.$("postSave");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
@@ -350,7 +350,7 @@
 	function testSaveNoTransaction(){
 
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("preSave");
 		mockEventHandler.$("postSave");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
@@ -376,7 +376,7 @@
 	function testSaveAll(){
 
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("preSave").$("postSave");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
 
@@ -407,7 +407,7 @@
 	function testSaveAllWithFlush(){
 
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("preSave").$("postSave");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
 

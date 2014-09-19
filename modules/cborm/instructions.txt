@@ -1,0 +1,14 @@
+********************************************************************************
+INSTRUCTIONS
+********************************************************************************
+Just drop into your modules folder or use the box-cli to install
+
+box install cborm
+
+Documentation
+- http://wiki.coldbox.org/wiki/ORM:BaseORMService.cfm
+- http://wiki.coldbox.org/wiki/ORM:ActiveEntity.cfm
+- http://wiki.coldbox.org/wiki/ORM:VirtualEntityService.cfm
+- http://wiki.coldbox.org/wiki/ORM:ORMEventHandler.cfm
+- http://wiki.coldbox.org/wiki/ORM:CriteriaBuilder.cfm
+- http://wiki.coldbox.org/wiki/ORM:DetachedCriteriaBuilder.cfm

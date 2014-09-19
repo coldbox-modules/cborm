@@ -1,8 +1,0 @@
-********************************************************************************
-INSTRUCTIONS
-********************************************************************************
-Just drop into your modules folder or use the box-cli to install
-
-box install cborm
-
-

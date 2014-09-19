@@ -70,7 +70,7 @@
 
 	function testIsValid(){
 		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
-		mockValidationManager = new cbvalidation.model.ValidationManager();
+		mockValidationManager = new cbvalidation.models.ValidationManager();
 		mockValidationManager.setWireBox( mockWireBox );
 		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( mockValidationManager );
 
@@ -88,12 +88,12 @@
 
 	function testValidationResults(){
 		r = activeUser.getValidationResults();
-		assertTrue( isInstanceOf(r, "cbvalidation.model.result.IValidationResult") );
+		assertTrue( isInstanceOf(r, "cbvalidation.models.result.IValidationResult") );
 	}
 
 	function testNew(){
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("postNew");
 		activeUser.$property("ORMEventHandler","variables",mockEventHandler);
 
@@ -129,7 +129,7 @@
 	function testSave(){
 
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("preSave");
 		mockEventHandler.$("postSave");
 

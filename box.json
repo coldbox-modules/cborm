@@ -1,23 +1,90 @@
 {
-	"name" 		: "JavaLoader",
-	"author" 	: "Luis Majano <lmajano@ortussolutions.com",
-	"version"	: "1.0.0",
-	"slug"		: "javaloader",
-	"directory"	: "/modules",
-	"type"		: "modules",
-	"engines"	: [
-		{ "type" : "railo", "version" : ">3.1" },
-		{ "type" : "adobe", "version" : ">9.0" },
-		{ "type" : "coldbox", "version" : ">3.5" }
-	],
-	"testbox" 	: {
-		"runner" : {
-			"cf10" 	: "http://cf10cboxdev.jfetmac/codedepot/cbox-javaloader/tests/runner.cfm",
-			"railo" : "http://railocboxdev.jfetmac/codedepot/cbox-javaloader/tests/runner.cfm" 
-		}
-	},
-	"devdependencies" : {
-		"testbox" : ">1.1",
-		"cbvalidation" : ">1.0"		
-	}
+    "name":"Module Development Shell",
+    "version":"1.0.0.0000",
+    "author":"",
+    "location":"",
+    "directory":"",
+    "createPackageDirectory":true,
+    "packageDirectory":"",
+    "homepage":"",
+    "documentation":"",
+    "repository":{
+        "type":"",
+        "url":""
+    },
+    "bugs":"",
+    "slug":"mySlug",
+    "shortDescription":"",
+    "description":"",
+    "instructions":"",
+    "changelog":"",
+    "type":"",
+    "keywords":[
+        
+    ],
+    "private":false,
+    "engines":[
+        {
+            "type":"railo",
+            "version":">=4.1.x"
+        },
+        {
+            "type":"adobe",
+            "version":">=10.0.0"
+        }
+    ],
+    "defaultEngine":"",
+    "defaultPort":0,
+    "projectURL":"",
+    "license":[
+        {
+            "type":"",
+            "url":""
+        }
+    ],
+    "contributors":[
+        
+    ],
+    "dependencies":{
+        "cborm" : "1.0.0"
+    },
+    "devDependencies":{
+        "coldbox-be" : "4.0.0",
+        "testbox" : "2.0.0"
+    },
+    "installPaths":{
+        "validation" : "modules/validation"
+    },
+    "ignore":[
+        
+    ],
+    "testbox":{
+        "runner":[
+            {
+                "default":""
+            }
+        ],
+        "labels":[
+            
+        ],
+        "reporter":"",
+        "reporterResults":"",
+        "bundles":[
+            ""
+        ],
+        "directory":{
+            "mapping":"",
+            "recurse":true
+        },
+        "watchers":[
+            
+        ],
+        "notify":{
+            "emails":[
+                
+            ],
+            "growl":"",
+            "url":""
+        }
+    }
 }

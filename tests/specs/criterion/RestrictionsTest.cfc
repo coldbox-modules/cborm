@@ -1,7 +1,7 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdBox = false;
 	function setup(){
-		restrictions   = getMockBox().createMock("cborm.model.criterion.Restrictions");
+		restrictions   = getMockBox().createMock("cborm.models.criterion.Restrictions");
 		restrictions.init();
 	}
 	

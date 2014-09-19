@@ -17,6 +17,7 @@ Holy Ghost which is given unto us. ." Romans 5:5
 WELCOME TO THE COLDBOX ORM MODULE
 ********************************************************************************
 Created & copyright by Luis Majano (Ortus Solutions, Corp)
+
 This module provides you with several enhancements when interacting with the
 ColdFusion ORM via Hibernate.  It provides you with virtual service layers,
 active record patterns, criteria and detached criteria queries and so much 
@@ -44,9 +45,8 @@ Documentation
 ********************************************************************************
 SYSTEM REQUIREMENTS
 ********************************************************************************
-- Railo 3.2 and above
-- ColdFusion MX 9 and above
-- ColdBox 4.0 and above
+- Railo 4+
+- ColdFusion 9+
 
 ----
 

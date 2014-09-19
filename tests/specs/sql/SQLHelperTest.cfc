@@ -9,16 +9,16 @@ component extends="coldbox.system.testing.BaseTestCase" {
 	}
 	
 	function setup(){
-		ormService = getMockBox().createMock("cborm.model.BaseORMService")
+		ormService = getMockBox().createMock("cborm.models.BaseORMService")
 					.init();
 		mockEventHandler = getMockBox().createStub().$( "getEventManager", 
 			getMockBox().createStub().$( "processState" )
 		);
 		ormService.$( "getORMEventHandler", mockEventHandler );
 
-		criteria   = getMockBox().createMock("cborm.model.CriteriaBuilder");
+		criteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
 		criteria.init( entityName="User", ormservice=ormservice );
-		SQLHelper = getMockBox().createMock("cborm.model.sql.SQLHelper");
+		SQLHelper = getMockBox().createMock("cborm.models.sql.SQLHelper");
 		SQLHelper.init( criteria );
 
 		// Test ID's

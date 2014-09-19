@@ -17,8 +17,8 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		**/
 
 		application.wirebox = new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
-		criteria   = getMockBox().createMock("cborm.model.CriteriaBuilder");
-		criteria.init( entityName="User", ormService=new cborm.model.BaseORMService() );
+		criteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
+		criteria.init( entityName="User", ormService=new cborm.models.BaseORMService() );
 
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
@@ -63,7 +63,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	}
 
 	function testCount(){
-		criteria.init( entityName="User", ormService=new cborm.model.BaseORMService() );
+		criteria.init( entityName="User", ormService=new cborm.models.BaseORMService() );
 		r = criteria.count();
 		count = new Query(datasource="coolblog", sql="select count(*) allCount from users").execute().getResult();
 		assertEquals( count.allCount , r );
@@ -85,14 +85,14 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		r = criteria.list(timeout=2);
 		assertEquals( 1, arrayLen(r) );
 
-		criteria.init( entityName="User", ormService=new cborm.model.BaseORMService() );
+		criteria.init( entityName="User", ormService=new cborm.models.BaseORMService() );
 		r = criteria.list(sortOrder="lastName asc, firstName desc");
 		assertTrue( arrayLen(r) );
 	}
 
 	function testCreateSubcriteria(){
-		s = getMockBox().createMock("cborm.model.DetachedCriteriaBuilder");
-		assertTrue( isInstanceOf( s, "cborm.model.DetachedCriteriaBuilder" ) );
+		s = getMockBox().createMock("cborm.models.DetachedCriteriaBuilder");
+		assertTrue( isInstanceOf( s, "cborm.models.DetachedCriteriaBuilder" ) );
 	}
 
 	function testConvertIDValueToJavaType(){

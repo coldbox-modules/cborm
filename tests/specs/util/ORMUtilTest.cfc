@@ -8,7 +8,7 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isCF"{
 	}
 
 	function setup(){
-		ormUtil   = getMockBox().createMock("cborm.model.util.ORMUtil");
+		ormUtil   = getMockBox().createMock("cborm.models.util.ORMUtil");
 	}
 
 	function testflush(){

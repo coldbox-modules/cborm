@@ -4,7 +4,7 @@
 **************************************************************************************
 */
 component{
-	this.name = "CBORM Test Suite" & hash( getCurrentTemplatePath() );
+	this.name = "A TestBox Runner Suite " & hash( getCurrentTemplatePath() );
 	// any other application.cfc stuff goes below:
 	this.sessionManagement = true;
 
@@ -15,25 +15,24 @@ component{
 	this.mappings[ "/cborm" ]   = rootPath & "/modules/cborm";
 	this.mappings[ "/cbvalidation" ]   = rootPath & "/modules/validation";
 
+	// any orm definitions go here.
 	this.datasource = "coolblog";
 	this.ormEnabled = "true";
 
 	this.ormSettings = {
-		cfclocation = [ "/root/model" ],
+		cfclocation = [ "/root/models" ],
 		logSQL = true,
 		dbcreate = "update",
 		secondarycacheenabled = false,
 		cacheProvider = "ehcache",
 		flushAtRequestEnd = false,
 		eventhandling = true,
-		eventHandler = "cborm.model.EventHandler",
+		eventHandler = "cborm.models.EventHandler",
 		skipcfcWithError = false
 	};
 
-
 	// request start
 	public boolean function onRequestStart( String targetPage ){
-
 		ormreload();
 		return true;
 	}

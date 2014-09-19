@@ -6,17 +6,17 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 	function setup(){
-		ormService = getMockBox().createMock("cborm.model.BaseORMService")
+		ormService = getMockBox().createMock("cborm.models.BaseORMService")
 					.init();
-		rootcriteria   = getMockBox().createMock("cborm.model.CriteriaBuilder");
+		rootcriteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
 		rootcriteria.init( entityName="User", ORMService=ormService );
-		criteria   = getMockBox().createMock("cborm.model.DetachedCriteriaBuilder");
+		criteria   = getMockBox().createMock("cborm.models.DetachedCriteriaBuilder");
 		mockEventManager = getMockBox().createStub();
 		mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
-		mockService = getMockBox().createEmptyMock( "cborm.model.BaseORMService" )
+		mockService = getMockBox().createEmptyMock( "cborm.models.BaseORMService" )
 			.$( "getORMEventHandler", mockEventHandler );
 		criteria.init( "Role", "Role", ormService );
-		orm = new cborm.model.util.ORMUtilFactory().getORMUtil();
+		orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
 
 	function testCreateDetachedSQLProjection() {

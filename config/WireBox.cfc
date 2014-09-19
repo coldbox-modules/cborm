@@ -17,7 +17,7 @@ Description :
 
 		// WireBox Mappings
 		map("WireBoxURL").toValue("TEST");
-		map("testService").to( "root.model.TestService" );
+		map("testService").to( "root.models.TestService" );
 	}
 </cfscript>
 </cfcomponent>

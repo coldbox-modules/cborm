@@ -7,7 +7,7 @@
 	}
 
 	function setup(){
-		ormservice = getMockBox().createMock("cborm.model.VirtualEntityService");
+		ormservice = getMockBox().createMock("cborm.models.VirtualEntityService");
 		// Mocks
 		ormservice.init( entityname="User" );
 
@@ -71,7 +71,7 @@
 
 	function testNew(){
 		//mocks
-		mockEventHandler = getMockBox().createEmptyMock("cborm.model.EventHandler");
+		mockEventHandler = getMockBox().createEmptyMock("cborm.models.EventHandler");
 		mockEventHandler.$("postNew");
 		ormService.$property("ORMEventHandler","variables",mockEventHandler);
 

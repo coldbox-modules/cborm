@@ -24,7 +24,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	* Constructor
 	*/
 	function init(){
-		orm = new cborm.model.util.ORMUtilFactory().getORMUtil();
+		orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
 		return this;
 	}
 

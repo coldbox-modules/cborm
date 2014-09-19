@@ -23,13 +23,13 @@ component{
 	// COLDBOX APPLICATION KEY OVERRIDE
 	COLDBOX_APP_KEY 		 = "";
 
-	// Map CBORM
+	// Map CBORM REQUIRED TO USE EVENT HANDLERS
 	this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";
 	this.mappings[ "/root" ] = COLDBOX_APP_ROOT_PATH;
 
 	// application start
 	public boolean function onApplicationStart(){
-		application.cbBootstrap = new coldbox.system.Coldbox( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
+		application.cbBootstrap = new coldbox.system.Bootstrap( COLDBOX_CONFIG_FILE, COLDBOX_APP_ROOT_PATH, COLDBOX_APP_KEY, COLDBOX_APP_MAPPING );
 		application.cbBootstrap.loadColdbox();
 		return true;
 	}
@@ -48,7 +48,7 @@ component{
 			cacheProvider = "ehcache",
 			flushAtRequestEnd = false,
 			eventhandling = true,
-			eventHandler = "cborm.model.EventHandler",
+			eventHandler = "cborm.models.EventHandler",
 			skipcfcWithError = true
 		};
 

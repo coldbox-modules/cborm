@@ -1,7 +1,7 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 	this.loadColdBox = false;
 	function setup(){
-		ormUtil   = getMockBox().createMock("cborm.model.util.CFORMUtil");
+		ormUtil   = getMockBox().createMock("cborm.models.util.CFORMUtil");
 		// CF ENGINE MUST HAVE coolblog as a DSN
 		dsn = "coolblog";
 	}
