@@ -152,15 +152,20 @@
 	}
 
 	function testDelete(){
+
 		user = entityNew("ActiveUser");
 		user.setFirstName('unitTest');
 		user.setLastName('unitTest');
 		user.setUsername('unitTest');
 		user.setPassword('unitTest');
-		entitySave(user);ORMFlush();
+		entitySave(user);
+		ORMFlush();
 
 		try{
 			user.delete();
+			ORMFlush();
+			user.clear();
+
 			test = entityLoad("ActiveUser",{firstName="unittest"}, true);
 			assertTrue( isNull(test) );
 		}
@@ -168,8 +173,8 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			q = new Query(datasource="coolblog");
-			q.execute(sql="delete from users where firstName = 'unitTest'");
+			var q = new Query(datasource="coolblog");
+			q.execute(sql="delete from users where userName = 'unitTest'");
 		}
 	}
 
@@ -183,6 +188,8 @@
 
 		try{
 			activeUser.deleteByID( user.getID() );
+			ORMFlush();
+			user.clear();
 			test = entityLoad("ActiveUser",{firstName="unittest"}, true);
 			assertTrue( isNull(test) );
 		}
@@ -209,6 +216,8 @@
 
 		try{
 			activeUser.deleteWhere(userName="unitTest");
+			ORMFlush();
+			user.clear();
 
 			result = q.execute(sql="select * from users where userName = 'unitTest'");
 			assertEquals( 0, result.getResult().recordcount );
@@ -271,5 +280,10 @@
 		c = activeUser.newCriteria();
 		assertEquals( "ActiveUser", c.getEntityName() );
 
+	}
+
+	private function deleteCategories(){
+		var q = new Query(datasource="coolblog");
+		q.execute(sql="delete from categories where category = 'unitTest'");
 	}
 }
