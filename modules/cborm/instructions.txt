@@ -5,6 +5,13 @@ Just drop into your modules folder or use the box-cli to install
 
 box install cborm
 
+We have also migrated the UniqueValidator from the validation module into our
+ORM module.  It is mapped into wirebox as UniqueValidator@cborm so you can use in 
+your constraints.
+
+{ fieldName : { validator: "UniqueValidator@cborm" } }
+
+
 Documentation
 - http://wiki.coldbox.org/wiki/ORM:BaseORMService.cfm
 - http://wiki.coldbox.org/wiki/ORM:ActiveEntity.cfm

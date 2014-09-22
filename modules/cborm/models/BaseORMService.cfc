@@ -30,42 +30,42 @@ component accessors="true"{
 	/**
 	* The queryCacheRegion name property for all query caching produced in this service
 	*/
-	property name="queryCacheRegion" type="string" default="ORMService.defaultCache";
+	property name="queryCacheRegion" type="string" default="ORMService.defaultCache" persistent="false";
 
 	/**
 	* The bit that tells the service to enable query caching, disabled by default
 	*/
-	property name="useQueryCaching" type="boolean" default="false";
+	property name="useQueryCaching" type="boolean" default="false" persistent="false";
 
 	/**
 	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
 	*/
-	property name="eventHandling" type="boolean" default="true";
+	property name="eventHandling" type="boolean" default="true" persistent="false";
 
 	/**
 	* The system ORM event handler to transmitt ORM events to
 	*/
-	property name="ORMEventHandler";
+	property name="ORMEventHandler" persistent="false";
 
 	/**
 	* The system ORM utility object
 	*/
-	property name="ORM";
+	property name="ORM" persistent="false";
 
 	/**
 	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
 	*/
-	property name="useTransactions" type="boolean" default="true";
+	property name="useTransactions" type="boolean" default="true" persistent="false";
 
 	/**
 	* The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
 	*/
-	property name="defaultAsQuery" type="boolean" default="true";
+	property name="defaultAsQuery" type="boolean" default="true" persistent="false";
 
 	/**
 	* All calculated and parsed dynamic finders' and counters' HQL will be stored here for easier execution
 	*/
-	property name="HQLDynamicCache" type="struct";
+	property name="HQLDynamicCache" type="struct" persistent="false";
 
 	// STATIC DYNAMIC FINDER VARIABLES
 	ALL_CONDITIONALS 		= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";

@@ -22,6 +22,8 @@ component {
 	this.modelNamespace		= "cborm";
 	// CF Mapping
 	this.cfmapping			= "cborm";
+	// Dependencies
+	this.dependencies 		= [ "validation" ];
 
 	function configure(){
 

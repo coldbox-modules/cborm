@@ -34,17 +34,17 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	/**
 	* The entityName property for this "version" of the Virtual Service
 	*/
-	property name="entityName" type="string";
-	
+ 	property name="entityName" type="string" persistent="false";
+
 	/**
 	* The datasource property for this "version" of the Virtual Service
 	*/
-	property name="datasource" type="string";
+	property name="datasource" type="string" persistent="false";
 
 	/************************************** CONSTRUCTOR *********************************************/
 
-	VirtualEntityService function init(required string entityname, 
-										string queryCacheRegion, 
+	VirtualEntityService function init(required string entityname,
+										string queryCacheRegion,
 										boolean useQueryCaching,
 										boolean eventHandling,
 										boolean useTransactions,
@@ -57,10 +57,10 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 
 		// init parent
 		super.init(argumentCollection=arguments);
-		
+
 		// Set the local entity to be used in this virtual entity service
 		setEntityName( arguments.entityName );
-		
+
 		// Set the datasource of the local entity to be used in this virtual entity service
 		// Only if not passed
 		if( !StructKeyExists(arguments, "datasource") ){
@@ -69,7 +69,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		else{
 			setDatasource( arguments.datasource );
 		}
-		
+
 		return this;
 	}
 
@@ -83,9 +83,9 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 						       boolean ignorecase=false,
 						       boolean asQuery=getDefaultAsQuery(),
 						       boolean unique=false){
-						       	   
+
 		arguments.datasource = this.getDatasource();
-		return super.executeQuery(argumentCollection=arguments);				       	   
+		return super.executeQuery(argumentCollection=arguments);
 	}
 
 	any function list(struct criteria=structnew(),
@@ -133,12 +133,12 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		arguments.entityName = this.getEntityName();
 		return super.deleteAll(arguments.entityName,arguments.flush);
 	}
-	
+
 	boolean function deleteByID(required any id, boolean flush=false,boolean transactional=getUseTransactions()){
 		arguments.entityName = this.getEntityName();
 		return super.deleteByID(argumentCollection=arguments);
 	}
-	
+
 	any function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions() ){
 		arguments.datasource = this.getDatasource();
 		return super.deleteByQuery(argumentCollection=arguments);
@@ -163,16 +163,16 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		arguments.entityName = this.getEntityName();
 		super.evict(argumentCollection=arguments);
 	}
-	
+
 	any function clear(string datasource=this.getDatasource()){
 		return super.clear(argumentCollection=arguments);
 	}
-	
+
 	boolean function isSessionDirty(string datasource=this.getDatasource()){
 		arguments.datasource = this.getDatasource();
 		return super.isSessionDirty(argumentCollection=arguments);
 	}
-	
+
 	struct function getSessionStatistics(string datasource=this.getDatasource()){
 		arguments.datasource = this.getDatasource();
 		return super.getSessionStatistics(argumentCollection=arguments);
@@ -189,7 +189,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	string function getTableName(){
 		return super.getTableName(this.getEntityName());
 	}
-	
+
 	any function criteriaQuery(array criteria=ArrayNew(1),
 					  		 		  string sortOrder="",
 					  		 		  numeric offset=0,
@@ -200,17 +200,17 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		arguments.entityName = this.getEntityName();
 		return super.criteriaQuery(argumentCollection=arguments);
 	}
-	
+
 	numeric function criteriaCount(array criteria=ArrayNew(1)){
 		return super.criteriaCount(this.getEntityName(), arguments.criteria);
 	}
-	
+
 	any function newCriteria(boolean useQueryCaching=false, string queryCacheRegion=""){
-		
+
 		arguments.entityName = this.getEntityName();
 		return super.newCriteria(argumentCollection=arguments);
 	}
-	
+
 	/**
 	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
 	* The method returns a coverted array of ID's
@@ -219,7 +219,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		arguments.entityName = this.getEntityName();
 		return super.convertIDValueToJavaType(argumentCollection=arguments);
 	}
-	
+
 	/**
 	* Coverts a value to the correct javaType for the property passed in
 	* The method returns the value in the proper Java Type
@@ -228,7 +228,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		arguments.entityName = this.getEntityName();
 		return super.convertValueToJavaType(argumentCollection=arguments);
 	}
-	
+
 	/**
 	* A nice onMissingMethod template to create awesome dynamic methods based on a virtual service
 	*/

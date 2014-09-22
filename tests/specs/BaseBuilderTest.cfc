@@ -7,16 +7,17 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	}
 
 	function setup(){
-		ormService = getMockBox().createMock("cborm.models.BaseORMService")
-					.init();
-		mockEventHandler = getMockBox().createStub().$( "getEventManager",
-			getMockBox().createStub().$( "processState" )
-		);
-		ormService.$( "getORMEventHandler", mockEventHandler );
+		super.setup();
 
-		criteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
-		criteria.init( entityName="User", ORMService=ormService );
-		subCriteria   = getMockBox().createMock("cborm.models.DetachedCriteriaBuilder");
+		ormService = getMockBox().createMock("cborm.models.BaseORMService").init();
+
+		mockEventHandler = getMockBox().createMock( "cborm.models.EventHandler" )
+			.$( "getEventManager", getMockBox().createStub().$( "processState" ) );
+		ormService.setORMEventHandler( mockEventHandler );
+		ormservice.seteventHandling( false );
+
+		criteria   		= new cborm.models.CriteriaBuilder( entityName="User", ORMService=ormService );
+		subCriteria   	= getMockBox().createMock("cborm.models.DetachedCriteriaBuilder");
 		subCriteria.init( entityName="User", alias="User2", ormService=ormService );
 
 		// Test ID's
@@ -27,41 +28,41 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function testCreateCriteria(){
 
-		r = criteria.init( entityName="Role", ormService = ormService )
-			.createCriteria( associationName="users", joinType=criteria.INNER_JOIN )
+		var r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
+				.createCriteria( associationName="users", joinType=criteria.INNER_JOIN )
 				.like("lastName","M%")
-			.list();
+				.list();
 
 		assertEquals("Administrator", r[1].getRole() );
 
 		// with join Type
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.withusers( criteria.LEFT_JOIN ).like("lastName","M%")
 			.list();
 
 		assertEquals("Administrator", r[1].getRole() );
 		// No Joins
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.withusers().like("lastName","M%")
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 		// with alias
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.createCriteria( associationName="users", alias="user" )
 			.like("user.lastName","M%")
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 		// with alias & join type
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.createCriteria( associationName="users", alias="user", joinType=criteria.LEFT_JOIN )
 			.like("user.lastName","M%")
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 		// with alias & join type & withClause
-		r = criteria.init( entityName="Role", ormService = ormService )
-			.createCriteria( 
-				associationName="users", 
-				alias="user", 
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
+			.createCriteria(
+				associationName="users",
+				alias="user",
 				joinType=criteria.LEFT_JOIN,
 				withClause=criteria.restrictions.like("user.lastName","M%")
 			)
@@ -71,25 +72,25 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function testCreateAlias(){
 		// with alias and join type
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.INNER_JOIN )
 			.like("u.lastName","M%")
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 		// with alias,join type and withClause
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.createAlias("users", "u", criteria.LEFT_JOIN, criteria.restrictions.like("u.lastName","M%") )
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 
 		// no join type
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.createAlias("users","u")
 			.like("u.lastName","M%")
 			.list();
 		assertEquals("Administrator", r[1].getRole() );
 		// no join type, but withClause
-		r = criteria.init( entityName="Role", ormService = ormService )
+		r = new cborm.models.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.createAlias(
 				associationName="users",
 				alias="u",
@@ -356,7 +357,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 			.startSqlLog()
 			.like("u.lastName","M%");
 
-		assertTrue( r.$getProperty( "sqlLoggerActive" ) );
+		assertTrue( r.getSQLLoggerActive() );
 	}
 
 	function testStopSqlLog() {
@@ -366,7 +367,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 			.like("u.lastName","M%")
 			.stopSqlLog();
 
-		assertFalse( r.$getProperty( "sqlLoggerActive" ) );
+		assertFalse( r.getSQLLoggerActive() );
 	}
 
 	function testLogSql() {
@@ -389,10 +390,10 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		makePublic( r, "canLogSql" );
 		// start sql log=can log sql
 		r.startSqlLog();
-		assertTrue( r.$getProperty( "sqlLoggerActive" ) );
+		assertTrue( r.getSQLLoggerActive() );
 		// stop sql log=can't log sql
 		r.stopSqlLog();
-		assertFalse( r.$getProperty( "sqlLoggerActive" ) );
+		assertFalse( r.getSQLLoggerActive() );
 	}
 
 	function testHasProjection() {

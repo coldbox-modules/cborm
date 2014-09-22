@@ -2,7 +2,7 @@
 * My BDD Test
 */
 component extends="testbox.system.BaseSpec"{
-	
+
 /*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
@@ -19,11 +19,12 @@ component extends="testbox.system.BaseSpec"{
 	function run(){
 		// all your suites go here.
 		describe( "ORM Util Factory", function(){
-			it( "can get adobe instance", function(){
+
+			it( title="can get adobe instance", body=function(){
 				factory.$("getPlatform", "ColdFusion Server");
 				var u = factory.getORMUtil();
 				expect(	u ).toBeInstanceOf( "cborm.models.util.CFORMUtil" );
-			});
+			}, skip=isRailo);
 
 			it( "can get railo < 4.3 instance", function(){
 				factory.$("getPlatform", "railo" ).$("getRailoVersion", "4.1.000");
@@ -31,13 +32,18 @@ component extends="testbox.system.BaseSpec"{
 				expect(	u ).toBeInstanceOf( "cborm.models.util.ORMUtil" );
 			});
 
-			it( "can get railo > 4.3 instance", function(){
+			it( title="can get railo > 4.3 instance", body=function(){
 				factory.$("getPlatform", "railo" ).$("getRailoVersion", "4.3.000");
 				var u = factory.getORMUtil();
 				expect(	u ).toBeInstanceOf( "cborm.models.util.RailoORMUtil" );
+			}, skip=function(){
+				return ( isRailo() and findNoCase( "4.3", server.railo.version ) ) ? false : true;
 			});
-		
+
 		});
 	}
-	
+
+	function isRailo(){
+		return structKeyExists( server, "railo" );
+	}
 }

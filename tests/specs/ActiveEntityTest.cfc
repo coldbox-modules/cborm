@@ -1,12 +1,14 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function beforeTests(){
+		structClear( application );
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
+		//new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 
 	function setup(){
+		super.setup();
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
 
 		// Test ID's
@@ -69,12 +71,6 @@
 	}
 
 	function testIsValid(){
-		mockWireBox = getMockBox().createMock("coldbox.system.ioc.Injector").init();
-		mockValidationManager = new cbvalidation.models.ValidationManager();
-		mockValidationManager.setWireBox( mockWireBox );
-		mockWireBox.getBinder().map("WireBoxValidationManager").toValue( mockValidationManager );
-
-		activeUser.setWireBox( mockWireBox );
 		r = activeUser.isValid();
 		assertFalse( r );
 
@@ -235,7 +231,7 @@
 	}
 
 	function testList(){
-		test = activeUser.list(sortorder="lastName asc");
+		test = activeUser.list( sortorder="lastName asc" );
 
 		assertTrue( test.recordcount );
 	}

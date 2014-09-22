@@ -122,6 +122,14 @@
  						destination="modules/validation"
  						unzip="true"
  						removeZip="true"/>
+ 		<!-- Download Dependency via box task-->
+ 		<box-dependency artifactID="i18n" 
+ 						groupID="ortussolutions/coldbox-modules" 
+ 						version="${i18n.version}"
+ 						extension="zip"
+ 						destination="modules/i18n"
+ 						unzip="true"
+ 						removeZip="true"/>
 	</target>
 
 </project>

@@ -50,4 +50,5 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isCF"{
 	function testGetDefaultDatasource(){
 		assertEquals('coolblog', ormutil.getDefaultDatasource() );
 	}
+
 }

@@ -23,11 +23,6 @@ These methods are only active if WireBox entity injection is available.
 component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
-	* WireBox entity injector, only injected if ORM entity injection is available.
-	*/
-	property name="wirebox" inject="wirebox" persistent="false";
-
-	/**
 	* Active Entity Constructor, if you override it, make sure you call super.init()
 	* @queryCacheRegion.hint The query cache region to use if not we will use one for you
 	* @useQueryCaching.hint Enable query caching for this entity or not, defaults to false
@@ -35,11 +30,17 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	* @useTransactions.hint Enable transactions for all major operations, defaults to true
 	* @defaultAsQuery.hint What should be the default return type query or arrays for list opertions, defaults to true
 	*/
-	function init(string queryCacheRegion, boolean useQueryCaching,	boolean eventHandling, boolean useTransactions,	boolean defaultAsQuery){
-		var md 		= getMetadata( this );
+	function init(
+		string queryCacheRegion,
+		boolean useQueryCaching,
+		boolean eventHandling,
+		boolean useTransactions,
+		boolean defaultAsQuery
+	){
+		var md = getMetadata( this );
 
 		// find entity name on md?
-		if( structKeyExists(md,"entityName") ){
+		if( structKeyExists( md,"entityName" ) ){
 			arguments.entityName = md.entityName;
 		}
 		// else default to entity CFC name
@@ -160,16 +161,18 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
     */
-	any function populate(any target=this,
-						  required struct memento,
-						  string scope="",
-					 	  boolean trustedSetter=false,
-						  string include="",
-						  string exclude="",
-						  boolean ignoreEmpty=false,
-						  string nullEmptyInclude="",
-						  string nullEmptyExclude="",
-						  boolean composeRelationships=true){
+	any function populate(
+		any target=this,
+		required struct memento,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 		return beanPopulator.populateFromStruct( argumentCollection=arguments );
 	}
 
@@ -182,17 +185,19 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	* @exclude.hint A list of keys to exclude from the population
 	* @prefix.hint The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
     */
-	any function populateWithPrefix(any target=this,
-						  required struct memento,
-						  string scope="",
-					 	  boolean trustedSetter=false,
-						  string include="",
-						  string exclude="",
-						  boolean ignoreEmpty=false,
-						  string nullEmptyInclude="",
-						  string nullEmptyExclude="",
-						  boolean composeRelationships=true,
-						  required string prefix){
+	any function populateWithPrefix(
+		any target=this,
+		required struct memento,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true,
+		required string prefix
+	){
 		return beanPopulator.populateFromStructWithPrefix( argumentCollection=arguments );
 	}
 
@@ -204,16 +209,18 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromJSON(any target=this,
-								  required string JSONString,
-								  string scope="",
-								  boolean trustedSetter=false,
-								  string include="",
-								  string exclude="",
-						   	 	  boolean ignoreEmpty=false,
-						  		  string nullEmptyInclude="",
-						  		  string nullEmptyExclude="",
-						  		  boolean composeRelationships=true){
+	any function populateFromJSON(
+		any target=this,
+		required string JSONString,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 		return beanPopulator.populateFromJSON( argumentCollection=arguments );
 	}
 
@@ -226,17 +233,19 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromXML(any target=this,
-								 required string xml,
-								 string root="",
-								 string scope="",
-								 boolean trustedSetter=false,
-								 string include="",
-								 string exclude="",
-						   	     boolean ignoreEmpty=false,
-						  		 string nullEmptyInclude="",
-						  		 string nullEmptyExclude="",
-						  		 boolean composeRelationships=true){
+	any function populateFromXML(
+		any target=this,
+		required string xml,
+		string root="",
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 		return beanPopulator.populateFromXML( argumentCollection=arguments );
 	}
 
@@ -249,17 +258,19 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	* @include.hint A list of keys to include in the population ONLY
 	* @exclude.hint A list of keys to exclude from the population
 	*/
-	any function populateFromQuery(any target=this,
-								   required any qry,
-								   numeric rowNumber=1,
-								   string scope="",
-								   boolean trustedSetter=false,
-								   string include="",
-								   string exclude="",
-						  		   boolean ignoreEmpty=false,
-						  		   string nullEmptyInclude="",
-						  		   string nullEmptyExclude="",
-						  		   boolean composeRelationships=true){
+	any function populateFromQuery(
+		any target=this,
+		required any qry,
+		numeric rowNumber=1,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 		return beanPopulator.populateFromQuery( argumentCollection=arguments );
 	}
 
@@ -271,14 +282,19 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	* @locale.hint An optional locale to use for i18n messages
 	* @excludeFields.hint An optional list of fields to exclude from the validation.
 	*/
-	boolean function isValid(string fields="*", any constraints="", string locale="", string excludeFields=""){
+	boolean function isValid(
+		string fields="*",
+		any constraints="",
+		string locale="",
+		string excludeFields=""
+	){
 		// validate wirebox
-		if( !structKeyExists(variables,"wirebox") OR !isObject(variables.wirebox) ){
-			throw(message="WireBox reference does not exist in this entity",detail="WireBox entity injection must be enabled in order to use the validation features",type="ActiveEntity.ORMEntityInjectionMissing");
+		if( !structKeyExists( application, "wirebox" ) OR !isObject( application.wirebox ) ){
+			throw( message="WireBox reference does not exist in application scope",
+				   type="ActiveEntity.WireBoxException" );
 		}
-
 		// Get validation manager
-		var validationManager = wirebox.getInstance("WireBoxValidationManager");
+		var validationManager = application.wirebox.getInstance( "ValidationManager@validation" );
 		// validate constraints
 		var thisConstraints = "";
 		if( structKeyExists(this,"constraints") ){ thisConstraints = this.constraints; }
@@ -288,7 +304,13 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		}
 
 		// validate and save results in private scope
-		validationResults = validationManager.validate(target=this, fields=arguments.fields, constraints=thisConstraints, locale=arguments.locale, excludeFields=arguments.excludeFields);
+		validationResults = validationManager.validate(
+			target			= this,
+			fields			= arguments.fields,
+			constraints		= thisConstraints,
+			locale			= arguments.locale,
+			excludeFields	= arguments.excludeFields
+		);
 
 		// return it
 		return ( !validationResults.hasErrors() );
@@ -297,11 +319,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	/**
 	* Get the validation results object.  This will be an empty validation object if isValid() has not being called yet.
 	*/
-	cbvalidation.model.result.IValidationResult function getValidationResults(){
-		if( structKeyExists(variables,"validationResults") ){
+	cbvalidation.models.result.IValidationResult function getValidationResults(){
+		if( structKeyExists( variables, "validationResults" ) ){
 			return validationResults;
 		}
-		return new cbvalidation.model.result.ValidationResult();
+		return new cbvalidation.models.result.ValidationResult();
 	}
 
 }

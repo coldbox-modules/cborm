@@ -19,6 +19,7 @@
 		{ "type" : "adobe", "version" : ">9.02" },
 	],
 	"dependencies" 	:{
-		"validation" : "1.0.0"
+		"validation" : "1.0.0",
+		"i18n" : "1.0.0"
 	}
 }

@@ -1,20 +1,19 @@
 component extends="coldbox.system.testing.BaseTestCase" {
 
 	this.loadColdbox = false;
-	
+
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
-	
+
 	function setup(){
 		ormService = getMockBox().createMock("cborm.models.BaseORMService")
 					.init();
-		mockEventHandler = getMockBox().createStub().$( "getEventManager", 
-			getMockBox().createStub().$( "processState" )
-		);
-		ormService.$( "getORMEventHandler", mockEventHandler );
+		mockEventHandler = getMockBox().createMock( "cborm.models.EventHandler" )
+			.$( "getEventManager", getMockBox().createStub().$( "processState" ) );
+		ormService.setORMEventHandler( mockEventHandler );
 
 		criteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
 		criteria.init( entityName="User", ormservice=ormservice );
@@ -25,7 +24,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 	}
-	
+
 	function testLog() {
 		SQLHelper.log( "Anything" );
 		SQLHelper.log( "Mother" );
@@ -34,7 +33,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// check that the array is the length we expect
 		assertTrue( arrayLen( SQLHelper.getLog() )==2 );
 	}
-	
+
 	function testGetSQL() {
 		criteria.like("lastName","M%");
 		// test it returns a string
@@ -48,7 +47,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// test it returns formatted sql
 		assertTrue( findNoCase( "<pre>", SQLHelper.getSQL( formatSql=true ) ) );
 	}
-	
+
 	function testApplyFormatting() {
 		criteria.like("lastName","M%");
 		var sql = SQLHelper.getSql( false, false );
@@ -56,7 +55,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// test it returns formatted sql
 		assertTrue( findNoCase( "<pre>", formatted ) );
 	}
-	
+
 	function testGetPositionalSQLParameterValues() {
 		r = criteria.init( entityName="Role", ormservice=ormservice )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -67,7 +66,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// test it returns the number of param values we expect (1)
 		assertTrue( arrayLen( values )==1 );
 	}
-	
+
 	function testGetPositionalSQLParameterTypes() {
 		r = criteria.init( entityName="Role", ormservice=ormservice )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -81,7 +80,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// if not simple, test that the result is an object
 		assertTrue( isObject( complexttypes[ 1 ] ) );
 	}
-	
+
 	function testGetPositionalSQLParameters() {
 		r = criteria.init( entityName="Role", ormservice=ormservice )
 			.createAlias("users", "u", criteria.INNER_JOIN )
@@ -92,11 +91,11 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// test it returns the number of param types we expect (1)
 		assertTrue( arrayLen( params )==1 );
 	}
-	
+
 	function testGenerateSQLAlias() {
         assertTrue( isSimpleValue( SQLHelper.generateSQLAlias() ) );
     }
-    
+
     function testGetRootSQLAlias() {
         assertTrue( isSimpleValue( SQLHelper.getRootSQLAlias() ) );
     }
@@ -105,27 +104,27 @@ component extends="coldbox.system.testing.BaseTestCase" {
     	criteria.withProjections( count="id" );
         assertIsArray( SQLHelper.getProjectedTypes() );
     }
-	
+
 	function testGetProjectionAlias() {
 		criteria.withProjections( count="id" );
 		assertEquals( SQLHelper.getProjectionAlias(), "id" );
 	}
-	
+
 	function testCanLogLimitOffset() {
         assertTrue( isBoolean( SQLHelper.canLogLimitOffset() ) );
     }
-	
+
 	function testGetDialect() {
         assertEquals( getMetaData( SQLHelper.getDialect() ).getSuperClass().getName(), "org.hibernate.dialect.Dialect" );
     }
-	
+
 	function testGetQueryParameters() {
 		criteria.like("lastName","M%");
 		makePublic( SQLHelper, "getQueryParameters" );
-		
-		assertTrue( isInstanceOf( SQLHelper.getQueryParameters(), "org.hibernate.engine.QueryParameters" ) );
+
+		assertTrue( isObject( SQLHelper.getQueryParameters() ) );
 	}
-	
+
 	function testReplaceQueryParameters() {
 		criteria.like("lastName","M%");
 		var sql = criteria.getSQL( false, false );
@@ -138,7 +137,7 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// test it returns executable sql
 		assertFalse( findNoCase( "?", replaced ) );
     }
-	
+
 	function testBindLimitParameters() {
 		criteria.like("lastName","M%");
 		criteria.list( max=10, offset=2 );
@@ -153,25 +152,25 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		// max/limit will be prepended
 		assertTrue( test1[1]==2 );
 		assertTrue( test1[2]==10 );
-		
+
 		var test2 = SQLHelper.bindLimitParameters( SQLHelper.convertToCFArray( params.getPositionalParameterValues() ), true, selection );
 		// max/limit will be appended
 		assertTrue( test2[2]==2 );
 		assertTrue( test2[3]==10 );
 	}
-	
+
 	function testUseLimit() {
 		makePublic( SQLHelper, "useLimit" );
 		makePublic( SQLHelper, "getQueryParameters" );
 		assertTrue( isBoolean( SQLHelper.useLimit( SQLHelper.getQueryParameters().getRowSelection() ) ) );
 	}
-	
+
 	function testHasMaxRows() {
 		makePublic( SQLHelper, "hasMaxRows" );
 		makePublic( SQLHelper, "getQueryParameters" );
 		assertTrue( isBoolean( SQLHelper.hasMaxRows( SQLHelper.getQueryParameters().getRowSelection() ) ) );
 	}
-	
+
 	function testGetFirstRow() {
 		criteria.like("lastName","M%");
 		criteria.list( max=10, offset=2 );
@@ -179,22 +178,22 @@ component extends="coldbox.system.testing.BaseTestCase" {
 		makePublic( SQLHelper, "getQueryParameters" );
 		assertTrue( isNumeric( SQLHelper.getFirstRow( SQLHelper.getQueryParameters().getRowSelection() ) ) );
 	}
-	
+
 	function testGetMaxOrLimit() {
 		criteria.like("lastName","M%");
 		criteria.list( max=10, offset=2 );
 		makePublic( SQLHelper, "getMaxOrLimit" );
 		makePublic( SQLHelper, "getQueryParameters" );
 		assertTrue( isNumeric( SQLHelper.getMaxOrLimit( SQLHelper.getQueryParameters().getRowSelection() ) ) );
-	}   
+	}
 
     function testGetCriteriaJoinWalker() {
         makePublic( SQLHelper, "getCriteriaJoinWalker" );
         assertTrue( getMetaData( SQLHelper.getCriteriaJoinWalker() ).getName()=="org.hibernate.loader.criteria.CriteriaJoinWalker" );
     }
-    
+
     function testGetCriteriaQueryTranslator() {
         makePublic( SQLHelper, "getCriteriaQueryTranslator" );
         assertTrue( getMetaData( SQLHelper.getCriteriaQueryTranslator() ).getName()=="org.hibernate.loader.criteria.CriteriaQueryTranslator" );
-    } 
+    }
 }

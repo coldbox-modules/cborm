@@ -6,6 +6,9 @@
 		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 
+	function teardown(){
+		ormservice.clear();
+	}
 	function setup(){
 		ormservice 	= getMockBox().createMock("cborm.models.BaseORMService");
 		mockEH 		= getMockBox().createMock("cborm.models.EventHandler");
@@ -52,12 +55,10 @@
 		assert( isNull( t ) , "Conditionals isNull");
 		t = ormservice.findAllByLastNameIsNotNull("User");
 		assert( arrayLen( t ) , "Conditionals isNull");
-		t = ormservice.findAllByLastLoginBetween("User", "01/01/2009", "01/01/2012");
-		assert( arrayLen( t ) , "Conditionals between");
 		t = ormservice.findByLastLoginBetween("User", "01/01/2008", "11/01/2008");
 		assert( isNull( t ) , "Conditionals between");
-		t = ormservice.findByLastLoginNotBetween("User", "01/01/2009", "01/01/2018");
-		assert( isNull( t ) , "Conditionals not between");
+		t = ormservice.findByLastLoginNotBetween("User", "2008-01-01", "2013-01-01");
+		assert( !isNull( t ) , "Conditionals not between");
 		t = ormservice.findAllByLastNameInList("User", "Majano,Fernando");
 		assert( arrayLen( t ) , "Conditionals inList");
 		t = ormservice.findAllByLastNameInList("User", listToArray(  "Majano,Fernando" ));
@@ -115,7 +116,7 @@
 		assertFalse( ormservice.sessionContains( entityNew("User") ));
 		test = entityLoad("User",{firstName="Luis"},true);
 		assertTrue( ormservice.sessionContains( test ));
-		ORMEvictEntity("user");
+		ORMEvictEntity("User");
 		assertFalse( ormservice.sessionContains( entityNew("User") ));
 	}
 
@@ -207,25 +208,32 @@
 	}
 
 	function testDelete(){
+		// cleanup
+		deleteCategories();
+
 		var cat = entityNew("Category");
 		cat.setCategory('unitTest');
 		cat.setDescription('unitTest');
-		entitySave(cat);ORMFlush();
+		entitySave( cat );
+		ORMFlush();
 
 		try{
+
+			var test = entityLoad("Category",{category="unittest"} );
+			debug(test);
+			ormservice.delete( test[1] );
+			ORMFlush();
+			ormservice.clear();
+
 			var test = entityLoad("Category",{category="unittest"} );
 			//debug(test);
-			ormservice.delete( test[1] );
-			ormservice.clear();
-			var test = entityLoad("Category",{category="unittest"} );
 			assertTrue( arrayLen(test) eq 0 );
 		}
 		catch(any e){
 			fail(e.detail & e.message);
 		}
 		finally{
-			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -248,8 +256,7 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			q = new Query(datasource="coolblog");
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -267,8 +274,7 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			q = new Query(datasource="coolblog");
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -284,6 +290,7 @@
 
 		try{
 			ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'});
+			ormFlush();
 			result = q.execute(sql="select * from categories where category = 'unitTest'");
 			assertEquals( 0, result.getResult().recordcount );
 		}
@@ -291,7 +298,7 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -316,7 +323,7 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -342,8 +349,7 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -399,8 +405,7 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -430,8 +435,7 @@
 			fail(e.detail & e.message);
 		}
 		finally{
-			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from categories where category = 'unitTest'");
+			deleteCategories();
 		}
 	}
 
@@ -650,7 +654,10 @@
 		test = ormservice.merge( test );
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 1, stats.entityCount );
+	}
 
-
+	private function deleteCategories(){
+		var q = new Query(datasource="coolblog");
+		q.execute(sql="delete from categories where category = 'unitTest'");
 	}
 }
