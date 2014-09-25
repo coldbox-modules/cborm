@@ -9,3 +9,4 @@ tests/results
 modules/javaloader
 modules/validation
 modules/i18n
+workbench/build.number
