@@ -27,6 +27,9 @@ component {
 
 	function configure(){
 
+		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
+		controller.getWireBox().registerDSL( namespace="entityService", path="#moduleMapping#.models.dsl.ORMDSL" );
+
 		// Custom Declared Points
 		interceptorSettings = {
 			customInterceptionPoints = [
