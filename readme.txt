@@ -33,7 +33,7 @@ IMPORTANT LINKS
 ********************************************************************************
 Source
 - https://github.com/ColdBox/cbox-cborm
-- http://www.coldbox.org/forgebox/cborm
+- http://www.coldbox.org/forgebox/view/cborm
 Documentation
 - http://wiki.coldbox.org/wiki/ORM:BaseORMService.cfm
 - http://wiki.coldbox.org/wiki/ORM:ActiveEntity.cfm
