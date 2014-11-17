@@ -54,14 +54,6 @@ component{
 
 		ormReload();
 
-		// Bootstrap Reinit
-		if( not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit() ){
-			lock name="coldbox.bootstrap_#this.name#" type="exclusive" timeout="5" throwonTimeout=true{
-				structDelete( application, "cbBootStrap" );
-				onApplicationStart();
-			}
-		}
-
 		// Process ColdBox Request
 		application.cbBootstrap.onRequestStart( arguments.targetPage );
 

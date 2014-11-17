@@ -46,14 +46,16 @@
         
     ],
     "dependencies":{
-        "cborm" : "1.0.0"
+        "cborm":"1.0.0",
+        "cbvalidation":"1.0.0"
     },
     "devDependencies":{
-        "coldbox-be" : "4.0.0",
-        "testbox" : "2.0.0"
+        "coldbox-be":"4.0.0",
+        "testbox":"2.0.0"
     },
     "installPaths":{
-        "validation" : "modules/validation"
+        "validation":"modules/validation",
+        "cbvalidation":"modules/cbvalidation"
     },
     "ignore":[
         

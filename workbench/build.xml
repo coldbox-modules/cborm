@@ -68,7 +68,7 @@
         	<fileset dir="modules/${module.name}" />
         </copy>
         <!-- Copy readme -->
-        <copy todir="${dir.build}" encoding="UTF-8" file="readme.txt" overwrite="true" />
+        <copy todir="${dir.build}" encoding="UTF-8" file="readme.md" overwrite="true" />
         
         <!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
@@ -115,19 +115,19 @@
     <!-- Get Dependencies -->
 	<target name="getDependencies" description="Get all the necessary dependencies for the build process using: box.repo.url">
 		<!-- Download Dependency via box task-->
- 		<box-dependency artifactID="validation" 
+ 		<box-dependency artifactID="cbvalidation" 
  						groupID="ortussolutions/coldbox-modules" 
  						version="${validation.version}"
  						extension="zip"
- 						destination="modules/validation"
+ 						destination="modules/cbvalidation"
  						unzip="true"
  						removeZip="true"/>
  		<!-- Download Dependency via box task-->
- 		<box-dependency artifactID="i18n" 
+ 		<box-dependency artifactID="cbi18n" 
  						groupID="ortussolutions/coldbox-modules" 
  						version="${i18n.version}"
  						extension="zip"
- 						destination="modules/i18n"
+ 						destination="modules/cbi18n"
  						unzip="true"
  						removeZip="true"/>
 	</target>

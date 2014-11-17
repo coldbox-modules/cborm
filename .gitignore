@@ -6,7 +6,7 @@ test/results/*.properties
 test/results/*.html
 test/results/*.log
 tests/results
-modules/javaloader
-modules/validation
-modules/i18n
+modules/cbjavaloader
+modules/cbvalidation
+modules/cbi18n
 workbench/build.number

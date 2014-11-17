@@ -11,7 +11,7 @@ component {
 	this.author 			= "Luis Majano";
 	this.webURL 			= "http://www.ortussolutions.com";
 	this.description 		= "ColdBox ORM enhancements for Hibernate";
-	this.version			= "1.0.0.@build.number@";
+	this.version			= "1.0.0+@build.number@";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
 	this.viewParentLookup 	= true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
@@ -23,7 +23,7 @@ component {
 	// CF Mapping
 	this.cfmapping			= "cborm";
 	// Dependencies
-	this.dependencies 		= [ "validation" ];
+	this.dependencies 		= [ "cbvalidation" ];
 
 	function configure(){
 

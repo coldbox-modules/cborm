@@ -13,8 +13,8 @@ component{
 	rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" );
 	this.mappings[ "/root" ]   = rootPath;
 	this.mappings[ "/cborm" ]   = rootPath & "/modules/cborm";
-	this.mappings[ "/i18n" ]   = rootPath & "/modules/i18n";
-	this.mappings[ "/cbvalidation" ]   = rootPath & "/modules/validation";
+	this.mappings[ "/cbi18n" ]   = rootPath & "/modules/cbi18n";
+	this.mappings[ "/cbvalidation" ]   = rootPath & "/modules/cbvalidation";
 
 	// any orm definitions go here.
 	this.datasource = "coolblog";

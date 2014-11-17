@@ -294,7 +294,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 				   type="ActiveEntity.WireBoxException" );
 		}
 		// Get validation manager
-		var validationManager = application.wirebox.getInstance( "ValidationManager@validation" );
+		var validationManager = application.wirebox.getInstance( "ValidationManager@cbvalidation" );
 		// validate constraints
 		var thisConstraints = "";
 		if( structKeyExists(this,"constraints") ){ thisConstraints = this.constraints; }
