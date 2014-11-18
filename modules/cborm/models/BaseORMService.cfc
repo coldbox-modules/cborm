@@ -1071,8 +1071,10 @@ component accessors="true"{
 			if( right( thisGrammar, 2 ) eq "or" ){
 				expression.operator = "or";
 			}
-			// Remove operator now that we have it
-			thisGrammar = REReplacenoCase( thisGrammar, "(and|or)$", "" );
+			// Remove operator now that we have it, if the property name doesn't exist 
+			if( !arrayContainsNoCase(realPropertyNames,thisGrammar) ) {
+				thisGrammar = REReplacenoCase( thisGrammar, "(and|or)$", "" );
+			}
 
 			// Get property by removing conditionals from the expression
 			expression.property = REReplacenoCase( thisGrammar, "(#ALL_CONDITIONALS_REGEX#)$", "" );
