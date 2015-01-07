@@ -1072,7 +1072,7 @@ component accessors="true"{
 				expression.operator = "or";
 			}
 			// Remove operator now that we have it, if the property name doesn't exist 
-			if( !arrayContainsNoCase(realPropertyNames,thisGrammar) ) {
+			if( !arrayFindNoCase( realPropertyNames, thisGrammar ) ) {
 				thisGrammar = REReplacenoCase( thisGrammar, "(and|or)$", "" );
 			}
 
