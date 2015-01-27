@@ -7,8 +7,6 @@ Author      :	Luis Majano & Mike McKellip
 Description :
 
 This implementation supports multiple DSNs for ORM a-la Adobe ColdFusion 9
-
-Modifier is Railo 5+ only.
 ----------------------------------------------------------------------->
 */
 component modifier="abstract"{
@@ -70,7 +68,7 @@ component modifier="abstract"{
 	*/
 	public void function evictQueries( string cachename, string datasource ){
 		if(StructKeyExists( arguments,"cachename" ) AND  StructKeyExists( arguments, "datasource" ))
-			ORMEvictQueries(arguments.cachename, arguments.datasource);
+			ORMEvictQueries( arguments.cachename, arguments.datasource );
 		else if( StructKeyExists( arguments,"cachename" ) )
 			ORMEvictQueries( arguments.cachename );
 		else
@@ -100,13 +98,12 @@ component modifier="abstract"{
  		// get application metadata
  		if( listFirst( server.coldfusion.productVersion, "," ) gte 10 ){
 			var settings = getApplicationMetadata();
-		}
-		else{
+		} else {
 			var settings = application.getApplicationSettings();
 		}
 
  		// check orm settings first
- 		if( structKeyExists( settings,"ormsettings") AND structKeyExists(settings.ormsettings,"datasource")){
+ 		if( structKeyExists( settings, "ormsettings" ) AND structKeyExists( settings.ormsettings,"datasource" ) ){
  			return settings.ormsettings.datasource;
  		}
 

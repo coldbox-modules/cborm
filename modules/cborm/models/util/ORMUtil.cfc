@@ -6,7 +6,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author      :	Luis Majano & Mike McKellip
 Description :
 
-This is the Railo < 4.3.000 implementation for single datasource support
+This is the Railo implementation for single datasource support
 
 ----------------------------------------------------------------------->
 */

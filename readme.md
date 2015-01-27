@@ -23,7 +23,8 @@ Apache License, Version 2.0.
 
 ##SYSTEM REQUIREMENTS
 - Railo 4+
-- ColdFusion 9+
+- Lucee 4.5+
+- ColdFusion 9.02+
 
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp

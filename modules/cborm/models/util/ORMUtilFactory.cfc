@@ -18,8 +18,8 @@ component{
 		// Adobe ColdFusion
 		if( getPlatform() == "ColdFusion Server" )
 			return new CFORMUtil();
-		// Railo >= 4.3 MultiDatasource Support
-		if( getRailoVersion() >= "4.3.0.000" )
+		// Lucee >= 4.5 MultiDatasource Support
+		if( getPlatform() == "Lucee" )
 			return new RailoORMUtil();
 		// Railo >= 4.3
 		return new ORMUtil();
