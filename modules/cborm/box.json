@@ -20,7 +20,7 @@
 		{ "type" : "adobe", "version" : ">9.02" }
 	],
 	"dependencies" 	:{
-		"cbvalidation" : "1.0.0",
+		"cbvalidation" : "1.0.1",
 		"cbi18n" : "1.0.0"
 	}
 }
