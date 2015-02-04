@@ -1,6 +1,6 @@
 {
 	"name" 		: "ColdBox ORM Extensions",
-	"version"	: "1.0.1",
+	"version"	: "1.0.2",
 	"author" 	: "Luis Majano <lmajano@ortussolutions.com",
 	"slug"		: "cborm",
 	"type"		: "modules",
@@ -20,7 +20,13 @@
 		{ "type" : "adobe", "version" : ">9.02" }
 	],
 	"dependencies" 	:{
-		"cbvalidation" : "1.0.1",
-		"cbi18n" : "1.0.0"
-	}
+		"cbvalidation" : "1.0.2"
+	},
+	"ignore":[
+        "**/.*",
+        "test",
+        "tests",
+        "apidocs",
+        "*/.md"
+    ]
 }
