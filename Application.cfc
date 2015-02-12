@@ -11,9 +11,6 @@ component{
 	this.sessionTimeout = createTimeSpan(0,0,30,0);
 	this.setClientCookies = true;
 
-	// Mappings Imports
-	import coldbox.system.*;
-
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
 	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() );
 	// The web server mapping to this application. Used for remote purposes or static purposes
@@ -24,8 +21,23 @@ component{
 	COLDBOX_APP_KEY 		 = "";
 
 	// Map CBORM REQUIRED TO USE EVENT HANDLERS
-	this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";
-	this.mappings[ "/root" ] = COLDBOX_APP_ROOT_PATH;
+	this.mappings[ "/cborm" ] 	= COLDBOX_APP_ROOT_PATH & "modules/cborm";
+	this.mappings[ "/root" ] 	= COLDBOX_APP_ROOT_PATH;
+
+	this.datasource = "coolblog";
+	this.ormEnabled = "true";
+
+	this.ormSettings = {
+		cfclocation = [ "models" ],
+		logSQL = true,
+		dbcreate = "update",
+		secondarycacheenabled = false,
+		cacheProvider = "ehcache",
+		flushAtRequestEnd = false,
+		eventhandling = true,
+		eventHandler = "cborm.models.EventHandler",
+		skipcfcWithError = true
+	};
 
 	// application start
 	public boolean function onApplicationStart(){
@@ -36,21 +48,6 @@ component{
 
 	// request start
 	public boolean function onRequestStart(String targetPage){
-
-		this.datasource = "coolblog";
-		this.ormEnabled = "true";
-
-		this.ormSettings = {
-			cfclocation = [ "model" ],
-			logSQL = true,
-			dbcreate = "update",
-			secondarycacheenabled = false,
-			cacheProvider = "ehcache",
-			flushAtRequestEnd = false,
-			eventhandling = true,
-			eventHandler = "cborm.models.EventHandler",
-			skipcfcWithError = true
-		};
 
 		ormReload();
 

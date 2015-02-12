@@ -24,4 +24,10 @@
 	property name="testDI" inject="model:testService" persistent="false" required="false";
 	//property name="controller" inject="coldbox" persistent="false" required="false";
 
+	this.constraints = {
+		"firstName" : { required = true },
+		"lastName"  : { required = true },
+		"userName"  : { required = true, validator="cborm.models.validation.UniqueValidator" }
+	};
+
 }

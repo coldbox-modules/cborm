@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+## 1.0.3
+* ORM Unique validation not working
 
 ## 1.0.2
 * updates to all dependencies

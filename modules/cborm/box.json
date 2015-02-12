@@ -1,6 +1,6 @@
 {
 	"name" 		: "ColdBox ORM Extensions",
-	"version"	: "1.0.2",
+	"version"	: "1.0.3",
 	"author" 	: "Luis Majano <lmajano@ortussolutions.com",
 	"slug"		: "cborm",
 	"type"		: "modules",

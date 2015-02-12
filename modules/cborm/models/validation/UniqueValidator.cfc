@@ -31,10 +31,6 @@ component accessors="true" implements="cbvalidation.models.validators.IValidator
 		any targetValue,
 		any validationData
 	){
-
-		// return true if not unique, nothing needed to check
-		if( !arguments.validationData ){ return true; }
-
 		// null checks
 		if( isNull( arguments.targetValue ) ){
 			var args = {message="The '#arguments.field#' value is null",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
@@ -60,7 +56,7 @@ component accessors="true" implements="cbvalidation.models.validators.IValidator
 
 			// validate uniqueness
 			if( c.count() GT 0 ){
-				var args = {message="The '#arguments.field#' value is not unique in the database",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
+				var args = {message="The '#arguments.field#' value '#arguments.targetValue#' is not unique in the database",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
 				validationResult.addError( validationResult.newError(argumentCollection=args) );
 				return false;
 			}
