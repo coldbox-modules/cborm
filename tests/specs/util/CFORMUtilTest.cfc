@@ -1,8 +1,7 @@
-component extends="coldbox.system.testing.BaseTestCase" skip="isRailo"{
-
-	this.loadColdBox = false;
+component extends="coldbox.system.testing.BaseTestCase" skip="isLucee" appMapping="/root"{
 
 	function setup(){
+		super.setup();
 		ormUtil   = getMockBox().createMock("cborm.models.util.CFORMUtil");
 		// CF ENGINE MUST HAVE coolblog as a DSN
 		dsn = "coolblog";
@@ -54,7 +53,7 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isRailo"{
 		assertEquals('coolblog', ormutil.getDefaultDatasource() );
 	}
 
-	function isRailo(){
-		return structKeyExists( server, "railo" );
+	function isLucee(){
+		return structKeyExists( server, "lucee" );
 	}
 }

@@ -1,14 +1,12 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-Author      :	Luis Majano & Mike McKellip
-Description :
-
-This is the Railo implementation for single datasource support
-
------------------------------------------------------------------------>
+* ********************************************************************************
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ********************************************************************************
+* Author      :	Luis Majano & Mike McKellip
+* Description :
+* 
+* This is the Railo implementation for single datasource support
 */
 component implements="cborm.models.util.IORMUtil"{
 

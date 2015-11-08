@@ -24,26 +24,26 @@ component extends="testbox.system.BaseSpec"{
 				factory.$("getPlatform", "ColdFusion Server");
 				var u = factory.getORMUtil();
 				expect(	u ).toBeInstanceOf( "cborm.models.util.CFORMUtil" );
-			}, skip=isRailo);
+			}, skip=isLucee);
 
-			it( "can get railo < 4.3 instance", function(){
-				factory.$("getPlatform", "railo" ).$("getRailoVersion", "4.1.000");
+			it( "can get lucee < 4.3 instance", function(){
+				factory.$("getPlatform", "railo" ).$("getLuceeVersion", "4.1.000");
 				var u = factory.getORMUtil();
 				expect(	u ).toBeInstanceOf( "cborm.models.util.ORMUtil" );
 			});
 
-			it( title="can get railo > 4.3 instance", body=function(){
-				factory.$("getPlatform", "railo" ).$("getRailoVersion", "4.3.000");
+			it( title="can get lucee > 4.3 instance", body=function(){
+				factory.$("getPlatform", "lucee" ).$("getLuceeVersion", "4.3.000");
 				var u = factory.getORMUtil();
-				expect(	u ).toBeInstanceOf( "cborm.models.util.RailoORMUtil" );
+				expect(	u ).toBeInstanceOf( "cborm.models.util.LuceeORMUtil" );
 			}, skip=function(){
-				return ( isRailo() and findNoCase( "4.3", server.railo.version ) ) ? false : true;
+				return ( isLucee() and findNoCase( "4.3", server.lucee.version ) ) ? false : true;
 			});
 
 		});
 	}
 
-	function isRailo(){
-		return structKeyExists( server, "railo" );
+	function isLucee(){
+		return structKeyExists( server, "lucee" );
 	}
 }
