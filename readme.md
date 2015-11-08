@@ -14,15 +14,14 @@ Apache License, Version 2.0.
 - http://www.coldbox.org/forgebox/view/cborm
 
 **Documentation**
-- http://wiki.coldbox.org/wiki/ORM:BaseORMService.cfm
-- http://wiki.coldbox.org/wiki/ORM:ActiveEntity.cfm
-- http://wiki.coldbox.org/wiki/ORM:VirtualEntityService.cfm
-- http://wiki.coldbox.org/wiki/ORM:ORMEventHandler.cfm
-- http://wiki.coldbox.org/wiki/ORM:CriteriaBuilder.cfm
-- http://wiki.coldbox.org/wiki/ORM:DetachedCriteriaBuilder.cfm
+- https://github.com/ColdBox/cbox-cborm/wiki/Base-ORM-Service
+- https://github.com/ColdBox/cbox-cborm/wiki/Active-Entity
+- https://github.com/ColdBox/cbox-cborm/wiki/Virtual-Entity-Service
+- https://github.com/ColdBox/cbox-cborm/wiki/ColdBox-ORM-Event-Handler
+- https://github.com/ColdBox/cbox-cborm/wiki/ColdBox-Criteria-Builder
+- https://github.com/ColdBox/cbox-cborm/wiki/ColdBox-Detached-Criteria-Builder
 
 ##SYSTEM REQUIREMENTS
-- Railo 4+
 - Lucee 4.5+
 - ColdFusion 9.02+
 
@@ -61,14 +60,6 @@ ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use
 ```js
 { fieldName : { validator: "UniqueValidator@cborm" } }
 ```
-
-## Documentation
-- http://wiki.coldbox.org/wiki/ORM:BaseORMService.cfm
-- http://wiki.coldbox.org/wiki/ORM:ActiveEntity.cfm
-- http://wiki.coldbox.org/wiki/ORM:VirtualEntityService.cfm
-- http://wiki.coldbox.org/wiki/ORM:ORMEventHandler.cfm
-- http://wiki.coldbox.org/wiki/ORM:CriteriaBuilder.cfm
-- http://wiki.coldbox.org/wiki/ORM:DetachedCriteriaBuilder.cfm
 
 
 ********************************************************************************

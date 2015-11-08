@@ -1,6 +1,8 @@
 CHANGELOG
 =========
 ## 1.1.0
+* Updated cbvalidation dependency
+* Prevent conditionals from being stripped from property names
 * Updated build for api docs and commandbox usage for dependencies
 * ORM Unique validation not working
 

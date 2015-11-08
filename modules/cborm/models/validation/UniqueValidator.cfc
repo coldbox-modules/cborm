@@ -33,7 +33,12 @@ component accessors="true" implements="cbvalidation.models.validators.IValidator
 	){
 		// null checks
 		if( isNull( arguments.targetValue ) ){
-			var args = {message="The '#arguments.field#' value is null",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
+			var args = {
+				message 		= "The '#arguments.field#' value is null",
+				field 			= arguments.field,
+				validationType 	= 'Unique',
+				validationData	= arguments.validationData
+			};
 			validationResult.addError( validationResult.newError(argumentCollection=args) );
 			return false;
 		}
