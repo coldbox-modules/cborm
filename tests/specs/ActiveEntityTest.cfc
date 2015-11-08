@@ -23,6 +23,11 @@
 
 	}
 	function testFindByDynamically(){
+		
+		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
+		assert( arraylen( t ) , "Conditionals LessThanEquals");
+		
+
 		// Test simple Equals
 		t = activeUser.findByLastName("majano");
 		assert( isObject( t ), "FindBylastName" );
@@ -30,8 +35,6 @@
 		t = activeUser.findByLastName("d");
 		assert( isNull( t ), "Invalid last name" );
 		// Using Conditionals
-		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
-		assert( arraylen( t ) , "Conditionals LessThanEquals");
 		t = activeUser.findAllByLastNameLessThan( "Majano" );
 		assert( arraylen( t ) , "Conditionals LessThan");
 		t = activeUser.findAllByLastNameGreaterThan( "Majano" );
@@ -61,7 +64,7 @@
 	}
 
 	function testFindByDynamicallyBadProperty(){
-		expectException("BaseORMService.InvalidEntityProperty");
+		expectException("BaseORMService.InvalidMethodGrammar");
 		t = activeUser.findByLastAndFirst();
 	}
 

@@ -1,6 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase" {
-
-	this.loadColdbox = false;
+component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function beforeTests(){
 		super.beforeTests();

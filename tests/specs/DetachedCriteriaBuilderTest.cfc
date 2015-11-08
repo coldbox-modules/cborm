@@ -27,7 +27,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function testGetNativeCriteria() {
 		criteria.withProjections( count="Role.role" );
-		assertTrue( isInstanceOf( criteria.getNativeCriteria(), "org.hibernate.impl.CriteriaImpl" ) );
+		expect(	criteria.getNativeCriteria().getClass().getName() ).toInclude( 'CriteriaImpl' );
 	}
 
 	function testCreateAlias(){

@@ -1,18 +1,13 @@
-<!---
-* The base model test case will use the 'model' annotation as the instantiation path
-* and then create it, prepare it for mocking and then place it in the variables scope as 'model'. It is your
-* responsibility to update the model annotation instantiation path and init your model.
---->
-<cfcomponent extends="coldbox.system.testing.BaseModelTest"  model="cborm.aop.HibernateTransaction">
-<cfscript>
+component extends="coldbox.system.testing.BaseTestCase"  appMapping="/root"{
 
 	function setup(){
 		super.setup();
-		hTransaction = model.init();
+		hTransaction = createMock( "cborm.aop.HibernateTransaction" ).init();
 
 		// mocks
 		mockMapping = getMockBox().createEmptyMock("coldbox.system.ioc.config.Mapping");
-		mockLogger.$("canDebug",false);
+		mockLogger = createEmptyMock( "coldbox.system.logging.Logger" )
+			.$("canDebug",false).$("error");
 		hTransaction.setLog( mockLogger );
 	}
 
@@ -69,8 +64,4 @@
 		assertTrue( mockInvocation.$once("proceed") );
 		assertTrue( mockLogger.$once("canDebug") );
 	}
-
-
-
-</cfscript>
-</cfcomponent>
+}

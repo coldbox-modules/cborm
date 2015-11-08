@@ -68,7 +68,7 @@
 	}
 
 	function testFindByDynamicallyBadProperty(){
-		expectException("BaseORMService.InvalidEntityProperty");
+		expectException("BaseORMService.InvalidMethodGrammar");
 		t = ormservice.findByLastAndFirst("User");
 	}
 

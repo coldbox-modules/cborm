@@ -1045,20 +1045,28 @@ component accessors="true"{
 	/**
 	* Compile HQL from a dynamic method call
 	*/
-	private any function compileHQLFromDynamicMethod(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false, struct params, entityName){
-		var method 			= arguments.missingMethodName;
-		var args   			= arguments.missingMethodArguments;
+	private any function compileHQLFromDynamicMethod(
+		string missingMethodName, 
+		struct missingMethodArguments, 
+		boolean unique=true, 
+		boolean isCounting=false, 
+		struct params, 
+		entityName
+	){
+		var method 	= arguments.missingMethodName;
+		var args   	= arguments.missingMethodArguments;
 
 		// Get all real property names
 		var realPropertyNames = getPropertyNames( arguments.entityName );
 		// Match our method grammars in the method string
-		var methodGrammars = REMatchNoCase( "(#ArrayToList(realPropertyNames, '|')#)(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
-
+		var methodGrammars = REMatchNoCase( "(#arrayToList( realPropertyNames, '|' )#)+(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
+		
 		// Throw exception if no method grammars found
 		if( !arrayLen( methodGrammars ) ){
-			throw(message="Invalid dynamic method grammar expression. Please check your syntax. You could be missing property names or conditionals",
-				  detail="Expression: #method#",
-				  type="BaseORMService.InvalidMethodGrammar");
+			throw(
+				message = "Invalid dynamic method grammar expression. Please check your syntax. You could be missing property names or conditionals",
+				detail 	= "Expression: #method#",
+				type 	= "BaseORMService.InvalidMethodGrammar");
 		}
 
 		// Iterate over method grammars to build HQL Expressions
@@ -1082,9 +1090,11 @@ component accessors="true"{
 			// TODO: Add relationships later
 			var realPropertyIndex = arrayFindNoCase( realPropertyNames, expression.property );
 			if( realPropertyIndex EQ 0 ){
-				throw(message="The property you requested #expression.property# is not a valid property in the #arguments.entityName# entity",
-					  detail="Valid properties are #arrayToList( realPropertyNames )#",
-					  type="BaseORMService.InvalidEntityProperty");
+				throw(
+					message	= "The property you requested '#expression.property#' is not a valid property in the '#arguments.entityName#' entity",
+					detail	= "Valid properties are #arrayToList( realPropertyNames )#",
+					type 	= "BaseORMService.InvalidEntityProperty"
+				);
 			}
 			// now save the actual property name to the passed in property to avoid case issues with Hibernate
 			expression.property = realPropertyNames[ realPropertyIndex ];
