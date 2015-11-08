@@ -56,7 +56,7 @@ component accessors="true" implements="cbvalidation.models.validators.IValidator
 
 			// validate uniqueness
 			if( c.count() GT 0 ){
-				var args = {message="The '#arguments.field#' value '#arguments.targetValue#' is not unique in the database",field=arguments.field,validationType=getName(),validationData=arguments.validationData};
+				var args = {message="The '#arguments.field#' value '#arguments.targetValue#' is not unique in the database",field=arguments.field,validationType='validator',validationData=arguments.validationData};
 				validationResult.addError( validationResult.newError(argumentCollection=args) );
 				return false;
 			}
