@@ -1051,8 +1051,8 @@ component accessors="true"{
 
 		// Get all real property names
 		var realPropertyNames = getPropertyNames( arguments.entityName );
-		// Match our method gramars ini the method string
-		var methodGrammars = REMatchNoCase( "((?!(and|or|$))\w)+(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
+		// Match our method grammars in the method string
+		var methodGrammars = REMatchNoCase( "(#ArrayToList(realPropertyNames, '|')#)(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
 
 		// Throw exception if no method grammars found
 		if( !arrayLen( methodGrammars ) ){
