@@ -40,7 +40,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	public void function postLoad(any entity){
 		var orm 		= getORMUtil();
 		var datasource 	= orm.getEntityDatasource( arguments.entity );
-		
+
 		var args = { entity=arguments.entity, entityName=orm.getSession( datasource ).getEntityName( arguments.entity ) };
 		processEntityInjection(args.entityName, args.entity);
 		announceInterception("ORMPostLoad",args);
@@ -103,14 +103,14 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	}
 
 	/**
-    * Called before the session is flushed. 
+    * Called before the session is flushed.
     */
     public void function preFlush(any entities){
     	announceInterception("ORMPreFlush", {entities=arguments.entities});
     }
 
     /**
-    * Called after the session is flushed. 
+    * Called after the session is flushed.
     */
     public void function postFlush(any entities){
     	announceInterception("ORMPostFlush", {entities=arguments.entities});
@@ -122,7 +122,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	public any function getEventManager(){
 		return getWireBox().getEventManager();
 	}
-	
+
 	/********************************* PRIVATE *********************************/
 
 	/**
@@ -132,24 +132,24 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 		var ormSettings		= getController().getSetting("orm").injection;
 		var injectorInclude = ormSettings.include;
 		var injectorExclude = ormSettings.exclude;
-		
+
 		// Enabled?
 		if( NOT ormSettings.enabled ){
 			return;
 		}
-		
+
 		// Include,Exclude?
 		if( (len(injectorInclude) AND listContainsNoCase(injectorInclude,entityName))
 		    OR
 			(len(injectorExclude) AND NOT listContainsNoCase(injectorExclude,entityName))
-			OR 
+			OR
 			(NOT len(injectorInclude) AND NOT len(injectorExclude) ) ){
-			
+
 			// Process DI
 			getWireBox().autowire(target=entity,targetID="ORMEntity-#entityName#");
-		}	
+		}
 	}
-	
+
 	/**
 	* Get ORM Util
 	*/

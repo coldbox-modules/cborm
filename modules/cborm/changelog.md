@@ -1,6 +1,7 @@
 CHANGELOG
 =========
-## 1.0.3
+## 1.1.0
+* Updated build for api docs and commandbox usage for dependencies
 * ORM Unique validation not working
 
 ## 1.0.2
