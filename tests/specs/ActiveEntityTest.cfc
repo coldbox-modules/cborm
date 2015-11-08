@@ -9,6 +9,7 @@
 
 	function setup(){
 		super.setup();
+		// If Lucee, close the current ORM session to avoid stackoverflow bug
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
 
 		// Test ID's
@@ -23,11 +24,8 @@
 
 	}
 	function testFindByDynamically(){
-		
 		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
 		assert( arraylen( t ) , "Conditionals LessThanEquals");
-		
-
 		// Test simple Equals
 		t = activeUser.findByLastName("majano");
 		assert( isObject( t ), "FindBylastName" );
@@ -140,12 +138,14 @@
 		user.setPassword('unitTest');
 
 		try{
-			user.save();
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
+			user.save( transactional=false );
 			assertTrue( len(user.getID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
 		}
 		catch(any e){
+			writeDump(e);abort;
 			fail(e.detail & e.message);
 		}
 		finally{
@@ -165,6 +165,7 @@
 		ORMFlush();
 
 		try{
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			user.delete();
 			ORMFlush();
 			user.clear();
@@ -190,6 +191,7 @@
 		entitySave(user); ORMFlush();
 
 		try{
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			activeUser.deleteByID( user.getID() );
 			ORMFlush();
 			user.clear();
@@ -218,6 +220,7 @@
 		q = new Query(datasource="coolblog");
 
 		try{
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			activeUser.deleteWhere(userName="unitTest");
 			ORMFlush();
 			user.clear();

@@ -113,6 +113,7 @@
 		entitySave(user); ORMFlush();
 
 		try{
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			ormservice.deleteByID( user.getID() );
 			test = entityLoad("User",{firstName="unittest"}, true);
 			assertTrue( isNull(test) );
@@ -139,6 +140,7 @@
 		q = new Query(datasource="coolblog");
 
 		try{
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			ormService.deleteWhere(userName="unitTest");
 
 			result = q.execute(sql="select * from users where userName = 'unitTest'");
