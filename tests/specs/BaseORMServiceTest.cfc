@@ -218,10 +218,10 @@
 		ORMFlush();
 
 		try{
-
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			var test = entityLoad("Category",{category="unittest"} );
 			debug(test);
-			ormservice.delete( test[1] );
+			ormservice.delete( entity=test[1], transactional=false );
 			ORMFlush();
 			ormservice.clear();
 
@@ -246,9 +246,10 @@
 		entitySave(cat);ORMFlush();
 
 		try{
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			test = entityLoad("Category", {"category"="unitTest"}, true );
 			//debug(test);
-			ormservice.delete(entity=test,flush=true);
+			ormservice.delete(entity=test,flush=true, transactional=false);
 			test = entityLoad("Category",{category="unitTest"}, true);
 			assertTrue( isNull(test) );
 		}
@@ -267,6 +268,7 @@
 		entitySave(cat);ORMFlush();
 
 		try{
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			count=ormservice.deleteByID( "Category", cat.getCatID() );
 			assertTrue( count gt 0 );
 		}
@@ -289,7 +291,8 @@
 		q = new Query(datasource="coolblog");
 
 		try{
-			ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'});
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
+			ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'}, transactional=false);
 			ormFlush();
 			result = q.execute(sql="select * from categories where category = 'unitTest'");
 			assertEquals( 0, result.getResult().recordcount );
@@ -313,7 +316,7 @@
 		q = new Query(datasource="coolblog");
 
 		try{
-			count=ormService.deleteWhere(entityName="Category",category="unitTest");
+			count=ormService.deleteWhere( entityName="Category",category="unitTest", transactional=false );
 			debug(count);
 
 			result = q.execute(sql="select * from categories where category = 'unitTest'");
@@ -340,7 +343,8 @@
 		cat.setDescription('unitTest at #now()#');
 
 		try{
-			ormservice.save( cat );
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
+			ormservice.save( entity=cat, transactional=false );
 			assertTrue( len(cat.getCatID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
@@ -395,7 +399,8 @@
 		cat2.setDescription('unitTest at #now()#');
 
 		try{
-			ormservice.saveAll( [cat,cat2] );
+			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
+			ormservice.saveAll( entities=[cat,cat2], transactional=false );
 			assertTrue( len(cat.getCatID()) );
 			assertTrue( len(cat2.getCatID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
@@ -425,7 +430,8 @@
 		cat2.setDescription('unitTest at #now()#');
 
 		try{
-			ormservice.saveAll(entities=[cat,cat2], flush=true);
+		if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
+			ormservice.saveAll(entities=[cat,cat2], flush=true, transactional=false);
 			assertTrue( len(cat.getCatID()) );
 			assertTrue( len(cat2.getCatID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
