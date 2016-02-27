@@ -28,5 +28,7 @@ before_script:
 - mysql -u root < tests/resources/coolblog.sql
 # Startup the app
 - curl http://localhost:49616/
+#- curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt
 script:
   - ant -f workbench/build.xml
+  - cat tests/results/results.txt
