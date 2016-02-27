@@ -1,17 +1,16 @@
 /**
-*********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
-********************************************************************************
+* ---
 */
 component {
 
 	// Module Properties
 	this.title 				= "cborm";
-	this.author 			= "Luis Majano";
+	this.author 			= "Ortus Solutions";
 	this.webURL 			= "http://www.ortussolutions.com";
 	this.description 		= "ColdBox ORM enhancements for Hibernate";
-	this.version			= "1.1.0+@build.number@";
+	this.version			= "@version.number@+@build.number@";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
 	this.viewParentLookup 	= true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
@@ -25,6 +24,9 @@ component {
 	// Dependencies
 	this.dependencies 		= [ "cbvalidation" ];
 
+	/**
+	* Configure Module
+	*/
 	function configure(){
 
 		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app

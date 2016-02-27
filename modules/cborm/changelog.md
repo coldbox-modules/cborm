@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+
+## 1.2.0
+* Update build process to leverage Travis
+* Updated `cbvalidation` to v1.1.0
+* Build cleanup
+
 ## 1.1.0
 * Updated cbvalidation dependency
 * Prevent conditionals from being stripped from property names
