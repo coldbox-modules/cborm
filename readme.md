@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ColdBox/cbox-cborm.svg?branch=development)](https://travis-ci.org/ColdBox/cbox-cborm)
+
 #WELCOME TO THE ColdBox ORM Module
 
 This module provides you with several enhancements when interacting with the
