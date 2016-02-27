@@ -22,8 +22,9 @@
 
 # Dump of table blogEntries
 # ------------------------------------------------------------
+USE `coolblog`;
 
-#DROP TABLE IF EXISTS `blogEntries`;
+DROP TABLE IF EXISTS `blogEntries`;
 
 CREATE TABLE `blogEntries` (
   `blogEntriesID` int(11) NOT NULL AUTO_INCREMENT,
@@ -67,7 +68,7 @@ UNLOCK TABLES;
 # Dump of table blogs
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `blogs`;
+DROP TABLE IF EXISTS `blogs`;
 
 CREATE TABLE `blogs` (
   `blogsID` int(11) NOT NULL AUTO_INCREMENT,
@@ -99,7 +100,7 @@ UNLOCK TABLES;
 # Dump of table cacheBox
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `cacheBox`;
+DROP TABLE IF EXISTS `cacheBox`;
 
 CREATE TABLE `cacheBox` (
   `id` varchar(100) NOT NULL,
@@ -129,7 +130,7 @@ UNLOCK TABLES;
 # Dump of table categories
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `categories`;
+DROP TABLE IF EXISTS `categories`;
 
 CREATE TABLE `categories` (
   `category_id` varchar(50) NOT NULL,
@@ -169,7 +170,7 @@ UNLOCK TABLES;
 # Dump of table comments
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `comments`;
+DROP TABLE IF EXISTS `comments`;
 
 CREATE TABLE `comments` (
   `comment_id` varchar(50) NOT NULL,
@@ -203,7 +204,7 @@ UNLOCK TABLES;
 # Dump of table contact
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `contact`;
+DROP TABLE IF EXISTS `contact`;
 
 CREATE TABLE `contact` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -229,7 +230,7 @@ UNLOCK TABLES;
 # Dump of table entries
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `entries`;
+DROP TABLE IF EXISTS `entries`;
 
 CREATE TABLE `entries` (
   `entry_id` varchar(50) NOT NULL,
@@ -260,7 +261,7 @@ UNLOCK TABLES;
 # Dump of table entry_categories
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `entry_categories`;
+DROP TABLE IF EXISTS `entry_categories`;
 
 CREATE TABLE `entry_categories` (
   `FKcategory_id` varchar(50) NOT NULL,
@@ -297,7 +298,7 @@ UNLOCK TABLES;
 # Dump of table logs
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `logs`;
+DROP TABLE IF EXISTS `logs`;
 
 CREATE TABLE `logs` (
   `id` varchar(36) NOT NULL,
@@ -315,7 +316,7 @@ CREATE TABLE `logs` (
 # Dump of table relax_logs
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `relax_logs`;
+DROP TABLE IF EXISTS `relax_logs`;
 
 CREATE TABLE `relax_logs` (
   `id` varchar(36) NOT NULL,
@@ -333,7 +334,7 @@ CREATE TABLE `relax_logs` (
 # Dump of table roles
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `roles`;
+DROP TABLE IF EXISTS `roles`;
 
 CREATE TABLE `roles` (
   `roleID` int(11) NOT NULL AUTO_INCREMENT,
@@ -359,7 +360,7 @@ UNLOCK TABLES;
 # Dump of table todo
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `todo`;
+DROP TABLE IF EXISTS `todo`;
 
 CREATE TABLE `todo` (
   `blogsID` int(11) NOT NULL AUTO_INCREMENT,
@@ -430,7 +431,7 @@ UNLOCK TABLES;
 # Dump of table users
 # ------------------------------------------------------------
 
-#DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `user_id` varchar(50) NOT NULL,
