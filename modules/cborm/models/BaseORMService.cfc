@@ -698,7 +698,7 @@ component accessors="true"{
 		return $deleteWhere( argumentCollection=arguments );
 	}
 	private numeric function $deleteWhere(required string entityName){
-		var buffer   = createObject("java","java.lang.StringBuffer").init('');
+		var buffer   = createObject("java","java.lang.StringBuilder").init('');
 		var key      = "";
 		var operator = "AND";
 		var params	  = {};
@@ -823,7 +823,7 @@ component accessors="true"{
 	* Ex: count('User','age > ? AND name = ?',[40,"joe"])
 	*/
 	numeric function count(required string entityName,string where="", any params=structNew()){
-		var buffer   = createObject("java","java.lang.StringBuffer").init('');
+		var buffer   = createObject("java","java.lang.StringBuilder").init('');
 		var key      = "";
 		var operator = "AND";
 		var options = {};
@@ -860,7 +860,7 @@ component accessors="true"{
 	* Ex: countWhere(entityName="User",age="20");
 	*/
 	numeric function countWhere(required string entityName){
-		var buffer   = createObject("java","java.lang.StringBuffer").init('');
+		var buffer   = createObject("java","java.lang.StringBuilder").init('');
 		var key      = "";
 		var operator = "AND";
 		var params	  = {};
