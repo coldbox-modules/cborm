@@ -30,6 +30,5 @@ before_script:
 - curl http://localhost:49616/
 script:
   - ant -f workbench/build.xml
-  # Debugging if needed
-  - curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt
-  - cat /tmp/output.txt
+  - echo "************************************************* SERVER LOG *************************************************"
+  - box server log

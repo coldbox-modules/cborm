@@ -22,14 +22,12 @@ component{
 	this.mappings[ "/cbvalidation" ]   	= rootPath & "/modules/cbvalidation";
 
 	// Datasource definitions For Standalone mode/travis mode.
-	if( findNoCase( "localhost:49616", cgi.htt_host ) ){
+	if( findNoCase( ":49616", cgi.http_host ) ){
 		this.datasources[ "coolblog" ] = {
 			  class 			: 'org.gjt.mm.mysql.Driver',
-			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true',
-			  username 			: 'travis',
-			  password 			: ''
+			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&',
+			  username			: 'travis'
 		};
-	
 	}
 	
 	// ORM Definitions
