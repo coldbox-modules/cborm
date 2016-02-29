@@ -5,6 +5,7 @@ CHANGELOG
 * Update build process to leverage Travis
 * Updated `cbvalidation` to v1.1.0
 * Build cleanup
+* Replaced `StringBuffer` with `StringBuilder` for performance
 
 ## 1.1.0
 * Updated cbvalidation dependency
