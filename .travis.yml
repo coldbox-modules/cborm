@@ -30,5 +30,6 @@ before_script:
 - curl http://localhost:49616/
 script:
   - ant -f workbench/build.xml
-  - echo "************************************************* SERVER LOG *************************************************"
-  - box server log
+  # Check status code, if there is an issue, run raw so we can see results from server, usually 500 errors ANT craps on
+  - exitCode=$?
+  - if exitCode == 1; then curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt; cat /tmp/output.txt; fi
