@@ -29,7 +29,5 @@ before_script:
 # Startup the app
 - curl http://localhost:49616/
 script:
-  - ant -f workbench/build.xml
-  # Check status code, if there is an issue, run raw so we can see results from server, usually 500 errors ANT craps on
-  - exitCode=$?
+  - ant -f workbench/build.xml; exitCode=$?; 
   - if exitCode == 1; then curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt; cat /tmp/output.txt; fi
