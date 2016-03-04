@@ -28,5 +28,10 @@ before_script:
 - mysql -u root < tests/resources/coolblog.sql
 # Startup the app
 - curl http://localhost:49616/
-script:
-  - .travis.sh
+script: >
+  ant -f workbench/build.xml
+  export exitCode=$?
+  if [ $exitCode == 1 ]; then
+    curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt
+    cat /tmp/output.txt
+  fi
