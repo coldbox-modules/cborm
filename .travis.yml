@@ -29,5 +29,4 @@ before_script:
 # Startup the app
 - curl http://localhost:49616/
 script:
-  - ant -f workbench/build.xml; export exitCode=$?; 
-  - if $exitCode == 1; then curl http://localhost:49616/tests/runner.cfm?reporter=text -o /tmp/output.txt; cat /tmp/output.txt; exit 1; fi
+  - .travis.sh
