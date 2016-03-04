@@ -1,8 +1,7 @@
 ﻿/**
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+* Copyright Since 2005 Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 */
 component{
 	// Application properties
@@ -25,11 +24,11 @@ component{
 	this.mappings[ "/root" ] 	= COLDBOX_APP_ROOT_PATH;
 
 	// Datasource definitions For Standalone mode/travis mode.
-	if( findNoCase( ":49616", cgi.http_host ) ){
+	if( directoryExists( "/home/travis" ) ) ){
 		this.datasources[ "coolblog" ] = {
 			  class 			: 'org.gjt.mm.mysql.Driver',
 			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&',
-			  username			: 'travis'
+			  username			: 'root'
 		};
 	}
 

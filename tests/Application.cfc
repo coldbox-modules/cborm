@@ -1,7 +1,7 @@
 /**
 * Copyright Since 2005 Ortus Solutions, Corp
-* www.coldbox.org | www.luismajano.com | www.ortussolutions.com | www.gocontentbox.org
-**************************************************************************************
+* www.ortussolutions.com
+* ---
 */
 component{
 	this.name = "A TestBox Runner Suite " & hash( getCurrentTemplatePath() );
@@ -22,11 +22,11 @@ component{
 	this.mappings[ "/cbvalidation" ]   	= rootPath & "/modules/cbvalidation";
 
 	// Datasource definitions For Standalone mode/travis mode.
-	if( findNoCase( ":49616", cgi.http_host ) ){
+	if( directoryExists( "/home/travis" ) ) ){
 		this.datasources[ "coolblog" ] = {
 			  class 			: 'org.gjt.mm.mysql.Driver',
 			  connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&',
-			  username			: 'travis'
+			  username			: 'root'
 		};
 	}
 	
