@@ -8,12 +8,14 @@ component extends="coldbox.system.Interceptor"{
 
     /**
      * Configuration method for interceptor
-     * return void
      */
-    public void function configure(){
+    function configure(){
     }
 
-    public void function onCriteriaBuilderAddition( required event, required interceptData ){
+    /**
+    * Listen to criteria builder additions
+    */
+    function onCriteriaBuilderAddition( required event, required interceptData ){
         if( structKeyExists( interceptData, "CriteriaBuilder" ) ) {
             if( interceptData.CriteriaBuilder.canLogSql() ) {
                 interceptData.CriteriaBuilder.logSql( label=interceptData.type );

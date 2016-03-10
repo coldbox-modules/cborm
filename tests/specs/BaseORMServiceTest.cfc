@@ -650,7 +650,7 @@
 
 	function testMerge(){
 		// loaded entity
-		test = entityLoad("User",{firstName="Luis"},true);
+		test = entityLoad( "User", {firstName="Luis"}, true );
 		stats = ormservice.getSessionStatistics();
 
 		ormclearSession();
@@ -660,6 +660,19 @@
 		test = ormservice.merge( test );
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 1, stats.entityCount );
+	}
+
+	function testMergeArray(){
+		test = entityLoad( "User", {firstName="Luis"}, true );
+		
+		ormclearSession();
+		stats = ormservice.getSessionStatistics();
+		assertEquals( 0, stats.entityCount );
+
+		aTests = ormservice.merge( [ test ] );
+		stats = ormservice.getSessionStatistics();
+		assertEquals( 1, stats.entityCount );
+		expect(	aTests ).toBeArray();
 	}
 
 	private function deleteCategories(){

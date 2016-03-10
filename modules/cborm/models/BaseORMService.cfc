@@ -1,27 +1,10 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author      :	Luis Majano
-Description :
-
-This is a helper ORM service that will help you abstract some complexities
-when dealing with CF's ORM via Hibernate.  You can use this service in its
-concrete form or you can inherit from it and extend it.
-
-TODO:
-- Add dynamic findBy methods
-- Add dynamic countBy methods
-- Add dynamic getBy methods
-- Dynamic entity methods for the following methods:
-   - new{entityName}()
-   - exists{entityName}()
-   - get{entityName}()
-   - getAll{entityName}()
-   - count{entityName}()
-- Add find methods by criteria with projections
------------------------------------------------------------------------>
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* This is a helper ORM service that will help you abstract some complexities
+* when dealing with CF's ORM via Hibernate.  You can use this service in its
+* concrete form or you can inherit from it and extend it.
 */
 import cborm.models.util.*;
 
@@ -86,6 +69,14 @@ component accessors="true"{
 
 	/************************************** CONSTRUCTOR *********************************************/
 
+	/**
+	* Constructor
+	* @queryCacheRegion The default query cache region to use, by default it uses ORMService.defaultCache
+	* @useQueryCaching Activate caching or not
+	* @eventHandling Activate event handling or not
+	* @useTransactions Use cftransactions around all crud operations or not
+	* @defaultAsQuery Return queries or array of objects by default
+	*/
 	BaseORMService function init(
 		string queryCacheRegion="ORMService.defaultCache",
 		boolean useQueryCaching=false,
@@ -117,12 +108,18 @@ component accessors="true"{
 	/************************************** PUBLIC *********************************************/
 
 	/**
-	* Create a virtual abstract service for a specfic entity.
+	* Create a virtual abstract service for a specfic entity
+	* @entityName The name of the entity to bind the virtual service to
+	* @useQueryCaching Activate caching or not
+	* @queryCacheRegion The default query cache region to use, by default it uses ORMService.defaultCache
+	* @eventHandling Activate event handling or not
 	*/
-	any function createService(required string entityName,
-							   boolean useQueryCaching=getUseQueryCaching(),
-							   string queryCacheRegion=getQueryCacheRegion(),
-							   boolean eventHandling=getEventHandling()) {
+	any function createService(
+		required string entityName,
+		boolean useQueryCaching=getUseQueryCaching(),
+		string queryCacheRegion=getQueryCacheRegion(),
+		boolean eventHandling=getEventHandling()
+	){
 
 		return new cborm.models.VirtualEntityService( argumentCollection=arguments );
 	}
@@ -959,23 +956,24 @@ component accessors="true"{
 	}
 
 	/**
-    * Merge an entity or array of entities back into the session
+    * Merge an entity or array of entities back into a session
+    * @entity A single or an array of entities to re-merge
+    * 
+    * @return Same entity if one passed, array if an array of entities passed.
     */
-	any function merge(required any entity){
+	any function merge( required any entity ){
 		var objects = [];
 
-		if( not isArray( arguments.entity ) ){
-			arrayAppend( objects, arguments.entity );
-		}
-		else{
-			objects = arguments.entity;
+		if( !isArray( arguments.entity ) ){
+			return entityMerge( arguments.entity );
 		}
 
-		for( var x=1; x lte arrayLen( objects ); x++){
-			entityMerge( objects[ x ] );
+		var aReturns = [];
+		for( var thisObject in arguments.entity ){
+			arrayAppend( aReturns, entityMerge( thisObject ) );
 		}
-
-		return this;
+		
+		return aReturns;
 	}
 
 	/**

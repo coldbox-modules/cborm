@@ -2,6 +2,8 @@ CHANGELOG
 =========
 
 ## 1.2.0
+* BaseORMService.merge doesn't seem to merge entities back into session #10
+* Variable scoping in SQLHelper.cfc bug #9
 * Update build process to leverage Travis
 * Updated `cbvalidation` to v1.1.0
 * Build cleanup
