@@ -1,23 +1,21 @@
 /**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-
-Description :
-    Simple utility for extracting SQL from native Criteria Query object
+* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* Simple utility for extracting SQL from native Criteria Query objects
 */
-import org.hibernate.*;
-component displayName="SQLHelper" accessors="true" {
+component accessors="true"{
 
     /**
     * The log array
     */
-    property name="log"                 type="array";
+    property name="log" type="array";
+
     /**
     * Format the SQL or not.
     */
-    property name="formatSql"           type="boolean"  default="false";
+    property name="formatSql" type="boolean"  default="false";
+
     /**
     * Bit to return the executable SQL or not
     */
@@ -25,18 +23,21 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
     * Constructor
+    * @criteriaBuilder The builder this helper is linked to
+    * @returnExecutableSql To return the executable SQL or not
+    * @formatSQL Pretty format the SQL or not
     */
     SQLHelper function init( 
-        required any criteriaBuilder, 
+        required any criteriaBuilder,
         boolean returnExecutableSql = false, 
         boolean formatSql = false  
     ){
 
         // Setup properties
         variables.cb            = arguments.criteriaBuilder;
-        variables.entityName    = cb.getEntityName();
-        variables.criteriaImpl  = cb.getNativeCriteria();
-        variables.ormSession    = criteriaImpl.getSession();
+        variables.entityName    = variables.cb.getEntityName();
+        variables.criteriaImpl  = variables.cb.getNativeCriteria();
+        variables.ormSession    = variables.criteriaImpl.getSession();
         variables.factory       = ormSession.getFactory();
         
         // get formatter for sql string beautification
@@ -49,19 +50,18 @@ component displayName="SQLHelper" accessors="true" {
         }
         
         // set properties
-        variables.log           = [];
-        variables.formatSQL     = arguments.formatSQL;
-        variables.returnExecutableSql = arguments.returnExecutableSql;
+        variables.log                   = [];
+        variables.formatSQL             = arguments.formatSQL;
+        variables.returnExecutableSql   = arguments.returnExecutableSql;
 
         return this;
     }
 
     /**
      * Logs current state of criteria to internal tracking log
-     * @label {string} The label for the log record
-     * return void
+     * @label The label for the log record
      */
-    function log( required string label="Criteria" ) {
+    SQLHelper function log( required string label="Criteria" ) {
         var logentry = {
             "type" = arguments.label,
             "sql"  = getSQL( argumentCollection=arguments )
@@ -73,20 +73,19 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Returns the SQL string that will be prepared for the criteria object at the time of request
-     * @returnExecutableSql {Boolean} Whether or not to do query param replacements on returned SQL string
-     * @formatSql {Boolean} Whether to format the sql
-     * return string
+     * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
+     * @formatSql Whether to format the sql
      */
     string function getSQL( 
         required boolean returnExecutableSql=getReturnExecutableSql(), 
         required boolean formatSql=getFormatSql() 
     ){
 
-        var sql = getCriteriaJoinWalker().getSQLstring();
-        var selection = getQueryParameters().getRowSelection();
-        var useLimit = useLimit( selection );
-        var hasFirstRow = getFirstRow( selection ) > 0;
-        var useOffset = hasFirstRow && useLimit && getDialect().supportsLimitOffset();
+        var sql             = getCriteriaJoinWalker().getSQLstring();
+        var selection       = getQueryParameters().getRowSelection();
+        var useLimit        = useLimit( selection );
+        var hasFirstRow     = getFirstRow( selection ) > 0;
+        var useOffset       = hasFirstRow && useLimit && getDialect().supportsLimitOffset();
        
         // try to add limit/offset in
         if( useLimit ) {
@@ -112,11 +111,10 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Applies pretty formatting to a sql string
-     * @sql {string} The SQL string to format
-     * return string
+     * @sql The SQL string to format
      */
     string function applyFormatting( required string sql ) {
-        return "<pre>" & formatter.format( arguments.sql ) & "</pre>";
+        return "<pre>" & variables.formatter.format( arguments.sql ) & "</pre>";
     }
 
     /** 
@@ -129,8 +127,7 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Gets positional SQL parameter types from the criteria query
-     * @simple {Boolean} Whether to return a simply array or full objects
-     * return any
+     * @simple Whether to return a simply array or full objects
      */
     any function getPositionalSQLParameterTypes( required Boolean simple=true ) {
         var types = getCriteriaQueryTranslator().getQueryParameters().getPositionalParameterTypes();
@@ -146,9 +143,8 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Returns a formatted array of parameter value and types
-     * return array
      */
-    public Array function getPositionalSQLParameters() {
+    array function getPositionalSQLParameters() {
         var params = [];
         var values = getPositionalSQLParameterValues();
         var types  = getPositionalSQLParameterTypes( true );
@@ -164,7 +160,6 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Generates a unique SQL Alias within the criteria query
-     * return string
      */
     string function generateSQLAlias() {
         return getCriteriaQueryTranslator().generateSQLAlias();
@@ -172,7 +167,6 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Retrieves the "rooted" SQL alias for the criteria query
-     * return string
      */
     string function getRootSQLAlias() {
         return getCriteriaQueryTranslator().getRootSQLAlias();
@@ -180,7 +174,6 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Retrieves the projected types of the criteria query
-     * return string
      */
     any function getProjectedTypes() {
         return getCriteriaQueryTranslator().getProjectedTypes();
@@ -188,7 +181,6 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Get the alias of the current projection
-     * return string
      */
     string function getProjectionAlias() {
         return getCriteriaQueryTranslator().getProjectedAliases()[ 1 ];
@@ -196,15 +188,17 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Retrieves the correct dialect of the database engine
-     * return any
      */
     any function getDialect() {
-        return factory.getDialect();
+        return variables.factory.getDialect();
     }
 
+    /**
+    * Is there a limit in the logging offset
+    */
     Boolean function canLogLimitOffset() {
         var dialect = getDialect();
-        var max = !isNull( criteriaImpl.getMaxResults() ) ? criteriaImpl.getMaxResults() : 0;
+        var max     = !isNull( variables.criteriaImpl.getMaxResults() ) ? variables.criteriaImpl.getMaxResults() : 0;
         return dialect.supportsLimitOffset() && max > 0;
     }
 
@@ -232,8 +226,7 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * replace query parameter placeholders with their actual values (for detachedSQLProjection)
-     * @sql (string) The sql string to massage
-     * returns string
+     * @sql The sql string to massage
      */
     private string function replaceQueryParameters( required string sql ) {
         var dialect = getDialect();
@@ -242,7 +235,7 @@ component displayName="SQLHelper" accessors="true" {
         var values = parameters.getPositionalParameterValues();
         var types  = parameters.getPositionalParameterTypes();
         // get query so we can see full number of ordinal parameters
-        var query = ormsession.createSQLQuery( sql );
+        var query = ormsession.createSQLQuery( arguments.sql );
         var meta = query.getParameterMetaData();
         var positionalParameterCount = meta.getOrdinalParameterCount();
         // get row selection
@@ -322,55 +315,57 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Inserts parameter values into the running list based on the dialect of the database engine
-     * @positionalValues {Array} The positional values for this query
-     * @append {Boolean} Whether values are appended or prepended to the array
-     * @selection {any} The current row selection
-     * return Array
+     * @positionalValues The positional values for this query
+     * @append Whether values are appended or prepended to the array
+     * @selection The current row selection
      */
-    private Array function bindLimitParameters( required Array positionalValues, required Boolean append, required any selection ) {
+    private Array function bindLimitParameters( 
+        required Array positionalValues, 
+        required Boolean append, 
+        required any selection 
+    ){
         var dialect = getDialect();
         // trackers
         var newPositionalValues = [];
-        var finalArray = [];
+        var finalArray          = [];
         // prepare some meta about the limit info
-        var firstRow = dialect.convertToFirstRowValue( getFirstRow( selection ) );
-        var lastRow = getMaxOrLimit( selection );
+        var firstRow    = dialect.convertToFirstRowValue( getFirstRow( arguments.selection ) );
+        var lastRow     = getMaxOrLimit( arguments.selection );
         var hasFirstRow = dialect.supportsLimitOffset() && ( firstRow > 0 || dialect.forceLimitUsage() );
-        var reverse = dialect.bindLimitParametersInReverseOrder();
+        var reverse     = dialect.bindLimitParametersInReverseOrder();
         // has offset...need to add both limit and offset
         if ( hasFirstRow ) {
             // if offset/limit are reversed
             // EX: Other engines "reverse" this and use: LIMIT {limit}, {offset}
             if( reverse ) {
-                arrayAppend( newPositionalValues, selection.getMaxRows() );
+                arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
                 arrayAppend( newPositionalValues, firstRow );
             }
             // EX: In MySQL, offset limit are: LIMIT {offset}, {limit}
             else {
                 arrayAppend( newPositionalValues, firstRow );
-                arrayAppend( newPositionalValues, selection.getMaxRows() );
+                arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
             }
         }
         // no start row...just add regular limit
         else {
-            arrayAppend( newPositionalValues, selection.getMaxRows() );
+            arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
         }
         // APPEND: Engines like MySQL, etc. put limit/offset at the end of the statement
-        if( append ) {
-            positionalValues.addAll( newPositionalValues );
-            return positionalValues;
+        if( arguments.append ) {
+            arguments.positionalValues.addAll( newPositionalValues );
+            return arguments.positionalValues;
         }
         // PREPEND:Engines like SQL Server, etc. use top/row numbering
         else {
-            newPositionalValues.addAll( positionalValues );
+            newPositionalValues.addAll( arguments.positionalValues );
             return newPositionalValues;
         }
     }
 
     /**
      * Determines whether the database engine allows for the use of "limit/offset" syntax
-     * @selection {any} The current row selection
-     * return Boolean
+     * @selection The current row selection
      */
     private Boolean function useLimit( required any selection ) {
         return getDialect().supportsLimit() && hasMaxRows( argumentCollection=arguments );
@@ -378,58 +373,58 @@ component displayName="SQLHelper" accessors="true" {
 
     /**
      * Determines whether the current row selection has a limit already applied
-     * @selection {any} The current row selection
-     * return Boolean
+     * @selection The current row selection
      */
     private Boolean function hasMaxRows( required any selection ) {
-        return !isNull( selection.getMaxRows() );
+        return !isNull( arguments.selection.getMaxRows() );
     }
 
     /**
      * Gets the first row (or 0) for the current row selection
-     * @selection {any} The current row selection
-     * return Numeric
+     * @selection The current row selection
      */
     private Numeric function getFirstRow( required any selection ) {
-        return isNull( selection.getFirstRow() ) ? 0 : selection.getFirstRow().intValue();
+        return isNull( arguments.selection.getFirstRow() ) ? 0 : arguments.selection.getFirstRow().intValue();
     }
 
     /**
      * Gets correct "limit" value for the current row selection
-     * @selection {any} The current row selection
-     * return Numeric
+     * @selection The current row selection
      */
     private Numeric function getMaxOrLimit( required any selection ) {
-        var dialect = getDialect();
-        var firstRow = dialect.convertToFirstRowValue( getFirstRow( selection ) );
-        var lastRow = selection.getMaxRows().intValue();
-        return dialect.useMaxForLimit() ? lastRow+firstRow : lastRow;
+        var dialect     = getDialect();
+        var firstRow    = dialect.convertToFirstRowValue( getFirstRow( arguments.selection ) );
+        var lastRow     = arguments.selection.getMaxRows().intValue();
+        return dialect.useMaxForLimit() ? lastRow + firstRow : lastRow;
     }
 
-    /** gets an instance of CriteriaJoinWalker, which can allow for translating criteria query into a sql string
-     * returns CriteriaJoinWalker
+    /** 
+     * gets an instance of CriteriaJoinWalker, which can allow for translating criteria query into a sql string
+     * @return org.hibernate.loader.criteria.CriteriaJoinWalker
      */
     private any function getCriteriaJoinWalker() {
         // not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
         return createObject( "java", "org.hibernate.loader.criteria.CriteriaJoinWalker" ).init(
-            factory.getEntityPersister( entityName ), // persister (loadable)
+            variables.factory.getEntityPersister( variables.entityName ), // persister (loadable)
             getCriteriaQueryTranslator(), // translator 
-            factory, // factory
-            criteriaImpl, // criteria
-            entityName, // rootEntityName
-            ormSession.getLoadQueryInfluencers() // loadQueryInfluencers
+            variables.factory, // factory
+            variables.criteriaImpl, // criteria
+            variables.entityName, // rootEntityName
+            variables.ormSession.getLoadQueryInfluencers() // loadQueryInfluencers
         );
     }
-    /** gets an instance of CriteriaQueryTranslator, which can prepares criteria query for conversion to SQL
-     * returns CriteriaQueryTranslator
+
+    /** 
+     * gets an instance of CriteriaQueryTranslator, which can prepares criteria query for conversion to SQL
+     * @return org.hibernate.loader.criteria.CriteriaQueryTranslator
      */
     private any function getCriteriaQueryTranslator() {
         // create new criteria query translator; we'll use this to build up the query string
         return createObject( "java", "org.hibernate.loader.criteria.CriteriaQueryTranslator" ).init(
-            factory, // factory
-            criteriaImpl, // criteria
-            entityName,  // rootEntityName
-            criteriaImpl.getAlias() // rootSQLAlias
+            variables.factory, // factory
+            variables.criteriaImpl, // criteria
+            variables.entityName,  // rootEntityName
+            variables.criteriaImpl.getAlias() // rootSQLAlias
         );  
     } 
 }
