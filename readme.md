@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/ColdBox/cbox-cborm.svg?branch=development)](https://travis-ci.org/ColdBox/cbox-cborm)
 
-#WELCOME TO THE ColdBox ORM Module
+#Welcome To The ColdBox ORM Module
 
 This module provides you with several enhancements when interacting with the
 ColdFusion ORM via Hibernate.  It provides you with virtual service layers,
@@ -11,9 +11,9 @@ Apache License, Version 2.0.
 
 ##IMPORTANT LINKS
 
-**Source**
+**Source & Changelog**
 - https://github.com/ColdBox/cbox-cborm
-- http://www.coldbox.org/forgebox/view/cborm
+- https://github.com/ColdBox/cbox-cborm/blob/development/modules/cborm/changelog.md
 
 **Documentation**
 - https://github.com/ColdBox/cbox-cborm/wiki/Base-ORM-Service
