@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+## 1.2.1
+* Fixed box.json version number
 
 ## 1.2.0
 * BaseORMService.merge doesn't seem to merge entities back into session #10
