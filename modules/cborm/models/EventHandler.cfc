@@ -19,15 +19,6 @@ Description :
 component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler"{
 
 	/**
-	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
-	*/
-	public void function postNew(any entity,any entityName){
-		var args = {entity = arguments.entity, entityName=arguments.entityName};
-		processEntityInjection(args.entityName, args.entity);
-		announceInterception("ORMPostNew",args);
-	}
-
-	/**
 	* preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
 	*/
 	public void function preLoad(any entity){
@@ -63,7 +54,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/**
 	* preUpdate called by hibernate which in turn announces a coldbox interception: ORMPreUpdate
 	*/
-	public void function preUpdate(any entity, struct oldData=structNew()){
+	public void function preUpdate(any entity, Struct oldData={}){
 		announceInterception("ORMPreUpdate", {entity=arguments.entity, oldData=arguments.oldData});
 	}
 
@@ -115,6 +106,15 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
     public void function postFlush(any entities){
     	announceInterception("ORMPostFlush", {entities=arguments.entities});
     }
+
+    /**
+	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
+	*/
+	public void function postNew(any entity,any entityName){
+		var args = {entity = arguments.entity, entityName=arguments.entityName};
+		processEntityInjection(args.entityName, args.entity);
+		announceInterception("ORMPostNew",args);
+	}
 
 	/**
 	* Get the system Event Manager
