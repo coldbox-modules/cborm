@@ -1201,6 +1201,10 @@ component accessors="true"{
 				params[ "param#i#" ] = args[ i ];
 			}
 		}
+
+		//add datasource to options for multi datasource orm
+		options["datasource"]=orm.getEntityDatasource(arguments.entityname);
+
 		// Check if we have already the signature for this request
 		if( structKeyExists( HQLDynamicCache, dynamicCacheKey ) ){
 			hql = HQLDynamicCache[ dynamicCacheKey ];
