@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+
+## 1.2.2
+* Travis updates
+
+
 ## 1.2.1
 * Fixed box.json version number
 
