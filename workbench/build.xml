@@ -57,7 +57,7 @@
 		</if>
 		
 		<!-- Build Label -->
-		<property name="build.label" value="${project.name}-${project.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="${project.name}-${project.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Get Build Dependencies -->
  		<antcall target="getDependencies" />
 		<!-- Cleanup + Init -->
@@ -82,7 +82,7 @@
         <copy todir="${dir.build}" encoding="UTF-8" file="changelog.md" overwrite="true" />
         
         <!-- Replace Version + Build Numbers -->
-		<replaceregexp match='@version.number@' replace="${project.version}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build.version@' replace="${project.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
