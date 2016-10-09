@@ -3,7 +3,8 @@ CHANGELOG
 
 ## 1.2.2
 * Travis updates
-
+* COLDBOX-460 Dynamic finders fixed by always adding datasource attribute to hql query
+* Fixes an interface error on AC11 startup
 
 ## 1.2.1
 * Fixed box.json version number
