@@ -75,7 +75,16 @@ component accessors="true" extends="cborm.models.BaseBuilder" {
 			// wrap it up and uniquely alias it
 			sql = "( #sql# ) as " & alias;
 		// now that we have the sql string, we can create the sqlProjection
-		return this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
+		var projection =  this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
+        // finally, add the alias to the projection list so we can sort on the column if needed
+        return this.PROJECTIONS.alias( projection, alias );
+
+	}
+
+	// Set a limit upon the number of objects to be retrieved.
+    any function maxResults(required numeric maxResults){
+        getNativeCriteria().setMaxResults( javaCast("int", arguments.maxResults ) );
+        return this;
 	}
 
 	/**

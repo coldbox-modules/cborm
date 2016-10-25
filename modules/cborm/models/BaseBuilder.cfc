@@ -376,7 +376,7 @@ component accessors="true"{
 			// loop over sqlProjections
 			for( var projection in sqlargs ) {
 				var projectionArgs = prepareSQLProjection( projection );
-				projectionList.add( this.PROJECTIONS.sqlProjection( projectionArgs.sql, projectionArgs.alias, projectionArgs.types ) );
+				projectionList.add( this.PROJECTIONS.sqlProjection( projectionArgs.sql, projectionArgs.alias, projectionArgs.types ), arrayToList( projectionArgs.alias ) );
 			}
 			
 		}
@@ -388,7 +388,7 @@ component accessors="true"{
 			// loop over sqlGroupProjections
 			for( var projection in sqlargs ) {
 				var projectionArgs = prepareSQLProjection( projection );
-				projectionList.add( this.PROJECTIONS.sqlGroupProjection( projectionArgs.sql, projectionArgs.group, projectionArgs.alias, projectionArgs.types ) );
+                projectionList.add( this.PROJECTIONS.sqlGroupProjection( projectionArgs.sql, projectionArgs.group, projectionArgs.alias, projectionArgs.types ), arrayToList( projectionArgs.alias ) );
 			}
 		}
 		// add all the projections
@@ -557,8 +557,8 @@ component accessors="true"{
 		var partialSQL = "";
 		projection.sql = "";
 		// if multiple subqueries have been specified, smartly separate them out into a sql string that will work
-		for( var x=1; x<=listLen( arguments.rawProjection.sql ); x++ ) {
-			partialSQL = listGetAt( arguments.rawProjection.sql, x );
+		for( var x=1; x<=listLen( arguments.rawProjection.sql, "&&" ); x++ ) {
+            partialSQL = listGetAt( arguments.rawProjection.sql, x, "&&" );
 			partialSQL = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
 			partialSQL = partialSQL & " as #listGetAt( arguments.rawProjection.alias, x )#";
 			projection.sql = listAppend( projection.sql, partialSQL );
