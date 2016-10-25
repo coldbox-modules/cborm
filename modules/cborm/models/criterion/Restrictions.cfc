@@ -169,8 +169,21 @@ component singleton{
 		return restrictions.sizeNE(arguments.property, arguments.propertyValue);
 	}
 	
-	// Use arbitrary SQL to modify the resultset
-	any function sqlRestriction(required string sql){
+	any function sqlRestriction(required string sql, any parameters ){
+        //if we defined a parameter then its assume its a string and pass it through right
+        if(arguments.keyExists('parameters')){
+            var StringType = CreateObject("java","org.hibernate.type.StringType");
+            if(isArray(arguments.parameters)){
+                var types = [];
+                for(var i in arguments.parameters){
+                    types.append(StringType.INSTANCE);
+                }
+            }else{
+                var types = StringType.INSTANCE;
+            }
+            //get the an instance to string type to pass as the second param
+            return restrictions.sqlRestriction(arguments.sql, parameters , types);
+        }
 		return restrictions.sqlRestriction(arguments.sql);
 	}
 	
