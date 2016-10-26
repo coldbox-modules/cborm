@@ -42,7 +42,7 @@ before_script:
 
 script:
   # Execute build via ANT
-  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f workbench/build.xml
+  - sudo ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -f workbench/build.xml
   # Spit out log just in case we need to debug
   - sudo box server log
 
