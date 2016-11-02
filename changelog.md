@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## 1.3.0
+* Pass the target value as the rejected value for Unique validator
+* Travis Updates
+
 ## 1.2.2
 * Travis updates
 * COLDBOX-460 Dynamic finders fixed by always adding datasource attribute to hql query

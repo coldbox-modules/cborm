@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ColdBox/cbox-cborm.svg?branch=development)](https://travis-ci.org/ColdBox/cbox-cborm)
+[![Build Status](https://travis-ci.org/coldbox-modules/cbox-cborm.svg?branch=development)](https://travis-ci.org/coldbox-modules/cbox-cborm)
 
 #Welcome To The ColdBox ORM Module
 
@@ -12,16 +12,16 @@ Apache License, Version 2.0.
 ##IMPORTANT LINKS
 
 **Source & Changelog**
-- https://github.com/ColdBox/cbox-cborm
-- https://github.com/ColdBox/cbox-cborm/blob/development/modules/cborm/changelog.md
+- https://github.com/coldbox-modules/cbox-cborm
+- [Changelog](changelog.md)
 
 **Documentation**
-- https://github.com/ColdBox/cbox-cborm/wiki/Base-ORM-Service
-- https://github.com/ColdBox/cbox-cborm/wiki/Active-Entity
-- https://github.com/ColdBox/cbox-cborm/wiki/Virtual-Entity-Service
-- https://github.com/ColdBox/cbox-cborm/wiki/ColdBox-ORM-Event-Handler
-- https://github.com/ColdBox/cbox-cborm/wiki/ColdBox-Criteria-Builder
-- https://github.com/ColdBox/cbox-cborm/wiki/ColdBox-Detached-Criteria-Builder
+- https://github.com/coldbox-modules/cbox-cborm/wiki/Base-ORM-Service
+- https://github.com/coldbox-modules/cbox-cborm/wiki/Active-Entity
+- https://github.com/coldbox-modules/cbox-cborm/wiki/Virtual-Entity-Service
+- https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-ORM-Event-Handler
+- https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-Criteria-Builder
+- https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-Detached-Criteria-Builder
 
 ##SYSTEM REQUIREMENTS
 - Lucee 4.5+
