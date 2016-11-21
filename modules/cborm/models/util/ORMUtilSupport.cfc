@@ -8,7 +8,7 @@
 * 
 * This implementation supports multiple DSNs for ORM a-la Adobe ColdFusion 9
 */
-component modifier="abstract"{
+component{
 
 	/**
 	* Flush a datasource
