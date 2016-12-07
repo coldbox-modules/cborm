@@ -4,6 +4,8 @@ CHANGELOG
 ## 1.3.0
 * Pass the target value as the rejected value for Unique validator
 * Travis Updates
+* Dependency updates
+* Lucee 5 exceptions on ORM Util due to abstract keyword
 
 ## 1.2.2
 * Travis updates

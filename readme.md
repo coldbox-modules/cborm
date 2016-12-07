@@ -25,7 +25,7 @@ Apache License, Version 2.0.
 
 ##SYSTEM REQUIREMENTS
 - Lucee 4.5+
-- ColdFusion 9.02+
+- ColdFusion 10+
 
 # INSTRUCTIONS
 Just drop into your **modules** folder or use the box-cli to install
