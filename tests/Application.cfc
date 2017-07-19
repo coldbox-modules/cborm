@@ -51,7 +51,9 @@ component{
 	// request start
 	public boolean function onRequestStart( String targetPage ){
 		ormreload();
-		pagePoolClear();
+		if( StructKeyExists( server, "lucee" ) ){
+			pagePoolClear();
+		}
 		return true;
 	}
 
