@@ -1,19 +1,25 @@
 {
     "name":"CBORM Builder",
-    "version":"1.0.0",
+    "version":"1.4.0",
     "slug":"cborm-shell",
-    "private":false,
-    "defaultPort":0,
     "dependencies":{
         "cbvalidation":"^1.2.0",
-        "coldbox":"^4.3.0"
+        "coldbox":"^4.3.0",
+        "workbench":"git+https://github.com/Ortus-Solutions/unified-workbench.git"
     },
     "devDependencies":{
         "testbox":"^2.3.0+00044"
     },
     "installPaths":{
-        "cbvalidation":"modules/cbvalidation",
-        "coldbox":"coldbox",
-        "testbox":"testbox"
+        "cbvalidation":"modules/cbvalidation/",
+        "coldbox":"coldbox/",
+        "testbox":"testbox/",
+        "workbench":"workbench"
+    },
+    "testbox":{
+        "runner":"http://localhost:49616"
+    },
+    "scripts":{
+        "postVersion":"recipe workbench/bump.boxr"
     }
 }

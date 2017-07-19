@@ -1,12 +1,20 @@
+# IDE Stuff
 .settings
-logs/*.log
 settings.xml
-.netbeans
+
+# Logs
+logs/*.log
+
+# Test Results
 tests/results/*
-modules/cbvalidation/*
+
+# Dependencies
 coldbox/*
 testbox/*
 artifacts/*
 apidocs/docbox/*
-workbench/build.number
+workbench/*
 build/*
+
+# Module Dependencies
+modules/cbvalidation/*

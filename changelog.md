@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+## 1.4.0
+
+* Update to module standard template
+* Updated dependencies
+
 ## 1.3.0
 * Pass the target value as the rejected value for Unique validator
 * Travis Updates

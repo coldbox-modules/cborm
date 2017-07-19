@@ -49,6 +49,12 @@ component{
 	// request start
 	public boolean function onRequestStart( String targetPage ){
 		ormreload();
+		pagePoolClear();
 		return true;
+	}
+
+	public function onRequestEnd(){
+		structDelete( application, "cbController" );
+		structDelete( application, "wirebox" );
 	}
 }
