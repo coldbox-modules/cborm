@@ -155,55 +155,62 @@
 	}
 
 	function testDelete(){
-
-		user = entityNew("ActiveUser");
-		user.setFirstName('unitTest');
-		user.setLastName('unitTest');
-		user.setUsername('unitTest');
-		user.setPassword('unitTest');
-		entitySave(user);
+		// Create test record to delete
+		var user = entityNew( "ActiveUser" );
+		user.setFirstName( 'unitTest' );
+		user.setLastName( 'unitTest' );
+		user.setUsername( 'unitTest' );
+		user.setPassword( 'unitTest' );
+		entitySave( user ); 
 		ORMFlush();
 
 		try{
-			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			user.delete();
 			ORMFlush();
-			user.clear();
+			
+			// Clear the session just in case to make sure we try and load the deleted entity
+			ORMClearSession();
 
-			test = entityLoad("ActiveUser",{firstName="unittest"}, true);
-			assertTrue( isNull(test) );
+			var testUser = entityLoad( "ActiveUser", { firstName="unitTest" } , true );
+			expect( isNull( testUser ) ).toBeTrue();
 		}
 		catch(any e){
 			fail(e.detail & e.message);
 		}
 		finally{
-			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from users where userName = 'unitTest'");
+			var q = new Query( datasource="coolblog" );
+			q.execute( sql="delete from users where firstName = 'unitTest'" );
 		}
 	}
 
 	function testDeleteByID(){
-		user = entityNew("ActiveUser");
-		user.setFirstName('unitTest');
-		user.setLastName('unitTest');
-		user.setUsername('unitTest');
-		user.setPassword('unitTest');
-		entitySave(user); ORMFlush();
-
+		// Create test record to delete
+		var user = entityNew( "ActiveUser" );
+		user.setFirstName( 'unitTest' );
+		user.setLastName( 'unitTest' );
+		user.setUsername( 'unitTest' );
+		user.setPassword( 'unitTest' );
+		entitySave( user ); 
+		ORMFlush();
+		
 		try{
-			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			activeUser.deleteByID( user.getID() );
 			ORMFlush();
-			user.clear();
-			test = entityLoad("ActiveUser",{firstName="unittest"}, true);
-			assertTrue( isNull(test) );
+
+			// Clear the session just in case to make sure we try and load the deleted entity
+			ORMClearSession();
+			
+			// Try to load
+			var testUser = entityLoad( "ActiveUser", { firstName="unitTest" } , true );
+			expect( isNull( testUser ) ).toBeTrue();
 		}
 		catch(any e){
-			fail(e.detail & e.message);
+			debug( testUser );
+			fail( e.detail & e.message );
 		}
 		finally{
-			q = new Query(datasource="coolblog");
-			q.execute(sql="delete from users where firstName = 'unitTest'");
+			var q = new Query( datasource="coolblog" );
+			q.execute( sql="delete from users where firstName = 'unitTest'" );
 		}
 	}
 
