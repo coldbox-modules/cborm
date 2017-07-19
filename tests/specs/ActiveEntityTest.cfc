@@ -170,6 +170,7 @@
 			
 			// Clear the session just in case to make sure we try and load the deleted entity
 			ORMClearSession();
+			ORMCloseSession();
 
 			var testUser = entityLoad( "ActiveUser", { firstName="unitTest" } , true );
 			expect( isNull( testUser ) ).toBeTrue();
@@ -199,6 +200,7 @@
 
 			// Clear the session just in case to make sure we try and load the deleted entity
 			ORMClearSession();
+			ORMCloseSession();
 			
 			// Try to load
 			var testUser = entityLoad( "ActiveUser", { firstName="unitTest" } , true );
