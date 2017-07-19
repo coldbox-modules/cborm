@@ -113,7 +113,8 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
     }
 
 	function testGetDialect() {
-        assertEquals( getMetaData( SQLHelper.getDialect() ).getSuperClass().getName(), "org.hibernate.dialect.Dialect" );
+		expect( getMetaData( SQLHelper.getDialect() ).getSuperClass().getName() )
+			.toInclude( "Dialect" );
     }
 
 	function testGetQueryParameters() {
