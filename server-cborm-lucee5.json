@@ -2,7 +2,7 @@
     "app":{
         "cfengine":"lucee@5"
     },
-    "name":"lucee@5",
+    "name":"cborm-lucee5",
     "openbrowser":"false",
     "web":{
         "http":{
