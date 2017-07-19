@@ -28,8 +28,7 @@ component{
 			type 				: "mysql",
 			connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&',
 			url					: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&',
-			username			: 'root',
-			password 			: 'mysql'
+			username			: 'root'
 		};
 
 		if( structKeyExists( server, "lucee" ) ){
@@ -37,18 +36,6 @@ component{
 		}
 	}
 
-	this.datasources[ "coolblog" ] = {
-		driver 				: "MySQL5",
-		type 				: "mysql",
-		connectionString	: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&',
-		url					: 'jdbc:mysql://localhost:3306/coolblog?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=true&',
-		username			: 'root',
-		password 			: 'mysql'
-	};
-
-	if( structKeyExists( server, "lucee" ) ){
-		this.datasources[ "coolblog" ].class = 'org.gjt.mm.mysql.Driver';
-	}
 	
 	// ORM Definitions
 	this.datasource = "coolblog";
