@@ -172,8 +172,9 @@
 			ORMClearSession();
 			ORMCloseSession();
 
-			var testUser = entityLoad( "ActiveUser", { firstName="unitTest" } , true );
-			expect( isNull( testUser ) ).toBeTrue();
+			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
+			var results = q.execute();
+			expect( results.recordcount ).toBe( 0 );			
 		}
 		catch(any e){
 			fail(e.detail & e.message);
