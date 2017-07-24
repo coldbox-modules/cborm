@@ -1,5 +1,5 @@
-<cfcomponent output="false" hint="My App Configuration">
-<cfscript>
+component{
+
 	// Configure ColdBox Application
 	function configure(){
 
@@ -47,9 +47,6 @@
 		settings = {
 		};
 
-		// Activate WireBox
-		wirebox = { enabled = true, singletonReload=true };
-
 		// Module Directives
 		modules = {
 			//Turn to false in production, on for dev
@@ -62,7 +59,7 @@
 			appenders = {
 				files={class="coldbox.system.logging.appenders.RollingFileAppender",
 					properties = {
-						filename = "javaloader", filePath="/#appMapping#/logs"
+						filename = "application", filePath="/#appMapping#/logs"
 					}
 				}
 			},
@@ -75,11 +72,11 @@
 		//Register interceptors as an array, we need order
 		interceptors = [
 			//SES
-			{class="coldbox.system.interceptors.SES",
-			 properties={}
+			{
+				class="coldbox.system.interceptors.SES"
 			}
 		];
 
 	}
-</cfscript>
-</cfcomponent>
+
+}
