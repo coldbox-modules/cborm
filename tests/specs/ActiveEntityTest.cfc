@@ -173,7 +173,7 @@
 			ORMCloseSession();
 
 			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
-			var results = q.execute();
+			var results = q.execute().getResult();
 			expect( results.recordcount ).toBe( 0 );			
 		}
 		catch(any e){
@@ -204,11 +204,11 @@
 			ORMCloseSession();
 			
 			// Try to load
-			var testUser = entityLoad( "ActiveUser", { firstName="unitTest" } , true );
-			expect( isNull( testUser ) ).toBeTrue();
+			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
+			var results = q.execute().getResult();
+			expect( results.recordcount ).toBe( 0 );	
 		}
 		catch(any e){
-			debug( testUser );
 			fail( e.detail & e.message );
 		}
 		finally{
