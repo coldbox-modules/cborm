@@ -178,7 +178,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		return super.getSessionStatistics(argumentCollection=arguments);
 	}
 
-	string function getKey(){
+	any function getKey(){
 		return super.getKey( this.getEntityName() );
 	}
 
