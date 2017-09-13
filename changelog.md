@@ -3,6 +3,7 @@ CHANGELOG
 
 ## 1.4.0
 
+* Fix `getKey()` return typing to allow composite keys: https://github.com/coldbox-modules/cbox-cborm/pull/21
 * Update to module standard template
 * Updated dependencies
 

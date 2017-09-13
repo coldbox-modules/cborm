@@ -1,15 +1,15 @@
 [![Build Status](https://travis-ci.org/coldbox-modules/cbox-cborm.svg?branch=development)](https://travis-ci.org/coldbox-modules/cbox-cborm)
 
-#Welcome To The ColdBox ORM Module
+# Welcome To The ColdBox ORM Module
 
 This module provides you with several enhancements when interacting with the
 ColdFusion ORM via Hibernate.  It provides you with virtual service layers,
 active record patterns, criteria and detached criteria queries, entity compositions, populations and so much more to make your ORM life easier!
 
-##LICENSE
+## LICENSE
 Apache License, Version 2.0.
 
-##IMPORTANT LINKS
+## IMPORTANT LINKS
 
 **Source & Changelog**
 - https://github.com/coldbox-modules/cbox-cborm
@@ -23,7 +23,7 @@ Apache License, Version 2.0.
 - https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-Criteria-Builder
 - https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-Detached-Criteria-Builder
 
-##SYSTEM REQUIREMENTS
+## SYSTEM REQUIREMENTS
 - Lucee 4.5+
 - ColdFusion 10+
 
@@ -69,7 +69,7 @@ Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
 
-####HONOR GOES TO GOD ABOVE ALL
+#### HONOR GOES TO GOD ABOVE ALL
 Because of His grace, this project exists. If you don't like this, then don't read it, its not for you.
 
 >"Therefore being justified by faith, we have peace with God through our Lord Jesus Christ:
@@ -79,5 +79,5 @@ And patience, experience; and experience, hope:
 And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
 Holy Ghost which is given unto us. ." Romans 5:5
 
-###THE DAILY BREAD
+### THE DAILY BREAD
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12
