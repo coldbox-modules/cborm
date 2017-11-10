@@ -9,10 +9,10 @@ env:
     - MODULE_ID=cborm
   matrix:
     - ENGINE=lucee@4.5
-    #- ENGINE=lucee@5
-    #- ENGINE=adobe@10
+    - ENGINE=lucee@5
     - ENGINE=adobe@11
     - ENGINE=adobe@2016
+    - ENGINE=adobe@2018
 
 branches:
   only:
@@ -59,6 +59,11 @@ script:
   # add our module-specific build properties
   - printf "\nmodule.name=$MODULE_ID" >> workbench/build.properties
   - printf "\ncfengine=$ENGINE" >> workbench/build.properties
+  - echo "************************ Runtime Properties ********************"
+  - cat build/build.properties
+  - echo "************************ END Runtime Properties ********************"
+  # Starting server twice due to stupid LUCEE 5 bug.
+  #- box server start name=$ENGINENAME debug=true
   # execute our build
   - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f workbench/build.xml
 
