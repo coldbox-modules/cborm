@@ -60,7 +60,7 @@ script:
   - printf "\nmodule.name=$MODULE_ID" >> workbench/build.properties
   - printf "\ncfengine=$ENGINE" >> workbench/build.properties
   - echo "************************ Runtime Properties ********************"
-  - cat build/build.properties
+  - cat workbench/build.properties
   - echo "************************ END Runtime Properties ********************"
   # Starting server twice due to stupid LUCEE 5 bug.
   #- box server start name=$ENGINENAME debug=true
