@@ -140,6 +140,13 @@
 		try{
 			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			user.save( transactional=false );
+			
+			ORMFlush();
+			
+			// Clear the session just in case to make sure we try and load the deleted entity
+			ORMClearSession();
+			ORMCloseSession();
+			
 			assertTrue( len(user.getID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
@@ -157,7 +164,7 @@
 	function testDelete(){
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
-		user.setFirstName( 'unitTest' );
+		user.setFirstName( 'unitTestunitTesttestDelete' );
 		user.setLastName( 'unitTest' );
 		user.setUsername( 'unitTest' );
 		user.setPassword( 'unitTest' );
@@ -172,7 +179,7 @@
 			ORMClearSession();
 			ORMCloseSession();
 
-			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
+			var q = new Query( sql="select * from users where firstName = 'unitTesttestDelete'" );
 			var results = q.execute().getResult();
 			expect( results.recordcount ).toBe( 0 );			
 		}
@@ -181,7 +188,7 @@
 		}
 		finally{
 			var q = new Query( datasource="coolblog" );
-			q.execute( sql="delete from users where firstName = 'unitTest'" );
+			q.execute( sql="delete from users where firstName = 'unitTestunitTesttestDelete'" );
 		}
 	}
 

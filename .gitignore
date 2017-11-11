@@ -18,3 +18,4 @@ build/*
 
 # Module Dependencies
 modules/cbvalidation/*
+*.project
