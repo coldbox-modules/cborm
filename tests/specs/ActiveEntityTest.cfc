@@ -155,6 +155,10 @@
 	}
 
 	function testDelete(){
+		// Make sure there's no "unitTest" record to start with
+		var q = new Query( datasource="coolblog" );
+		q.execute( sql="delete from users where firstName = 'unitTest'" );
+		
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
 		user.setFirstName( 'unitTest' );
