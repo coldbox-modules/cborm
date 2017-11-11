@@ -132,7 +132,7 @@
 
 		user = getMockBox().prepareMock( entityNew("ActiveUser") );
 		user.$property("ORMEventHandler","variables",mockEventHandler);
-		user.setFirstName('unitTesttestSave');
+		user.setFirstName('unitTest');
 		user.setLastName('unitTest');
 		user.setUsername('unitTest');
 		user.setPassword('unitTest');
@@ -140,6 +140,13 @@
 		try{
 			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
 			user.save( transactional=false );
+			
+			ORMFlush();
+			
+			// Clear the session just in case to make sure we try and load the deleted entity
+			ORMClearSession();
+			ORMCloseSession();
+			
 			assertTrue( len(user.getID()) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
 			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
@@ -150,7 +157,7 @@
 		}
 		finally{
 			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from users where firstName = 'unitTestunitTesttestSave'");
+			q.execute(sql="delete from users where firstName = 'unitTest'");
 		}
 	}
 
@@ -188,7 +195,7 @@
 	function testDeleteByID(){
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
-		user.setFirstName( 'unitTestunitTesttestDeleteByID' );
+		user.setFirstName( 'unitTest' );
 		user.setLastName( 'unitTest' );
 		user.setUsername( 'unitTest' );
 		user.setPassword( 'unitTest' );
@@ -204,7 +211,7 @@
 			ORMCloseSession();
 			
 			// Try to load
-			var q = new Query( sql="select * from users where firstName = 'unitTestunitTesttestDeleteByID'" );
+			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
 			var results = q.execute().getResult();
 			expect( results.recordcount ).toBe( 0 );	
 		}
@@ -213,7 +220,7 @@
 		}
 		finally{
 			var q = new Query( datasource="coolblog" );
-			q.execute( sql="delete from users where firstName = 'unitTesttestDeleteByID'" );
+			q.execute( sql="delete from users where firstName = 'unitTest'" );
 		}
 	}
 
@@ -222,7 +229,7 @@
 			user = entityNew("ActiveUser");
 			user.setFirstName('unitTest#x#');
 			user.setLastName('unitTest');
-			user.setUsername('unitTestunitTesttestDeleteByID');
+			user.setUsername('unitTest');
 			user.setPassword('unitTest');
 			entitySave(user);
 		}
@@ -235,14 +242,14 @@
 			ORMFlush();
 			user.clear();
 
-			result = q.execute(sql="select * from users where userName = 'unitTesttestDeleteByID'");
+			result = q.execute(sql="select * from users where userName = 'unitTest'");
 			assertEquals( 0, result.getResult().recordcount );
 		}
 		catch(any e){
 			fail(e.detail & e.message & e.stackTrace);
 		}
 		finally{
-			q.execute(sql="delete from users where userName = 'unitTestunitTesttestDeleteByID'");
+			q.execute(sql="delete from users where userName = 'unitTest'");
 		}
 	}
 
