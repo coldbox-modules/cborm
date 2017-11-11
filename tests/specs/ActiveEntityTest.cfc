@@ -132,7 +132,7 @@
 
 		user = getMockBox().prepareMock( entityNew("ActiveUser") );
 		user.$property("ORMEventHandler","variables",mockEventHandler);
-		user.setFirstName('unitTest');
+		user.setFirstName('unitTesttestSave');
 		user.setLastName('unitTest');
 		user.setUsername('unitTest');
 		user.setPassword('unitTest');
@@ -150,18 +150,14 @@
 		}
 		finally{
 			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from users where firstName = 'unitTest'");
+			q.execute(sql="delete from users where firstName = 'unitTestunitTesttestSave'");
 		}
 	}
 
 	function testDelete(){
-		// Make sure there's no "unitTest" record to start with
-		var q = new Query( datasource="coolblog" );
-		q.execute( sql="delete from users where firstName = 'unitTest'" );
-		
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
-		user.setFirstName( 'unitTest' );
+		user.setFirstName( 'unitTestunitTesttestDelete' );
 		user.setLastName( 'unitTest' );
 		user.setUsername( 'unitTest' );
 		user.setPassword( 'unitTest' );
@@ -176,7 +172,7 @@
 			ORMClearSession();
 			ORMCloseSession();
 
-			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
+			var q = new Query( sql="select * from users where firstName = 'unitTesttestDelete'" );
 			var results = q.execute().getResult();
 			expect( results.recordcount ).toBe( 0 );			
 		}
@@ -185,14 +181,14 @@
 		}
 		finally{
 			var q = new Query( datasource="coolblog" );
-			q.execute( sql="delete from users where firstName = 'unitTest'" );
+			q.execute( sql="delete from users where firstName = 'unitTestunitTesttestDelete'" );
 		}
 	}
 
 	function testDeleteByID(){
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
-		user.setFirstName( 'unitTest' );
+		user.setFirstName( 'unitTestunitTesttestDeleteByID' );
 		user.setLastName( 'unitTest' );
 		user.setUsername( 'unitTest' );
 		user.setPassword( 'unitTest' );
@@ -208,7 +204,7 @@
 			ORMCloseSession();
 			
 			// Try to load
-			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
+			var q = new Query( sql="select * from users where firstName = 'unitTestunitTesttestDeleteByID'" );
 			var results = q.execute().getResult();
 			expect( results.recordcount ).toBe( 0 );	
 		}
@@ -217,7 +213,7 @@
 		}
 		finally{
 			var q = new Query( datasource="coolblog" );
-			q.execute( sql="delete from users where firstName = 'unitTest'" );
+			q.execute( sql="delete from users where firstName = 'unitTesttestDeleteByID'" );
 		}
 	}
 
@@ -226,7 +222,7 @@
 			user = entityNew("ActiveUser");
 			user.setFirstName('unitTest#x#');
 			user.setLastName('unitTest');
-			user.setUsername('unitTest');
+			user.setUsername('unitTestunitTesttestDeleteByID');
 			user.setPassword('unitTest');
 			entitySave(user);
 		}
@@ -239,14 +235,14 @@
 			ORMFlush();
 			user.clear();
 
-			result = q.execute(sql="select * from users where userName = 'unitTest'");
+			result = q.execute(sql="select * from users where userName = 'unitTesttestDeleteByID'");
 			assertEquals( 0, result.getResult().recordcount );
 		}
 		catch(any e){
 			fail(e.detail & e.message & e.stackTrace);
 		}
 		finally{
-			q.execute(sql="delete from users where userName = 'unitTest'");
+			q.execute(sql="delete from users where userName = 'unitTestunitTesttestDeleteByID'");
 		}
 	}
 
