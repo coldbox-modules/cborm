@@ -4,6 +4,7 @@
 
 * ColdBox 5 Support
 * Dependency updates
+* Some syntax updates
 ## 1.4.0
 
 * Fix `getKey()` return typing to allow composite keys: https://github.com/coldbox-modules/cbox-cborm/pull/21

@@ -1,10 +1,10 @@
-﻿/********************************************************************************
+/********************************************************************************
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 ********************************************************************************
 * The ORM WireBox DSL
 */
-component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
+component accessors="true"{
 
 	property name="injector";
 	property name="log";
@@ -13,7 +13,7 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 	/**
 	* Constructor as per interface
 	*/
-	public any function init( required any injector ) output="false"{
+	public any function init( required any injector ){
 		variables.injector 	= arguments.injector;
 		variables.log		= arguments.injector.getLogBox().getLogger( this );
 
@@ -23,10 +23,13 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" accessors="true"{
 	/**
 	* Process an incoming DSL definition and produce an object with it.
 	*/
-	public any function process( required definition, targetObject ) output="false"{
+	public any function process( required definition, targetObject ){
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
+		
 		switch( DSLNamespace ){
-			case "entityService" : { return getEntityServiceDSL( argumentCollection=arguments );}
+			case "entityService" : { 
+				return getEntityServiceDSL( argumentCollection=arguments );
+			}
 		}
 	}
 

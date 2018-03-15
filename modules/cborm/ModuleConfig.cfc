@@ -26,9 +26,14 @@ component {
 	* Configure Module
 	*/
 	function configure(){
-
+		var dslPath = "#moduleMapping#.dsl.ORMDSL";
+		// ColdBox 5
+		if( variables.keyExists( "coldboxVersion" ) ){
+			dslPath &= "5";
+		}
+		
 		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
-		controller.getWireBox().registerDSL( namespace="entityService", path="#moduleMapping#.models.dsl.ORMDSL" );
+		controller.getWireBox().registerDSL( namespace="entityService", path=dslPath );
 
 		// Custom Declared Points
 		interceptorSettings = {
@@ -59,12 +64,12 @@ component {
 			injection = {
 				enabled = true, include = "", exclude = ""
 			}
-		});
+		} );
 		// Check if we have defined DSL first in application config
-		var ormDSL = oConfig.getPropertyMixin( "orm", "variables", structnew() );
+		var ormDsl = oConfig.getPropertyMixin( "orm", "variables", {} );
 		// injection
-		if( structCount( ormDSL ) ){
-			structAppend( controller.getSetting( "orm" ).injection, ormDSL.injection, true);
+		if( ormDsl.keyExists( "injection" ) ){
+			structAppend( controller.getSetting( "orm" ).injection, ormDsl.injection, true);
 		}
 	}
 
