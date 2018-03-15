@@ -1,5 +1,10 @@
 {
     "openbrowser":"false",
+    "name":"cborm-lucee4",
+    "app":{
+        "cfengine":"lucee@4.5",
+        "serverHomeDirectory":".engine/lucee4"
+    },
     "web":{
         "http":{
             "port":"49616"
