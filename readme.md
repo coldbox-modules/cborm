@@ -16,16 +16,11 @@ Apache License, Version 2.0.
 - [Changelog](changelog.md)
 
 **Documentation**
-- https://github.com/coldbox-modules/cbox-cborm/wiki/Base-ORM-Service
-- https://github.com/coldbox-modules/cbox-cborm/wiki/Active-Entity
-- https://github.com/coldbox-modules/cbox-cborm/wiki/Virtual-Entity-Service
-- https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-ORM-Event-Handler
-- https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-Criteria-Builder
-- https://github.com/coldbox-modules/cbox-cborm/wiki/ColdBox-Detached-Criteria-Builder
+- https://coldbox-orm.ortusbooks.com/
 
 ## SYSTEM REQUIREMENTS
 - Lucee 4.5+
-- ColdFusion 10+
+- ColdFusion 11+
 
 # INSTRUCTIONS
 Just drop into your **modules** folder or use the box-cli to install
@@ -39,12 +34,14 @@ this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";
 ```
 
 ## WireBox DSL
+
 The module also registers a new WireBox DSL called `entityservice` which can produce virtual or base orm entity services:
 
-- `entityservice` -  Inject a global ORM service
+- `entityservice` -  Inject a global ORM service so you can work with ANY entity
 - `entityservice:{entityName}` - Inject a Virtual entity service according to `entityName`
 
 ## Settings
+
 Here are the module settings you can place in your `ColdBox.cfc` under an `orm` structure:
 
 ```js
@@ -56,6 +53,7 @@ orm = {
 ```
 
 ## Validation
+
 We have also migrated the `UniqueValidator` from the **validation** module into our
 ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use in your constraints like so:
 
