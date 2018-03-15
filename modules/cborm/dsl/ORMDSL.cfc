@@ -10,14 +10,14 @@ component implements="coldbox.system.ioc.dsl.IDSLBuilder" extends="DslSpec" acce
 	* Constructor as per interface
 	*/
 	public any function init( required any injector ) output=false{
-		super.init( argumentCollection=arguments );
+		return super.init( argumentCollection=arguments );
 	}
 
 	/**
 	* Process an incoming DSL definition and produce an object with it.
 	*/
 	public any function process( required definition, targetObject ) output=false{
-		super.process( argumentCollection=arguments );
+		return super.process( argumentCollection=arguments );
 	}
 
 }
