@@ -1,6 +1,10 @@
 # IDE Stuff
 .settings
 settings.xml
+.vscode
+
+# Secrets
+.env
 
 # Logs
 logs/*.log
@@ -15,6 +19,9 @@ artifacts/*
 apidocs/docbox/*
 workbench/*
 build/*
+
+# Engines
+.engine/**
 
 # Module Dependencies
 modules/cbvalidation/*
