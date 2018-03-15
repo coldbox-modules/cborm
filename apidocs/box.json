@@ -3,11 +3,9 @@
     "version":"1.0.0",
     "slug":"module-apidocs",
     "dependencies":{
-        "docbox":"^2.0.7"
+        "docbox":"^2.2.1+27"
     },
-    "devDependencies":{
-        
-    },
+    "devDependencies":{},
     "installPaths":{
         "docbox":"docbox"
     }
