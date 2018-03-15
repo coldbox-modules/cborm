@@ -1,13 +1,15 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function beforeTests(){
-		structClear( application );
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 		//new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 
 	function setup(){
+		ORMCloseSession();
+		ORMClearSession();
+		
 		super.setup();
 		// If Lucee, close the current ORM session to avoid stackoverflow bug
 		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
@@ -137,20 +139,19 @@
 		user.setUsername('unitTest');
 		user.setPassword('unitTest');
 
-		try{
-			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
-			user.save( transactional=false );
-			assertTrue( len(user.getID()) );
-			assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
-			assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
-		}
-		catch(any e){
-			writeDump(e);abort;
-			fail(e.detail & e.message);
-		}
-		finally{
-			var q = new Query(datasource="coolblog");
-			q.execute(sql="delete from users where firstName = 'unitTest'");
+		transaction{
+			try{
+				user.save( transactional=false );
+				assertTrue( len(user.getID()) );
+				assertTrue( arrayLen(mockEventHandler.$callLog().preSave) );
+				assertTrue( arrayLen(mockEventHandler.$callLog().postSave) );
+			}
+			catch(any e){
+				fail(e.detail & e.message);
+			}
+			finally{
+				transactionRollback();
+			}
 		}
 	}
 
