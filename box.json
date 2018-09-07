@@ -1,25 +1,29 @@
 {
-    "name":"CBORM Builder",
-    "version":"1.4.0",
-    "slug":"cborm-shell",
-    "dependencies":{
-        "cbvalidation":"^1.3.1+51",
-        "workbench":"git+https://github.com/Ortus-Solutions/unified-workbench.git",
-        "coldbox":"^4.3.0+188"
-    },
-    "devDependencies":{
-        "testbox":"^2.6.0+156"
-    },
-    "installPaths":{
-        "cbvalidation":"modules/cbvalidation/",
-        "workbench":"workbench",
-        "testbox":"testbox/",
-        "coldbox":"coldbox/"
-    },
-    "testbox":{
-        "runner":"http://localhost:49616"
-    },
-    "scripts":{
-        "postVersion":"recipe workbench/bump.boxr"
-    }
+	"name" 		: "ColdBox ORM Extensions",
+	"version"   : "@build.version@+@build.number@",
+    "location"  : "http://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
+	"author" 	: "Ortus Solutions <info@ortussolutions.com",
+	"homepage"	: "https://github.com/coldbox-modules/cbox-cborm",
+	"documentation"		: "https://github.com/coldbox-modules/cbox-cborm/wiki",
+	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox-modules/cbox-cborm" },
+	"bugs" : "https://github.com/coldbox-modules/cbox-cborm/issues",
+	"shortDescription"	: "Enhances the ColdFusion ORM with tons of utilities.",
+	"slug"		: "cborm",
+	"type"		: "modules",
+	"keywords":"hibernate, orm extensions, orm, coldfusion orm, cfml orm",
+	"license"			: [
+		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" }
+	],
+	"contributors"		: [
+		"Brad Wood <bdw429s@gmail.com>",
+		"Curt Gratz <gratz@computerknowhow.com>",
+		"Joel Watson <existdissolve@gmail.com>"
+	],
+	"dependencies" 	:{
+		"cbvalidation" : "^1.3.1"
+	},
+	"ignore":[
+        "**/.*",
+        "test-harness"
+    ]
 }

@@ -2,11 +2,11 @@
 
 # Welcome To The ColdBox ORM Module
 
-This module provides you with several enhancements when interacting with the
-ColdFusion ORM via Hibernate.  It provides you with virtual service layers,
-active record patterns, criteria and detached criteria queries, entity compositions, populations and so much more to make your ORM life easier!
+This module provides you with several enhancements when interacting with the ColdFusion ORM via Hibernate.  It provides you with virtual service layers,
+active record patterns, criteria and detached criteria queries, entity compositions, populations and so much more to make your ORM life easier!  In other words, it makes using ORM not SUCK! :rocket:
 
 ## LICENSE
+
 Apache License, Version 2.0.
 
 ## IMPORTANT LINKS
@@ -19,13 +19,17 @@ Apache License, Version 2.0.
 - https://coldbox-orm.ortusbooks.com/
 
 ## SYSTEM REQUIREMENTS
+
 - Lucee 4.5+
 - ColdFusion 11+
 
 # INSTRUCTIONS
-Just drop into your **modules** folder or use the box-cli to install
 
-`box install cborm`
+Use CommandBox cli to install:
+
+```bash
+box install cborm
+```
 
 Unfortunately, due to the way that ORM is loaded by ColdFusion, if you are using the ORM EventHandler or ActiveEntity or any ColdBox Proxies that require ORM, you must create an Application Mapping in the `Application.cfc` like this:
 
@@ -33,9 +37,11 @@ Unfortunately, due to the way that ORM is loaded by ColdFusion, if you are using
 this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";
 ```
 
+This is due to the fact that the ORM event listener starts before ColdBox, so no dynamic mappings exist yet.  **Important**: Make sure you ALWAYS lazy load dependencies in your event handlers to avoid chicken and the egg issues.
+
 ## WireBox DSL
 
-The module also registers a new WireBox DSL called `entityservice` which can produce virtual or base orm entity services:
+The module also registers a new WireBox DSL called `entityservice` which can produce virtual or base ORM entity services:
 
 - `entityservice` -  Inject a global ORM service so you can work with ANY entity
 - `entityservice:{entityName}` - Inject a Virtual entity service according to `entityName`
@@ -59,7 +65,6 @@ ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use
 
 ```js
 { fieldName : { validator: "UniqueValidator@cborm" } }
-```
 
 
 ********************************************************************************
@@ -70,7 +75,7 @@ www.ortussolutions.com
 #### HONOR GOES TO GOD ABOVE ALL
 Because of His grace, this project exists. If you don't like this, then don't read it, its not for you.
 
->"Therefore being justified by faith, we have peace with God through our Lord Jesus Christ:
+> "Therefore being justified by faith, we have peace with God through our Lord Jesus Christ:
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
 And not only so, but we glory in tribulations also: knowing that tribulation worketh patience;
 And patience, experience; and experience, hope:
@@ -78,4 +83,5 @@ And hope maketh not ashamed; because the love of God is shed abroad in our heart
 Holy Ghost which is given unto us. ." Romans 5:5
 
 ### THE DAILY BREAD
+
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12

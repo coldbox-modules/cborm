@@ -2,11 +2,15 @@
 
 ## 1.5.0
 
+* ACF 2018 Support via Hibernate 5
+* Update to leverage new module template schema
+* Updated readme from old text
+
+## 1.4.0
+
 * ColdBox 5 Support
 * Dependency updates
 * Some syntax updates
-## 1.4.0
-
 * Fix `getKey()` return typing to allow composite keys: https://github.com/coldbox-modules/cbox-cborm/pull/21
 * Update to module standard template
 * Updated dependencies
@@ -23,6 +27,7 @@
 * Travis updates
 * COLDBOX-460 Dynamic finders fixed by always adding datasource attribute to hql query
 * Fixes an interface error on AC11 startup
+
 ## 1.2.1
 
 * Fixed box.json version number

@@ -1,27 +1,14 @@
-# IDE Stuff
-.settings
-settings.xml
 .vscode
 
-# Secrets
-.env
+.artifacts/**
+.tmp/**
 
-# Logs
-logs/*.log
+test-harness/.engine/**
+test-harness/coldbox/**
+test-harness/docbox/**
+test-harness/testbox/**
+test-harness/logs/**
+test-harness/modules/**
 
-# Test Results
-tests/results/*
-
-# Dependencies
-coldbox/*
-testbox/*
-artifacts/*
-apidocs/docbox/*
-workbench/*
-build/*
-
-# Engines
-.engine/**
-
-# Module Dependencies
-modules/cbvalidation/*
+# log files
+logs/**
