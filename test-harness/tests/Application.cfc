@@ -11,7 +11,7 @@ component{
 	request.MODULE_PATH = "cbox-cborm";
 
 	// APPLICATION CFC PROPERTIES
-	this.name 				= "ColdBoxTestingSuite" & hash(getCurrentTemplatePath());
+	this.name 				= "#request.MODULE_NAME# Testing Suite";
 	this.sessionManagement 	= true;
 	this.sessionTimeout 	= createTimeSpan( 0, 0, 15, 0 );
 	this.applicationTimeout = createTimeSpan( 0, 0, 15, 0 );
@@ -27,15 +27,13 @@ component{
 	this.mappings[ "/cbi18n" ]   		= rootPath & "/modules/cbvalidation/modules/cbi18n";
 
 	// The module root path
-	moduleRootPath = REReplaceNoCase( this.mappings[ "/root" ], "#request.MODULE_PATH#(\\|/)test-harness(\\|/)", "" );
-	this.mappings[ "/moduleroot" ] = moduleRootPath;
-	this.mappings[ "/#request.MODULE_NAME#" ] = moduleRootPath & "#request.MODULE_PATH#";
-
+	moduleRootPath = REReplaceNoCase( rootPath, "#request.MODULE_PATH#(\\|/)test-harness(\\|/)", "" );
+	this.mappings[ "/moduleroot" ] 				= moduleRootPath;
+	this.mappings[ "/#request.MODULE_NAME#" ] 	= moduleRootPath & "#request.MODULE_PATH#";
 
 	// ORM Definitions
 	this.datasource = "coolblog";
 	this.ormEnabled = "true";
-
 	this.ormSettings = {
 		cfclocation = [ "/root/models" ],
 		logSQL = true,
@@ -50,10 +48,13 @@ component{
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
-		ormreload();
-		if( StructKeyExists( server, "lucee" ) ){
-			pagePoolClear();
+		if( url.keyExists( "fwreinit" ) ){
+			ormreload();
+			if( StructKeyExists( server, "lucee" ) ){
+				pagePoolClear();
+			}
 		}
+
 		return true;
 	}
 
