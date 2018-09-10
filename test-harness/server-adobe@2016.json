@@ -1,5 +1,5 @@
 {
-    "name":"adobe@2016",
+    "name":"cborm-adobe@2016",
     "app":{
         "serverHomeDirectory":".engine/adobe2016",
         "cfengine":"adobe@2016"
@@ -11,6 +11,9 @@
         "rewrites":{
             "enable":"true"
         }
+	},
+	"jvm":{
+        "heapSize":"1024"
     },
     "openBrowser":"false"
 }
