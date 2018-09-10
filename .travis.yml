@@ -7,7 +7,7 @@ notifications:
 env:
   global:
     - MODULE_ID=cborm
-    - TARGET_VERSION=1.5.0
+    - TARGET_VERSION=1.6.0
   matrix:
     - ENGINE=lucee@45
     - ENGINE=lucee@5
