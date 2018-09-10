@@ -2,6 +2,7 @@
 
 ## 1.5.0
 
+* Performance improvements for criteria building as we now build up the dialect and support structs
 * ACF 2018 Support via Hibernate 5
 * Update to leverage new module template schema
 * Updated readme from old text
