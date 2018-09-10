@@ -42,6 +42,7 @@ component accessors="true"{
         variables.ormSession    = variables.criteriaImpl.getSession();
         variables.ormFactory	= variables.ormSession.getFactory();
 
+		// Load Hibernate Properties Accordingly to version
         setupHibernateProperties();
 
         // set properties
@@ -63,7 +64,8 @@ component accessors="true"{
 
 			// Dialect Specific Setup: Hibernate 4vs5 differences
 			if( listFirst( server.coldfusion.productVersion ) gte 2018 ){
-				// Set SQL Dialect ACF2018:Hibernate5+
+				variables.hibernateVersion = "5";
+				// Set SQL Dialect ACF2018:Hibernate5.2+
 				var jdbcServiceClass 	= createObject( "java", "org.hibernate.engine.jdbc.spi.JdbcServices" ).getClass();
 				var jdbcService 		= variables.ormFactory.getServiceRegistry().getService( jdbcServiceClass );
 				variables.dialect 		= jdbcService.getDialect();
@@ -78,6 +80,7 @@ component accessors="true"{
 			} else {
 				// Hibernate 4+
 				variables.dialect 			= variables.ormFactory.getDialect();
+				variables.hibernateVersion 	= "4";
 				variables.dialectSupport 	= {
 					limit           					: variables.dialect.supportsLimit(),
 					limitOffset     					: variables.dialect.supportsLimitOffset(),
@@ -89,6 +92,7 @@ component accessors="true"{
 			}
         } else {
 			// Lucee Hibernate 3+, waayyyyy old.
+			variables.hibernateVersion 	= "3";
 			variables.formatter  		= createObject( "java", "org.hibernate.jdbc.util.BasicFormatterImpl" );
 			variables.dialect 			= variables.ormFactory.getDialect();
 			variables.dialectSupport 	= {
@@ -450,9 +454,16 @@ component accessors="true"{
      * @return org.hibernate.loader.criteria.CriteriaJoinWalker
      */
     private any function getCriteriaJoinWalker() {
+		// More Diff on Hibernate Versions: Remove when standardized
+		if( variables.hibernateVersion gte 5 ){
+			var persister = variables.ormFactory.getMetaModel().entityPersister( variables.entityName );
+		} else {
+			var persister = variables.ormFactory.getEntityPersister( variables.entityName );
+		}
+
         // not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
         return createObject( "java", "org.hibernate.loader.criteria.CriteriaJoinWalker" ).init(
-            variables.ormFactory.getEntityPersister( variables.entityName ), // persister (loadable)
+            persister, // persister (loadable)
             getCriteriaQueryTranslator(), // translator
             variables.ormFactory, // factory
             variables.criteriaImpl, // criteria

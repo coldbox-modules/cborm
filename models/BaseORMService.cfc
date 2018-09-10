@@ -958,7 +958,7 @@ component accessors="true"{
 	/**
     * Merge an entity or array of entities back into a session
     * @entity A single or an array of entities to re-merge
-    * 
+    *
     * @return Same entity if one passed, array if an array of entities passed.
     */
 	any function merge( required any entity ){
@@ -972,7 +972,7 @@ component accessors="true"{
 		for( var thisObject in arguments.entity ){
 			arrayAppend( aReturns, entityMerge( thisObject ) );
 		}
-		
+
 		return aReturns;
 	}
 
@@ -993,12 +993,14 @@ component accessors="true"{
 	}
 
 	/**
-	* Checks if the current session contains the passed in entity
-	*/
-	boolean function sessionContains(required any entity){
-		var ormSession = orm.getSession(orm.getEntityDatasource(arguments.entity));
+	 * Checks if the current session contains the passed in entity
+	 *
+	 * @entity The entity object
+	 */
+	boolean function sessionContains( required any entity ){
+		var ormSession = orm.getSession( orm.getEntityDatasource( arguments.entity ) );
 		// weird CFML thing
-		return ormSession.contains(arguments.entity);
+		return ormSession.contains( arguments.entity );
 	}
 
 	/**
@@ -1044,11 +1046,11 @@ component accessors="true"{
 	* Compile HQL from a dynamic method call
 	*/
 	private any function compileHQLFromDynamicMethod(
-		string missingMethodName, 
-		struct missingMethodArguments, 
-		boolean unique=true, 
-		boolean isCounting=false, 
-		struct params, 
+		string missingMethodName,
+		struct missingMethodArguments,
+		boolean unique=true,
+		boolean isCounting=false,
+		struct params,
 		entityName
 	){
 		var method 	= arguments.missingMethodName;
@@ -1058,7 +1060,7 @@ component accessors="true"{
 		var realPropertyNames = getPropertyNames( arguments.entityName );
 		// Match our method grammars in the method string
 		var methodGrammars = REMatchNoCase( "(#arrayToList( realPropertyNames, '|' )#)+(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
-		
+
 		// Throw exception if no method grammars found
 		if( !arrayLen( methodGrammars ) ){
 			throw(
@@ -1077,7 +1079,7 @@ component accessors="true"{
 			if( right( thisGrammar, 2 ) eq "or" ){
 				expression.operator = "or";
 			}
-			// Remove operator now that we have it, if the property name doesn't exist 
+			// Remove operator now that we have it, if the property name doesn't exist
 			if( !arrayFindNoCase( realPropertyNames, thisGrammar ) ) {
 				thisGrammar = REReplacenoCase( thisGrammar, "(and|or)$", "" );
 			}
