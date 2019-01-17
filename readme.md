@@ -65,7 +65,7 @@ ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use
 
 ```js
 { fieldName : { validator: "UniqueValidator@cborm" } }
-
+```
 
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
