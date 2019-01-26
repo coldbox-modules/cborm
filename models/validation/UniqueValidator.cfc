@@ -46,7 +46,7 @@ component accessors="true" implements="cbvalidation.models.validators.IValidator
 		// Only validate simple values and if they have length, else ignore.
 		if( isSimpleValue( arguments.targetValue ) AND len( trim( arguments.targetValue ) ) ){
 			// process entity setups.
-			var entityName 		= ORMService.getEntityGivenName( arguments.target );
+			var entityName 		= arguments.target.getEntityName();
 			var identityField 	= ORMService.getKey( entityName );
 			var identityValue 	= evaluate( "arguments.target.get#identityField#()" );
 
