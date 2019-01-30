@@ -97,8 +97,6 @@ component accessors="true"{
 		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
 		// Create the service ORM Event Handler
 		variables.ORMEventHandler = new cborm.models.EventHandler();
-		// Create our bean populator utility object
-		variables.beanPopulator = new coldbox.system.core.dynamic.BeanPopulator();
 		// Restrictions orm.hibernate.criterion.Restrictions
 		variables.restrictions  = new cborm.models.criterion.Restrictions();
 
@@ -235,7 +233,7 @@ component accessors="true"{
 	/**
 	* Finds and returns the first result for the given query or null if no entity was found.
 	* You can either use the query and params combination or send in an example entity to find.
-	* @example.hint DEPRECATED. Use findByExample() instead, deprecated by 3.5
+	* @example DEPRECATED. Use findByExample() instead, deprecated by 3.5
 	*/
 	any function findIt(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
@@ -264,7 +262,7 @@ component accessors="true"{
 
 	/**
 	* Find all the entities for the specified query and params or example
-	* @example.hint	DEPRECATED use findByExample() this will be dropped in 3.5
+	* @example	DEPRECATED use findByExample() this will be dropped in 3.5
 	*/
 	array function findAll(string query,
 						    any params=structnew(),
@@ -319,14 +317,14 @@ component accessors="true"{
 
 	/**
     * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
-    * @entityName.hint The entity to create
-    * @properties.hint The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
-    * @composeRelationships.hint Automatically attempt to compose relationships from the incoming properties memento
-    * @nullEmptyInclude.hint A list of keys to NULL when empty
-    * @nullEmptyExclude.hint A list of keys to NOT NULL when empty
-    * @ignoreEmpty.hint Ignore empty values on populations, great for ORM population
-    * @include.hint A list of keys to include in the population from the incoming properties memento
-    * @exclude.hint A list of keys to exclude in the population from the incoming properties memento
+    * @entityName The entity to create
+    * @properties The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
+    * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+    * @nullEmptyInclude A list of keys to NULL when empty
+    * @nullEmptyExclude A list of keys to NOT NULL when empty
+    * @ignoreEmpty Ignore empty values on populations, great for ORM population
+    * @include A list of keys to include in the population from the incoming properties memento
+    * @exclude A list of keys to exclude in the population from the incoming properties memento
     */
 	any function new(required string entityName, struct properties=structnew(), boolean composeRelationships=true, nullEmptyInclude="", nullEmptyExclude="", boolean ignoreEmpty=false, include="", exclude=""){
 		var entity   = entityNew( arguments.entityName );
@@ -348,11 +346,11 @@ component accessors="true"{
 
 	/**
     * Simple map to property population for entities
-	* @memento.hint	The map/struct to populate the entity with
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @memento	The map/struct to populate the entity with
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
     */
 	any function populate(required any target,
 						   required struct memento,
@@ -365,17 +363,17 @@ component accessors="true"{
 						   string nullEmptyExclude="",
 						   boolean composeRelationships=true){
 
-		return beanPopulator.populateFromStruct( argumentCollection=arguments );
+		return new coldbox.system.core.dynamic.BeanPopulator().populateFromStruct( argumentCollection=arguments );
 	}
 
 	/**
     * Simple map to property population for entities with structure key prefixes
-	* @memento.hint	The map/struct to populate the entity with
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
-	* @prefix.hint The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	* @memento	The map/struct to populate the entity with
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
+	* @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
     */
 	any function populateWithPrefix(required any target,
 						  required struct memento,
@@ -388,16 +386,16 @@ component accessors="true"{
 						  string nullEmptyExclude="",
 						  boolean composeRelationships=true,
 						  required string prefix){
-		return beanPopulator.populateFromStructWithPrefix( argumentCollection=arguments );
+		return new coldbox.system.core.dynamic.BeanPopulator().populateFromStructWithPrefix( argumentCollection=arguments );
 	}
 
 	/**
 	* Populate from JSON, for argument definitions look at the populate method
-	* @JSONString.hint	The JSON packet to use for population
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @JSONString	The JSON packet to use for population
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
 	*/
 	any function populateFromJSON(required any target,
 								   required string JSONString,
@@ -410,17 +408,17 @@ component accessors="true"{
 						   		   string nullEmptyExclude="",
 						   		   boolean composeRelationships=true){
 
-		return beanPopulator.populateFromJSON( argumentCollection=arguments );
+		return new coldbox.system.core.dynamic.BeanPopulator().populateFromJSON( argumentCollection=arguments );
 	}
 
 	/**
 	* Populate from XML, for argument definitions look at the populate method
-	* @root.hint The XML root element to start from
-	* @xml.hint	The XML string or packet or XML object to populate from
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @root The XML root element to start from
+	* @xml	The XML string or packet or XML object to populate from
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
 	*/
 	any function populateFromXML(required any target,
 								  required string xml,
@@ -434,17 +432,17 @@ component accessors="true"{
 						   		  string nullEmptyExclude="",
 						   		  boolean composeRelationships=true){
 
-		return beanPopulator.populateFromXML( argumentCollection=arguments );
+		return new coldbox.system.core.dynamic.BeanPopulator().populateFromXML( argumentCollection=arguments );
 	}
 
 	/**
 	* Populate from Query, for argument definitions look at the populate method
-	* @qry.hint The query to use for population
-	* @rowNumber.hint	The row number to use for population
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @qry The query to use for population
+	* @rowNumber	The row number to use for population
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
 	*/
 	any function populateFromQuery(required any target,
 								    required any qry,
@@ -458,39 +456,48 @@ component accessors="true"{
 						   		  	string nullEmptyExclude="",
 						   		  	boolean composeRelationships=true){
 
-		return beanPopulator.populateFromQuery( argumentCollection=arguments );
+		return new coldbox.system.core.dynamic.BeanPopulator().populateFromQuery( argumentCollection=arguments );
 	}
 
 
 	/**
     * Refresh the state of an entity or array of entities from the database
     */
-	any function refresh(required any entity){
-		var objects = arrayNew(1);
+	any function refresh( required any entity ){
+		var objects = [];
 
-		if( not isArray(arguments.entity) ){
-			arrayAppend(objects, arguments.entity);
-		}
-		else{
+		if( !isArray( arguments.entity ) ){
+			arrayAppend( objects, arguments.entity );
+		} else {
 			objects = arguments.entity;
 		}
 
-		for( var x=1; x lte arrayLen(objects); x++){
-			orm.getSession(orm.getEntityDatasource(objects[x])).refresh( objects[x] );
-		}
+		objects.each( function( item ){
+			orm.getSession( orm.getEntityDatasource( item ) )
+				.refresh( item );
+		} );
+
 		return this;
 	}
 
 	/**
-    * Checks if the given entityName and id exists in the database, this method does not load the entity into session
-	*/
-	boolean function exists(required entityName, required any id) {
-		var  options = {};
-		options.datasource = orm.getEntityDatasource(arguments.entityName);
-
+     * Checks if the given entityName and id exists in the database, this method does not load the entity into session
+	 *
+	 * @entityName the name of the entity
+	 * @id The id to lookup
+	 */
+	boolean function exists( required entityName, required any id ){
 		// Do it DLM style
-		var count = ORMExecuteQuery("select count(id) from #arguments.entityName# where id = ?",[arguments.id],true,options);
-		return (count gt 0);
+		var count = ORMExecuteQuery(
+			"select count( id ) from #arguments.entityName# where id = ?",
+			[ arguments.id ],
+			true,
+			{
+				datasource = orm.getEntityDatasource( arguments.entityName )
+			}
+		);
+
+		return ( count gt 0 );
 	}
 
 	/**
@@ -1286,15 +1293,24 @@ component accessors="true"{
 	 *
 	 * @entity The entity to get it's name from
 	 */
-	function getEntityGivenName(required entity) {
-		if( sessionContains( arguments.entity ) ){
- 			return orm.getSession( orm.getEntityDatasource(arguments.entity) ).getEntityName( entity );
- 		}
+	function getEntityGivenName( required entity ){
+		// Short-cut discovery via ActiveEntity
+		if( structKeyExists( arguments.entity, "getEntityName" ) ){
+			return arguments.entity.getEntityName();
+		}
 
- 		// else long approach
- 		var md = getMetadata( arguments.entity );
- 		if( structKeyExists(md, "entityname") ){ return md.entityname; }
- 		return listLast( md.name, ".");
+		// Hibernate Discovery
+		try{
+			var entityName = variables.orm
+		 		.getSession( variables.orm.getEntityDatasource( arguments.entity ) )
+				.getEntityName( arguments.entity );
+		} catch( org.hibernate.TransientObjectException e ){
+			// ignore it, it is not in session, go for long-discovery
+		}
+
+		// Long Discovery
+		var md = getMetadata( arguments.entity );
+		return ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
  	}
 
 	/**

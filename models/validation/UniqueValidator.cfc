@@ -1,29 +1,34 @@
 /**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Validates if the field has a unique value in the database, this only applies to ORM objects
-*/
+ * ********************************************************************************
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ********************************************************************************
+ * Validates if the field has a unique value in the database, this only applies to ORM objects
+ */
 component accessors="true" implements="cbvalidation.models.validators.IValidator" singleton{
 
+	// Properties
 	property name="name";
 	property name="ORMService";
 
+	/**
+	 * Constructor
+	 */
 	UniqueValidator function init(){
-		name 		= "Unique";
-		ORMService 	= new cborm.models.BaseORMService();
+		variables.name 			= "Unique";
+		variables.ORMService 	= new cborm.models.BaseORMService();
 		return this;
 	}
 
 	/**
-	* Will check if an incoming value validates
-	* @validationResult.hint The result object of the validation
-	* @target.hint The target object to validate on
-	* @field.hint The field on the target object to validate on
-	* @targetValue.hint The target value to validate
-	* @validationData.hint The validation data the validator was created with
-	*/
+	 * Will check if an incoming value validates
+	 *
+	 * @validationResult The result object of the validation
+	 * @target The target object to validate on
+	 * @field The field on the target object to validate on
+	 * @targetValue The target value to validate
+	 * @validationData The validation data the validator was created with
+	 */
 	boolean function validate(
 		required cbvalidation.models.result.IValidationResult validationResult,
 		required any target,
