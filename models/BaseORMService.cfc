@@ -1282,8 +1282,10 @@ component accessors="true"{
 	}
 
 	/**
- 	* Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
-	*/
+	 * Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
+	 *
+	 * @entity The entity to get it's name from
+	 */
 	function getEntityGivenName(required entity) {
 		if( sessionContains( arguments.entity ) ){
  			return orm.getSession( orm.getEntityDatasource(arguments.entity) ).getEntityName( entity );

@@ -1,72 +1,86 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author      :	Curt Gratz & Luis Majano
-Description :
-
-This is a Virtual Entity Service that extends the Coldbox BaseORMService to
-provide easy access to creating virtual services that extend the BaseORMService
-
-For example, if you want a UserService, you can either create an object based
-off this object if no additional functionality is needed like this:
-
-UserService=CreateObject("component", "cborm.models.VirtualEntityService").init("User");
-
-You can also use this virtual service as a template object and extend and override as needed.
-
-import cborm.models.*;
-component extends="VirtualEntityService"
-UserService function init(){
-    // setup properties
-    setEntityName('User');
-    setQueryCacheRegion( "#arguments.entityName#.defaultVSCache" );
-    setUseQueryCaching( false );
-	setEventHandling( false );
-	setDefaultAsQuery( true );
-    return this;
-}
-
-*/
+ * ********************************************************************************
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ********************************************************************************
+ * @author Curt Gratz & Luis Majano
+ *
+ * This is a Virtual Entity Service that extends the Coldbox BaseORMService to
+ * provide easy access to creating virtual services that extend the BaseORMService
+ *
+ * For example, if you want a UserService, you can either create an object based
+ * off this object if no additional functionality is needed like this:
+ *
+ * <pre>
+ * UserService=CreateObject("component", "cborm.models.VirtualEntityService").init("User");
+ * </pre>
+ *
+ * You can also use this virtual service as a template object and extend and override as needed.
+ *
+ * <pre>
+ * import cborm.models.*;
+ * component extends="VirtualEntityService"
+ * UserService function init(){
+ *     	// setup properties
+ *     	setEntityName('User');
+ *     	setQueryCacheRegion( "#arguments.entityName#.defaultVSCache" );
+ *     	setUseQueryCaching( false );
+ * 		setEventHandling( false );
+ * 		setDefaultAsQuery( true );
+ *     	return this;
+ * }
+ * </pre>
+ */
 component extends="cborm.models.BaseORMService" accessors="true"{
 
 	/**
-	* The entityName property for this "version" of the Virtual Service
-	*/
+	 * The entityName property for this "version" of the Virtual Service
+	 */
  	property name="entityName" type="string" persistent="false";
 
 	/**
-	* The datasource property for this "version" of the Virtual Service
-	*/
+	 * The datasource property for this "version" of the Virtual Service
+	 */
 	property name="datasource" type="string" persistent="false";
 
 	/************************************** CONSTRUCTOR *********************************************/
 
-	VirtualEntityService function init(required string entityname,
-										string queryCacheRegion,
-										boolean useQueryCaching,
-										boolean eventHandling,
-										boolean useTransactions,
-										boolean defaultAsQuery,
-										string datasource){
+	/**
+	 * Constructor
+	 *
+	 * @entityname The name of the entity to root this service with
+	 * @queryCacheRegion The name of the query cache region if using caching, defaults to `#arguments.entityName#.defaultVSCache`
+	 * @useQueryCaching Activate query caching, defaults to false
+	 * @eventHandling Activate event handling, defaults to true
+	 * @useTransactions Activate transaction blocks on calls, defaults to true
+	 * @defaultAsQuery Return query or array of objects on list(), executeQuery(), criteriaQuery(), defaults to true
+	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
+	 */
+	VirtualEntityService function init(
+		required string entityname,
+		string queryCacheRegion,
+		boolean useQueryCaching,
+		boolean eventHandling,
+		boolean useTransactions,
+		boolean defaultAsQuery,
+		string datasource
+	){
 		// create cache region
-		if( !structKeyExists(arguments,"queryCacheRegion") ){
+		if( isNull( arguments.queryCacheRegion ) ){
 			arguments.queryCacheRegion = "#arguments.entityName#.defaultVSCache";
 		}
 
-		// init parent
-		super.init(argumentCollection=arguments);
+		// init base service
+		super.init( argumentCollection=arguments );
 
 		// Set the local entity to be used in this virtual entity service
-		setEntityName( arguments.entityName );
+		variables.entityName = arguments.entityName;
 
 		// Set the datasource of the local entity to be used in this virtual entity service
 		// Only if not passed
-		if( !StructKeyExists(arguments, "datasource") ){
-			setDatasource( orm.getEntityDatasource( arguments.entityName ) );
-		}
-		else{
+		if( isNull( arguments.datasource ) ){
+			setDatasource( variables.orm.getEntityDatasource( arguments.entityName ) );
+		} else {
 			setDatasource( arguments.datasource );
 		}
 

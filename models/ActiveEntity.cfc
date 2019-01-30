@@ -1,35 +1,34 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Description :
-
-This Active Entity object allows you to enhance your ORM entities with virtual service methods
-and make it follow more of an Active Record pattern, but not really :)
-
-It just allows you to operate on entity and related entity objects much much more easily.
-
-If you have enabled WireBox entity injection, then you will get an added validation features:
-Just make sure you have the ColdBox Validation module installed ( box install validation )
-
-boolean function isValid(fields="*",constraints="",locale=""){}
-cbvalidation.model.result.IValidationResult function getValidationResults(){}
-
-These methods are only active if WireBox entity injection is available.
-
-
-*/
+ * ********************************************************************************
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ********************************************************************************
+ * This Active Entity object allows you to enhance your ORM entities with virtual service methods
+ * and make it follow more of an Active Record pattern, but not really :)
+ *
+ * It just allows you to operate on entity and related entity objects much much more easily.
+ *
+ * If you have enabled WireBox entity injection, then you will get an added validation features:
+ * Just make sure you have the ColdBox Validation module installed ( box install validation )
+ *
+ * <pre>
+ * boolean function isValid(fields="*",constraints="",locale=""){}
+ * cbvalidation.model.result.IValidationResult function getValidationResults(){}
+ * </pre>
+ *
+ * These methods are only active if WireBox entity injection is available.
+ */
 component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
-	* Active Entity Constructor, if you override it, make sure you call super.init()
-	* @queryCacheRegion.hint The query cache region to use if not we will use one for you
-	* @useQueryCaching.hint Enable query caching for this entity or not, defaults to false
-	* @eventHandling.hint Enable event handling for new() and save() operations, defaults to true
-	* @useTransactions.hint Enable transactions for all major operations, defaults to true
-	* @defaultAsQuery.hint What should be the default return type query or arrays for list opertions, defaults to true
-	*/
+	 * Active Entity Constructor, if you override it, make sure you call super.init()
+	 *
+	 * @queryCacheRegion The query cache region to use if not we will use one for you
+	 * @useQueryCaching Enable query caching for this entity or not, defaults to false
+	 * @eventHandling Enable event handling for new() and save() operations, defaults to true
+	 * @useTransactions Enable transactions for all major operations, defaults to true
+	 * @defaultAsQuery What should be the default return type query or arrays for list opertions, defaults to true
+	 */
 	function init(
 		string queryCacheRegion,
 		boolean useQueryCaching,
@@ -37,22 +36,26 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		boolean useTransactions,
 		boolean defaultAsQuery
 	){
+		// Calculate name via md
 		var md = getMetadata( this );
+		arguments.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
 
-		// find entity name on md?
-		if( structKeyExists( md,"entityName" ) ){
-			arguments.entityName = md.entityName;
-		}
-		// else default to entity CFC name
-		else{
-			arguments.entityName = listLast( md.name, "." );
-		}
 		// query cache region just in case
-		if( !structKeyExists(arguments,"queryCacheRegion") ){
+		if( isNull( arguments.queryCacheRegion ) ){
 			arguments.queryCacheRegion = "#arguments.entityName#.activeEntityCache";
 		}
-		// datasource
-		arguments.datasource = new cborm.models.util.ORMUtilFactory().getORMUtil().getEntityDatasource( this );
+
+		// datasource discovery, done here for perf considerations.
+		if( md.keyExists( "datasource" ) ){
+			arguments.datasource = md.datasource;
+		} else {
+			var appMD = getApplicationMetadata();
+			if( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ){
+				arguments.datasource = appMD.ormsettings.datasource;
+			} else {
+				arguments.datasource = appMD.datasource;
+			}
+		}
 
 		// init the super class with our own arguments
 		super.init( argumentCollection=arguments );
@@ -62,10 +65,10 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
     * Save an entity using hibernate transactions or not. You can optionally flush the session also
-    * @entity.hint You can optionally pass in an entity, else this active entity is saved
-    * @forceInsert.hint Force insert on the save
-    * @flush.hint Flush the session or not, default is false
-    * @transactional.hint Use transactions or not, it defaults to true
+    * @entity You can optionally pass in an entity, else this active entity is saved
+    * @forceInsert Force insert on the save
+    * @flush Flush the session or not, default is false
+    * @transactional Use transactions or not, it defaults to true
     */
 	any function save(any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=getUseTransactions()){
 		if( !structKeyExists(arguments,"entity") ){
@@ -79,9 +82,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
     * Delete an entity. The entity argument can be a single entity
 	* or an array of entities. You can optionally flush the session also after committing
 	* Transactions are used if useTransactions bit is set or the transactional argument is passed
-    * @entity.hint You can optionally pass in an entity, else this active entity is saved
-    * @flush.hint Flush the session or not, default is false
-    * @transactional.hint Use transactions or not, it defaults to true
+    * @entity You can optionally pass in an entity, else this active entity is saved
+    * @flush Flush the session or not, default is false
+    * @transactional Use transactions or not, it defaults to true
     */
 	any function delete(any entity, boolean flush=false,boolean transactional=getUseTransactions()){
 		if( !structKeyExists(arguments,"entity") ){
@@ -92,7 +95,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
     * Refresh the state of the entity
-    * @entity.hint The argument can be one persistence entity or an array of entities
+    * @entity The argument can be one persistence entity or an array of entities
     */
 	any function refresh(any entity){
 		var objects = arrayNew(1);
@@ -113,7 +116,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
     * Merge an entity or array of entities back into the session
-    * @entity.hint The argument can be one persistence entity or an array of entities
+    * @entity The argument can be one persistence entity or an array of entities
     */
 	any function merge(any entity){
 		var objects = arrayNew(1);
@@ -134,7 +137,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
     * Evict entity objects from session, if no arguments, then the entity evicts itself
-	* @entity.hint The argument can be one persistence entity or an array of entities
+	* @entity The argument can be one persistence entity or an array of entities
     */
 	any function evict(any entity){
 		var objects = arrayNew(1);
@@ -155,11 +158,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
     * Simple map to property population for entities
-	* @memento.hint	The map/struct to populate the entity with
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @memento	The map/struct to populate the entity with
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
     */
 	any function populate(
 		any target=this,
@@ -178,12 +181,12 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
     * Simple map to property population for entities with structure key prefixes
-	* @memento.hint	The map/struct to populate the entity with
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
-	* @prefix.hint The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	* @memento	The map/struct to populate the entity with
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
+	* @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
     */
 	any function populateWithPrefix(
 		any target=this,
@@ -203,11 +206,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
 	* Populate from JSON, for argument definitions look at the populate method
-	* @JSONString.hint	The JSON packet to use for population
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @JSONString	The JSON packet to use for population
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
 	*/
 	any function populateFromJSON(
 		any target=this,
@@ -226,12 +229,12 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
 	* Populate from XML, for argument definitions look at the populate method. <br/>
-	* @root.hint The XML root element to start from
-	* @xml.hint	The XML string or packet or XML object to populate from
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @root The XML root element to start from
+	* @xml	The XML string or packet or XML object to populate from
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
 	*/
 	any function populateFromXML(
 		any target=this,
@@ -251,12 +254,12 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
 	* Populate from Query, for argument definitions look at the populate method. <br/>
-	* @qry.hint The query to use for population
-	* @rowNumber.hint	The row number to use for population
-	* @scope.hint Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter.hint Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include.hint A list of keys to include in the population ONLY
-	* @exclude.hint A list of keys to exclude from the population
+	* @qry The query to use for population
+	* @rowNumber	The row number to use for population
+	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	* @include A list of keys to include in the population ONLY
+	* @exclude A list of keys to exclude from the population
 	*/
 	any function populateFromQuery(
 		any target=this,
@@ -277,10 +280,10 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	/**
 	* Validate the ActiveEntity with the coded constraints -> this.constraints, or passed in shared or implicit constraints
 	* The entity must have been populated with data before the validation
-	* @fields.hint One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
-	* @constraints.hint An optional shared constraints name or an actual structure of constraints to validate on.
-	* @locale.hint An optional locale to use for i18n messages
-	* @excludeFields.hint An optional list of fields to exclude from the validation.
+	* @fields One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
+	* @constraints An optional shared constraints name or an actual structure of constraints to validate on.
+	* @locale An optional locale to use for i18n messages
+	* @excludeFields An optional list of fields to exclude from the validation.
 	*/
 	boolean function isValid(
 		string fields="*",

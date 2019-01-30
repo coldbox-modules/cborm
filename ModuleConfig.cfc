@@ -65,7 +65,7 @@ component {
 		var ormDsl = oConfig.getPropertyMixin( "orm", "variables", {} );
 		// injection
 		if( ormDsl.keyExists( "injection" ) ){
-			structAppend( controller.getSetting( "orm" ).injection, ormDsl.injection, true);
+			structAppend( controller.getSetting( "orm" ).injection, ormDsl.injection, true );
 		}
 	}
 

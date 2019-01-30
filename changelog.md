@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 1.6.0
+
+* Update `getEntityGivenName` to support ACF2018
+* Performance update on creating active entities as datasource discovery has been reworked
+* Updated build process to latest in template
+* Dropped Railo support
+
 ## 1.5.0
 
 * Performance improvements for criteria building as we now build up the dialect and support structs

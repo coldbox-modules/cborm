@@ -1,18 +1,19 @@
 ﻿component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
+	// Do not unload per test bundle to improve performance.
+	this.unloadColdBox = false;
+
 	function beforeTests(){
 		super.beforeTests();
-		// Load our test injector for ORM entity binding
-		//new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 
 	function setup(){
 		ORMCloseSession();
 		ORMClearSession();
-		
+
 		super.setup();
 		// If Lucee, close the current ORM session to avoid stackoverflow bug
-		activeUser = getMockBox().prepareMock( entityNew("ActiveUser") );
+		activeUser = getMockBox().prepareMock( entityNew( "ActiveUser" ) );
 
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
@@ -162,20 +163,20 @@
 		user.setLastName( 'unitTest' );
 		user.setUsername( 'unitTest' );
 		user.setPassword( 'unitTest' );
-		entitySave( user ); 
+		entitySave( user );
 		ORMFlush();
 
 		try{
 			user.delete();
 			ORMFlush();
-			
+
 			// Clear the session just in case to make sure we try and load the deleted entity
 			ORMClearSession();
 			ORMCloseSession();
 
 			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
 			var results = q.execute().getResult();
-			expect( results.recordcount ).toBe( 0 );			
+			expect( results.recordcount ).toBe( 0 );
 		}
 		catch(any e){
 			fail(e.detail & e.message);
@@ -193,9 +194,9 @@
 		user.setLastName( 'unitTest' );
 		user.setUsername( 'unitTest' );
 		user.setPassword( 'unitTest' );
-		entitySave( user ); 
+		entitySave( user );
 		ORMFlush();
-		
+
 		try{
 			activeUser.deleteByID( user.getID() );
 			ORMFlush();
@@ -203,11 +204,11 @@
 			// Clear the session just in case to make sure we try and load the deleted entity
 			ORMClearSession();
 			ORMCloseSession();
-			
+
 			// Try to load
 			var q = new Query( sql="select * from users where firstName = 'unitTest'" );
 			var results = q.execute().getResult();
-			expect( results.recordcount ).toBe( 0 );	
+			expect( results.recordcount ).toBe( 0 );
 		}
 		catch(any e){
 			fail( e.detail & e.message );

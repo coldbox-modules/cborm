@@ -5,7 +5,7 @@
 * ********************************************************************************
 * Author      :	Luis Majano & Mike McKellip
 * Description :
-* 
+*
 * This implementation supports multiple DSNs for ORM a-la Adobe ColdFusion 9
 */
 component{
@@ -13,7 +13,7 @@ component{
 	/**
 	* Flush a datasource
 	*/
-	public void function flush( string datasource ){
+	void function flush( string datasource ){
 		if( StructKeyExists( arguments, "datasource" ) )
 			ORMFlush( arguments.datasource );
 		else
@@ -23,7 +23,7 @@ component{
 	/**
 	* Get session
 	*/
-	public any function getSession( string datasource ){
+	any function getSession( string datasource ){
 		if( StructKeyExists( arguments, "datasource" ) )
 			// get actual session from coldfusion.orm.hibernate.SessionWrapper
 			return ORMGetSession( arguments.datasource ).getActualSession();
@@ -35,7 +35,7 @@ component{
 	/**
 	* Get session factory
 	*/
-	public any function getSessionFactory( string datasource ){
+	any function getSessionFactory( string datasource ){
 		if( StructKeyExists( arguments, "datasource" ))
 			return ORMGetSessionFactory( arguments.datasource );
 		else
@@ -45,7 +45,7 @@ component{
 	/**
 	* Clear a session
 	*/
-	public void function clearSession( string datasource ){
+	void function clearSession( string datasource ){
 		if( StructKeyExists( arguments, "datasource" ))
 			ORMClearSession( arguments.datasource );
 		else
@@ -55,7 +55,7 @@ component{
 	/**
 	* Close a session
 	*/
-	public void function closeSession( string datasource ){
+	void function closeSession( string datasource ){
 		if( StructKeyExists( arguments, "datasource" ))
 			ORMCloseSession( arguments.datasource );
 		else
@@ -65,7 +65,7 @@ component{
 	/**
 	* Evict queries
 	*/
-	public void function evictQueries( string cachename, string datasource ){
+	void function evictQueries( string cachename, string datasource ){
 		if(StructKeyExists( arguments,"cachename" ) AND  StructKeyExists( arguments, "datasource" ))
 			ORMEvictQueries( arguments.cachename, arguments.datasource );
 		else if( StructKeyExists( arguments,"cachename" ) )
@@ -75,17 +75,22 @@ component{
 	}
 
 	/**
- 	* Returns the datasource for a given entity
- 	* @entity The entity reference. Can be passed as an object or as the entity name.
+	 * Returns the datasource for a given entity
+	 *
+	 * @entity The entity reference. Can be passed as an object or as the entity name.
  	*/
- 	public string function getEntityDatasource( required entity ){
+ 	string function getEntityDatasource( required entity ){
  		// DEFAULT datasource
- 		var datasource = getDefaultDatasource();
+		var datasource = getDefaultDatasource();
 
- 		if( !IsObject( arguments.entity ) ) arguments.entity= EntityNew( arguments.entity );
+ 		if( !IsObject( arguments.entity ) ){
+			arguments.entity= entityNew( arguments.entity );
+		}
 
  		var md = getMetaData( arguments.entity );
- 		if( structKeyExists( md, "datasource" ) ) datasource = md.datasource;
+ 		if( structKeyExists( md, "datasource" ) ){
+			datasource = md.datasource;
+		}
 
  		return datasource;
  	}
@@ -93,13 +98,9 @@ component{
  	/**
 	* Get the default application datasource
 	*/
- 	public string function getDefaultDatasource(){
+ 	string function getDefaultDatasource(){
  		// get application metadata
- 		if( listFirst( server.coldfusion.productVersion, "," ) gte 10 ){
-			var settings = getApplicationMetadata();
-		} else {
-			var settings = application.getApplicationSettings();
-		}
+		var settings = getApplicationMetadata();
 
  		// check orm settings first
  		if( structKeyExists( settings, "ormsettings" ) AND structKeyExists( settings.ormsettings,"datasource" ) ){

@@ -1,6 +1,6 @@
 {
 	"name" 		: "ColdBox ORM Extensions",
-	"version"   : "@build.version@+@build.number@",
+	"version"   : "1.6.0",
     "location"  : "http://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
 	"author" 	: "Ortus Solutions <info@ortussolutions.com",
 	"homepage"	: "https://github.com/coldbox-modules/cbox-cborm",
@@ -25,5 +25,8 @@
 	"ignore":[
         "**/.*",
         "test-harness"
-    ]
+	],
+	"scripts":{
+        "toMaster":"recipe build/toMaster.boxr"
+    }
 }
