@@ -6,6 +6,10 @@
 * Performance update on creating active entities as datasource discovery has been reworked
 * Updated build process to latest in template
 * Dropped Railo support
+* Lazy loading `BeanPopulator` for performance on creations
+* Lazy loading `ORMEventHandler` for performance on creations
+* Lazy loading `restrictions` for performance on creations
+* More direct scoping for performance updates
 
 ## 1.5.0
 

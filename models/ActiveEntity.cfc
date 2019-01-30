@@ -176,7 +176,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		string nullEmptyExclude="",
 		boolean composeRelationships=true
 	){
-		return beanPopulator.populateFromStruct( argumentCollection=arguments );
+		return getBeanPopulator().populateFromStruct( argumentCollection=arguments );
 	}
 
 	/**
@@ -201,7 +201,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		boolean composeRelationships=true,
 		required string prefix
 	){
-		return beanPopulator.populateFromStructWithPrefix( argumentCollection=arguments );
+		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection=arguments );
 	}
 
 	/**
@@ -224,7 +224,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		string nullEmptyExclude="",
 		boolean composeRelationships=true
 	){
-		return beanPopulator.populateFromJSON( argumentCollection=arguments );
+		return getBeanPopulator().populateFromJSON( argumentCollection=arguments );
 	}
 
 	/**
@@ -249,7 +249,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		string nullEmptyExclude="",
 		boolean composeRelationships=true
 	){
-		return beanPopulator.populateFromXML( argumentCollection=arguments );
+		return getBeanPopulator().populateFromXML( argumentCollection=arguments );
 	}
 
 	/**
@@ -274,7 +274,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		string nullEmptyExclude="",
 		boolean composeRelationships=true
 	){
-		return beanPopulator.populateFromQuery( argumentCollection=arguments );
+		return getBeanPopulator().populateFromQuery( argumentCollection=arguments );
 	}
 
 	/**

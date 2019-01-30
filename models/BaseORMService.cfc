@@ -95,15 +95,23 @@ component accessors="true"{
 
 		// Create the ORM Utility component
 		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
-		// Create the service ORM Event Handler
-		variables.ORMEventHandler = new cborm.models.EventHandler();
-		// Restrictions orm.hibernate.criterion.Restrictions
-		variables.restrictions  = new cborm.models.criterion.Restrictions();
 
 		return this;
 	}
 
-	/************************************** PUBLIC *********************************************/
+	/**
+	 * Lazy loading event handler for performance
+	 */
+	function getORMEventHandler(){
+		if( !isNull( variables.ORMEventHandler ) ){
+			return variables.ORMEventHandler;
+		}
+
+		variables.ORMEventHandler = new cborm.models.EventHandler();
+		return variables.ORMEventHandler;
+	}
+
+	/************************************** *********************************************/
 
 	/**
 	* Create a virtual abstract service for a specfic entity
@@ -338,7 +346,7 @@ component accessors="true"{
 
 		// Event Handling? If enabled, call the postNew() interception
 		if( getEventHandling() ){
-			ORMEventHandler.postNew( entity, arguments.entityName );
+			getORMEventHandler().postNew( entity, arguments.entityName );
 		}
 
 		return entity;
@@ -363,7 +371,7 @@ component accessors="true"{
 						   string nullEmptyExclude="",
 						   boolean composeRelationships=true){
 
-		return new coldbox.system.core.dynamic.BeanPopulator().populateFromStruct( argumentCollection=arguments );
+		return getBeanPopulator().populateFromStruct( argumentCollection=arguments );
 	}
 
 	/**
@@ -386,7 +394,7 @@ component accessors="true"{
 						  string nullEmptyExclude="",
 						  boolean composeRelationships=true,
 						  required string prefix){
-		return new coldbox.system.core.dynamic.BeanPopulator().populateFromStructWithPrefix( argumentCollection=arguments );
+		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection=arguments );
 	}
 
 	/**
@@ -408,7 +416,7 @@ component accessors="true"{
 						   		   string nullEmptyExclude="",
 						   		   boolean composeRelationships=true){
 
-		return new coldbox.system.core.dynamic.BeanPopulator().populateFromJSON( argumentCollection=arguments );
+		return getBeanPopulator().populateFromJSON( argumentCollection=arguments );
 	}
 
 	/**
@@ -432,7 +440,7 @@ component accessors="true"{
 						   		  string nullEmptyExclude="",
 						   		  boolean composeRelationships=true){
 
-		return new coldbox.system.core.dynamic.BeanPopulator().populateFromXML( argumentCollection=arguments );
+		return getBeanPopulator().populateFromXML( argumentCollection=arguments );
 	}
 
 	/**
@@ -456,9 +464,15 @@ component accessors="true"{
 						   		  	string nullEmptyExclude="",
 						   		  	boolean composeRelationships=true){
 
-		return new coldbox.system.core.dynamic.BeanPopulator().populateFromQuery( argumentCollection=arguments );
+		return getBeanPopulator().populateFromQuery( argumentCollection=arguments );
 	}
 
+	/**
+	 * Get an instance of coldbox.system.core.dynamic.BeanPopulator
+	 */
+	function getBeanPopulator(){
+		return new coldbox.system.core.dynamic.BeanPopulator();
+	}
 
 	/**
     * Refresh the state of an entity or array of entities from the database
@@ -773,13 +787,13 @@ component accessors="true"{
 		for(var x=1; x lte count; x++){
 			// Event Handling? If enabled, call the preSave() interception
 			if( eventHandling ){
-				ORMEventHandler.preSave( arguments.entities[x] );
+				getORMEventHandler().preSave( arguments.entities[x] );
 			}
 			// Save it
 			entitySave(arguments.entities[x], arguments.forceInsert);
 			// Event Handling? If enabled, call the postSave() interception
 			if( eventHandling ){
-				ORMEventHandler.postSave( arguments.entities[x] );
+				getORMEventHandler().postSave( arguments.entities[x] );
 			}
 			// Auto Flush
 			if( arguments.flush ){ orm.flush( orm.getEntityDatasource( arguments.entities[x] ) ); }
@@ -804,7 +818,7 @@ component accessors="true"{
 
 		// Event Handling? If enabled, call the preSave() interception
 		if( eventHandling ){
-			ORMEventHandler.preSave( arguments.entity );
+			getORMEventHandler().preSave( arguments.entity );
 		}
 
 		// save
@@ -815,7 +829,7 @@ component accessors="true"{
 
 		// Event Handling? If enabled, call the postSave() interception
 		if( eventHandling ){
-			ORMEventHandler.postSave( arguments.entity );
+			getORMEventHandler().postSave( arguments.entity );
 		}
 
 		return true;
@@ -1346,16 +1360,20 @@ component accessors="true"{
 	}
 
 	/**
-	* Get our hibernate org.hibernate.criterion.Restrictions proxy object
-	*/
-	public any function getRestrictions(){
-		return restrictions;
+	 * Get our hibernate org.hibernate.criterion.Restrictions proxy object
+	 */
+	cborm.models.criterion.Restrictions function getRestrictions(){
+		if( !isNull( variables.restrictions ) ){
+			return variables.restrictions;
+		}
+		variables.restrictions = new cborm.models.criterion.Restrictions()
+		return variables.restrictions;
 	}
 
 	/**
 	* Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective.
 	*/
-	public any function criteriaQuery(required entityName,
+	any function criteriaQuery(required entityName,
 									  array criteria=ArrayNew(1),
 					  		 		  string sortOrder="",
 					  		 		  numeric offset=0,
