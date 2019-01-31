@@ -10,6 +10,7 @@
 * Lazy loading `ORMEventHandler` for performance on creations
 * Lazy loading `restrictions` for performance on creations
 * More direct scoping for performance updates
+* Optimized EventHandler so it is lighter and quicker when doing orm injections
 
 ## 1.5.0
 

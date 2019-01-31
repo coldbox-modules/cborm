@@ -7,6 +7,7 @@ component{
 
 	// Index
 	any function index( event,rc, prc ){
+		var cats = entityLoad( "Category" );
 	}
 
 	// Run on first init

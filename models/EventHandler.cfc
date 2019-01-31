@@ -18,102 +18,123 @@ Description :
 */
 component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler"{
 
+	// Java System
+	variables.system = createObject( "java", "java.lang.System" );
+
 	/**
 	* preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
 	*/
-	public void function preLoad(any entity){
-		announceInterception("ORMPreLoad",{entity = arguments.entity});
+	public void function preLoad( any entity ){
+		announceInterception( "ORMPreLoad", { entity = arguments.entity } );
 	}
 
 	/**
 	* postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
 	*/
-	public void function postLoad(any entity){
-		var orm 		= getORMUtil();
-		var datasource 	= orm.getEntityDatasource( arguments.entity );
+	public void function postLoad( any entity ){
+		var args = { entity=arguments.entity, entityName="" };
 
-		var args = { entity=arguments.entity, entityName=orm.getSession( datasource ).getEntityName( arguments.entity ) };
-		processEntityInjection(args.entityName, args.entity);
-		announceInterception("ORMPostLoad",args);
+		// Short-cut discovery via ActiveEntity
+		if( structKeyExists( arguments.entity, "getEntityName" ) ){
+			args.entityName = arguments.entity.getEntityName();
+		} else {
+			// it must be in session.
+			args.entityName = ormGetSession().getEntityName( arguments.entity );
+		}
+
+		processEntityInjection( args.entityName, args.entity );
+
+		announceInterception( "ORMPostLoad", args );
 	}
 
 	/**
 	* postDelete called by hibernate which in turn announces a coldbox interception: ORMPostDelete
 	*/
-	public void function postDelete(any entity){
-		announceInterception("ORMPostDelete", {entity=arguments.entity});
+	public void function postDelete( any entity ){
+		announceInterception( "ORMPostDelete", { entity=arguments.entity } );
 	}
 
 	/**
 	* preDelete called by hibernate which in turn announces a coldbox interception: ORMPreDelete
 	*/
-	public void function preDelete(any entity) {
-		announceInterception("ORMPreDelete", {entity=arguments.entity});
+	public void function preDelete( any entity) {
+		announceInterception( "ORMPreDelete", { entity=arguments.entity } );
 	}
 
 	/**
 	* preUpdate called by hibernate which in turn announces a coldbox interception: ORMPreUpdate
 	*/
-	public void function preUpdate(any entity, Struct oldData={}){
-		announceInterception("ORMPreUpdate", {entity=arguments.entity, oldData=arguments.oldData});
+	public void function preUpdate( any entity, Struct oldData={}){
+		announceInterception( "ORMPreUpdate", { entity=arguments.entity ,  oldData=arguments.oldData});
 	}
 
 	/**
 	* postUpdate called by hibernate which in turn announces a coldbox interception: ORMPostUpdate
 	*/
-	public void function postUpdate(any entity){
-		announceInterception("ORMPostUpdate", {entity=arguments.entity});
+	public void function postUpdate( any entity ){
+		announceInterception( "ORMPostUpdate", { entity=arguments.entity } );
 	}
 
 	/**
 	* preInsert called by hibernate which in turn announces a coldbox interception: ORMPreInsert
 	*/
-	public void function preInsert(any entity){
-		announceInterception("ORMPreInsert", {entity=arguments.entity});
+	public void function preInsert( any entity ){
+		announceInterception( "ORMPreInsert", { entity=arguments.entity } );
 	}
 
 	/**
 	* postInsert called by hibernate which in turn announces a coldbox interception: ORMPostInsert
 	*/
-	public void function postInsert(any entity){
-		announceInterception("ORMPostInsert", {entity=arguments.entity});
+	public void function postInsert( any entity ){
+		announceInterception( "ORMPostInsert", { entity=arguments.entity } );
 	}
 
 	/**
 	* preSave called by ColdBox Base service before save() calls
 	*/
-	public void function preSave(any entity){
-		announceInterception("ORMPreSave", {entity=arguments.entity});
+	public void function preSave( any entity ){
+		announceInterception( "ORMPreSave", { entity=arguments.entity } );
 	}
 
 	/**
 	* postSave called by ColdBox Base service after transaction commit or rollback via the save() method
 	*/
-	public void function postSave(any entity){
-		announceInterception("ORMPostSave", {entity=arguments.entity});
+	public void function postSave( any entity ){
+		announceInterception( "ORMPostSave", { entity=arguments.entity } );
 	}
 
 	/**
     * Called before the session is flushed.
     */
-    public void function preFlush(any entities){
-    	announceInterception("ORMPreFlush", {entities=arguments.entities});
+    public void function preFlush( any entities){
+    	announceInterception( "ORMPreFlush", { entities=arguments.entities } );
     }
 
     /**
     * Called after the session is flushed.
     */
-    public void function postFlush(any entities){
-    	announceInterception("ORMPostFlush", {entities=arguments.entities});
+    public void function postFlush( any entities){
+    	announceInterception( "ORMPostFlush", { entities=arguments.entities } );
     }
 
     /**
 	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
 	*/
-	public void function postNew(any entity,any entityName){
-		var args = {entity = arguments.entity, entityName=arguments.entityName};
-		processEntityInjection(args.entityName, args.entity);
-		announceInterception("ORMPostNew",args);
+	public void function postNew( any entity, any entityName ){
+		var args = { entity=arguments.entity, entityName="" };
+
+		// Short-cut discovery via ActiveEntity
+		if( structKeyExists( arguments.entity, "getEntityName" ) ){
+			args.entityName = arguments.entity.getEntityName();
+		} else {
+			// Long Discovery
+			var md = getMetadata( arguments.entity );
+			args.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+		}
+
+		processEntityInjection( args.entityName, args.entity );
+
+		announceInterception( "ORMPostNew", args );
 	}
 
 	/**
@@ -126,10 +147,13 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/********************************* PRIVATE *********************************/
 
 	/**
-	* process entity injection
-	*/
-	private function processEntityInjection(required entityName,required entity){
-		var ormSettings		= getController().getSetting("orm").injection;
+	 * process entity injection
+	 *
+	 * @entityName the entity to process, we use hash codes to identify builders
+	 * @entity The entity object
+	 */
+	private function processEntityInjection( required entityName, required entity ){
+		var ormSettings		= getController().getSetting( "orm" ).injection;
 		var injectorInclude = ormSettings.include;
 		var injectorExclude = ormSettings.exclude;
 
@@ -139,14 +163,17 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 		}
 
 		// Include,Exclude?
-		if( (len(injectorInclude) AND listContainsNoCase(injectorInclude,entityName))
+		if( (len( injectorInclude ) AND listContainsNoCase( injectorInclude, entityName ) )
 		    OR
-			(len(injectorExclude) AND NOT listContainsNoCase(injectorExclude,entityName))
+			(len( injectorExclude ) AND NOT listContainsNoCase( injectorExclude, entityName ) )
 			OR
-			(NOT len(injectorInclude) AND NOT len(injectorExclude) ) ){
-
+			( NOT len( injectorInclude ) AND NOT len( injectorExclude ) )
+		){
 			// Process DI
-			getWireBox().autowire(target=entity,targetID="ORMEntity-#entityName#");
+			getWireBox().autowire(
+				target 		= entity,
+				targetID 	= "ORMEntity-#entityName#"
+			);
 		}
 	}
 
@@ -154,7 +181,6 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	* Get ORM Util
 	*/
 	private function getORMUtil() {
-
 		return new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
 }
