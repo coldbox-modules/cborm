@@ -1366,7 +1366,7 @@ component accessors="true"{
 		if( !isNull( variables.restrictions ) ){
 			return variables.restrictions;
 		}
-		variables.restrictions = new cborm.models.criterion.Restrictions()
+		variables.restrictions = new cborm.models.criterion.Restrictions();
 		return variables.restrictions;
 	}
 
