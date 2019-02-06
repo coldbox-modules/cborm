@@ -2,9 +2,10 @@
 
 ## 1.6.0
 
+* **Mementifier** is now a dependency for cborm. (www.forgebox.io/view/mementifier), which can be used for producing state out of ORM entities for auditing or building JSON Api's.
 * Update `getEntityGivenName` to support ACF2018
 * Performance update on creating active entities as datasource discovery has been reworked
-* Updated build process to latest in template
+* Updated build process to latest in Ortus template
 * Dropped Railo support
 * Lazy loading `BeanPopulator` for performance on creations
 * Lazy loading `ORMEventHandler` for performance on creations
