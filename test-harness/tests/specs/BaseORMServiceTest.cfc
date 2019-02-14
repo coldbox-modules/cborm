@@ -7,7 +7,7 @@
 	}
 
 	function teardown(){
-		ormservice.clear();
+		ormClearSession();
 	}
 
 	function setup(){
@@ -187,11 +187,51 @@
 		user = ormService.get(entityName="User",id=0,returnNew=false);
 		assertTrue( isNull( user ) );
 	}
+
+	function testgetKeyValue(){
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		var targetID = ormService.getKeyValue( test )
+		expect( targetID ).toBe( "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91" );
+
+		var targetID = ormService.getKeyValue( entityNew( "Category" ) );
+		expect( isNull( targetID ) ).toBeTrue();
+	}
+
+	function testIsDirty(){
+		var role = entityLoad( "Role", { role = "Administrator" }, true );
+		expect( ormService.isDirty( role ) ).toBeFalse();
+
+		expect( ormService.isDirty( entityNew( "Category" ) ) ).toBeFalse();
+
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		test.setCategory( "dirty" );
+		test.setDescription( "dirty dirty" );
+		expect( ormService.isDirty( test ) ).toBeTrue();
+
+		ormclearSession();
+
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		expect( ormService.isDirty( test ) ).toBeFalse();
+	}
+
+	function testgetDirtyPropertyNames(){
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		test.setCategory( "dirty" );
+		test.setDescription( "dirty dirty" );
+
+		var properties = ormService.getDirtyPropertyNames( test );
+		debug( properties );
+		expect( properties ).toHaveLength( 2 );
+
+	}
+
 	function testGetAll(){
-		r = ormService.getAll('Category');
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+
+		r = ormService.getAll( entityName='Category', properties="catid as id,category as category" );
 		assertTrue( arrayLen(r) );
 
-		r = ormService.getAll('Category',"A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91","category" );
+		r = ormService.getAll( 'Category', "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", "category asc" );
 		assertTrue( arraylen( r ) eq 1 );
 
 		r = ormService.getAll('Category',[1,2]);
@@ -206,6 +246,9 @@
 		r = ormService.getAll(entityName='Category',sortOrder="category desc" );
 		assertTrue( arrayLen(r) );
 
+		// readonly
+		r = ormService.getAll( entityName='Category', readOnly=true );
+		assertTrue( arrayLen(r) );
 	}
 
 	function testDelete(){
@@ -510,16 +553,12 @@
 		assertTrue( test.recordcount );
 	}
 
-	function testFind(){
+	function testFindIt(){
 
-		test = ormservice.findit( "from Category where category = ?",['Training']);
+		test = ormservice.findIt( "from Category where category = ?",['Training']);
 		assertEquals( 'Training', test.getCategory() );
 
-		test = ormservice.findit( "from Category where category = :category",{category="Training"});
-		assertEquals( 'Training', test.getCategory() );
-
-		sample = entityLoad( "Category",{category="Training"},true);
-		test = ormService.findit(example=sample);
+		test = ormservice.findIt( "from Category where category = :category",{category="Training"});
 		assertEquals( 'Training', test.getCategory() );
 	}
 
@@ -539,10 +578,6 @@
 		assertEquals( 1, arrayLen(test) );
 
 		test = ormservice.findAll( "from Category where category = :category",{category="Training"});
-		assertEquals( 1, arrayLen(test) );
-
-		sample = entityLoad( "Category",{category="Training"},true);
-		test = ormService.findAll(example=sample);
 		assertEquals( 1, arrayLen(test) );
 
 		test = ormService.findAll(query="from Category",max=2,offset=1);
@@ -574,28 +609,30 @@
 
 	function testGetKey(){
 
-		test = ormservice.getKey(entityName="Category" );
+		test = ormservice.getKey("Category" );
 		assertEquals( 'catid', test );
 
-		test = ormservice.getKey(entityName="User" );
+		test = ormservice.getKey("User" );
 		assertEquals( 'id', test );
 	}
 
 	function testGetPropertyNames(){
 
-		test = ormservice.getPropertyNames(entityName="Category" );
+		test = ormservice.getPropertyNames("Category" );
 		assertEquals( 4, arrayLen(test) );
 
-		test = ormservice.getPropertyNames(entityName="User" );
+		test = ormservice.getPropertyNames("User" );
 		assertEquals( 6, arrayLen(test) );
 	}
 
 	function testGetTableName(){
-
-		test = ormservice.getTableName(entityName="Category" );
+		test = ormservice.getTableName( "Category" );
 		assertEquals( 'categories', test );
 
-		test = ormservice.getTableName(entityName="User" );
+		test = ormservice.getTableName( "User" );
+		assertEquals( 'users', test );
+
+		test = ormservice.getTableName( entityNew( "User" ) );
 		assertEquals( 'users', test );
 	}
 

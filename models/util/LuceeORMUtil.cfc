@@ -4,16 +4,20 @@
 * ********************************************************************************
 * Author      :	Luis Majano & Mike McKellip
 * Description :
-* 
+*
 * This implementation supports multiple DSNs for ORM a-la Adobe ColdFusion 9
 */
 component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.util.IORMUtil" {
 
 	/**
-	* Get hibernate session object
-	* @override
-	*/
-	public any function getSession( string datasource ){
-		return ( StructKeyExists( arguments,"datasource" ) ?  ORMGetSession( arguments.datasource ) : ORMGetSession() );
+	 * Get hibernate session object
+	 *
+	 * @datasource optional datasource
+	 *
+	 * @override
+	 */
+	any function getSession( string datasource ){
+		return ( !isNull( arguments.datasource ) ? ORMGetSession( arguments.datasource ) : ORMGetSession() );
 	}
+
 }

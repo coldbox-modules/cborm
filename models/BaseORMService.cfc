@@ -50,10 +50,15 @@ component accessors="true"{
 	*/
 	property name="HQLDynamicCache" type="struct" persistent="false";
 
+	/**
+	 * The default datsource to use for all transactions, else we look at arguments or entity itself
+	 */
+	property name="datasource" type="string" persistent="false" default="";
+
 	// STATIC DYNAMIC FINDER VARIABLES
-	ALL_CONDITIONALS 		= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
-	ALL_CONDITIONALS_REGEX	= replace( ALL_CONDITIONALS, ",", "|", "all" );
-	CONDITIONALS_SQL_MAP 	= {
+	variables.ALL_CONDITIONALS 			= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
+	variables.ALL_CONDITIONALS_REGEX	= replace( variables.ALL_CONDITIONALS, ",", "|", "all" );
+	variables.CONDITIONALS_SQL_MAP 		= {
 		"LessThanEquals" = "<=",
 		"LessThan" = "<",
 		"GreaterThanEquals" = ">=",
@@ -70,19 +75,22 @@ component accessors="true"{
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
-	* Constructor
-	* @queryCacheRegion The default query cache region to use, by default it uses ORMService.defaultCache
-	* @useQueryCaching Activate caching or not
-	* @eventHandling Activate event handling or not
-	* @useTransactions Use cftransactions around all crud operations or not
-	* @defaultAsQuery Return queries or array of objects by default
-	*/
+	 * Constructor
+	 *
+	 * @queryCacheRegion The default query cache region to use, by default it uses ORMService.defaultCache
+	 * @useQueryCaching Activate caching or not
+	 * @eventHandling Activate event handling or not
+	 * @useTransactions Use cftransactions around all crud operations or not
+	 * @defaultAsQuery Return queries or array of objects by default
+	 * @datasource The default datasource to use for this service
+	 */
 	BaseORMService function init(
 		string queryCacheRegion="ORMService.defaultCache",
 		boolean useQueryCaching=false,
 		boolean eventHandling=true,
 		boolean useTransactions=true,
-		boolean defaultAsQuery=true
+		boolean defaultAsQuery=true,
+		string datasource
 	){
 
 		// setup local properties
@@ -95,6 +103,12 @@ component accessors="true"{
 
 		// Create the ORM Utility component
 		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
+		// Datasource
+		if( isNull( arguments.datasource ) ){
+			variables.datasource = variables.ORM.getDefaultDatasource();
+		} else {
+			variables.datasource = arguments.datasource;
+		}
 
 		return this;
 	}
@@ -114,36 +128,54 @@ component accessors="true"{
 	/************************************** *********************************************/
 
 	/**
-	* Create a virtual abstract service for a specfic entity
-	* @entityName The name of the entity to bind the virtual service to
-	* @useQueryCaching Activate caching or not
-	* @queryCacheRegion The default query cache region to use, by default it uses ORMService.defaultCache
-	* @eventHandling Activate event handling or not
-	*/
+	 * Create a virtual abstract service for a specfic entity
+	 *
+	 * @entityname The name of the entity to root this service with
+	 * @queryCacheRegion The name of the query cache region if using caching, defaults to `#arguments.entityName#.defaultVSCache`
+	 * @useQueryCaching Activate query caching, defaults to false
+	 * @eventHandling Activate event handling, defaults to true
+	 * @useTransactions Activate transaction blocks on calls, defaults to true
+	 * @defaultAsQuery Return query or array of objects on list(), executeQuery(), criteriaQuery(), defaults to true
+	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
+	 */
 	any function createService(
-		required string entityName,
-		boolean useQueryCaching=getUseQueryCaching(),
+		required string entityname,
 		string queryCacheRegion=getQueryCacheRegion(),
-		boolean eventHandling=getEventHandling()
+		boolean useQueryCaching=getUseQueryCaching(),
+		boolean eventHandling=getEventHandling(),
+		boolean useTransactions=getUseTransactions(),
+		boolean defaultAsQuery=getDefaultAsQuery(),
+		string datasource=getDatasource()
 	){
-
 		return new cborm.models.VirtualEntityService( argumentCollection=arguments );
 	}
 
 	/**
-	* List all of the instances of the passed in entity class name. You can pass in several optional arguments like
-	* a struct of filtering criteria, a sortOrder string, offset, max, ignorecase, and timeout.
-	* Caching for the list is based on the useQueryCaching class property and the cachename property is based on
-	* the queryCacheRegion class property.
-	*/
-	any function list(required string entityName,
-					  struct criteria=structnew(),
-					  string sortOrder="",
-					  numeric offset=0,
-					  numeric max=0,
-					  numeric timeout=0,
-					  boolean ignoreCase=false,
-					  boolean asQuery=getDefaultAsQuery()){
+	 * List all of the instances of the passed in entity class name. You can pass in several optional arguments like
+	 * a struct of filtering criteria, a sortOrder string, offset, max, ignorecase, and timeout.
+	 *
+	 * Caching for the list is based on the useQueryCaching class property and the cachename property is based on
+	 * the queryCacheRegion class property.
+	 *
+	 * @entityName The entity to list on
+	 * @criteria A struct of filtering criteria to apply to the where clause
+	 * @sortOrder The sorting order of the result
+	 * @offset Used for pagination
+	 * @max The max number of records to retrieve
+	 * @timeout A DB timeout for this query
+	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @asQuery The return format as either a query or array of objects
+	 */
+	any function list(
+		required string entityName,
+		struct criteria=structnew(),
+		string sortOrder="",
+		numeric offset=0,
+		numeric max=0,
+		numeric timeout=0,
+		boolean ignoreCase=false,
+		boolean asQuery=getDefaultAsQuery()
+	){
 		var options = {};
 
 		// Setup listing options
@@ -164,37 +196,56 @@ component accessors="true"{
 		}
 
 		// Sort Order Case
-		if( len(trim(arguments.sortOrder)) ){
+		if( len( trim( arguments.sortOrder ) ) ){
 			options.ignoreCase = arguments.ignoreCase;
 		}
 
-		// Get listing
-		var results = entityLoad(arguments.entityName, arguments.criteria, arguments.sortOrder, options);
+		// Execute Query: https://cfdocs.org/entityload
+		var results = entityLoad(
+			arguments.entityName,
+			arguments.criteria,
+			arguments.sortOrder,
+			options
+		);
 
 		// Is it Null?
-		if( isNull(results) ){ results = []; }
+		if( isNull( results ) ){
+			results = [];
+		}
 
 		// Objects or Query?
 		if( arguments.asQuery ){
-			results = entityToQuery(results);
+			results = entityToQuery( results );
 		}
 
 		return results;
 	}
 
 	/**
-	* Allows the execution of HQL queries using several nice arguments and returns either an array of entities or a query as specified by the asQuery argument.
-	* The params filtering can be using named or positional.
-	*/
-	any function executeQuery(required string query,
-							   any params=structnew(),
-							   numeric offset=0,
-					  		   numeric max=0,
-					  		   numeric timeout=0,
-						       boolean ignorecase=false,
-						       boolean asQuery=getDefaultAsQuery(),
-						       boolean unique=false,
-						       string datasource=""){
+	 * Allows the execution of HQL queries using several nice arguments and returns either an array of entities or a query as specified by the asQuery argument.
+	 * The params filtering can be using named or positional.
+	 *
+	 * @query The HQL Query to execute
+	 * @params A struct or array of query params
+	 * @offset Used for pagination
+	 * @max The max number of records to retrieve
+	 * @timeout A DB timeout for this query
+	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @asQuery The return format as either a query or array of objects
+	 * @unique Return array or a unique record, defaults to array
+	 * @datasource The datasource to use
+	 */
+	any function executeQuery(
+		required string query,
+		any params=structnew(),
+		numeric offset=0,
+		numeric max=0,
+		numeric timeout=0,
+		boolean ignorecase=false,
+		boolean asQuery=getDefaultAsQuery(),
+		boolean unique=false,
+		string datasource=""
+	){
 		var options = {};
 
 		// Setup listing options
@@ -207,24 +258,34 @@ component accessors="true"{
 		if( arguments.timeout neq 0 ){
 			options.timeout = arguments.timeout;
 		}
-		if( Len(arguments.datasource) ){
+		if( len( arguments.datasource ) ){
 			options.datasource = arguments.datasource;
+		} else {
+			options.datasource = variables.datasource;
 		}
 		options.ignorecase = arguments.ignorecase;
+
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
 
-		// Get listing
-		var results = ORMExecuteQuery( arguments.query, arguments.params, arguments.unique, options );
+		// Get listing: https://cfdocs.org/ormexecutequery
+		var results = ORMExecuteQuery(
+			arguments.query,
+			arguments.params,
+			arguments.unique,
+			options
+		);
 
 		// Null Checks
-		if( isNull(results) ){
-			if( arguments.asQuery ){ return queryNew(""); }
-			if (arguments.unique) {
-				return;
+		if( isNull( results ) ){
+			if( arguments.asQuery ){
+				return queryNew( "" );
+			}
+			if( arguments.unique ){
+				return; //NULL
 			} else {
 				return [];
 			}
@@ -232,116 +293,162 @@ component accessors="true"{
 
 		// Objects or Query?
 		if( arguments.asQuery ){
-			results = entityToQuery(results);
+			results = entityToQuery( results );
 		}
 
 		return results;
 	}
 
 	/**
-	* Finds and returns the first result for the given query or null if no entity was found.
-	* You can either use the query and params combination or send in an example entity to find.
-	* @example DEPRECATED. Use findByExample() instead, deprecated by 3.5
-	*/
-	any function findIt(string query,any params=structnew(), any example){
-		var options = {maxresults=1};
+	 * Finds and returns the first result for the given query or null if no entity was found.
+	 * You can either use the query and params combination
+	 *
+	 * @query The HQL Query to execute
+	 * @params A struct or array of query params
+	 * @timeout A DB timeout for this query
+	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @datasource The datasource to use
+	 */
+	any function findIt(
+		required string query,
+		any params=structnew(),
+		numeric timeout=0,
+		boolean ignoreCase=false,
+		string datasource
+	){
+		// One result
+		arguments.max = 1;
+		arguments.unique = true;
+		arguments.asQuery = false;
 
-		// Caching?
-		if( getUseQueryCaching() ){
-			options.cacheName  = getQueryCacheRegion();
-			options.cacheable  = true;
-		}
-
-		// Get entry by example
-		if( structKeyExists( arguments, "example") ){
-			return findByExample( arguments.example, true );
-		}
-
-		// Normal Find
-		return ORMExecuteQuery( arguments.query, arguments.params, true, options);
+		// Delegate
+		return executeQuery( argumentCollection=arguments );
 	}
 
 	/**
-	* Find all/single entities by example
-	*/
-	any function findByExample(any example,boolean unique=false){
-		return entityLoadByExample(arguments.example,arguments.unique);
+	 * Find all/single entities by example
+	 *
+	 * https://dzone.com/articles/hibernate-query-example-qbe
+	 * https://cfdocs.org/entityloadbyexample
+	 *
+	 * @example The example entity
+	 * @unique Unique or array of entities (default)
+	 */
+	any function findByExample( any example, boolean unique=false ){
+		return entityLoadByExample( arguments.example, arguments.unique );
 	}
 
 	/**
-	* Find all the entities for the specified query and params or example
-	* @example	DEPRECATED use findByExample() this will be dropped in 3.5
-	*/
-	array function findAll(string query,
-						    any params=structnew(),
-						    numeric offset=0,
-					        numeric max=0,
-					        numeric timeout=0,
-					        boolean ignoreCase=false,
-						    any example){
-
-		// Get entry by example
-		if( structKeyExists( arguments, "example") ){
-			return findByExample( arguments.example );
-		}
-
+	 * Find all entities for the specified HQL query and accompanied params.
+	 *
+	 * @query The HQL Query to execute
+	 * @params A struct or array of query params
+	 * @offset Used for pagination
+	 * @max The max number of records to retrieve
+	 * @timeout A DB timeout for this query
+	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @datasource The datasource to use
+	 *
+	 * @return array of entities
+	 */
+	array function findAll(
+		string query,
+		any params=structnew(),
+		numeric offset=0,
+		numeric max=0,
+		numeric timeout=0,
+		boolean ignoreCase=false,
+		string datasource
+	){
 		// Normal Execute Query
 		arguments.asQuery=false;
 		return executeQuery( argumentCollection=arguments );
 	}
 
 	/**
-	* Find one entity (or null if not found) according to a criteria structure
-	*/
-	any function findWhere(required string entityName, required struct criteria){
+	 * Find one entity (or null if not found) according to a criteria structure
+	 *
+	 * @entityName The entity to search for
+	 * @criteria The filtering criteria to search for.
+	 */
+	any function findWhere(
+		required string entityName,
+		struct criteria={}
+	){
 		// Caching?
 		if( getUseQueryCaching() ){
-			//if we are caching, we will use find all and return an array since entityLoad does not support both unique and caching
-			var arEntity = findAllWhere( argumentCollection=arguments );
-			//if we found an entity, return it
-			if (arrayLen(arEntity)) {
-				return arEntity[1];
-			//else return NULL, just like entityLoad with unique would
-			} else {
-				return javaCast("null",0);
-			}
+			// if we are caching, we will use find all and return an array since entityLoad does not support both unique and caching
+			var aEntity = findAllWhere( argumentCollection=arguments );
+			return ( arrayLen( aEntity ) ? aEntity[ 1 ] : javaCast( "null", "" ) );
 		} else {
 			return entityLoad( arguments.entityName, arguments.criteria, true );
 		}
 	}
 
 	/**
-	* Find all entities according to criteria structure
-	*/
-	array function findAllWhere(required string entityName, required struct criteria, string sortOrder=""){
-		var options = {};
+	 * Find all entities according to criteria structure
+	 *
+	 * @entityName The entity to search for
+	 * @criteria The filtering criteria to search for.
+	 * @sortOrder The sorting order
+	 */
+	array function findAllWhere(
+		required string entityName,
+		struct criteria={},
+		string sortOrder="",
+		boolean ignoreCase=false,
+		numeric timeout=0
+	){
+		var options = {
+			ignorecase 	= arguments.ignoreCase,
+			timeout 	= arguments.timeout
+		};
+
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
-		return entityLoad( arguments.entityName, arguments.criteria, arguments.sortOrder, options);
+
+		return entityLoad( arguments.entityName, arguments.criteria, arguments.sortOrder, options );
 	}
 
 	/**
-    * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
-    * @entityName The entity to create
-    * @properties The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
-    * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-    * @nullEmptyInclude A list of keys to NULL when empty
-    * @nullEmptyExclude A list of keys to NOT NULL when empty
-    * @ignoreEmpty Ignore empty values on populations, great for ORM population
-    * @include A list of keys to include in the population from the incoming properties memento
-    * @exclude A list of keys to exclude in the population from the incoming properties memento
+     * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
+	 *
+     * @entityName The entity to create
+     * @properties The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
+     * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+     * @nullEmptyInclude A list of keys to NULL when empty
+     * @nullEmptyExclude A list of keys to NOT NULL when empty
+     * @ignoreEmpty Ignore empty values on populations, great for ORM population
+     * @include A list of keys to include in the population from the incoming properties memento
+     * @exclude A list of keys to exclude in the population from the incoming properties memento
     */
-	any function new(required string entityName, struct properties=structnew(), boolean composeRelationships=true, nullEmptyInclude="", nullEmptyExclude="", boolean ignoreEmpty=false, include="", exclude=""){
+	any function new(
+		required string entityName,
+		struct properties=structnew(),
+		boolean composeRelationships=true,
+		nullEmptyInclude="",
+		nullEmptyExclude="",
+		boolean ignoreEmpty=false,
+		include="",
+		exclude=""
+	){
 		var entity   = entityNew( arguments.entityName );
 
 		// Properties exists?
-		if( NOT structIsEmpty(arguments.properties) ){
-			populate(target=entity, memento=arguments.properties, composeRelationships=arguments.composeRelationships,
-					 nullEmptyInclude=arguments.nullEmptyInclude, nullEmptyExclude=arguments.nullEmptyExclude, ignoreEmpty=arguments.ignoreEmpty,
-					 include=arguments.include, exclude=arguments.exclude );
+		if( NOT structIsEmpty( arguments.properties ) ){
+			populate(
+				target               = entity,
+				memento              = arguments.properties,
+				composeRelationships = arguments.composeRelationships,
+				nullEmptyInclude     = arguments.nullEmptyInclude,
+				nullEmptyExclude     = arguments.nullEmptyExclude,
+				ignoreEmpty          = arguments.ignoreEmpty,
+				include              = arguments.include,
+				exclude              = arguments.exclude
+			);
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
@@ -353,117 +460,156 @@ component accessors="true"{
 	}
 
 	/**
-    * Simple map to property population for entities
-	* @memento	The map/struct to populate the entity with
-	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include A list of keys to include in the population ONLY
-	* @exclude A list of keys to exclude from the population
-    */
-	any function populate(required any target,
-						   required struct memento,
-						   string scope="",
-					 	   boolean trustedSetter=false,
-						   string include="",
-						   string exclude="",
-						   boolean ignoreEmpty=false,
-						   string nullEmptyInclude="",
-						   string nullEmptyExclude="",
-						   boolean composeRelationships=true){
+     * Populate/bind an entity's properties and relationships from an incoming structure or map of flat data.
+	 *
+	 * @target The entity to populate
+	 * @memento	The map/struct to populate the entity with
+	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include A list of keys to include in the population ONLY
+	 * @exclude A list of keys to exclude from the population
+     * @ignoreEmpty Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude A list of keys to NULL when empty
+     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+     */
+	any function populate(
+		required any target,
+		required struct memento,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 
 		return getBeanPopulator().populateFromStruct( argumentCollection=arguments );
 	}
 
 	/**
-    * Simple map to property population for entities with structure key prefixes
-	* @memento	The map/struct to populate the entity with
-	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include A list of keys to include in the population ONLY
-	* @exclude A list of keys to exclude from the population
-	* @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
-    */
-	any function populateWithPrefix(required any target,
-						  required struct memento,
-						  string scope="",
-					 	  boolean trustedSetter=false,
-						  string include="",
-						  string exclude="",
-						  boolean ignoreEmpty=false,
-						  string nullEmptyInclude="",
-						  string nullEmptyExclude="",
-						  boolean composeRelationships=true,
-						  required string prefix){
+     * Simple map to property population for entities with structure key prefixes
+	 *
+	 * @target The entity to populate
+	 * @memento	The map/struct to populate the entity with
+	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include A list of keys to include in the population ONLY
+	 * @exclude A list of keys to exclude from the population
+	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude A list of keys to NULL when empty
+     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+     * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+     */
+	any function populateWithPrefix(
+		required any target,
+		required struct memento,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true,
+		required string prefix
+	){
 		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection=arguments );
 	}
 
 	/**
-	* Populate from JSON, for argument definitions look at the populate method
-	* @JSONString	The JSON packet to use for population
-	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include A list of keys to include in the population ONLY
-	* @exclude A list of keys to exclude from the population
-	*/
-	any function populateFromJSON(required any target,
-								   required string JSONString,
-								   string scope="",
-								   boolean trustedSetter=false,
-								   string include="",
-								   string exclude="",
-						   		   boolean ignoreEmpty=false,
-						   		   string nullEmptyInclude="",
-						   		   string nullEmptyExclude="",
-						   		   boolean composeRelationships=true){
-
+	 * Populate from JSON, for argument definitions look at the populate method
+	 *
+	 * @target The entity to populate
+	 * @jsonString The Json string to use for population
+	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include A list of keys to include in the population ONLY
+	 * @exclude A list of keys to exclude from the population
+	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude A list of keys to NULL when empty
+     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+     * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+     */
+	any function populateFromJson(
+		required any target,
+		required string jsonString,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 		return getBeanPopulator().populateFromJSON( argumentCollection=arguments );
 	}
 
 	/**
-	* Populate from XML, for argument definitions look at the populate method
-	* @root The XML root element to start from
-	* @xml	The XML string or packet or XML object to populate from
-	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include A list of keys to include in the population ONLY
-	* @exclude A list of keys to exclude from the population
-	*/
-	any function populateFromXML(required any target,
-								  required string xml,
-								  string root="",
-								  string scope="",
-								  boolean trustedSetter=false,
-								  string include="",
-								  string exclude="",
-						   		  boolean ignoreEmpty=false,
-						   		  string nullEmptyInclude="",
-						   		  string nullEmptyExclude="",
-						   		  boolean composeRelationships=true){
-
+	 * Populate from XML, for argument definitions look at the populate method
+	 *
+	 * @target The entity to populate
+	 * @xml	The XML string or packet or XML object to populate from
+	 * @root The XML root element to start from
+	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include A list of keys to include in the population ONLY
+	 * @exclude A list of keys to exclude from the population
+	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude A list of keys to NULL when empty
+     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+     * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+     */
+	any function populateFromXml(
+		required any target,
+		required string xml,
+		string root="",
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 		return getBeanPopulator().populateFromXML( argumentCollection=arguments );
 	}
 
 	/**
-	* Populate from Query, for argument definitions look at the populate method
-	* @qry The query to use for population
-	* @rowNumber	The row number to use for population
-	* @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	* @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	* @include A list of keys to include in the population ONLY
-	* @exclude A list of keys to exclude from the population
-	*/
-	any function populateFromQuery(required any target,
-								    required any qry,
-								    numeric rowNumber=1,
-								    string scope="",
-								    boolean trustedSetter=false,
-								    string include="",
-								    string exclude="",
-						   			boolean ignoreEmpty=false,
-						   			string nullEmptyInclude="",
-						   		  	string nullEmptyExclude="",
-						   		  	boolean composeRelationships=true){
-
+	 * Populate from Query, for argument definitions look at the populate method
+	 *
+	 * @target The entity to populate
+	 * @qry The query to use for population
+	 * @rowNumber The row number to use for population
+	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include A list of keys to include in the population ONLY
+	 * @exclude A list of keys to exclude from the population
+	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude A list of keys to NULL when empty
+     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+     */
+	any function populateFromQuery(
+		required any target,
+		required any qry,
+		numeric rowNumber=1,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true
+	){
 		return getBeanPopulator().populateFromQuery( argumentCollection=arguments );
 	}
 
@@ -475,19 +621,21 @@ component accessors="true"{
 	}
 
 	/**
-    * Refresh the state of an entity or array of entities from the database
-    */
-	any function refresh( required any entity ){
+     * Refresh the state of an entity or array of entities from the database
+	 *
+	 * @entity The entity or array of entities to refresh
+     */
+	BaseORMService function refresh( required any entity ){
 		var objects = [];
 
 		if( !isArray( arguments.entity ) ){
-			arrayAppend( objects, arguments.entity );
+			objects.append( arguments.entity );
 		} else {
 			objects = arguments.entity;
 		}
 
 		objects.each( function( item ){
-			orm.getSession( orm.getEntityDatasource( item ) )
+			variables.ORM.getSession( variables.ORM.getEntityDatasource( item ) )
 				.refresh( item );
 		} );
 
@@ -497,7 +645,7 @@ component accessors="true"{
 	/**
      * Checks if the given entityName and id exists in the database, this method does not load the entity into session
 	 *
-	 * @entityName the name of the entity
+	 * @entityName The name of the entity
 	 * @id The id to lookup
 	 */
 	boolean function exists( required entityName, required any id ){
@@ -507,7 +655,7 @@ component accessors="true"{
 			[ arguments.id ],
 			true,
 			{
-				datasource = orm.getEntityDatasource( arguments.entityName )
+				datasource = variables.ORM.getEntityDatasource( arguments.entityName )
 			}
 		);
 
@@ -515,18 +663,31 @@ component accessors="true"{
 	}
 
 	/**
-	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
-	* @entityName the name of the entity to retrieve
-	* @id An optional primary key to use to retrieve the entity, if the id is 0 or empty
-    */
-	any function get(required string entityName,required any id,boolean returnNew=true) {
+	 * Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
+	 *
+	 * @entityName The name of the entity to retrieve
+	 * @id An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
+	 * @returnNew By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
+	 *
+	 * @return Requested entity, new entity or `null`
+     */
+	any function get(
+		required string entityName,
+		required any id,
+		boolean returnNew=true
+	){
 
 		// check if id exists so entityLoad does not throw error
-		if( (isSimpleValue(arguments.id) and len(arguments.id)) OR NOT isSimpleValue(arguments.id) ){
-			var entity = entityLoadByPK(arguments.entityName, arguments.id);
+		if(
+			( isSimpleValue( arguments.id ) and len( arguments.id ) )
+			OR
+			NOT isSimpleValue( arguments.id )
+		){
+			// https://cfdocs.org/entityloadbypk
+			var oEntity = entityLoadByPK( arguments.entityName, arguments.id );
 			// Check if not null, then return it
-			if( NOT isNull(entity) ){
-				return entity;
+			if( !isNull( oEntity ) ){
+				return oEntity;
 			}
 		}
 
@@ -534,50 +695,146 @@ component accessors="true"{
 		if( arguments.returnNew ){
 
 			// Check if ID=0 or empty to do convenience new entity
-			if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
-				return new(entityName=arguments.entityName);
+			if( isSimpleValue( arguments.id ) and ( arguments.id eq 0  OR len( arguments.id ) eq 0 ) ){
+				return this.new( entityName=arguments.entityName );
 			}
 
 		}
 	}
 
 	/**
-	* Retrieve all the instances from the passed in entity name using the id argument if specified
-	* The id can be a list of IDs or an array of IDs or none to retrieve all.
-    */
-	array function getAll(required string entityName,any id,string sortOrder="") {
+	 * Retrieve all the instances from the passed in entity name using the id argument if specified.flash.inflateFlash()
+	 * You can also use the properties argument so this method can return to you array of structs instead of array of objects.
+	 * The property list must include the `as` alias if not you will get positional keys.
+	 * Example: properties="catID as id, category as category, role as role"
+	 *
+	 * @entityName The entity to get
+	 * @id The id or a list/array of Ids to retrieve
+	 * @sortOrder The sorting of the returning array, defaults to natural sorting
+	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
+     */
+	array function getAll(
+		required string entityName,
+		any id,
+		string sortOrder="",
+		boolean readOnly=false,
+		string properties
+	){
 		var results = [];
 
-		// Return all entity values
-		if( NOT structKeyExists(arguments,"id") ){
-			return entityLoad(arguments.entityName,{},arguments.sortOrder);
+		// Prepare HQL, it is way faster with HQL
+		var hql = "FROM #arguments.entityName#";
+
+		// Properties
+		if( !isNull( arguments.properties ) ){
+			hql = "SELECT new map( #arguments.properties# ) #hql#";
 		}
 
-		// type safe conversions
-		arguments.id = convertIDValueToJavaType(entityName=arguments.entityName, id=arguments.id);
-		var q = "FROM #arguments.entityName# where id in (:idlist)";
-		// ordering?
-		if( len(arguments.sortOrder) ){
-			q &= " ORDER BY #arguments.sortOrder#";
+		// ID
+		if( !isNull( arguments.id ) ){
+			// type safe conversions
+			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
+			hql &= " WHERE id in (:idlist)";
 		}
+
+		// Sorting
+		if( len( arguments.sortOrder ) ){
+			hql &= " ORDER BY #arguments.sortOrder#";
+		}
+
 		// Execute native hibernate query
-		var query = orm.getSession(orm.getEntityDatasource(arguments.entityName)).createQuery(q);
+		var query = orm.getSession( orm.getEntityDatasource( arguments.entityName ) )
+			.createQuery( hql );
+
 		// parameter binding
-		query.setParameterList("idlist",arguments.id);
+		if( !isNull( arguments.id ) ){
+			query.setParameterList( "idlist", arguments.id );
+		}
+
 		// Caching?
 		if( getUseQueryCaching() ){
-			query.setCacheRegion(getQueryCacheRegion());
-			query.setCacheable(true);
+			query.setCacheRegion( getQueryCacheRegion() );
+			query.setCacheable( true );
 		}
+		// Read Only
+		query.setReadOnly( javaCast( "boolean", arguments.readOnly ) );
+
 		return query.list();
 	}
 
 	/**
-    * Delete an entity. The entity argument can be a single entity
-	* or an array of entities. You can optionally flush the session also after committing
-	* Transactions are used if useTransactions bit is set or the transactional argument is passed
-    */
-	any function delete(required any entity,boolean flush=false,boolean transactional=getUseTransactions()){
+	 * Get an array of properties that are dirty in the entity, empty array if none.
+	 *
+	 * @entity The entity to check
+	 */
+	array function getDirtyPropertyNames( required entity ){
+		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
+		var hibernateMD = getEntityMetadata( arguments.entity );
+		var dbState 	= hibernateMD.getDatabaseSnapshot( getKeyValue( entity ), thisSession );
+
+		// If this is null, then the entity is not in session
+		if( isNull( dbState ) ){
+			return [];
+		}
+
+		var currentState 	= hibernateMD.getPropertyValues( arguments.entity, thisSession.getEntityMode() );
+		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
+
+		return arrayMap( dirtyArray, function( index ){
+			return hibernateMD.getSubclassPropertyName( index );
+		} );
+	}
+
+	/**
+	 * Verifies if the entity has dirty data or not.  If the entity is not loaded in session, this method will throw an exception.
+	 *
+	 * @entity The entity to check if lazy
+	 */
+	boolean function isDirty( required entity ){
+		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
+		var hibernateMD = getEntityMetadata( arguments.entity );
+		var dbState 	= hibernateMD.getDatabaseSnapshot( getKeyValue( arguments.entity ), thisSession );
+
+		// If this is null, then the entity is not in session
+		if( isNull( dbState ) ){
+			return false;
+		}
+
+		var currentState 	= hibernateMD.getPropertyValues( arguments.entity, thisSession.getEntityMode() );
+		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
+
+		return ( arrayLen( dirtyArray ) > 0 );
+	}
+
+	/**
+	 * Get the unique identifier value for the passed in entity, or null if the instance is not in session
+	 *
+	 * @entity The entity to inspect for it's id
+	 */
+	any function getKeyValue( required entity ){
+		try{
+			return variables.ORM
+				.getSession( variables.ORM.getEntityDatasource( arguments.entity ) )
+				.getIdentifier( arguments.entity );
+		} catch( any e ){
+			return;
+		}
+	}
+
+	/**
+     * Delete an entity. The entity argument can be a single entity
+	 * or an array of entities. You can optionally flush the session also after committing
+	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
+	 *
+	 * @entity The entity or array of entities to delete
+	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @transactional Wrap it in a `cftransaction`, defaults to true
+     */
+	BaseORMService function delete(
+		required any entity,
+		boolean flush=false,
+		boolean transactional=getUseTransactions()
+	){
 		// using transaction closure, well, semy closures :(
 		if( arguments.transactional ){
 			return $transactioned(variables.$delete, arguments);
@@ -1268,11 +1525,15 @@ component accessors="true"{
 
 
 	/**
-	* Returns the key (id field) of a given entity, either simple or composite keys.
-	* If the key is a simple pk then it will return a string, if it is a composite key then it returns an array
-	*/
-	any function getKey(required string entityName){
-		var hibernateMD =  orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName);
+	 * Returns the key (id field) of a given entity, either simple or composite keys.
+	 * If the key is a simple pk then it will return a string, if it is a composite key then it returns an array
+	 *
+	 * @entity The entity name or entity object
+	 *
+	 * @return string or array
+	 */
+	any function getKey( required entity ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
 
 		// Is this a simple key?
 		if( hibernateMD.hasIdentifierProperty() ){
@@ -1282,24 +1543,46 @@ component accessors="true"{
 		// Composite Keys?
 		if( hibernateMD.getIdentifierType().isComponentType() ){
 			// Do conversion to CF Array instead of java array, just in case
-			return listToArray(arrayToList(hibernateMD.getIdentifierType().getPropertyNames()));
+			return listToArray( arrayToList( hibernateMD.getIdentifierType().getPropertyNames() ) );
 		}
 
 		return "";
 	}
 
 	/**
-	* Returns the Property Names of the entity via hibernate metadata
-	*/
-	array function getPropertyNames(required string entityName){
-		return orm.getSessionFactory( orm.getEntityDatasource(arguments.entityName) ).getClassMetaData( arguments.entityName ).getPropertyNames();
+	 * Returns the Property Names of the entity via hibernate metadata
+	 *
+	 * @entity The entity name or the actual entity object
+	 */
+	array function getPropertyNames( required entity ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
+		return hibernateMD.getPropertyNames();
 	}
 
 	/**
-	* Returns the table name that the current entity string belongs to via hibernate metadata
-	*/
-	string function getTableName(required string entityName){
-		return orm.getSessionFactory( orm.getEntityDatasource(arguments.entityName) ).getClassMetadata( arguments.entityName ).getTableName();
+	 * Returns the table name that the current entity belongs to via hibernate metadata
+	 *
+	 * @entity The entity name or the actual entity object
+	 */
+	string function getTableName( required entity ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
+		return hibernateMD.getTableName();
+	}
+
+	/**
+	 * Get an entity's hibernate metadata
+	 *
+	 * @see https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/metadata/ClassMetadata.html
+	 *
+	 * @entity The entity name or entity object
+	 *
+	 * @return The Hibernate Java ClassMetadata Object
+	 */
+	function getEntityMetadata( required entity ){
+		return variables.ORM.getEntityMetadata(
+			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
+			datasource = variables.ORM.getEntityDatasource( arguments.entity, variables.datasource )
+		);
 	}
 
 	/**
@@ -1328,35 +1611,74 @@ component accessors="true"{
  	}
 
 	/**
-	* Coverts an ID, list of ID's, or array of ID's values to the proper java type
-	* The method returns a coverted array of ID's
-	*/
-	any function convertIDValueToJavaType(required entityName, required id){
-		var hibernateMD = orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName);
+	 * Convert an Id value to it's Java cast type, this is an alias for `ConvertIdValueToJavaType()`
+	 *
+	 * @entity The entity name or entity object
+	 * @id The id value to convert
+	 */
+	any function idCast( required entity, required id ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
 
-		if(isDefined("hibernateMD") and not hibernateMD.getIdentifierType().isComponentType() ){
-			//id conversion to array
-			if( isSimpleValue(arguments.id) ){
-				arguments.id = listToArray(arguments.id);
+		// No component type support for identifiers
+		if( !isNull( hibernateMD ) and !hibernateMD.getIdentifierType().isComponentType() ){
+			var identifierType = hibernateMD.getIdentifierType();
+
+			// id conversion to array
+			if( isSimpleValue( arguments.id ) ){
+				arguments.id = listToArray( arguments.id );
 			}
 
-			// Convert to hibernate native types
-			for (var i=1; i lte arrayLen(arguments.id); i=i+1){
-				arguments.id[i] = hibernateMD.getIdentifierType().fromStringValue(arguments.id[i]);
-			}
+			// Convert to Java Type
+			return arguments.id
+				.map( function( thisID ){
+					return identifierType.fromStringValue( thisID );
+				} );
 		}
 
 		return arguments.id;
 	}
 
 	/**
-	* Coverts a value to the correct javaType for the property passed in
-	* The method returns the value in the proper Java Type
-	*/
-	any function convertValueToJavaType(required entityName, required propertyName, required value){
-		var hibernateMD = orm.getSessionFactory(orm.getEntityDatasource(arguments.entityName)).getClassMetaData(arguments.entityName);
+	 * Coverts an ID, list of ID's, or array of ID's values to the proper Java type
+	 * The method returns a coverted array of ID's
+	 *
+	 * @deprecated In favor of `idCast()`
+	 *
+	 * @entityName The entity name
+	 * @id The id value to convert
+	 */
+	any function convertIdValueToJavaType( required entityName, required id ){
+		arguments.entity = arguments.entityname;
+		return idCast( argumentCollection = arguments );
+	}
 
-		return hibernateMD.getPropertyType(arguments.propertyName).fromStringValue(arguments.value);
+	/**
+	 * Coverts a value to the correct javaType for the property passed in.
+	 *
+	 * @entity The entity name or entity object
+	 * @propertyName The property name
+	 * @value The property value
+	 */
+	any function autoCast( required entity, required propertyName, required value ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
+
+		return hibernateMD
+			.getPropertyType( arguments.propertyName )
+			.fromStringValue( arguments.value );
+	}
+
+	/**
+	 * Coverts a value to the correct javaType for the property passed in
+	 *
+	 * @deprecated In favor of `autoCast()`
+	 *
+	 * @entityName The entity name or entity object
+	 * @propertyName The property name
+	 * @value The property value
+	 */
+	any function convertValueToJavaType( required entityName, required propertyName, required value ){
+		arguments.entity = arguments.entityName;
+		return autoCast( argumentCollection=arguments );
 	}
 
 	/**
@@ -1497,42 +1819,40 @@ component accessors="true"{
 	}
 
 	/**
-	* My hibernate safe transaction closure wrapper
-	* @method the method to closure
-	* @argCollection the arguments to passthrough
-	*/
-	private any function $transactioned( required method, argCollection=structnew() ){
-		// Are we already in a transaction?
-		if( structKeyExists(request,"cbox_aop_transaction") ){
-			return arguments.method(argumentCollection=arguments.argCollection);
+	 * My hibernate safe transaction closure wrapper, Transactions are per request basis
+	 *
+	 * @method The method to closure
+	 * @argCollection The arguments
+	 */
+	private any function $transactioned( required method, argCollection={} ){
+		// If in transaction, just execute
+		if( request.keyExists( "cbox_aop_transaction" ) ){
+			return arguments.method( argumentCollection=arguments.argCollection );
 		}
 
-		// transaction safe call, start one
+		// transaction safe call, start one, so we can support nested transactions
 		// mark transaction began
-		request["cbox_aop_transaction"] = true;
-		transaction{
-
+		request[ "cbox_aop_transaction" ] = true;
+		transaction action="begin"{
 			try{
 				// Call method
-				results = arguments.method(argumentCollection=arguments.argCollection);
+				var results = arguments.method( argumentCollection=arguments.argCollection );
 				// commit transaction
 				transactionCommit();
-			}
-			catch(Any e){
-				// remove pointer
-				structDelete(request,"cbox_aop_transaction");
+			} catch( Any e ) {
 				// RollBack Transaction
 				transactionRollback();
-				//throw it
+				// throw it back folks
 				rethrow;
+			} finally {
+				// remove pointer
+				request.delete( "cbox_aop_transaction" );
 			}
 
+		} // end transaction
+
+		if( !isNull( results ) ){
+			return results;
 		}
-
-		// remove pointer, out of transaction now.
-		structDelete(request,"cbox_aop_transaction");
-		// Results? If found, return them.
-		if( NOT isNull(results) ){ return results; }
-
 	}
 }

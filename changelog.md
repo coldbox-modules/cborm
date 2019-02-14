@@ -1,17 +1,48 @@
 # CHANGELOG
 
-## 1.6.0
+## v2.0.0
+
+### General Updates
 
 * **Mementifier** is now a dependency for cborm. (www.forgebox.io/view/mementifier), which can be used for producing state out of ORM entities for auditing or building JSON Api's.
-* Update `getEntityGivenName` to support ACF2018
 * Performance update on creating active entities as datasource discovery has been reworked
 * Updated build process to latest in Ortus template
 * Dropped Railo support
+* More direct scoping for performance updates
+* Optimized EventHandler so it is lighter and quicker when doing orm injections
+* Documented all functions with extra examples and notes and hibernate references
+
+### Base ORM Service
+
+* Update `getEntityGivenName` to support ACF2018
 * Lazy loading `BeanPopulator` for performance on creations
 * Lazy loading `ORMEventHandler` for performance on creations
 * Lazy loading `restrictions` for performance on creations
-* More direct scoping for performance updates
-* Optimized EventHandler so it is lighter and quicker when doing orm injections
+* Base service can now be initialized with a `datasource`, or uses the default one declared
+* Removed `byExample` on many listing methods
+* Added optional `datasource` to many listing methods
+* Added consistency on querying options to all major functions to include ignoreCase, sorting and timeouts.
+* Added ability to `getAll()` to retrieve read only entities using the `readOnly` argument.
+* The `getAll()` method has a new `properties` argument that if passed will allow you to retrieve an array of structs according to the passed in properties.
+* New method: `idCast( entity, id )` to auto cast your entity `id` value to java type automatically for you, no more javacasting
+* New method: `autoCast( entity, propertyName, value )` to auto cast any value for any entity property automatically, no more javacasting.
+* New method: `getId( entity )` which will give you the value of the entity's unique identifier
+* New method: `isDirty( entity )` which will let you know if the entity has dirty values or has its values changed since loaded from the db
+* New method: `getEntityMetadata( entity )` which will return to you the hibernate's metadata for a specific entity.
+* `getPropertyNames()` argument of `entityname` renamed to `entity` to allow not only for a name but an actual entity as well.
+* `getTableName()` argument of `entityname` renamed to `entity` to allow not only for a name but an actual entity as well.
+* `getKey()` argument of `entityname` renamed to `entity` to allow not only for a name but an actual entity as well.
+* ORM Encapsulation of hibernate metadata retrieval via `getEntityMetadata()`
+
+### Virtual Entity Service
+
+Remember this entity extends Base Service, so we get all the features above plus the following:
+
+### Active Entity
+
+Remember this entity extends the Virtual Service, so we get all the features above plus the following:
+
+* Faster creation speeds due to lazy loading of dependencies and better datasource determination.
 
 ## 1.5.0
 

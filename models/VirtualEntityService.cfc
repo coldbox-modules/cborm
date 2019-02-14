@@ -38,11 +38,6 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
  	property name="entityName" type="string" persistent="false";
 
-	/**
-	 * The datasource property for this "version" of the Virtual Service
-	 */
-	property name="datasource" type="string" persistent="false";
-
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**

@@ -153,7 +153,9 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * @entity The entity object
 	 */
 	private function processEntityInjection( required entityName, required entity ){
-		var ormSettings		= getController().getSetting( "orm" ).injection;
+		var ormSettings		= getController()
+			.getSetting( name="orm", defaultValue={ injection = false } )
+			.injection;
 		var injectorInclude = ormSettings.include;
 		var injectorExclude = ormSettings.exclude;
 
