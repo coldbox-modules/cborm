@@ -58,6 +58,7 @@ component{
 		dbcreate = "update",
 		secondarycacheenabled = false,
 		cacheProvider = "ehcache",
+		automanageSession = false,
 		flushAtRequestEnd = false,
 		eventhandling = true,
 		eventHandler = "cborm.models.EventHandler",

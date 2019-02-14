@@ -4,6 +4,7 @@
 component{
 
 	property name="userService" inject="entityService:User";
+	property name="categoryService" inject="entityService:Category";
 
 	// Index
 	any function index( event,rc, prc ){
