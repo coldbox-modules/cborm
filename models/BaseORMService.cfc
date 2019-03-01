@@ -1,4 +1,4 @@
-﻿/**
+/**
 * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
@@ -643,23 +643,14 @@ component accessors="true"{
 	}
 
 	/**
-     * Checks if the given entityName and id exists in the database, this method does not load the entity into session
+     * Checks if the given entityName and id exists in the database
 	 *
 	 * @entityName The name of the entity
 	 * @id The id to lookup
 	 */
 	boolean function exists( required entityName, required any id ){
-		// Do it DLM style
-		var count = ORMExecuteQuery(
-			"select count( id ) from #arguments.entityName# where id = ?",
-			[ arguments.id ],
-			true,
-			{
-				datasource = variables.ORM.getEntityDatasource( arguments.entityName )
-			}
-		);
-
-		return ( count gt 0 );
+		var identifierProperty = getEntityMetadata( entityNew( arguments.entityName ) ).getIdentifierPropertyName();
+		return javacast( "boolean", new CriteriaBuilder( arguments.entityName, false, "", this ).isEq( identifierProperty, arguments.id ).count() );
 	}
 
 	/**
@@ -734,7 +725,8 @@ component accessors="true"{
 		if( !isNull( arguments.id ) ){
 			// type safe conversions
 			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
-			hql &= " WHERE id in (:idlist)";
+			var identifierProperty = getEntityMetadata( entityNew( arguments.entityName ) ).getIdentifierPropertyName();
+			hql &= " WHERE #identifierProperty# in (:idlist)";
 		}
 
 		// Sorting
@@ -908,7 +900,8 @@ component accessors="true"{
 
 		// delete using lowercase id convention from hibernate for identifier
 		var datasource = orm.getEntityDatasource(arguments.entityName);
-		var query = orm.getSession(datasource).createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
+		var identifierProperty = getEntityMetadata( entityNew( arguments.entityName ) ).getIdentifierPropertyName();
+		var query = orm.getSession(datasource).createQuery("delete FROM #arguments.entityName# where #identifierProperty# in (:idlist)");
 		query.setParameterList("idlist",arguments.id);
 		count = query.executeUpdate();
 
