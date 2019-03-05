@@ -725,8 +725,9 @@ component accessors="true"{
 		if( !isNull( arguments.id ) ){
 			// type safe conversions
 			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
-			var identifierProperty = getEntityMetadata( entityNew( arguments.entityName ) ).getIdentifierPropertyName();
-			hql &= " WHERE #identifierProperty# in (:idlist)";
+			// `id` is a hibernate keyword, not the column name, in this case: 
+			//  https://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/queryhql.html
+			hql &= " WHERE id in (:idlist)";
 		}
 
 		// Sorting
@@ -897,11 +898,9 @@ component accessors="true"{
 
 		// type safe conversions
 		arguments.id = convertIDValueToJavaType(entityName=arguments.entityName, id=arguments.id);
-
-		// delete using lowercase id convention from hibernate for identifier
-		var datasource = orm.getEntityDatasource(arguments.entityName);
-		var identifierProperty = getEntityMetadata( entityNew( arguments.entityName ) ).getIdentifierPropertyName();
-		var query = orm.getSession(datasource).createQuery("delete FROM #arguments.entityName# where #identifierProperty# in (:idlist)");
+		// delete using lowercase id convention from hibernate for identifier		
+		//  https://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/queryhql.html
+		var query = orm.getSession(datasource).createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
 		query.setParameterList("idlist",arguments.id);
 		count = query.executeUpdate();
 
