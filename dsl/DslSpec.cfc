@@ -1,9 +1,9 @@
-/********************************************************************************
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-********************************************************************************
-* The ORM WireBox DSL
-*/
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * The ORM WireBox DSL
+ */
 component accessors="true"{
 
 	property name="injector";
@@ -25,9 +25,9 @@ component accessors="true"{
 	*/
 	public any function process( required definition, targetObject ){
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
-		
+
 		switch( DSLNamespace ){
-			case "entityService" : { 
+			case "entityService" : {
 				return getEntityServiceDSL( argumentCollection=arguments );
 			}
 		}
