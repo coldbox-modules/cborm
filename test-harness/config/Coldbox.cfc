@@ -70,6 +70,16 @@
 			info = [ "coldbox.system" ]
 		};
 
+		moduleSettings = {
+			cborm = {
+				injection = {
+					enabled = true,
+					include = "",
+					exclude = ""
+				}
+			}
+		};
+
 	}
 
 	/**

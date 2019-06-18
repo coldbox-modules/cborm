@@ -1,8 +1,9 @@
 /**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-*/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * ColdBox ORM enhancements for Hibernate
+ */
 component {
 
 	// Module Properties
@@ -18,11 +19,22 @@ component {
 	this.dependencies 		= [ "cbvalidation" ];
 
 	/**
-	* Configure Module
-	*/
+	 * Configure Module
+	 */
 	function configure(){
+
+		// cbORM Settings
+		settings = {
+			// WireBox Injection Bridge
+			injection = {
+				enabled = true,
+				include = "",
+				exclude = ""
+			}
+		};
+
+		// ColdBox 5 or 4 DSL Builder
 		var dslPath = "#moduleMapping#.dsl.ORMDSL";
-		// ColdBox 5
 		if( variables.keyExists( "coldboxVersion" ) ){
 			dslPath &= "5";
 		}
@@ -35,11 +47,25 @@ component {
 		interceptorSettings = {
 			customInterceptionPoints = [
 				// CriteriaBuilder Events
-				"onCriteriaBuilderAddition", "beforeCriteriaBuilderList", "afterCriteriaBuilderList", "beforeCriteriaBuilderCount",
+				"onCriteriaBuilderAddition",
+				"beforeCriteriaBuilderList",
+				"afterCriteriaBuilderList",
+				"beforeCriteriaBuilderCount",
 				"afterCriteriaBuilderCount",
 				// ORM Bridge Events
-				"ORMPostNew", "ORMPreLoad", "ORMPostLoad", "ORMPostDelete", "ORMPreDelete", "ORMPreUpdate", "ORMPostUpdate",
-				"ORMPreInsert", "ORMPostInsert", "ORMPreSave", "ORMPostSave", "ORMPostFlush", "ORMPreFlush"
+				"ORMPostNew",
+				"ORMPreLoad",
+				"ORMPostLoad",
+				"ORMPostDelete",
+				"ORMPreDelete",
+				"ORMPreUpdate",
+				"ORMPostUpdate",
+				"ORMPreInsert",
+				"ORMPostInsert",
+				"ORMPreSave",
+				"ORMPostSave",
+				"ORMPostFlush",
+				"ORMPreFlush"
 			]
 		};
 
@@ -50,30 +76,15 @@ component {
 	}
 
 	/**
-	* Fired when the module is registered and activated.
-	*/
+	 * Fired when the module is registered and activated.
+	 */
 	function onLoad(){
-		// Read parent application config
-		var oConfig = controller.getSetting( "ColdBoxConfig" );
-		// Default Config Structure
-		controller.setSetting( "orm", {
-			injection = {
-				enabled = true, include = "", exclude = ""
-			}
-		} );
-		// Check if we have defined DSL first in application config
-		var ormDsl = oConfig.getPropertyMixin( "orm", "variables", {} );
-		// injection
-		if( ormDsl.keyExists( "injection" ) ){
-			structAppend( controller.getSetting( "orm" ).injection, ormDsl.injection, true );
-		}
 	}
 
 	/**
-	* Fired when the module is unregistered and unloaded
-	*/
+	 * Fired when the module is unregistered and unloaded
+	 */
 	function onUnload(){
-
 	}
 
 }

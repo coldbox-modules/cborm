@@ -2,15 +2,34 @@
 
 ## v2.0.0
 
+### Compatibility Updates
+
+* You will need to move the `orm` configuration structure in your `config/ColdBox.cfc` to the `moduleSettings` struct and rename it to `cborm` to standardize it to module settings.
+
+```
+moduleSettings = {
+
+	cborm = {
+		inject = {
+			enabled = true, 
+			includes = "",
+			excludes = ""
+		}
+	}
+
+};
+```
+
 ### General Updates
 
 * **Mementifier** is now a dependency for cborm. (www.forgebox.io/view/mementifier), which can be used for producing state out of ORM entities for auditing or building JSON Api's.
 * Performance update on creating active entities as datasource discovery has been reworked
 * Updated build process to latest in Ortus template
-* Dropped Railo support
+* Dropped Railo, Lucee 4.5, ACF11 support
 * More direct scoping for performance updates
 * Optimized EventHandler so it is lighter and quicker when doing orm injections
 * Documented all functions with extra examples and notes and hibernate references
+* ColdBox 5 and 4 discrete ORM Injection DSLs
 
 ### Base ORM Service
 
@@ -26,7 +45,7 @@
 * The `getAll()` method has a new `properties` argument that if passed will allow you to retrieve an array of structs according to the passed in properties.
 * New method: `idCast( entity, id )` to auto cast your entity `id` value to java type automatically for you, no more javacasting
 * New method: `autoCast( entity, propertyName, value )` to auto cast any value for any entity property automatically, no more javacasting.
-* New method: `getId( entity )` which will give you the value of the entity's unique identifier
+* New method: `getKeyValue( entity )` which will give you the value of the entity's unique identifier
 * New method: `isDirty( entity )` which will let you know if the entity has dirty values or has its values changed since loaded from the db
 * New method: `getEntityMetadata( entity )` which will return to you the hibernate's metadata for a specific entity.
 * `getPropertyNames()` argument of `entityname` renamed to `entity` to allow not only for a name but an actual entity as well.
@@ -56,7 +75,7 @@ Remember this entity extends the Virtual Service, so we get all the features abo
 * ColdBox 5 Support
 * Dependency updates
 * Some syntax updates
-* Fix `getKey()` return typing to allow composite keys: https://github.com/coldbox-modules/cbox-cborm/pull/21
+* Fix `getKey()` return typing to allow composite keys: https://github.com/coldbox-modules/cborm/pull/21
 * Update to module standard template
 * Updated dependencies
 

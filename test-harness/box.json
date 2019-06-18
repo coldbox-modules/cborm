@@ -1,5 +1,5 @@
 {
-    "name":"Tester",
+    "name":"CBORM Tester",
     "version":"0.0.0",
     "slug":"tester",
     "private":true,
@@ -10,11 +10,11 @@
         "mementifier":"^1.4.0+27"
     },
     "devDependencies":{
-        "testbox":"^2.8.0"
+        "testbox":"^3.0.0"
     },
     "installPaths":{
-        "coldbox":"coldbox",
-        "testbox":"testbox",
+        "coldbox":"coldbox/",
+        "testbox":"testbox/",
         "cbvalidation":"modules/cbvalidation/",
         "mementifier":"modules/mementifier/"
     },
