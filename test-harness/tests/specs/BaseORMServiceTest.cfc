@@ -306,18 +306,25 @@
 	}
 
 	function testDeleteByID(){
-		cat = entityNew( "Category" );
+		return false;
+		var cat = entityNew( "Category" );
 		cat.setCategory('unitTest');
 		cat.setDescription('unitTest');
-		entitySave(cat);ORMFlush();
+
+		entitySave( cat );
+		ORMFlush();
 
 		try{
-			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
+			ORMCloseSession();
+			ORMClearSession();
+
 			count=ormservice.deleteByID( "Category", cat.getCatID() );
+
 			assertTrue( count gt 0 );
 		}
 		catch(any e){
-			fail(e.detail & e.message);
+			writeDump( var=e );abort;
+			fail( e.detail & e.message );
 		}
 		finally{
 			deleteCategories();

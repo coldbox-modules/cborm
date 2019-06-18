@@ -19,4 +19,15 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 		return ( !isNull( arguments.datasource ) ? ORMGetSession( arguments.datasource ) : ORMGetSession() );
 	}
 
+	/**
+	 * Retrieve the entity mode in effect for this session.
+	 *
+	 * @ormSession Pass the hibernate ORM session
+	 *
+	 * @return https://docs.jboss.org/hibernate/core/3.5/javadocs/org/hibernate/EntityMode.html
+	 */
+	any function getSessionEntityMode( required ormSession, required entity ){
+		return arguments.ormSession.getEntityMode();
+	}
+
 }

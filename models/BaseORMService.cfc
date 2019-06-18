@@ -100,6 +100,7 @@ component accessors="true"{
 		variables.useTransactions 	= arguments.useTransactions;
 		variables.defaultAsQuery 	= arguments.defaultAsQuery;
 		variables.HQLDynamicCache	= {};
+		variables.wirebox 			= application.wirebox;
 
 		// Create the ORM Utility component
 		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
@@ -777,7 +778,17 @@ component accessors="true"{
 			return [];
 		}
 
-		var currentState 	= hibernateMD.getPropertyValues( arguments.entity, thisSession.getEntityMode() );
+		if( server.keyExists( "lucee" ) ){
+			var currentState = hibernateMD.getPropertyValues(
+				arguments.entity,
+				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
+			);
+		} else {
+			var currentState = hibernateMD.getPropertyValues(
+				arguments.entity
+			);
+		}
+
 		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
 
 		return arrayMap( dirtyArray, function( index ){
@@ -800,7 +811,16 @@ component accessors="true"{
 			return false;
 		}
 
-		var currentState 	= hibernateMD.getPropertyValues( arguments.entity, thisSession.getEntityMode() );
+		if( server.keyExists( "lucee" ) ){
+			var currentState = hibernateMD.getPropertyValues(
+				arguments.entity,
+				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
+			);
+		} else {
+			var currentState = hibernateMD.getPropertyValues(
+				arguments.entity
+			);
+		}
 		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
 
 		return ( arrayLen( dirtyArray ) > 0 );
@@ -889,33 +909,43 @@ component accessors="true"{
 	}
 
 	/**
-	* Delete using an entity name and an incoming id, you can also flush the session if needed. The id parameter can be a single id or an array of IDs to delete
-	* The method returns the count of deleted entities.
-	* Transactions are used if useTransactions bit is set or the transactional argument is passed
-	*/
-	numeric function deleteByID(required string entityName, required any id, boolean flush=false, boolean transactional=getUseTransactions()){
-		// using transaction closure, well, semy closures :(
-		if( arguments.transactional ){
-			return $transactioned(variables.$deleteByID, arguments);
-		}
-		return $deleteByID( argumentCollection=arguments );
+	 * Delete using an entity name and an incoming id, you can also flush the session if needed. The id parameter can be a single id or an array of IDs to delete
+	 * The method returns the count of deleted entities.
+	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
+	 *
+	 * @entityName The entity name target
+	 * @id The single id or an array of Ids to delete
+	 * @flush Do a flush after deleting, false by default since we use transactions
+	 */
+	numeric function deleteByID(
+		required string entityName,
+		required any id,
+		boolean flush=false,
+		boolean transactional=getUseTransactions()
+	){
+
+		return $transactioned( function( entityName, id, flush ){
+			// type safe conversions
+			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
+
+			// delete using lowercase id convention from hibernate for identifier
+			var datasource = variables.orm.getEntityDatasource( arguments.entityName );
+			var query = variables.orm.getSession( datasource )
+				.createQuery( "delete FROM #arguments.entityName# where id in (:idlist)" );
+			query.setParameterList( "idlist", arguments.id );
+			var count = query.executeUpdate();
+
+			// Auto Flush
+			if( arguments.flush ){
+				variables.ORM.flush( datasource );
+			}
+
+			return count;
+		}, arguments, arguments.transactional );
+
 	}
 	private numeric function $deleteByID(required string entityName, required any id, boolean flush=false){
-		var count   = 0;
 
-		// type safe conversions
-		arguments.id = convertIDValueToJavaType(entityName=arguments.entityName, id=arguments.id);
-
-		// delete using lowercase id convention from hibernate for identifier
-		var datasource = orm.getEntityDatasource(arguments.entityName);
-		var query = orm.getSession(datasource).createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
-		query.setParameterList("idlist",arguments.id);
-		count = query.executeUpdate();
-
-		// Auto Flush
-		if( arguments.flush ){ orm.flush(datasource); }
-
-		return count;
 	}
 
 	/**
@@ -1271,13 +1301,16 @@ component accessors="true"{
 	}
 
 	/**
-	 * Checks if the current session contains the passed in entity
+	 * Checks if the current session contains the passed in entity.
 	 *
 	 * @entity The entity object
 	 */
 	boolean function sessionContains( required any entity ){
 		var ormSession = orm.getSession( orm.getEntityDatasource( arguments.entity ) );
-		// weird CFML thing
+		// ACF 2018 regression
+		if( server.coldfusion.productVersion.listFirst() == 2018 ){
+			return ormSession.contains( getEntityGivenName( arguments.entity ), arguments.entity );
+		}
 		return ormSession.contains( arguments.entity );
 	}
 
@@ -1823,6 +1856,7 @@ component accessors="true"{
 	 *
 	 * @target The closure or UDF to execute
 	 * @argCollection The arguments
+	 * @transactional Whether to apply the transactions or not.
 	 */
 	private any function $transactioned(
 		required target,

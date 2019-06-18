@@ -16,5 +16,6 @@ interface {
 	string	function getEntityDatasource( required entity, string defaultDatasource );
 	string	function getDefaultDatasource();
 	any 	function getEntityMetadata( required string entityName, required string datasource );
+	any		function getSessionEntityMode( required ormSession, required entity );
 
 }
