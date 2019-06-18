@@ -9,9 +9,8 @@ env:
     - MODULE_ID=cborm
   matrix:
     - ENGINE=lucee@5
-    - ENGINE=adobe@11
     - ENGINE=adobe@2016
-    #- ENGINE=adobe@2018 : Not supported due too many regressions.
+    - ENGINE=adobe@2018
 
 branches:
   only:
