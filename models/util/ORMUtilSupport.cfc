@@ -1,12 +1,10 @@
 ﻿/**
- ********************************************************************************
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ********************************************************************************
- * Author      :	Luis Majano & Mike McKellip
- * Description :
+ * ---
+ * @author Luis Majano & Mike McKellip
  *
- * This implementation supports multiple DSNs for ORM a-la Adobe ColdFusion 9
+ * An agnostic CFML Engine utility class
  */
 component{
 

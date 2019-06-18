@@ -1,15 +1,10 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ********************************************************************************
-* Author      :	Luis Majano & Mike McKellip
-* Description :
-*
-* The base interface for retreieveing the right CF ORM session for CFML engines
-* that do not support multiple dsn's yet.
-*
-* Once they do, these implementations will disappear.
-*/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ *
+ * This interface is used so each CFML engine can implement its interface into Hibernate.
+ */
 interface {
 
 	void	function flush( string datasource );
