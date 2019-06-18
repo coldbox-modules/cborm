@@ -146,18 +146,18 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 */
 	private function processEntityInjection( required entityName, required entity ){
 		var ormSettings 	= getController().getConfigSettings().modules[ "cborm" ].settings;
-		var injectorInclude = ormSettings.include;
-		var injectorExclude = ormSettings.exclude;
+		var injectorInclude = ormSettings.injection.include;
+		var injectorExclude = ormSettings.injection.exclude;
 
 		// Enabled?
-		if( NOT ormSettings.enabled ){
+		if( NOT ormSettings.injection.enabled ){
 			return;
 		}
 
 		// Include,Exclude?
-		if( (len( injectorInclude ) AND listContainsNoCase( injectorInclude, entityName ) )
+		if( ( len( injectorInclude ) AND listContainsNoCase( injectorInclude, entityName ) )
 		    OR
-			(len( injectorExclude ) AND NOT listContainsNoCase( injectorExclude, entityName ) )
+			( len( injectorExclude ) AND NOT listContainsNoCase( injectorExclude, entityName ) )
 			OR
 			( NOT len( injectorInclude ) AND NOT len( injectorExclude ) )
 		){
@@ -169,10 +169,4 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 		}
 	}
 
-	/**
-	* Get ORM Util
-	*/
-	private function getORMUtil() {
-		return new cborm.models.util.ORMUtilFactory().getORMUtil();
-	}
 }
