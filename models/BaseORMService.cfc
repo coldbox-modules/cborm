@@ -927,13 +927,12 @@ component accessors="true"{
 		return $transactioned( function( entityName, id, flush ){
 			// type safe conversions
 			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
-
-			// delete using lowercase id convention from hibernate for identifier
-			var datasource = variables.orm.getEntityDatasource( arguments.entityName );
-			var query = variables.orm.getSession( datasource )
-				.createQuery( "delete FROM #arguments.entityName# where id in (:idlist)" );
-			query.setParameterList( "idlist", arguments.id );
-			var count = query.executeUpdate();
+			var count = ormExecuteQuery(
+				"delete FROM #arguments.entityName# where id in (:idlist)",
+				{
+					"idlist" = arguments.id
+				}
+			);
 
 			// Auto Flush
 			if( arguments.flush ){
@@ -942,9 +941,6 @@ component accessors="true"{
 
 			return count;
 		}, arguments, arguments.transactional );
-
-	}
-	private numeric function $deleteByID(required string entityName, required any id, boolean flush=false){
 
 	}
 
@@ -1259,7 +1255,7 @@ component accessors="true"{
     * Evict all queries in the default cache or the cache region passed
     */
 	any function evictQueries(string cacheName, string datasource){
-		orm.evictQueries( argumentCollection=arguments );
+		variables.orm.evictQueries( argumentCollection=arguments );
 		return this;
 	}
 

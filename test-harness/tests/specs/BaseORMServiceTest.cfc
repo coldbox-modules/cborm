@@ -306,7 +306,6 @@
 	}
 
 	function testDeleteByID(){
-		return false;
 		var cat = entityNew( "Category" );
 		cat.setCategory('unitTest');
 		cat.setDescription('unitTest');
@@ -323,7 +322,6 @@
 			assertTrue( count gt 0 );
 		}
 		catch(any e){
-			writeDump( var=e );abort;
 			fail( e.detail & e.message );
 		}
 		finally{
