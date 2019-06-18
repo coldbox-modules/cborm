@@ -8,7 +8,7 @@ component{
 
 	// UPDATE THE NAME OF THE MODULE IN TESTING BELOW
 	request.MODULE_NAME = "cborm";
-	request.MODULE_PATH = "cbox-cborm";
+	request.MODULE_PATH = "cborm";
 
 	// APPLICATION CFC PROPERTIES
 	this.name 				= "#request.MODULE_NAME# Testing Suite";
