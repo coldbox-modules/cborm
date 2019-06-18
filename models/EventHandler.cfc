@@ -1,25 +1,17 @@
 ﻿/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-
-Author     :	Luis Majano
-Date        :	10/16/2007
-Description :
-	Generic Hibernate Event Handler that ties to the ColdBox proxy for ColdBox Operations.
- 	This is just a base class you can inherit from to give you access to your ColdBox
-	Application and the CF9 ORM event handler methods. Then you just need to
-	use a la carte.
-
-	We also execute interception points that match the ORM events so you can eaisly
-	chain ORM interceptions.
-
-*/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Generic Hibernate Event Handler that ties to the ColdBox proxy for ColdBox Operations.
+ * This is just a base class you can inherit from to give you access to your ColdBox
+ * Application and the CF9 ORM event handler methods. Then you just need to
+ * use a la carte.
+ *
+ * We also execute interception points that match the ORM events so you can eaisly
+ * chain ORM interceptions.
+ *
+ */
 component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler"{
-
-	// Java System
-	variables.system = createObject( "java", "java.lang.System" );
 
 	/**
 	* preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
@@ -153,9 +145,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * @entity The entity object
 	 */
 	private function processEntityInjection( required entityName, required entity ){
-		var ormSettings		= getController()
-			.getSetting( name="orm", defaultValue={ injection = false } )
-			.injection;
+		var ormSettings 	= getController().getConfigSettings().modules[ "cborm" ].settings;
 		var injectorInclude = ormSettings.include;
 		var injectorExclude = ormSettings.exclude;
 
