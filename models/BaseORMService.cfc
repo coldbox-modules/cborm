@@ -1,53 +1,53 @@
 ﻿/**
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This is a helper ORM service that will help you abstract some complexities
-* when dealing with CF's ORM via Hibernate.  You can use this service in its
-* concrete form or you can inherit from it and extend it.
-*/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This is a helper ORM service that will help you abstract some complexities
+ * when dealing with CF's ORM via Hibernate.  You can use this service in its
+ * concrete form or you can inherit from it and extend it.
+ */
 import cborm.models.util.*;
 
 component accessors="true"{
 
 	/**
-	* The queryCacheRegion name property for all query caching produced in this service
-	*/
+	 * The queryCacheRegion name property for all query caching produced in this service
+	 */
 	property name="queryCacheRegion" type="string" default="ORMService.defaultCache" persistent="false";
 
 	/**
-	* The bit that tells the service to enable query caching, disabled by default
-	*/
+	 * The bit that tells the service to enable query caching, disabled by default
+	 */
 	property name="useQueryCaching" type="boolean" default="false" persistent="false";
 
 	/**
-	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
-	*/
+	 * The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
+	 */
 	property name="eventHandling" type="boolean" default="true" persistent="false";
 
 	/**
-	* The system ORM event handler to transmitt ORM events to
-	*/
+	 * The system ORM event handler to transmitt ORM events to
+	 */
 	property name="ORMEventHandler" persistent="false";
 
 	/**
-	* The system ORM utility object
-	*/
+	 * The system ORM utility object
+	 */
 	property name="ORM" persistent="false";
 
 	/**
-	* The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
-	*/
+	 * The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
+	 */
 	property name="useTransactions" type="boolean" default="true" persistent="false";
 
 	/**
-	* The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
-	*/
+	 * The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
+	 */
 	property name="defaultAsQuery" type="boolean" default="true" persistent="false";
 
 	/**
-	* All calculated and parsed dynamic finders' and counters' HQL will be stored here for easier execution
-	*/
+	 * All calculated and parsed dynamic finders' and counters' HQL will be stored here for easier execution
+	 */
 	property name="HQLDynamicCache" type="struct" persistent="false";
 
 	/**
@@ -835,57 +835,57 @@ component accessors="true"{
 		boolean flush=false,
 		boolean transactional=getUseTransactions()
 	){
-		// using transaction closure, well, semy closures :(
-		if( arguments.transactional ){
-			return $transactioned(variables.$delete, arguments);
-		}
-		$delete( argumentCollection=arguments );
-		return this;
-	}
-	private any function $delete(required any entity,boolean flush=false){
-		var objects = arrayNew(1);
-		var objLen  = 0;
+		return $transactioned( function( entity, flush ){
+			var objects = [];
+			var objLen  = 0;
 
-		if( not isArray(arguments.entity) ){
-			arrayAppend(objects, arguments.entity);
-		}
-		else{
-			objects = arguments.entity;
-		}
+			if( !isArray( arguments.entity ) ){
+				arrayAppend( objects, arguments.entity );
+			} else {
+				objects = arguments.entity;
+			}
 
-		objLen = arrayLen(objects);
-		for(var x=1; x lte objLen; x++){
-			// Delete?
-			entityDelete( objects[x] );
+			objects.each( function( item ){
+				entityDelete( item );
+			} );
+
 			// Flush?
-			if( arguments.flush ){ orm.flush( orm.getEntityDatasource( objects[x] ) ); }
-		}
+			if( arguments.flush ){
+				variables.ORM.flush();
+			}
 
-		return this;
+			return this;
+		}, arguments, arguments.transactional );
 	}
 
 	/**
-	* Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
-	* Transactions are used if useTransactions bit is set or the transactional argument is passed
-	*/
-	numeric function deleteAll(required string entityName,boolean flush=false,boolean transactional=getUseTransactions()){
-		// using transaction closure, well, semy closures :(
-		if( arguments.transactional ){
-			return $transactioned(variables.$deleteAll, arguments);
-		}
-		return $deleteAll( argumentCollection=arguments );
-	}
-	private numeric function $deleteAll(required string entityName,boolean flush=false){
-		var options = {};
-		options.datasource = orm.getEntityDatasource(arguments.entityName);
+	 * Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
+	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
+	 *
+	 * @entityName The entity name to delete all from
+	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 */
+	numeric function deleteAll(
+		required string entityName,
+		boolean flush=false,
+		boolean transactional=getUseTransactions()
+	){
+		return $transactioned( function( entityName, flush ){
+			var options = {
+				datasource = variables.ORM.getEntityDatasource( arguments.entityName )
+			};
 
-		var count   = 0;
-		count = ORMExecuteQuery("delete from #arguments.entityName#",false,options);
+			var count = 0;
+			count = ORMExecuteQuery( "delete from #arguments.entityName#", false, options );
 
-		// Auto Flush
-		if( arguments.flush ){ orm.flush(options.datasource); }
+			// Auto Flush
+			if( arguments.flush ){
+				variables.ORM.flush( options.datasource );
+			}
 
-		return count;
+			return count;
+		}, arguments, arguments.transactional );
 	}
 
 	/**
@@ -1821,13 +1821,17 @@ component accessors="true"{
 	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis
 	 *
-	 * @method The method to closure
+	 * @target The closure or UDF to execute
 	 * @argCollection The arguments
 	 */
-	private any function $transactioned( required method, argCollection={} ){
+	private any function $transactioned(
+		required target,
+		argCollection={},
+		boolean transactional=getUseTransactions()
+	){
 		// If in transaction, just execute
-		if( request.keyExists( "cbox_aop_transaction" ) ){
-			return arguments.method( argumentCollection=arguments.argCollection );
+		if( request.keyExists( "cbox_aop_transaction" ) OR !arguments.transactional ){
+			return arguments.target( argumentCollection=arguments.argCollection );
 		}
 
 		// transaction safe call, start one, so we can support nested transactions
@@ -1836,7 +1840,7 @@ component accessors="true"{
 		transaction action="begin"{
 			try{
 				// Call method
-				var results = arguments.method( argumentCollection=arguments.argCollection );
+				var results = arguments.target( argumentCollection=arguments.argCollection );
 				// commit transaction
 				transactionCommit();
 			} catch( Any e ) {
