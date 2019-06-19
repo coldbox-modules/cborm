@@ -341,9 +341,10 @@
 
 		try{
 			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
-			ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'}, transactional=false);
+			var results = ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'}, transactional=false);
+			debug( "Removed #results# records");
 			ormFlush();
-			result = q.execute(sql="select * from categories where category = 'unitTest'" );
+			var result = q.execute(sql="select * from categories where category = 'unitTest'" );
 			assertEquals( 0, result.getResult().recordcount );
 		}
 		catch(any e){
@@ -365,10 +366,14 @@
 		q = new Query(datasource="coolblog" );
 
 		try{
-			count=ormService.deleteWhere( entityName="Category",category="unitTest", transactional=false );
-			debug(count);
+			var count=ormService.deleteWhere(
+				entityName="Category",
+				category="unitTest",
+				transactional=false
+			);
+			debug( "Delete where: #count#" );
 
-			result = q.execute(sql="select * from categories where category = 'unitTest'" );
+			var result = q.execute(sql="select * from categories where category = 'unitTest'" );
 			assertEquals( 0, result.getResult().recordcount );
 		}
 		catch(any e){

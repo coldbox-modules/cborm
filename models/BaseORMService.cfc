@@ -11,37 +11,44 @@ import cborm.models.util.*;
 component accessors="true"{
 
 	/**
-	 * The queryCacheRegion name property for all query caching produced in this service
+	 * The name of the cache region to store cached queries, entities, etc.  Defaults to `ORMService.defaultCache`
 	 */
 	property name="queryCacheRegion" type="string" default="ORMService.defaultCache" persistent="false";
 
 	/**
-	 * The bit that tells the service to enable query caching, disabled by default
+	 * Tells the services to leverage query caching, defaults to false
 	 */
 	property name="useQueryCaching" type="boolean" default="false" persistent="false";
 
 	/**
-	 * The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
+	 * Bit identifying if ORM event handling is active, defaults to true
 	 */
 	property name="eventHandling" type="boolean" default="true" persistent="false";
 
 	/**
-	 * The system ORM event handler to transmitt ORM events to
+	 * The system ORM event handler to transmit ORM events to
+	 * @lazy true
 	 */
 	property name="ORMEventHandler" persistent="false";
 
 	/**
-	 * The system ORM utility object
+	 * The object populator
+	 * @lazy true
+	 */
+	property name="beanPopulator" persistent="false";
+
+	/**
+	 * The system ORM utility object depending on the CFML Engine you are on
 	 */
 	property name="ORM" persistent="false";
 
 	/**
-	 * The bit that enables automatic hibernate transactions on all save, saveAll, update, delete methods
+	 * The bit that enables automatic transaction demarcation on all save, saveAll, update, delete methods, default is TRUE
 	 */
 	property name="useTransactions" type="boolean" default="true" persistent="false";
 
 	/**
-	 * The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or array
+	 * The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or arrays, default is query for listing
 	 */
 	property name="defaultAsQuery" type="boolean" default="true" persistent="false";
 
@@ -54,6 +61,9 @@ component accessors="true"{
 	 * The default datsource to use for all transactions, else we look at arguments or entity itself
 	 */
 	property name="datasource" type="string" persistent="false" default="";
+
+
+	/************************************** STATIC VARIABLES *********************************************/
 
 	// STATIC DYNAMIC FINDER VARIABLES
 	variables.ALL_CONDITIONALS 			= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
@@ -104,6 +114,7 @@ component accessors="true"{
 
 		// Create the ORM Utility component
 		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
+
 		// Datasource
 		if( isNull( arguments.datasource ) ){
 			variables.datasource = variables.ORM.getDefaultDatasource();
@@ -114,8 +125,14 @@ component accessors="true"{
 		return this;
 	}
 
+	/*****************************************************************************************/
+	/************************************ UTILITY METHODS ************************************/
+	/*****************************************************************************************/
+
 	/**
 	 * Lazy loading event handler for performance
+	 *
+	 * @return cborm.models.EventHandler
 	 */
 	function getORMEventHandler(){
 		if( !isNull( variables.ORMEventHandler ) ){
@@ -126,30 +143,80 @@ component accessors="true"{
 		return variables.ORMEventHandler;
 	}
 
-	/************************************** *********************************************/
+	/**
+	 * Convert an Id value to it's Java cast type, this is an alias for `ConvertIdValueToJavaType()`
+	 *
+	 * @entity The entity name or entity object
+	 * @id The id value to convert
+	 */
+	any function idCast( required entity, required id ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
+
+		// No component type support for identifiers
+		if( !isNull( hibernateMD ) and !hibernateMD.getIdentifierType().isComponentType() ){
+			var identifierType = hibernateMD.getIdentifierType();
+
+			// id conversion to array
+			if( isSimpleValue( arguments.id ) ){
+				arguments.id = listToArray( arguments.id );
+			}
+
+			// Convert to Java Type
+			return arguments.id
+				.map( function( thisID ){
+					return identifierType.fromStringValue( thisID );
+				} );
+		}
+
+		return arguments.id;
+	}
 
 	/**
-	 * Create a virtual abstract service for a specfic entity
+	 * Coverts a value to the correct javaType for the property passed in.
 	 *
-	 * @entityname The name of the entity to root this service with
-	 * @queryCacheRegion The name of the query cache region if using caching, defaults to `#arguments.entityName#.defaultVSCache`
-	 * @useQueryCaching Activate query caching, defaults to false
-	 * @eventHandling Activate event handling, defaults to true
-	 * @useTransactions Activate transaction blocks on calls, defaults to true
-	 * @defaultAsQuery Return query or array of objects on list(), executeQuery(), criteriaQuery(), defaults to true
-	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
+	 * @entity The entity name or entity object
+	 * @propertyName The property name
+	 * @value The property value
 	 */
-	any function createService(
-		required string entityname,
-		string queryCacheRegion=getQueryCacheRegion(),
-		boolean useQueryCaching=getUseQueryCaching(),
-		boolean eventHandling=getEventHandling(),
-		boolean useTransactions=getUseTransactions(),
-		boolean defaultAsQuery=getDefaultAsQuery(),
-		string datasource=getDatasource()
-	){
-		return new cborm.models.VirtualEntityService( argumentCollection=arguments );
+	any function autoCast( required entity, required propertyName, required value ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
+
+		return hibernateMD
+			.getPropertyType( arguments.propertyName )
+			.fromStringValue( arguments.value );
 	}
+
+	/**
+	 * Coverts an ID, list of ID's, or array of ID's values to the proper Java type
+	 * The method returns a coverted array of ID's
+	 *
+	 * @deprecated In favor of `idCast()`
+	 *
+	 * @entityName The entity name
+	 * @id The id value to convert
+	 */
+	any function convertIdValueToJavaType( required entityName, required id ){
+		arguments.entity = arguments.entityname;
+		return idCast( argumentCollection = arguments );
+	}
+
+	/**
+	 * Coverts a value to the correct javaType for the property passed in
+	 *
+	 * @deprecated In favor of `autoCast()`
+	 *
+	 * @entityName The entity name or entity object
+	 * @propertyName The property name
+	 * @value The property value
+	 */
+	any function convertValueToJavaType( required entityName, required propertyName, required value ){
+		arguments.entity = arguments.entityName;
+		return autoCast( argumentCollection=arguments );
+	}
+
+	/*****************************************************************************************/
+	/************************************ RETRIEVAL METHODS **********************************/
+	/*****************************************************************************************/
 
 	/**
 	 * List all of the instances of the passed in entity class name. You can pass in several optional arguments like
@@ -301,6 +368,106 @@ component accessors="true"{
 	}
 
 	/**
+	 * Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
+	 *
+	 * @entityName The name of the entity to retrieve
+	 * @id An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
+	 * @returnNew By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
+	 *
+	 * @return Requested entity, new entity or `null`
+     */
+	any function get(
+		required string entityName,
+		required any id,
+		boolean returnNew=true
+	){
+
+		// check if id exists so entityLoad does not throw error
+		if(
+			( isSimpleValue( arguments.id ) and len( arguments.id ) )
+			OR
+			NOT isSimpleValue( arguments.id )
+		){
+			// https://cfdocs.org/entityloadbypk
+			var oEntity = entityLoadByPK( arguments.entityName, arguments.id );
+			// Check if not null, then return it
+			if( !isNull( oEntity ) ){
+				return oEntity;
+			}
+		}
+
+		// Check for return new?
+		if( arguments.returnNew ){
+
+			// Check if ID=0 or empty to do convenience new entity
+			if( isSimpleValue( arguments.id ) and ( arguments.id eq 0  OR len( arguments.id ) eq 0 ) ){
+				return this.new( entityName=arguments.entityName );
+			}
+
+		}
+	}
+
+	/**
+	 * Retrieve all the instances from the passed in entity name using the id argument if specified.flash.inflateFlash()
+	 * You can also use the properties argument so this method can return to you array of structs instead of array of objects.
+	 * The property list must include the `as` alias if not you will get positional keys.
+	 * Example: properties="catID as id, category as category, role as role"
+	 *
+	 * @entityName The entity to get
+	 * @id The id or a list/array of Ids to retrieve
+	 * @sortOrder The sorting of the returning array, defaults to natural sorting
+	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
+     */
+	array function getAll(
+		required string entityName,
+		any id,
+		string sortOrder="",
+		boolean readOnly=false,
+		string properties
+	){
+		var results = [];
+
+		// Prepare HQL, it is way faster with HQL
+		var hql = "FROM #arguments.entityName#";
+
+		// Properties
+		if( !isNull( arguments.properties ) ){
+			hql = "SELECT new map( #arguments.properties# ) #hql#";
+		}
+
+		// ID
+		if( !isNull( arguments.id ) ){
+			// type safe conversions
+			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
+			hql &= " WHERE id in (:idlist)";
+		}
+
+		// Sorting
+		if( len( arguments.sortOrder ) ){
+			hql &= " ORDER BY #arguments.sortOrder#";
+		}
+
+		// Execute native hibernate query
+		var query = orm.getSession( orm.getEntityDatasource( arguments.entityName ) )
+			.createQuery( hql );
+
+		// parameter binding
+		if( !isNull( arguments.id ) ){
+			query.setParameterList( "idlist", arguments.id );
+		}
+
+		// Caching?
+		if( getUseQueryCaching() ){
+			query.setCacheRegion( getQueryCacheRegion() );
+			query.setCacheable( true );
+		}
+		// Read Only
+		query.setReadOnly( javaCast( "boolean", arguments.readOnly ) );
+
+		return query.list();
+	}
+
+	/**
 	 * Finds and returns the first result for the given query or null if no entity was found.
 	 * You can either use the query and params combination
 	 *
@@ -414,6 +581,17 @@ component accessors="true"{
 		return entityLoad( arguments.entityName, arguments.criteria, arguments.sortOrder, options );
 	}
 
+	/*****************************************************************************************/
+	/************************************ CREATION METHODS ***********************************/
+	/*****************************************************************************************/
+
+	/**
+	 * Return a null value
+	 */
+	function nullValue(){
+		return javaCast( "null", "" );
+	}
+
 	/**
      * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
 	 *
@@ -459,6 +637,35 @@ component accessors="true"{
 
 		return entity;
 	}
+
+	/**
+	 * Create a virtual abstract service for a specfic entity
+	 *
+	 * @entityname The name of the entity to root this service with
+	 * @queryCacheRegion The name of the query cache region if using caching, defaults to `#arguments.entityName#.defaultVSCache`
+	 * @useQueryCaching Activate query caching, defaults to false
+	 * @eventHandling Activate event handling, defaults to true
+	 * @useTransactions Activate transaction blocks on calls, defaults to true
+	 * @defaultAsQuery Return query or array of objects on list(), executeQuery(), criteriaQuery(), defaults to true
+	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
+	 *
+	 * @return cborm.models.VirtualEntityService
+	 */
+	any function createService(
+		required string entityname,
+		string queryCacheRegion=getQueryCacheRegion(),
+		boolean useQueryCaching=getUseQueryCaching(),
+		boolean eventHandling=getEventHandling(),
+		boolean useTransactions=getUseTransactions(),
+		boolean defaultAsQuery=getDefaultAsQuery(),
+		string datasource=getDatasource()
+	){
+		return new cborm.models.VirtualEntityService( argumentCollection=arguments );
+	}
+
+	/*****************************************************************************************/
+	/********************************* POPULATION METHODS ************************************/
+	/*****************************************************************************************/
 
 	/**
      * Populate/bind an entity's properties and relationships from an incoming structure or map of flat data.
@@ -615,10 +822,39 @@ component accessors="true"{
 	}
 
 	/**
-	 * Get an instance of coldbox.system.core.dynamic.BeanPopulator
+	 * Lazy load an entity populator
+	 *
+	 * @return coldbox.system.core.dynamic.BeanPopulator
 	 */
 	function getBeanPopulator(){
-		return new coldbox.system.core.dynamic.BeanPopulator();
+		if( !isNull( variables.beanPopulator ) ){
+			return variables.beanPopulator;
+		}
+		variables.beanPopulator = new coldbox.system.core.dynamic.BeanPopulator();
+		return variables.beanPopulator;
+	}
+
+	/*****************************************************************************************/
+	/********************************* ENTITY UTILITY METHODS ********************************/
+	/*****************************************************************************************/
+
+	/**
+    * Merge an entity or array of entities back into a session
+    * @entity A single or an array of entities to re-merge
+    *
+    * @return Same entity if one passed, array if an array of entities passed.
+    */
+	any function merge( required any entity ){
+		if( !isArray( arguments.entity ) ){
+			return entityMerge( arguments.entity );
+		}
+
+		var aReturns = [];
+		for( var thisObject in arguments.entity ){
+			arrayAppend( aReturns, entityMerge( thisObject ) );
+		}
+
+		return aReturns;
 	}
 
 	/**
@@ -627,140 +863,23 @@ component accessors="true"{
 	 * @entity The entity or array of entities to refresh
      */
 	BaseORMService function refresh( required any entity ){
-		var objects = [];
+		var aObjects = [];
 
 		if( !isArray( arguments.entity ) ){
-			objects.append( arguments.entity );
+			aObjects.append( arguments.entity );
 		} else {
-			objects = arguments.entity;
+			aObjects = arguments.entity;
 		}
 
-		objects.each( function( item ){
+		aObjects.each( function( item ){
 			variables.ORM.getSession( variables.ORM.getEntityDatasource( item ) )
 				.refresh( item );
 		} );
 
+		// Null it due to closure memory bugs on some engines
+		aObjects = nullValue();
+
 		return this;
-	}
-
-	/**
-     * Checks if the given entityName and id exists in the database, this method does not load the entity into session
-	 *
-	 * @entityName The name of the entity
-	 * @id The id to lookup
-	 */
-	boolean function exists( required entityName, required any id ){
-		// Do it DLM style
-		var count = ORMExecuteQuery(
-			"select count( id ) from #arguments.entityName# where id = ?",
-			[ arguments.id ],
-			true,
-			{
-				datasource = variables.ORM.getEntityDatasource( arguments.entityName )
-			}
-		);
-
-		return ( count gt 0 );
-	}
-
-	/**
-	 * Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
-	 *
-	 * @entityName The name of the entity to retrieve
-	 * @id An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
-	 * @returnNew By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
-	 *
-	 * @return Requested entity, new entity or `null`
-     */
-	any function get(
-		required string entityName,
-		required any id,
-		boolean returnNew=true
-	){
-
-		// check if id exists so entityLoad does not throw error
-		if(
-			( isSimpleValue( arguments.id ) and len( arguments.id ) )
-			OR
-			NOT isSimpleValue( arguments.id )
-		){
-			// https://cfdocs.org/entityloadbypk
-			var oEntity = entityLoadByPK( arguments.entityName, arguments.id );
-			// Check if not null, then return it
-			if( !isNull( oEntity ) ){
-				return oEntity;
-			}
-		}
-
-		// Check for return new?
-		if( arguments.returnNew ){
-
-			// Check if ID=0 or empty to do convenience new entity
-			if( isSimpleValue( arguments.id ) and ( arguments.id eq 0  OR len( arguments.id ) eq 0 ) ){
-				return this.new( entityName=arguments.entityName );
-			}
-
-		}
-	}
-
-	/**
-	 * Retrieve all the instances from the passed in entity name using the id argument if specified.flash.inflateFlash()
-	 * You can also use the properties argument so this method can return to you array of structs instead of array of objects.
-	 * The property list must include the `as` alias if not you will get positional keys.
-	 * Example: properties="catID as id, category as category, role as role"
-	 *
-	 * @entityName The entity to get
-	 * @id The id or a list/array of Ids to retrieve
-	 * @sortOrder The sorting of the returning array, defaults to natural sorting
-	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
-     */
-	array function getAll(
-		required string entityName,
-		any id,
-		string sortOrder="",
-		boolean readOnly=false,
-		string properties
-	){
-		var results = [];
-
-		// Prepare HQL, it is way faster with HQL
-		var hql = "FROM #arguments.entityName#";
-
-		// Properties
-		if( !isNull( arguments.properties ) ){
-			hql = "SELECT new map( #arguments.properties# ) #hql#";
-		}
-
-		// ID
-		if( !isNull( arguments.id ) ){
-			// type safe conversions
-			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
-			hql &= " WHERE id in (:idlist)";
-		}
-
-		// Sorting
-		if( len( arguments.sortOrder ) ){
-			hql &= " ORDER BY #arguments.sortOrder#";
-		}
-
-		// Execute native hibernate query
-		var query = orm.getSession( orm.getEntityDatasource( arguments.entityName ) )
-			.createQuery( hql );
-
-		// parameter binding
-		if( !isNull( arguments.id ) ){
-			query.setParameterList( "idlist", arguments.id );
-		}
-
-		// Caching?
-		if( getUseQueryCaching() ){
-			query.setCacheRegion( getQueryCacheRegion() );
-			query.setCacheable( true );
-		}
-		// Read Only
-		query.setReadOnly( javaCast( "boolean", arguments.readOnly ) );
-
-		return query.list();
 	}
 
 	/**
@@ -842,6 +961,95 @@ component accessors="true"{
 	}
 
 	/**
+	 * Returns the key (id field) of a given entity, either simple or composite keys.
+	 * If the key is a simple pk then it will return a string, if it is a composite key then it returns an array.
+	 * If the key cannot be identified then a blank string is returned.
+	 *
+	 * @entity The entity name or entity object
+	 *
+	 * @return string or array
+	 */
+	any function getKey( required entity ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
+
+		// Is this a simple key?
+		if( hibernateMD.hasIdentifierProperty() ){
+			return hibernateMD.getIdentifierPropertyName();
+		}
+
+		// Composite Keys?
+		if( hibernateMD.getIdentifierType().isComponentType() ){
+			// Do conversion to CF Array instead of java array, just in case
+			return listToArray( arrayToList( hibernateMD.getIdentifierType().getPropertyNames() ) );
+		}
+
+		return "";
+	}
+
+	/**
+	 * Returns the Property Names of the entity via hibernate metadata
+	 *
+	 * @entity The entity name or the actual entity object
+	 */
+	array function getPropertyNames( required entity ){
+		return getEntityMetadata( arguments.entity ).getPropertyNames();
+	}
+
+	/**
+	 * Returns the table name that the current entity belongs to via hibernate metadata
+	 *
+	 * @entity The entity name or the actual entity object
+	 */
+	string function getTableName( required entity ){
+		return getEntityMetadata( arguments.entity ).getTableName();
+	}
+
+	/**
+	 * Get an entity's hibernate metadata
+	 *
+	 * @see https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/metadata/ClassMetadata.html
+	 *
+	 * @entity The entity name or entity object
+	 *
+	 * @return The Hibernate Java ClassMetadata Object
+	 */
+	function getEntityMetadata( required entity ){
+		return variables.ORM.getEntityMetadata(
+			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
+			datasource = variables.ORM.getEntityDatasource( arguments.entity, variables.datasource )
+		);
+	}
+
+	/**
+	 * Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
+	 *
+	 * @entity The entity to get it's name from
+	 */
+	function getEntityGivenName( required entity ){
+		// Short-cut discovery via ActiveEntity
+		if( structKeyExists( arguments.entity, "getEntityName" ) ){
+			return arguments.entity.getEntityName();
+		}
+
+		// Hibernate Discovery
+		try{
+			var entityName = variables.orm
+		 		.getSession( variables.orm.getEntityDatasource( arguments.entity ) )
+				.getEntityName( arguments.entity );
+		} catch( org.hibernate.TransientObjectException e ){
+			// ignore it, it is not in session, go for long-discovery
+		}
+
+		// Long Discovery
+		var md = getMetadata( arguments.entity );
+		return ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+ 	}
+
+	/*****************************************************************************************/
+	/********************************* DELETION METHODS ************************************/
+	/*****************************************************************************************/
+
+	/**
      * Delete an entity. The entity argument can be a single entity
 	 * or an array of entities. You can optionally flush the session also after committing
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
@@ -857,7 +1065,6 @@ component accessors="true"{
 	){
 		return $transactioned( function( entity, flush ){
 			var objects = [];
-			var objLen  = 0;
 
 			if( !isArray( arguments.entity ) ){
 				arrayAppend( objects, arguments.entity );
@@ -868,6 +1075,8 @@ component accessors="true"{
 			objects.each( function( item ){
 				entityDelete( item );
 			} );
+
+			objects = nullValue();
 
 			// Flush?
 			if( arguments.flush ){
@@ -893,11 +1102,10 @@ component accessors="true"{
 	){
 		return $transactioned( function( entityName, flush ){
 			var options = {
-				datasource = variables.ORM.getEntityDatasource( arguments.entityName )
+				"datasource" : variables.ORM.getEntityDatasource( arguments.entityName )
 			};
 
-			var count = 0;
-			count = ORMExecuteQuery( "delete from #arguments.entityName#", false, options );
+			var count = ORMExecuteQuery( "delete from #arguments.entityName#", false, options );
 
 			// Auto Flush
 			if( arguments.flush ){
@@ -916,6 +1124,7 @@ component accessors="true"{
 	 * @entityName The entity name target
 	 * @id The single id or an array of Ids to delete
 	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
 	numeric function deleteByID(
 		required string entityName,
@@ -925,12 +1134,15 @@ component accessors="true"{
 	){
 
 		return $transactioned( function( entityName, id, flush ){
-			// type safe conversions
-			arguments.id = convertIDValueToJavaType( entityName=arguments.entityName, id=arguments.id );
+			// Bulk Execute
 			var count = ormExecuteQuery(
 				"delete FROM #arguments.entityName# where id in (:idlist)",
 				{
-					"idlist" = arguments.id
+					"idlist" = idCast( entity=arguments.entityName, id=arguments.id )
+				},
+				false,
+				{
+					"datasource" : variables.ORM.getEntityDatasource( arguments.entityName )
 				}
 			);
 
@@ -945,110 +1157,125 @@ component accessors="true"{
 	}
 
 	/**
-	* Delete by using an HQL query and iterating via the results, it is not performing a delete query but
-	* it actually is a select query that should retrieve objects to remove
-	* Transactions are used if useTransactions bit is set or the transactional argument is passed
-	*/
-	any function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, boolean transactional=getUseTransactions(), string datasource="" ){
-		// using transaction closure, well, semy closures :(
-		if( arguments.transactional ){
-			return $transactioned(variables.$deleteByQuery, arguments);
-		}
-		$deleteByQuery( argumentCollection=arguments );
-		return this;
-	}
-	private any function $deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false, string datasource=""){
-		var objects = arrayNew(1);
-		var options = {};
+	 * Delete using HQL native queries. Do not add the `delete` keyword, this is added automatically for you.
+	 *
+	 * So you can do <code>deleteByQuery( "from categories where id = :id" )</code>
+	 *
+	 * @query The query to use for deletion
+	 * @params The params to bind the query with
+	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @datasource Add the datasource to use or defaults
+	 */
+	numeric function deleteByQuery(
+		required string query,
+		any params,
+		boolean flush=false,
+		boolean transactional=getUseTransactions(),
+		string datasource=getDatasource()
+	){
 
-		// Setup query options
-		if( arguments.offset neq 0 ){
-			options.offset = arguments.offset;
-		}
-		if( arguments.max neq 0 ){
-			options.maxresults = arguments.max;
-		}
-		if( Len(arguments.datasource) ){
-			options.datasource = arguments.datasource;
-		}
-		// Query
-		if( structKeyExists(arguments, "params") ){
-			objects = ORMExecuteQuery(arguments.query, arguments.params, false, options);
-		}
-		else{
-			objects = ORMExecuteQuery(arguments.query, false, options);
-		}
+		return $transactioned( function( query, params, flush, datasource ){
 
-		delete(entity=objects,flush=arguments.flush,transactional=arguments.transactional);
-		return this;
+			// Bulk Execute
+			var count = ormExecuteQuery(
+				"delete #arguments.query#",
+				arguments.params,
+				false,
+				{
+					"datasource" : arguments.datasource
+				}
+			);
+
+			// Auto Flush
+			if( arguments.flush ){
+				variables.ORM.flush( datasource );
+			}
+
+			return count;
+		}, arguments, arguments.transactional );
+
 	}
 
 	/**
-	* Deletes entities by using name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
-	* The rest of the arguments are used in the where class using AND notation and parameterized.
-	* Ex: deleteWhere(entityName="User",age="4",isActive=true);
-	* Transactions are used if useTransactions bit is set or the transactional argument is passed
-	*/
-	numeric function deleteWhere(required string entityName,boolean transactional=getUseTransactions()){
-		// using transaction closure, well, semy closures :(
-		if( arguments.transactional ){
-			structDelete(arguments,"transactional");
-			return $transactioned(variables.$deleteWhere, arguments);
-		}
-		structDelete(arguments,"transactional");
-		return $deleteWhere( argumentCollection=arguments );
-	}
-	private numeric function $deleteWhere(required string entityName){
-		var buffer   = createObject("java","java.lang.StringBuilder").init('');
-		var key      = "";
-		var operator = "AND";
-		var params	  = {};
-		var idx	  	  = 1;
-		var count	  = 0;
-		var options   = {};
+	 * Deletes entities by using name value pairs as arguments to this function.
+	 * One mandatory argument is to pass the 'entityName'.
+	 * The rest of the arguments are used in the where class using <strong>AND</strong> notation and parameterized.
+	 *
+	 * Ex:
+	 * <pre>
+	 * deleteWhere(entityName="User",age="4",isActive=true);
+	 * </pre>
+	 *
+	 * @entityName The entity name to target
+	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @datasource The datasource to use or the default one
+	 */
+	numeric function deleteWhere(
+		required string entityName,
+		boolean flush=false,
+		boolean transactional=getUseTransactions(),
+		datasource=getDatasource()
+	){
 
-		options.datasource = orm.getEntityDatasource(arguments.entityName);
+		return $transactioned( function( entityName, flush, datasource ){
+			var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init( 'delete from #arguments.entityName#' );
 
-		buffer.append('delete from #arguments.entityName#');
-
-		// Do we have arguments?
-		if( structCount(arguments) gt 1){
-			buffer.append(" WHERE");
-		}
-		else{
-			throw(message="No where arguments sent, aborting deletion",
-			  detail="We will not do a full delete via this method, you need to pass in named value arguments.",
-			  type="BaseORMService.NoWhereArgumentsFound");
-		}
-
-		// Go over Params
-		for(key in arguments){
-			// Build where parameterized
-			if( key neq "entityName" ){
-				params[key] = arguments[key];
-				buffer.append(" #key# = :#key#");
-				idx++;
-				// Check AND?
-				if( idx neq structCount(arguments) ){
-					buffer.append(" AND");
-				}
+			// Do we have arguments?
+			if( structCount( arguments ) > 3 ){
+				sqlBuffer.append( " WHERE" );
+			} else {
+				throw(
+					message = "No where arguments sent, aborting deletion",
+					detail  = "We will not do a full delete via this method, you need to pass in named value arguments.",
+					type    = "BaseORMService.NoWhereArgumentsFound"
+				);
 			}
-		}
 
-		//start DLM deleteion
-		try{
-			count = ORMExecuteQuery( buffer.toString(), params, true, options);
-		}
-		catch("java.lang.NullPointerException" e){
-			throw(message="A null pointer exception occurred when running the query",
-			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
-			  type="BaseORMService.MaybeInvalidParamCaseException");
-		}
-		catch(any e){
-			rethrow;
-		}
-		return count;
+			// Go over Params and incorporate them
+			var params = arguments
+				// filter out reserved names
+				.filter( function( key, value ){
+					return ( !listFindNoCase( "entityName,flush,datasource", arguments.key ) );
+				} )
+				.reduce( function( accumulator, key, value ){
+					accumulator[ key ] = value;
+					sqlBuffer.append( " #key# = :#key# AND" );
+					return accumulator;
+				}, {} );
+
+			// Finalize ANDs
+			sqlBuffer.append( " 1 = 1" );
+
+			//start DLM deleteion
+			try{
+				var count = ORMExecuteQuery(
+					sqlBuffer.toString(),
+					params,
+					false,
+					{
+						datasource : arguments.datasource
+					}
+				);
+			} catch( "java.lang.NullPointerException" e ) {
+				throw(
+					message = "A null pointer exception occurred when running the query",
+					detail 	= "The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList( arguments )#",
+					type 	= "BaseORMService.MaybeInvalidParamCaseException"
+				);
+			} catch( any e ) {
+				rethrow;
+			}
+
+			return count;
+		}, arguments, arguments.transactional );
+
 	}
+
+	/*****************************************************************************************/
+	/********************************* SAVE METHODS ******************************************/
+	/*****************************************************************************************/
 
 	/**
     * Saves an array of passed entities in specified order
@@ -1116,6 +1343,30 @@ component accessors="true"{
 		}
 
 		return true;
+	}
+
+	/*****************************************************************************************/
+	/********************************* COUNTER METHODS ***************************************/
+	/*****************************************************************************************/
+
+	/**
+     * Checks if the given entityName and id exists in the database, this method does not load the entity into session
+	 *
+	 * @entityName The name of the entity
+	 * @id The id to lookup
+	 */
+	boolean function exists( required entityName, required any id ){
+		// Do it DLM style
+		var count = ORMExecuteQuery(
+			"select count( id ) from #arguments.entityName# where id = ?",
+			[ arguments.id ],
+			true,
+			{
+				datasource = variables.ORM.getEntityDatasource( arguments.entityName )
+			}
+		);
+
+		return ( count gt 0 );
 	}
 
 	/**
@@ -1206,6 +1457,10 @@ component accessors="true"{
 		}
 	}
 
+	/*****************************************************************************************/
+	/********************************* EVICTION METHODS **************************************/
+	/*****************************************************************************************/
+
 	/**
     * Evict an entity from session, the id can be a string or structure for the primary key
 	* You can also pass in a collection name to evict from the collection
@@ -1259,26 +1514,9 @@ component accessors="true"{
 		return this;
 	}
 
-	/**
-    * Merge an entity or array of entities back into a session
-    * @entity A single or an array of entities to re-merge
-    *
-    * @return Same entity if one passed, array if an array of entities passed.
-    */
-	any function merge( required any entity ){
-		var objects = [];
-
-		if( !isArray( arguments.entity ) ){
-			return entityMerge( arguments.entity );
-		}
-
-		var aReturns = [];
-		for( var thisObject in arguments.entity ){
-			arrayAppend( aReturns, entityMerge( thisObject ) );
-		}
-
-		return aReturns;
-	}
+	/*****************************************************************************************/
+	/********************************* ORM UTILITIES *****************************************/
+	/*****************************************************************************************/
 
 	/**
 	* Clear the session removes all the entities that are loaded or created in the session.
@@ -1348,6 +1586,234 @@ component accessors="true"{
 		// Throw exception, method not found.
 		throw(message="Invalid method call: #method#", detail="The dynamic/static method you called does not exist", type="BaseORMService.MissingMethodException");
 	}
+
+	/**
+	* A method for finding entity's dynamically, for example:
+	* findByLastNameAndFirstName('User', 'Tester', 'Test');
+	* findByLastNameOrFirstName('User', 'Tester', 'Test')
+	* findAllByLastNameIsNotNull('User');
+	* The first argument must be the 'entityName' or a named agument called 'entityname'
+	* Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
+	*/
+	any function findDynamically(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false){
+		var method 			= arguments.missingMethodName;
+		var args   			= arguments.missingMethodArguments;
+		var dynamicCacheKey = hash( arguments.toString() );
+		var hql				= "";
+
+		// setup the params to bind from the arguments, and also distinguish the incoming query options
+		var params 	= {};
+		var options = {};
+		// Verify entityName, if does not exist, use the first argument.
+		if( !structKeyExists(args, "entityName" ) ){
+			arguments.entityName = args[ 1 ];
+			// Remove it like a mighty ninja
+			structDelete( args, "1" );
+		}
+		else{
+			arguments.entityName = args.entityName;
+			// Remove it like a mighty ninja
+			structDelete( args, "entityName" );
+		}
+		// Process arguments to binding parameters, we use named as they bind better in HQL, go figure
+		for(var i=1; i LTE ArrayLen( args ); i++){
+			// Check if the argument is a structure, if it is, then these are the query options
+			if( isStruct( args[ i ] ) ){
+				options = args[ i ];
+			}
+			// Normal params
+			else{
+				params[ "param#i#" ] = args[ i ];
+			}
+		}
+
+		//add datasource to options for multi datasource orm
+		options["datasource"]=orm.getEntityDatasource(arguments.entityname);
+
+		// Check if we have already the signature for this request
+		if( structKeyExists( HQLDynamicCache, dynamicCacheKey ) ){
+			hql = HQLDynamicCache[ dynamicCacheKey ];
+		}
+		else{
+			arguments.params = params;
+			hql = compileHQLFromDynamicMethod( argumentCollection=arguments );
+			// store compiled HQL
+			HQLDynamicCache[ dynamicCacheKey ] = hql;
+		}
+
+		//results struct used for testing
+		var results = structNew();
+		results.method = method;
+		results.params = params;
+		results.options = options;
+		results.unique = arguments.unique;
+		results.isCounting = arguments.isCounting;
+		results.hql = hql;
+
+		//writeDump( ORMExecuteQuery( hql, params, arguments.unique, options) );
+		//writeDump(results);abort;
+
+		// execute query as unique for the count
+		try{
+			return ORMExecuteQuery( hql, params, arguments.unique, options);
+		}
+		catch(Any e){
+			if( findNoCase("org.hibernate.NonUniqueResultException", e.detail) ){
+		 		throw(message=e.message & e.detail,
+					  detail="If you do not want unique results then use 'FindAllBy' instead of 'FindBy'",
+				  	  type="ORMService.NonUniqueResultException");
+			}
+			throw(message=e.message & e.detail, type="BaseORMService.HQLQueryException", detail="Dynamic compiled query: #results.toString()#");
+		}
+
+	}
+
+	/*****************************************************************************************/
+	/********************************* CRITERIA METHODS **************************************/
+	/*****************************************************************************************/
+
+	/**
+	 * Get our hibernate org.hibernate.criterion.Restrictions proxy object
+	 *
+	 * @return cborm.models.criterion.Restrictions
+	 */
+	function getRestrictions(){
+		if( !isNull( variables.restrictions ) ){
+			return variables.restrictions;
+		}
+		variables.restrictions = new cborm.models.criterion.Restrictions();
+		return variables.restrictions;
+	}
+
+	/**
+	 * Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective.
+	 */
+	any function criteriaQuery(required entityName,
+									  array criteria=ArrayNew(1),
+					  		 		  string sortOrder="",
+					  		 		  numeric offset=0,
+					  				  numeric max=0,
+					  		 		  numeric timeout=0,
+					  		 		  boolean ignoreCase=false,
+					  		 		  boolean asQuery=getDefaultAsQuery()){
+		// create Criteria query object
+		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
+
+		// Setup listing options
+		if( arguments.offset NEQ 0 ){
+			qry.setFirstResult(arguments.offset);
+		}
+		if(arguments.max GT 0){
+			qry.setMaxResults(arguments.max);
+		}
+		if( arguments.timeout NEQ 0 ){
+			qry.setTimeout(arguments.timeout);
+		}
+
+		// Caching
+		if( getUseQueryCaching() ){
+			qry.setCacheRegion(getQueryCacheRegion());
+			qry.setCacheable(true);
+		}
+
+		// Sort Order Case
+		if( Len(Trim(arguments.sortOrder)) ){
+			var sortTypes = listToArray(arguments.sortOrder);
+			for(var sortType in sortTypes) {
+				var sortField = Trim(ListFirst(sortType," "));
+				var sortDir = "ASC";
+				var Order = CreateObject("java","org.hibernate.criterion.Order");
+
+				if(ListLen(sortType," ") GTE 2){
+					sortDir = ListGetAt(sortType,2," ");
+				}
+
+				switch(UCase(sortDir)) {
+					case "DESC":
+						var orderBy = Order.desc(sortField);
+						break;
+					default:
+						var orderBy = Order.asc(sortField);
+						break;
+				}
+				// ignore case
+				if(arguments.ignoreCase){
+					orderBy.ignoreCase();
+				}
+				// add order to query
+				qry.addOrder(orderBy);
+			}
+		}
+
+		// Get listing
+		var results = qry.list();
+
+		// Is it Null? If yes, return empty array
+		if( isNull(results) ){ results = []; }
+
+		// Objects or Query?
+		if( arguments.asQuery ){
+			results = EntityToQuery(results);
+		}
+
+		return results;
+	}
+
+	/**
+	* Get the record count using hibernate projections and criterion for specific queries
+	*/
+	numeric function criteriaCount(required entityName, array criteria=ArrayNew(1)){
+		// create a new criteria query object
+		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
+		var projections = CreateObject("java","org.hibernate.criterion.Projections");
+
+		qry.setProjection( projections.rowCount() );
+
+		return qry.uniqueResult();
+	}
+
+	/**
+	* Get a brand new criteria builder object
+	* @entityName The name of the entity to bind this criteria query to
+	* @useQueryCaching Activate query caching for the list operations
+	* @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
+	* @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	*/
+	any function newCriteria(
+		required string entityName,
+		boolean useQueryCaching=false,
+		string queryCacheRegion=""
+	){
+
+		// mix in yourself as a dependency
+		arguments.ORMService = this;
+		// create new criteria builder
+		return new CriteriaBuilder( argumentCollection=arguments );
+	}
+
+	/**
+	* Create a new hibernate criteria object according to entityname and criterion array objects
+	*/
+	private any function createCriteriaQuery(required entityName, array criteria=ArrayNew(1)){
+		var qry = orm.getSession(orm.getEntityDatasource(arguments.entityName)).createCriteria( arguments.entityName );
+
+		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
+			if( isSimpleValue( arguments.criteria[i] ) ){
+				// create criteria out of simple values for associations with alias
+				qry.createCriteria( arguments.criteria[i], arguments.criteria[i] );
+			}
+			else{
+				// add criterion
+				qry.add( arguments.criteria[i] );
+			}
+		}
+
+		return qry;
+	}
+
+	/*****************************************************************************************/
+	/********************************* PRIVATE METHODS **************************************/
+	/*****************************************************************************************/
 
 	/**
 	* Compile HQL from a dynamic method call
@@ -1472,382 +1938,6 @@ component accessors="true"{
 	}
 
 	/**
-	* A method for finding entity's dynamically, for example:
-	* findByLastNameAndFirstName('User', 'Tester', 'Test');
-	* findByLastNameOrFirstName('User', 'Tester', 'Test')
-	* findAllByLastNameIsNotNull('User');
-	* The first argument must be the 'entityName' or a named agument called 'entityname'
-	* Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
-	*/
-	any function findDynamically(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false){
-		var method 			= arguments.missingMethodName;
-		var args   			= arguments.missingMethodArguments;
-		var dynamicCacheKey = hash( arguments.toString() );
-		var hql				= "";
-
-		// setup the params to bind from the arguments, and also distinguish the incoming query options
-		var params 	= {};
-		var options = {};
-		// Verify entityName, if does not exist, use the first argument.
-		if( !structKeyExists(args, "entityName" ) ){
-			arguments.entityName = args[ 1 ];
-			// Remove it like a mighty ninja
-			structDelete( args, "1" );
-		}
-		else{
-			arguments.entityName = args.entityName;
-			// Remove it like a mighty ninja
-			structDelete( args, "entityName" );
-		}
-		// Process arguments to binding parameters, we use named as they bind better in HQL, go figure
-		for(var i=1; i LTE ArrayLen( args ); i++){
-			// Check if the argument is a structure, if it is, then these are the query options
-			if( isStruct( args[ i ] ) ){
-				options = args[ i ];
-			}
-			// Normal params
-			else{
-				params[ "param#i#" ] = args[ i ];
-			}
-		}
-
-		//add datasource to options for multi datasource orm
-		options["datasource"]=orm.getEntityDatasource(arguments.entityname);
-
-		// Check if we have already the signature for this request
-		if( structKeyExists( HQLDynamicCache, dynamicCacheKey ) ){
-			hql = HQLDynamicCache[ dynamicCacheKey ];
-		}
-		else{
-			arguments.params = params;
-			hql = compileHQLFromDynamicMethod( argumentCollection=arguments );
-			// store compiled HQL
-			HQLDynamicCache[ dynamicCacheKey ] = hql;
-		}
-
-		//results struct used for testing
-		var results = structNew();
-		results.method = method;
-		results.params = params;
-		results.options = options;
-		results.unique = arguments.unique;
-		results.isCounting = arguments.isCounting;
-		results.hql = hql;
-
-		//writeDump( ORMExecuteQuery( hql, params, arguments.unique, options) );
-		//writeDump(results);abort;
-
-		// execute query as unique for the count
-		try{
-			return ORMExecuteQuery( hql, params, arguments.unique, options);
-		}
-		catch(Any e){
-			if( findNoCase("org.hibernate.NonUniqueResultException", e.detail) ){
-		 		throw(message=e.message & e.detail,
-					  detail="If you do not want unique results then use 'FindAllBy' instead of 'FindBy'",
-				  	  type="ORMService.NonUniqueResultException");
-			}
-			throw(message=e.message & e.detail, type="BaseORMService.HQLQueryException", detail="Dynamic compiled query: #results.toString()#");
-		}
-
-	}
-
-
-	/**
-	 * Returns the key (id field) of a given entity, either simple or composite keys.
-	 * If the key is a simple pk then it will return a string, if it is a composite key then it returns an array
-	 *
-	 * @entity The entity name or entity object
-	 *
-	 * @return string or array
-	 */
-	any function getKey( required entity ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
-
-		// Is this a simple key?
-		if( hibernateMD.hasIdentifierProperty() ){
-			return hibernateMD.getIdentifierPropertyName();
-		}
-
-		// Composite Keys?
-		if( hibernateMD.getIdentifierType().isComponentType() ){
-			// Do conversion to CF Array instead of java array, just in case
-			return listToArray( arrayToList( hibernateMD.getIdentifierType().getPropertyNames() ) );
-		}
-
-		return "";
-	}
-
-	/**
-	 * Returns the Property Names of the entity via hibernate metadata
-	 *
-	 * @entity The entity name or the actual entity object
-	 */
-	array function getPropertyNames( required entity ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
-		return hibernateMD.getPropertyNames();
-	}
-
-	/**
-	 * Returns the table name that the current entity belongs to via hibernate metadata
-	 *
-	 * @entity The entity name or the actual entity object
-	 */
-	string function getTableName( required entity ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
-		return hibernateMD.getTableName();
-	}
-
-	/**
-	 * Get an entity's hibernate metadata
-	 *
-	 * @see https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/metadata/ClassMetadata.html
-	 *
-	 * @entity The entity name or entity object
-	 *
-	 * @return The Hibernate Java ClassMetadata Object
-	 */
-	function getEntityMetadata( required entity ){
-		return variables.ORM.getEntityMetadata(
-			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
-			datasource = variables.ORM.getEntityDatasource( arguments.entity, variables.datasource )
-		);
-	}
-
-	/**
-	 * Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
-	 *
-	 * @entity The entity to get it's name from
-	 */
-	function getEntityGivenName( required entity ){
-		// Short-cut discovery via ActiveEntity
-		if( structKeyExists( arguments.entity, "getEntityName" ) ){
-			return arguments.entity.getEntityName();
-		}
-
-		// Hibernate Discovery
-		try{
-			var entityName = variables.orm
-		 		.getSession( variables.orm.getEntityDatasource( arguments.entity ) )
-				.getEntityName( arguments.entity );
-		} catch( org.hibernate.TransientObjectException e ){
-			// ignore it, it is not in session, go for long-discovery
-		}
-
-		// Long Discovery
-		var md = getMetadata( arguments.entity );
-		return ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
- 	}
-
-	/**
-	 * Convert an Id value to it's Java cast type, this is an alias for `ConvertIdValueToJavaType()`
-	 *
-	 * @entity The entity name or entity object
-	 * @id The id value to convert
-	 */
-	any function idCast( required entity, required id ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
-
-		// No component type support for identifiers
-		if( !isNull( hibernateMD ) and !hibernateMD.getIdentifierType().isComponentType() ){
-			var identifierType = hibernateMD.getIdentifierType();
-
-			// id conversion to array
-			if( isSimpleValue( arguments.id ) ){
-				arguments.id = listToArray( arguments.id );
-			}
-
-			// Convert to Java Type
-			return arguments.id
-				.map( function( thisID ){
-					return identifierType.fromStringValue( thisID );
-				} );
-		}
-
-		return arguments.id;
-	}
-
-	/**
-	 * Coverts an ID, list of ID's, or array of ID's values to the proper Java type
-	 * The method returns a coverted array of ID's
-	 *
-	 * @deprecated In favor of `idCast()`
-	 *
-	 * @entityName The entity name
-	 * @id The id value to convert
-	 */
-	any function convertIdValueToJavaType( required entityName, required id ){
-		arguments.entity = arguments.entityname;
-		return idCast( argumentCollection = arguments );
-	}
-
-	/**
-	 * Coverts a value to the correct javaType for the property passed in.
-	 *
-	 * @entity The entity name or entity object
-	 * @propertyName The property name
-	 * @value The property value
-	 */
-	any function autoCast( required entity, required propertyName, required value ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
-
-		return hibernateMD
-			.getPropertyType( arguments.propertyName )
-			.fromStringValue( arguments.value );
-	}
-
-	/**
-	 * Coverts a value to the correct javaType for the property passed in
-	 *
-	 * @deprecated In favor of `autoCast()`
-	 *
-	 * @entityName The entity name or entity object
-	 * @propertyName The property name
-	 * @value The property value
-	 */
-	any function convertValueToJavaType( required entityName, required propertyName, required value ){
-		arguments.entity = arguments.entityName;
-		return autoCast( argumentCollection=arguments );
-	}
-
-	/**
-	 * Get our hibernate org.hibernate.criterion.Restrictions proxy object
-	 */
-	cborm.models.criterion.Restrictions function getRestrictions(){
-		if( !isNull( variables.restrictions ) ){
-			return variables.restrictions;
-		}
-		variables.restrictions = new cborm.models.criterion.Restrictions();
-		return variables.restrictions;
-	}
-
-	/**
-	* Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective.
-	*/
-	any function criteriaQuery(required entityName,
-									  array criteria=ArrayNew(1),
-					  		 		  string sortOrder="",
-					  		 		  numeric offset=0,
-					  				  numeric max=0,
-					  		 		  numeric timeout=0,
-					  		 		  boolean ignoreCase=false,
-					  		 		  boolean asQuery=getDefaultAsQuery()){
-		// create Criteria query object
-		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
-
-		// Setup listing options
-		if( arguments.offset NEQ 0 ){
-			qry.setFirstResult(arguments.offset);
-		}
-		if(arguments.max GT 0){
-			qry.setMaxResults(arguments.max);
-		}
-		if( arguments.timeout NEQ 0 ){
-			qry.setTimeout(arguments.timeout);
-		}
-
-		// Caching
-		if( getUseQueryCaching() ){
-			qry.setCacheRegion(getQueryCacheRegion());
-			qry.setCacheable(true);
-		}
-
-		// Sort Order Case
-		if( Len(Trim(arguments.sortOrder)) ){
-			var sortTypes = listToArray(arguments.sortOrder);
-			for(var sortType in sortTypes) {
-				var sortField = Trim(ListFirst(sortType," "));
-				var sortDir = "ASC";
-				var Order = CreateObject("java","org.hibernate.criterion.Order");
-
-				if(ListLen(sortType," ") GTE 2){
-					sortDir = ListGetAt(sortType,2," ");
-				}
-
-				switch(UCase(sortDir)) {
-					case "DESC":
-						var orderBy = Order.desc(sortField);
-						break;
-					default:
-						var orderBy = Order.asc(sortField);
-						break;
-				}
-				// ignore case
-				if(arguments.ignoreCase){
-					orderBy.ignoreCase();
-				}
-				// add order to query
-				qry.addOrder(orderBy);
-			}
-		}
-
-		// Get listing
-		var results = qry.list();
-
-		// Is it Null? If yes, return empty array
-		if( isNull(results) ){ results = []; }
-
-		// Objects or Query?
-		if( arguments.asQuery ){
-			results = EntityToQuery(results);
-		}
-
-		return results;
-	}
-
-	/**
-	* Get the record count using hibernate projections and criterion for specific queries
-	*/
-	numeric function criteriaCount(required entityName, array criteria=ArrayNew(1)){
-		// create a new criteria query object
-		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
-		var projections = CreateObject("java","org.hibernate.criterion.Projections");
-
-		qry.setProjection( projections.rowCount() );
-
-		return qry.uniqueResult();
-	}
-
-	/**
-	* Get a brand new criteria builder object
-	* @entityName The name of the entity to bind this criteria query to
-	* @useQueryCaching Activate query caching for the list operations
-	* @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
-	* @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
-	*/
-	any function newCriteria(
-		required string entityName,
-		boolean useQueryCaching=false,
-		string queryCacheRegion=""
-	){
-
-		// mix in yourself as a dependency
-		arguments.ORMService = this;
-		// create new criteria builder
-		return new CriteriaBuilder( argumentCollection=arguments );
-	}
-
-	/**
-	* Create a new hibernate criteria object according to entityname and criterion array objects
-	*/
-	private any function createCriteriaQuery(required entityName, array criteria=ArrayNew(1)){
-		var qry = orm.getSession(orm.getEntityDatasource(arguments.entityName)).createCriteria( arguments.entityName );
-
-		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
-			if( isSimpleValue( arguments.criteria[i] ) ){
-				// create criteria out of simple values for associations with alias
-				qry.createCriteria( arguments.criteria[i], arguments.criteria[i] );
-			}
-			else{
-				// add criterion
-				qry.add( arguments.criteria[i] );
-			}
-		}
-
-		return qry;
-	}
-
-	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis
 	 *
 	 * @target The closure or UDF to execute
@@ -1859,7 +1949,10 @@ component accessors="true"{
 		argCollection={},
 		boolean transactional=getUseTransactions()
 	){
-		// If in transaction, just execute
+		// Clean up the arg collection
+		structDelete( argCollection, "transactional" );
+
+		// If in transaction, just execute the incoming target
 		if( request.keyExists( "cbox_aop_transaction" ) OR !arguments.transactional ){
 			return arguments.target( argumentCollection=arguments.argCollection );
 		}

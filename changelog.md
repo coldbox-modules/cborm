@@ -20,6 +20,8 @@ moduleSettings = {
 };
 ```
 
+* `deleteByQuery()` reworked entirely to do native bulk delete queries.  It now also returns the number of records removed
+
 ### General Updates
 
 * **Mementifier** is now a dependency for cborm. (www.forgebox.io/view/mementifier), which can be used for producing state out of ORM entities for auditing or building JSON Api's.
@@ -52,6 +54,8 @@ moduleSettings = {
 * `getTableName()` argument of `entityname` renamed to `entity` to allow not only for a name but an actual entity as well.
 * `getKey()` argument of `entityname` renamed to `entity` to allow not only for a name but an actual entity as well.
 * ORM Encapsulation of hibernate metadata retrieval via `getEntityMetadata()`
+* `deleteByQuery()` reworked entirely to do native bulk delete queries.  It now also returns the number of records removed
+* `deleteWhere()` missing flush argument, added datasource as well
 
 ### Virtual Entity Service
 
