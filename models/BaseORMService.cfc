@@ -1390,76 +1390,86 @@ component accessors="true"{
 	}
 
 	/**
-	* Return the count of records in the DB for the given entity name. You can also pass an optional where statement
-	* that can filter the count. Ex: count('User','age > 40 AND name="joe"'). You can even use params with this method:
-	* Ex: count('User','age > ? AND name = ?',[40,"joe"])
-	*/
-	numeric function count(required string entityName,string where="", any params=structNew()){
-		var buffer   = createObject("java","java.lang.StringBuilder").init('');
-		var key      = "";
-		var operator = "AND";
-		var options = {};
+	 * Return the count of records in the DB for the given entity name. You can also pass an optional where statement
+	 * that can filter the count. Ex: <code>count( 'User','age > 40 AND name="joe"' )</code>. You can even use params with this method:
+	 * Ex: <code>count('User','age > ? AND name = ?',[40,"joe"])</code>
+	 *
+	 * @entityName The name of the entity
+	 * @where The HQL where statement
+	 * @params Any params to bind in the where argument
+	 */
+	numeric function count( required string entityName, string where="", any params=structNew() ){
+		var buffer   	= createObject( "java","java.lang.StringBuilder" ).init( '' );
+		var options 	= {
+			"datasource" : variables.orm.getEntityDatasource( arguments.entityName )
+		};
 
-		options.datasource = orm.getEntityDatasource(arguments.entityName);
 
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
-		buffer.append('select count(*) from #arguments.entityName#');
+
+		// HQL
+		buffer.append( "select count( id ) from #arguments.entityName#" );
 
 		// build params
-		if( len(trim(arguments.where)) ){
-			buffer.append(" WHERE #arguments.where#");
+		if( len( trim( arguments.where ) ) ){
+			buffer.append(" WHERE #trim( arguments.where )#" );
 		}
 
 		// execute query as unique for the count
 		try{
-			return ORMExecuteQuery( buffer.toString(), arguments.params, true, options);
-		}
-		catch("java.lang.NullPointerException" e){
-			throw(message="A null pointer exception occurred when running the query",
-				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(arguments.params)#",
-				  type="ORMService.MaybeInvalidParamCaseException");
+			return ORMExecuteQuery(
+				buffer.toString(),
+				arguments.params,
+				true,
+				options
+			);
+		} catch( "java.lang.NullPointerException" e ) {
+			throw(
+				message	= "A null pointer exception occurred when running the query",
+				detail	= "The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys	=#structKeyList( arguments.params )#",
+				type 	= "ORMService.MaybeInvalidParamCaseException"
+			);
 		}
 
 	}
 
 	/**
-	* Returns the count by passing name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
-	* The rest of the arguments are used in the where class using AND notation and parameterized.
-	* Ex: countWhere(entityName="User",age="20");
-	*/
-	numeric function countWhere(required string entityName){
-		var buffer   = createObject("java","java.lang.StringBuilder").init('');
-		var key      = "";
-		var operator = "AND";
-		var params	  = {};
-		var idx	  = 1;
-		var options = {};
+	 * Returns the count by passing name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
+	 * The rest of the arguments are used in the where class using AND notation and parameterized.
+	 * Ex: <code>countWhere( entityName="User", age="20" );</code>
+	 *
+	 * @entityName The entity name to count on
+	 */
+	numeric function countWhere( required string entityName ){
+		var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init( "select count(id) from #arguments.entityName#" );
+		var options = {
+			datasource : variables.orm.getEntityDatasource( arguments.entityName )
+		};
 
-		options.datasource = orm.getEntityDatasource(arguments.entityName);
-
-		buffer.append('select count(*) from #arguments.entityName#');
-
-		// Do we have params?
-		if( structCount(arguments) gt 1){
-			buffer.append(" WHERE");
+		// Do we have arguments?
+		if( structCount( arguments ) > 1 ){
+			sqlBuffer.append( " WHERE" );
 		}
-		// Go over Params
-		for(key in arguments){
-			// Build where parameterized
-			if( key neq "entityName" ){
-				params[key] = arguments[key];
-				buffer.append(" #key# = :#key#");
-				idx++;
-				// Check AND?
-				if( idx neq structCount(arguments) ){
-					buffer.append(" AND");
-				}
-			}
-		}
+
+		// Go over Params and incorporate them
+		var params = arguments
+		// filter out reserved names
+		.filter( function( key, value ){
+			return ( !listFindNoCase( "entityName", arguments.key ) );
+		} )
+		.reduce( function( accumulator, key, value ){
+			accumulator[ key ] = value;
+			sqlBuffer.append( " #key# = :#key# AND" );
+			return accumulator;
+		}, {} );
+
+		// Finalize ANDs
+		sqlBuffer.append( " 1 = 1" );
+
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
@@ -1468,12 +1478,20 @@ component accessors="true"{
 
 		// execute query as unique for the count
 		try{
-			return ORMExecuteQuery( buffer.toString(), params, true, options);
-		}
-		catch("java.lang.NullPointerException" e){
-			throw(message="A null pointer exception occurred when running the count",
-				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
-				  type="ORMService.MaybeInvalidParamCaseException");
+			return ORMExecuteQuery(
+				sqlBuffer.toString(),
+				params,
+				true,
+				options
+			);
+		} catch( "java.lang.NullPointerException" e ) {
+			throw(
+				message = "A null pointer exception occurred when running the query",
+				detail 	= "The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList( arguments )#",
+				type 	= "BaseORMService.MaybeInvalidParamCaseException"
+			);
+		} catch( any e ) {
+			rethrow;
 		}
 	}
 
@@ -1482,9 +1500,9 @@ component accessors="true"{
 	/*****************************************************************************************/
 
 	/**
-    * Evict an entity from session, the id can be a string or structure for the primary key
-	* You can also pass in a collection name to evict from the collection
-    */
+     * Evict an entity from session, the id can be a string or structure for the primary key
+	 * You can also pass in a collection name to evict from the collection
+     */
 	any function evict(required string entityName,string collectionName, any id){
 
 		//Collection?
