@@ -1278,71 +1278,91 @@ component accessors="true"{
 	/*****************************************************************************************/
 
 	/**
-    * Saves an array of passed entities in specified order
-	* @entities An array of entities to save
-	* Transactions are used if useTransactions bit is set or the transactional argument is passed
-    */
-	any function saveAll(required entities, forceInsert=false, flush=false,boolean transactional=getUseTransactions()){
-		// using transaction closure, well, semy closures :(
-		if( arguments.transactional ){
-			return $transactioned(variables.$saveAll, arguments);
-		}
-		return $saveAll( argumentCollection=arguments );
-	}
-	private any function $saveAll(required entities, forceInsert=false, flush=false){
-		var count 			=  arrayLen(arguments.entities);
-		var eventHandling 	=  getEventHandling();
+     * Saves an array of passed entities in specified order in a single transaction block
+	 *
+	 * @entities An array of entities to save
+	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
+	 * @flush Do a flush after saving the entries, false by default since we use transactions
+	 * @transactional Wrap it in a `cftransaction`, defaults to true
+     */
+	BaseORMService function saveAll(
+		required entities,
+		forceInsert=false,
+		boolean flush=false,
+		boolean transactional=getUseTransactions()
+	){
 
-		// iterate and save
-		for(var x=1; x lte count; x++){
-			// Event Handling? If enabled, call the preSave() interception
-			if( eventHandling ){
-				getORMEventHandler().preSave( arguments.entities[x] );
+		return $transactioned( function( entities, forceInsert, flush ){
+			var eventHandling 	=  getEventHandling();
+
+			// iterate and save
+			for( var thisEntity in arguments.entities ){
+				// Event Handling? If enabled, call the preSave() interception
+				if( eventHandling ){
+					getORMEventHandler().preSave( thisEntity );
+				}
+
+				// Save it
+				entitySave( thisEntity, arguments.forceInsert );
+
+				// Event Handling? If enabled, call the postSave() interception
+				if( eventHandling ){
+					getORMEventHandler().postSave( thisEntity );
+				}
 			}
-			// Save it
-			entitySave(arguments.entities[x], arguments.forceInsert);
-			// Event Handling? If enabled, call the postSave() interception
-			if( eventHandling ){
-				getORMEventHandler().postSave( arguments.entities[x] );
-			}
+
 			// Auto Flush
-			if( arguments.flush ){ orm.flush( orm.getEntityDatasource( arguments.entities[x] ) ); }
-		}
+			if( arguments.flush ){
+				variables.orm.flush( getDatasource() );
+			}
 
-		return true;
+			return this;
+		}
+		, arguments, arguments.transactional );
+
 	}
 
 	/**
-    * Save an entity using hibernate transactions or not. You can optionally flush the session also
-    */
-	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean transactional=getUseTransactions()){
-		// using transaction closure, well, semy closures :(
-		if( arguments.transactional ){
-			return $transactioned(variables.$save, arguments);
+     * Save an entity using hibernate transactions or not. You can optionally flush the session also
+	 * @entity The entity to save
+	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
+	 * @flush Do a flush after saving the entity, false by default since we use transactions
+	 * @transactional Wrap it in a `cftransaction`, defaults to true
+     */
+	BaseORMService function save(
+		required any entity,
+		boolean forceInsert=false,
+		boolean flush=false,
+		boolean transactional=getUseTransactions()
+	){
+
+		return $transactioned( function( entity, forceInsert, flush ){
+
+			// Event handling flag
+			var eventHandling = getEventHandling();
+
+			// Event Handling? If enabled, call the preSave() interception
+			if( eventHandling ){
+				getORMEventHandler().preSave( arguments.entity );
+			}
+
+			// save
+			entitySave(arguments.entity, arguments.forceInsert );
+
+			// Auto Flush
+			if( arguments.flush ){
+				variables.orm.flush( variables.orm.getEntityDatasource( arguments.entity ) );
+			}
+
+			// Event Handling? If enabled, call the postSave() interception
+			if( eventHandling ){
+				getORMEventHandler().postSave( arguments.entity );
+			}
+
+			return this;
 		}
-		return $save( argumentCollection=arguments );
-	}
-	any function $save(required any entity, boolean forceInsert=false, boolean flush=false){
-		// Event handling flag
-		var eventHandling = getEventHandling();
+		, arguments, arguments.transactional );
 
-		// Event Handling? If enabled, call the preSave() interception
-		if( eventHandling ){
-			getORMEventHandler().preSave( arguments.entity );
-		}
-
-		// save
-		entitySave(arguments.entity, arguments.forceInsert);
-
-		// Auto Flush
-		if( arguments.flush ){ orm.flush(orm.getEntityDatasource(arguments.entity)); }
-
-		// Event Handling? If enabled, call the postSave() interception
-		if( eventHandling ){
-			getORMEventHandler().postSave( arguments.entity );
-		}
-
-		return true;
 	}
 
 	/*****************************************************************************************/
