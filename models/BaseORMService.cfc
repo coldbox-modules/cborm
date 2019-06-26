@@ -53,34 +53,20 @@ component accessors="true"{
 	property name="defaultAsQuery" type="boolean" default="true" persistent="false";
 
 	/**
-	 * All calculated and parsed dynamic finders' and counters' HQL will be stored here for easier execution
-	 */
-	property name="HQLDynamicCache" type="struct" persistent="false";
-
-	/**
 	 * The default datsource to use for all transactions, else we look at arguments or entity itself
 	 */
 	property name="datasource" type="string" persistent="false" default="";
 
+	/**
+	 * A LogBox logger prepared for the class
+	 */
+	property name="logger" persistent="false";
 
-	/************************************** STATIC VARIABLES *********************************************/
+	/**
+	 * A WireBox reference
+	 */
+	property name="wirebox" persistent="false";
 
-	// STATIC DYNAMIC FINDER VARIABLES
-	variables.ALL_CONDITIONALS 			= "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
-	variables.ALL_CONDITIONALS_REGEX	= replace( variables.ALL_CONDITIONALS, ",", "|", "all" );
-	variables.CONDITIONALS_SQL_MAP 		= {
-		"LessThanEquals" = "<=",
-		"LessThan" = "<",
-		"GreaterThanEquals" = ">=",
-		"GreaterThan" = ">",
-		"Like" = "like",
-		"NotEqual" = "<>",
-		"isNull" = "is null",
-		"isNotNull" = "is not null",
-		"NotBetween" = "not between",
-		"between" = "between",
-		"NotInList" = "not in",
-		"InList" = "in" };
 
 	/************************************** CONSTRUCTOR *********************************************/
 
@@ -109,8 +95,8 @@ component accessors="true"{
 		variables.eventHandling 	= arguments.eventHandling;
 		variables.useTransactions 	= arguments.useTransactions;
 		variables.defaultAsQuery 	= arguments.defaultAsQuery;
-		variables.HQLDynamicCache	= {};
 		variables.wirebox 			= application.wirebox;
+		variables.logger 			= variables.wirebox.getLogBox().getLogger( this );
 
 		// Create the ORM Utility component
 		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
@@ -141,6 +127,20 @@ component accessors="true"{
 
 		variables.ORMEventHandler = new cborm.models.EventHandler();
 		return variables.ORMEventHandler;
+	}
+
+	/**
+	 * Lazy loading the dynamic methods processor
+	 *
+	 * @return cborm.models.DynamicMethods
+	 */
+	function getDynamicMethods(){
+		if( !isNull( variables.dynamicMethods ) ){
+			return variables.dynamicMethods;
+		}
+
+		variables.dynamicMethods = new cborm.models.DynamicMethods( this );
+		return variables.dynamicMethods;
 	}
 
 	/**
@@ -1500,54 +1500,64 @@ component accessors="true"{
 	/*****************************************************************************************/
 
 	/**
-     * Evict an entity from session, the id can be a string or structure for the primary key
-	 * You can also pass in a collection name to evict from the collection
+     * Evict all the collection or association data for a given entity name and collection name from the secondary cache ONLY, not the hibernate session
+	 * Evict an entity name with or without an ID from the secondary cache ONLY, not the hibernate session
+	 *
+	 * @entityName The entity name to evict or use in the eviction process
+	 * @relationName The name of the relation in the entity to evict
+	 * @id The id to use for eviction according to entity name or relation name
      */
-	any function evict(required string entityName,string collectionName, any id){
+	any function evictCollection( required string entityName, string relationName, any id ){
 
-		//Collection?
-		if( structKeyExists(arguments,"collectionName") ){
-			if( structKeyExists(arguments,"id") )
-				ORMEvictCollection(arguments.entityName,arguments.collectionName, arguments.id);
+		// With Relation
+		if( !isNull( arguments.relationName ) ){
+			if( !isNull( arguments.id ) )
+				ORMEvictCollection( arguments.entityName, arguments.relationName, arguments.id );
 			else
-				ORMEvictCollection(arguments.entityName,arguments.collectionName);
+				ORMEvictCollection( arguments.entityName, arguments.relationName );
+
+				return this;
 		}
+
 		// Single Entity
-		else{
-			if( structKeyExists(arguments,"id") )
-				evictEntity( this.get(entityName=arguments.entityName,id=arguments.id) );
-			else
-				evictEntity( this.new(entityName=arguments.entityName) );
-		}
+		if( !isNull( arguments.id ) )
+			ORMEvictEntity( arguments.entityName, arguments.id );
+		else
+			ORMEvictEntity( arguments.entityName );
 
 		return this;
 	}
 
 	/**
-    * Evict entity objects from session.
-	* @entities The argument can be one persistence entity or an array of entities
-    */
-	any function evictEntity(required any entities){
-		var objects = arrayNew(1);
+     * Evict entity object(s) from the hibernate session or first-level cache
+	 *
+	 * 1) An entity object
+	 * 2) An array of entity objects
+	 *
+	 * @entities The argument can be one persistence entity or an array of entities to evict
+     */
+	BaseORMService function evict( required any entities ){
 
-		if( not isArray(arguments.entities) ){
-			arrayAppend(objects, arguments.entities);
-		}
-		else{
-			objects = arguments.entities;
+		if( ! isArray( arguments.entities ) ){
+			arguments.entities = [ arguments.entities ];
 		}
 
-		for( var x=1; x lte arrayLen(objects); x++){
-			orm.getSession(orm.getEntityDatasource(objects[x])).evict( objects[x] );
-		}
+		arguments.entities.each( function( item ){
+			variables.ORM
+				.getSession( variables.orm.getEntityDatasource( item ) )
+				.evict( item );
+		} );
 
 		return this;
 	}
 
 	/**
-    * Evict all queries in the default cache or the cache region passed
-    */
-	any function evictQueries(string cacheName, string datasource){
+     * Evict all queries in the default cache or the cache region passed
+	 *
+	 * @cacheName The cache region to evict from or if empty from the default cache region
+	 * @datasource The specific datasource to use or the default datasource
+     */
+	BaseORMService function evictQueries( string cacheName, string datasource=getDatasource() ){
 		variables.orm.evictQueries( argumentCollection=arguments );
 		return this;
 	}
@@ -1557,23 +1567,25 @@ component accessors="true"{
 	/*****************************************************************************************/
 
 	/**
-	* Clear the session removes all the entities that are loaded or created in the session.
-	* This clears the first level cache and removes the objects that are not yet saved to the database.
-	*/
-	any function clear(string datasource=orm.getDefaultDatasource()){
-		orm.clearSession(arguments.datasource);
+	 * Clear the session removes all the entities that are loaded or created in the session.
+	 * This clears the first level cache and removes the objects that are not yet saved to the database.
+	 *
+	 * @datasource The datasource to use
+	 */
+	BaseORMService function clear( string datasource=getDatasource() ){
+		variables.ORM.clearSession( arguments.datasource );
 		return this;
 	}
 
 	/**
-	* Checks if the session contains dirty objects that are awaiting persistence
-	*/
-	boolean function isSessionDirty(string datasource=orm.getDefaultDatasource()){
-		return orm.getSession(arguments.datasource).isDirty();
+	 * Checks if the hibernate session contains dirty objects that are awaiting persistence
+	 */
+	boolean function isSessionDirty( string datasource=getDatasource() ){
+		return variables.orm.getSession( arguments.datasource ).isDirty();
 	}
 
 	/**
-	 * Checks if the current session contains the passed in entity.
+	 * Checks if the current hibernate session contains the passed in entity.
 	 *
 	 * @entity The entity object
 	 */
@@ -1587,123 +1599,82 @@ component accessors="true"{
 	}
 
 	/**
-	* Information about the first-level (session) cache for the current session
-	*/
-	struct function getSessionStatistics(string datasource=orm.getDefaultDatasource()){
-		var stats   = orm.getSession(arguments.datasource).getStatistics();
-		var results = {
-			collectionCount = stats.getCollectionCount(),
-			collectionKeys  = stats.getCollectionKeys().toString(),
-			entityCount	    = stats.getEntityCount(),
-			entityKeys		= stats.getEntityKeys().toString()
-		};
+	 * Information about the first-level (session) cache for the current session
+	 *
+	 * @datasource The datasource to use
+	 */
+	struct function getSessionStatistics( string datasource=getDatasource() ){
+		var stats   = variables.ORM.getSession( arguments.datasource ).getStatistics();
 
-		return results;
+		return {
+			"collectionCount" 	: stats.getCollectionCount(),
+			"collectionKeys"  	: stats.getCollectionKeys().toString(),
+			"entityCount"	  	: stats.getEntityCount(),
+			"entityKeys"		: stats.getEntityKeys().toString()
+		};
 	}
 
 	/**
-	* A nice onMissingMethod template to create awesome dynamic methods.
-	*/
-	any function onMissingMethod(string missingMethodName, struct missingMethodArguments){
+	 * This method listens to non-existent method to create fluently:
+	 *
+	 * 1) FindByXXX operations
+	 * 2) FindAllByXXX operations
+	 * 3) countByXXX operations
+	 *
+	 * You can pass in the arguments a structure of options by calling it `options` or the last
+	 * argument which is a struct will be used.  Options can contain the following keys:
+	 *
+	 * - ignoreCase:boolean
+	 * - maxResults:numeric
+	 * - offset:numeric
+	 * - cacheable:boolean
+	 * - cacheName:string
+	 * - timeout:numeric
+	 * - datasource:string
+	 * - sortBy:hql
+	 *
+	 * Else it throws a method does not exist exception
+	 * @throws MissingMethodException
+	 */
+	any function onMissingMethod( string missingMethodName, struct missingMethodArguments ){
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
 
 		// Dynamic Find Unique Finders
 		if( left( method, 6 ) eq "findBy" and len( method ) GT 6 ){
-			return findDynamically(missingMethodName=right( method, len( method ) - 6 ), missingMethodArguments=args, unique=true);
+			return getDynamicMethods().
+				findDynamically(
+					method		= right( method, len( method ) - 6 ),
+					args 		= args,
+					unique		= true
+				);
 		}
 		// Dynamic find All Finders
-		if( left( method, 9 ) eq "findAllBy"  and len( method ) GT 9 ){
-			return findDynamically(missingMethodName=right( method, len( method ) - 9 ), missingMethodArguments=args, unique=false);
+		if( left( method, 9 ) eq "findAllBy" and len( method ) GT 9 ){
+			return getDynamicMethods().
+				findDynamically(
+					method		= right( method, len( method ) - 9 ),
+					args 		= args,
+					unique 		= false
+				);
 		}
 		// Dynamic countBy Finders
-		if( left( method, 7 ) eq "countBy"  and len( method ) GT 7 ){
-			return findDynamically(missingMethodName=right( method, len( method ) - 7 ), missingMethodArguments=args, unique=true, isCounting=true);
+		if( left( method, 7 ) eq "countBy" and len( method ) GT 7 ){
+			return getDynamicMethods().
+				findDynamically(
+					method 		= right( method, len( method ) - 7 ),
+					args 		= args,
+					unique 		= true,
+					isCounting 	= true
+				);
 		}
 
 		// Throw exception, method not found.
-		throw(message="Invalid method call: #method#", detail="The dynamic/static method you called does not exist", type="BaseORMService.MissingMethodException");
-	}
-
-	/**
-	* A method for finding entity's dynamically, for example:
-	* findByLastNameAndFirstName('User', 'Tester', 'Test');
-	* findByLastNameOrFirstName('User', 'Tester', 'Test')
-	* findAllByLastNameIsNotNull('User');
-	* The first argument must be the 'entityName' or a named agument called 'entityname'
-	* Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
-	*/
-	any function findDynamically(string missingMethodName, struct missingMethodArguments, boolean unique=true, boolean isCounting=false){
-		var method 			= arguments.missingMethodName;
-		var args   			= arguments.missingMethodArguments;
-		var dynamicCacheKey = hash( arguments.toString() );
-		var hql				= "";
-
-		// setup the params to bind from the arguments, and also distinguish the incoming query options
-		var params 	= {};
-		var options = {};
-		// Verify entityName, if does not exist, use the first argument.
-		if( !structKeyExists(args, "entityName" ) ){
-			arguments.entityName = args[ 1 ];
-			// Remove it like a mighty ninja
-			structDelete( args, "1" );
-		}
-		else{
-			arguments.entityName = args.entityName;
-			// Remove it like a mighty ninja
-			structDelete( args, "entityName" );
-		}
-		// Process arguments to binding parameters, we use named as they bind better in HQL, go figure
-		for(var i=1; i LTE ArrayLen( args ); i++){
-			// Check if the argument is a structure, if it is, then these are the query options
-			if( isStruct( args[ i ] ) ){
-				options = args[ i ];
-			}
-			// Normal params
-			else{
-				params[ "param#i#" ] = args[ i ];
-			}
-		}
-
-		//add datasource to options for multi datasource orm
-		options["datasource"]=orm.getEntityDatasource(arguments.entityname);
-
-		// Check if we have already the signature for this request
-		if( structKeyExists( HQLDynamicCache, dynamicCacheKey ) ){
-			hql = HQLDynamicCache[ dynamicCacheKey ];
-		}
-		else{
-			arguments.params = params;
-			hql = compileHQLFromDynamicMethod( argumentCollection=arguments );
-			// store compiled HQL
-			HQLDynamicCache[ dynamicCacheKey ] = hql;
-		}
-
-		//results struct used for testing
-		var results = structNew();
-		results.method = method;
-		results.params = params;
-		results.options = options;
-		results.unique = arguments.unique;
-		results.isCounting = arguments.isCounting;
-		results.hql = hql;
-
-		//writeDump( ORMExecuteQuery( hql, params, arguments.unique, options) );
-		//writeDump(results);abort;
-
-		// execute query as unique for the count
-		try{
-			return ORMExecuteQuery( hql, params, arguments.unique, options);
-		}
-		catch(Any e){
-			if( findNoCase("org.hibernate.NonUniqueResultException", e.detail) ){
-		 		throw(message=e.message & e.detail,
-					  detail="If you do not want unique results then use 'FindAllBy' instead of 'FindBy'",
-				  	  type="ORMService.NonUniqueResultException");
-			}
-			throw(message=e.message & e.detail, type="BaseORMService.HQLQueryException", detail="Dynamic compiled query: #results.toString()#");
-		}
-
+		throw(
+			message = "Invalid method call: #arguments.missingMethodName#",
+			detail  = "The method you called does not exist in this component",
+			type    = "MissingMethodException"
+		);
 	}
 
 	/*****************************************************************************************/
@@ -1852,128 +1823,6 @@ component accessors="true"{
 	/*****************************************************************************************/
 	/********************************* PRIVATE METHODS **************************************/
 	/*****************************************************************************************/
-
-	/**
-	* Compile HQL from a dynamic method call
-	*/
-	private any function compileHQLFromDynamicMethod(
-		string missingMethodName,
-		struct missingMethodArguments,
-		boolean unique=true,
-		boolean isCounting=false,
-		struct params,
-		entityName
-	){
-		var method 	= arguments.missingMethodName;
-		var args   	= arguments.missingMethodArguments;
-
-		// Get all real property names
-		var realPropertyNames = getPropertyNames( arguments.entityName );
-		// Match our method grammars in the method string
-		var methodGrammars = REMatchNoCase( "(#arrayToList( realPropertyNames, '|' )#)+(#ALL_CONDITIONALS_REGEX#)?(and|or|$)", method );
-
-		// Throw exception if no method grammars found
-		if( !arrayLen( methodGrammars ) ){
-			throw(
-				message = "Invalid dynamic method grammar expression. Please check your syntax. You could be missing property names or conditionals",
-				detail 	= "Expression: #method#",
-				type 	= "BaseORMService.InvalidMethodGrammar");
-		}
-
-		// Iterate over method grammars to build HQL Expressions
-		var HQLExpressions = [];
-		for( var thisGrammar in methodGrammars ){
-			// create expression syntax
-			var expression = { property = "", conditional = "eq", operator = "and", sql = "=" };
-
-			// Check for Or expression, AND is default expression
-			if( right( thisGrammar, 2 ) eq "or" ){
-				expression.operator = "or";
-			}
-			// Remove operator now that we have it, if the property name doesn't exist
-			if( !arrayFindNoCase( realPropertyNames, thisGrammar ) ) {
-				thisGrammar = REReplacenoCase( thisGrammar, "(and|or)$", "" );
-			}
-
-			// Get property by removing conditionals from the expression
-			expression.property = REReplacenoCase( thisGrammar, "(#ALL_CONDITIONALS_REGEX#)$", "" );
-			// Verify if property exists in valid properties
-			// TODO: Add relationships later
-			var realPropertyIndex = arrayFindNoCase( realPropertyNames, expression.property );
-			if( realPropertyIndex EQ 0 ){
-				throw(
-					message	= "The property you requested '#expression.property#' is not a valid property in the '#arguments.entityName#' entity",
-					detail	= "Valid properties are #arrayToList( realPropertyNames )#",
-					type 	= "BaseORMService.InvalidEntityProperty"
-				);
-			}
-			// now save the actual property name to the passed in property to avoid case issues with Hibernate
-			expression.property = realPropertyNames[ realPropertyIndex ];
-			// Remove property now from method expression
-			thisGrammar = REReplacenoCase( thisGrammar, "#expression.property#", "" );
-
-			// Get Conditional Operator now if it exists, else it defaults to EQ
-			if( len( thisGrammar ) ){
-				// Match the conditional statement
-				var conditional = REMatchNoCase( "(#ALL_CONDITIONALS_REGEX#)$", thisGrammar );
-				// Did we match?
-				if( arrayLen( conditional ) ){
-					expression.conditional = conditional[ 1 ];
-					expression.sql = CONDITIONALS_SQL_MAP[ expression.conditional ];
-				}
-				else{
-					throw(message="Invalid conditional statement in method expression: #thisGrammar#",
-						  detail="Valid Conditionals: #ALL_CONDITIONALS#",
-						  type="BaseORMService.InvalidConditionalExpression");
-				}
-			}
-
-			// Add to expressions
-			arrayAppend( HQLExpressions, expression );
-		}
-		// end compile grammars
-
-		// Build the HQL
-		var where = "";
-		// Begin building the hql statement with or without counts
-		var hql = "";
-		if( arguments.isCounting ){
-			hql &= "select count(id) ";
-		}
-		hql &= "from " & arguments.entityName;
-
-		var paramIndex = 1;
-		for( var thisExpression in HQLExpressions ){
-			if( len( where ) ){
-				where = "#where# #thisExpression.operator# ";
-			}
-			switch( trim( thisExpression.conditional ) ){
-				case "isNull" : case "isNotNull" : {
-					where = "#where# #thisExpression.property# #thisExpression.sql#";
-					break;
-				}
-				case "between" : case "notBetween" : {
-					where = "#where# #thisExpression.property# #thisExpression.sql# :param#paramIndex++# and :param#paramIndex++#";
-					break;
-				}
-				case "inList" : case "notInList" : {
-					where = "#where# #thisExpression.property# #thisExpression.sql# (:param#paramIndex++#)";
-					// Verify if the param is an array collection
-					if( isSimpleValue( params["param#paramIndex-1#"] ) ){
-						params["param#paramIndex-1#"] = listToArray( params["param#paramIndex-1#"] );
-					}
-					break;
-				}
-				default:{
-					where = "#where# #thisExpression.property# #thisExpression.sql# :param#paramIndex++#";
-					break;
-				}
-			}
-		}
-
-		// Finalize the HQL
-		return hql & " where #where#";
-	}
 
 	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis

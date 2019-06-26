@@ -21,6 +21,8 @@ moduleSettings = {
 ```
 
 * `deleteByQuery()` reworked entirely to do native bulk delete queries.  It now also returns the number of records removed
+* The `evict()` method was renamed to `evictCollection()` to better satisfy the same contract in hibernate
+* The `evictEntity()` method was renamed to `evict()` to better satisfay the same contract in hibernate
 
 ### General Updates
 
@@ -56,6 +58,26 @@ moduleSettings = {
 * ORM Encapsulation of hibernate metadata retrieval via `getEntityMetadata()`
 * `deleteByQuery()` reworked entirely to do native bulk delete queries.  It now also returns the number of records removed
 * `deleteWhere()` missing flush argument, added datasource as well
+* New properties: `wirebox` : a WireBox reference already injected, `logger` : a prepared logger for the class, `datasource` The default datasource or constructed datasource for the class.
+* Logging of all activity now available via the `debug` level, even for dynamic methods.
+* Refactored all dynamic finders and counters to their own class, which improves not only performance but weight of orm service based entities.
+* All dynamic method calls accept a structure as an argument or named as `options` that can have the following keys now:
+
+```json
+{
+	ignoreCase : boolean (false)
+	maxResults : numeric (0)
+	offset     : numeric (0)
+	cacheable  : boolean (false)
+	cacheName  : string (default)
+	timeout    : numeric (0)
+	datasource : string (defaults)
+	sortBy     : hql to sort by
+}
+
+results = ormservice.findByLastLoginBetween( "User", "01/01/2008", "11/01/2008", { sortBy="LastName" } );
+```
+
 
 ### Virtual Entity Service
 
