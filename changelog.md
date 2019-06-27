@@ -35,6 +35,11 @@ moduleSettings = {
 * Documented all functions with extra examples and notes and hibernate references
 * ColdBox 5 and 4 discrete ORM Injection DSLs
 
+### Criteria Queries
+
+* They have been adapted to work with Hibernate 3, 4 and 5
+* When calling native restrictions, no more reflection is used to discover the restriction type thus increasing over 70% in performance when creating criteria queries
+
 ### Base ORM Service
 
 * Update `getEntityGivenName` to support ACF2018
