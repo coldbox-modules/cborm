@@ -41,6 +41,51 @@ moduleSettings = {
 * They have been adapted to work with Hibernate 3, 4 and 5
 * When calling native restrictions, no more reflection is used to discover the restriction type thus increasing over 70% in performance when creating criteria queries
 * You can now negate any criteria restriction by prefixing it with a `not`.  So you can do: `.notEq(), notBetween(), notIsNull(), notIsIn()` and much more.
+* `sqlRestriction()` deprecated in favor of the shorthand notation: `sql()`
+* The `sql()` restriction now supports binding positional parameters. You can pass them in an array and we will infer the types: `sql( "id = ? and isActive = ?", [ "123", true ] )`.  Or you can pass in a struct of `{value:"", type:""}` instead:
+
+```
+restrictions.sql( "userName = ? and firstName like ?", [
+	{ value : "joe", type : "string" },
+	{ value : "%joe%", type : "string" }
+] );
+```
+
+The available types are the following which match the Hibernate Types
+
+```
+this.TYPES = {
+	"string" 		: "StringType",
+	"clob"			: "ClobType",
+	"text"			: "TextType",
+	"char"			: "ChareacterType",
+	"boolean" 		: "BooleanType",
+	"yesno" 		: "YesNoType",
+	"truefalse"		: "TrueFalseType",
+	"byte" 			: "ByteType",
+	"short" 		: "ShortType",
+	"integer" 		: "IntegerType",
+	"long" 			: "LongType",
+	"float"			: "FloatType",
+	"double" 		: "DoubleType",
+	"bigInteger"	: "BigIntegerType",
+	"bigDecimal"	: "BigDecimalType",
+	"timestamp" 	: "TimestampType",
+	"time" 			: "TimeType",
+	"date" 			: "DateType",
+	"calendar"		: "CalendarType",
+	"currency"		: "CurrencyType",
+	"locale" 		: "LocaleType",
+	"timezone"		: "TimeZoneType",
+	"url" 			: "UrlType",
+	"class" 		: "ClassType",
+	"blob" 			: "BlobType",
+	"binary" 		: "BinaryType",
+	"uuid" 			: "UUIDCharType",
+	"serializable"	: "SerializableType"
+};
+```
+
 
 ### Base ORM Service
 

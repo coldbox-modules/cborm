@@ -1,7 +1,42 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 
 	function setup(){
-		restrictions = createMock("cborm.models.criterion.Restrictions").init();
+		restrictions = createMock( "cborm.models.criterion.Restrictions" ).init(
+			new cborm.models.BaseORMService()
+		);
+		criteria = ormGetSession().createCriteria( "User" );
+	}
+
+	function testSimpleSQLRestriction(){
+		r = restrictions.sql( "select * from users order by lastName" );
+		expect( r.toString() ).toBe( "select * from users order by lastName" );
+	}
+
+	function testSqlRestrictionWithInference(){
+		r = restrictions.sql( "userName = ? and firstName like ?", [ "joe", "%joe%"] );
+		criteria.add( r );
+		expect( criteria.list() ).toBeArray();
+
+		criteria = ormGetSession().createCriteria( "User" );
+		r = restrictions.sql( "isActive = ?", [ true ] );
+		criteria.add( r );
+		expect( criteria.list() ).toBeArray();
+	}
+
+	function testSqlRestrictionWithTypes(){
+		r = restrictions.sql( "userName = ? and firstName like ?", [
+			{ value : "joe", type : "string" },
+			{ value : "%joe%", type : "string" }
+		] );
+		criteria.add( r );
+		expect( criteria.list() ).toBeArray();
+
+		criteria = ormGetSession().createCriteria( "User" );
+		r = restrictions.sql( "user_id = ?", [
+			{ value : "4028818e2fb6c893012fe637c5db00a7", type : "string" }
+		] );
+		criteria.add( r );
+		expect( criteria.list() ).toBeArray();
 	}
 
 	function testgetNativeClass(){

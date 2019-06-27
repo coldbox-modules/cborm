@@ -6,11 +6,46 @@
  */
 component singleton{
 
+	// Lookup map of Hibernate to CF Types. Used for auto casting.
+	this.TYPES = {
+		"string" 		: "StringType",
+		"clob"			: "ClobType",
+		"text"			: "TextType",
+		"char"			: "ChareacterType",
+		"boolean" 		: "BooleanType",
+		"yesno" 		: "YesNoType",
+		"truefalse"		: "TrueFalseType",
+		"byte" 			: "ByteType",
+		"short" 		: "ShortType",
+		"integer" 		: "IntegerType",
+		"long" 			: "LongType",
+		"float"			: "FloatType",
+		"double" 		: "DoubleType",
+		"bigInteger"	: "BigIntegerType",
+		"bigDecimal"	: "BigDecimalType",
+		"timestamp" 	: "TimestampType",
+		"time" 			: "TimeType",
+		"date" 			: "DateType",
+		"calendar"		: "CalendarType",
+		"currency"		: "CurrencyType",
+		"locale" 		: "LocaleType",
+		"timezone"		: "TimeZoneType",
+		"url" 			: "UrlType",
+		"class" 		: "ClassType",
+		"blob" 			: "BlobType",
+		"binary" 		: "BinaryType",
+		"uuid" 			: "UUIDCharType",
+		"serializable"	: "SerializableType"
+	};
+
 	/**
 	 * Constructor
+	 *
+	 * @ormService A link to an orm service
 	 */
-	Restrictions function init(){
+	Restrictions function init( required ormService ){
 		variables.restrictions = createObject( "java", "org.hibernate.criterion.Restrictions" );
+		variables.ormService = arguments.ormService;
 		return this;
 	}
 
@@ -307,12 +342,95 @@ component singleton{
 	}
 
 	/**
+	 * Build out a Hibernate Type
+	 * https://vladmihalcea.com/a-beginners-guide-to-hibernate-types/
+	 *
+	 * @type The class type to build: StringType, BooleanType, YesNoType, LongType
+	 */
+	function buildHibernateType( required type ){
+		if( structKeyExists( server, "lucee" ) ){
+			return createObject( "java", "org.hibernate.type.#arguments.type#" );
+		}
+		return createObject( "java", "org.hibernate.type.#arguments.type#" ).INSTANCE;
+	}
+
+	/**
 	 * Use arbitrary SQL to modify the resultset
 	 *
-	 * @sql
+	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
+	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
-	any function sqlRestriction( required string sql ){
-		return variables.restrictions.sqlRestriction( arguments.sql );
+	function sql( required string sql, array params=[] ){
+		// No params, just execute
+		if( !params.len() ){
+			return variables.restrictions.sqlRestriction( arguments.sql );
+		}
+
+		// Discover Types, not perfect, but hey :)
+		var discoverType = function( target ){
+			if( isValid( "Binary", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "binary" ] );
+			}
+			if( isValid( "Boolean", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "boolean" ] );
+			}
+			if( isValid( "time", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "time" ] );
+			}
+			if( isValid( "date", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "timestamp" ] );
+			}
+			if( isValid( "uuid", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "uuid" ] );
+			}
+			if( isValid( "float", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "float" ] );
+			}
+			if( isValid( "numeric", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "integer" ] );
+			}
+			if( isValid( "url", arguments.target ) ){
+				return buildHibernateType( this.TYPES[ "url" ] );
+			}
+			if( len( arguments.target ) <= 255 ){
+				return buildHibernateType( this.TYPES[ "string" ] );
+			} else {
+				return buildHibernateType( this.TYPES[ "text" ] );
+			}
+		};
+
+		// Build out types
+		var types 	= [];
+		var values 	= arguments.params
+			.map( function( item ){
+				// Infer the Type if just the value
+				if( isSimpleValue( item ) ){
+					var thisType = discoverType( item );
+					types.append( thisType );
+					return thisType.fromStringValue( item );
+				}
+				// Else Strict Types: { value, type }
+				else {
+					var thisType = buildHibernateType( this.TYPES[ item.type ] );
+					types.append( thisType );
+					return thisType.fromStringValue( item.value );
+				}
+			} );
+
+		// Return with values and types
+		return variables.restrictions.sqlRestriction( arguments.sql, values, types );
+	}
+
+	/**
+	 * Use arbitrary SQL to modify the resultset
+	 *
+	 * @deprecated Use the `sql()` function instead
+	 *
+	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
+	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
+	 */
+	any function sqlRestriction( required string sql, array params=[] ){
+		return this.sql( argumentCollection=arguments );
 	}
 
 	/**
