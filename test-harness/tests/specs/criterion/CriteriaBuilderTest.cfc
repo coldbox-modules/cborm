@@ -17,7 +17,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		**/
 
 		application.wirebox = new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
-		criteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
+		criteria   = getMockBox().createMock("cborm.models.criterion.CriteriaBuilder");
 		criteria.init( entityName="User", ormService=new cborm.models.BaseORMService() );
 
 		// Test ID's
@@ -91,8 +91,8 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	}
 
 	function testCreateSubcriteria(){
-		s = getMockBox().createMock("cborm.models.DetachedCriteriaBuilder");
-		assertTrue( isInstanceOf( s, "cborm.models.DetachedCriteriaBuilder" ) );
+		s = getMockBox().createMock("cborm.models.criterion.DetachedCriteriaBuilder");
+		assertTrue( isInstanceOf( s, "cborm.models.criterion.DetachedCriteriaBuilder" ) );
 	}
 
 	function testConvertIDValueToJavaType(){

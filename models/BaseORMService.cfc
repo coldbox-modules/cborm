@@ -132,15 +132,15 @@ component accessors="true"{
 	/**
 	 * Lazy loading the dynamic methods processor
 	 *
-	 * @return cborm.models.DynamicMethods
+	 * @return cborm.models.util.DynamicProcessor
 	 */
-	function getDynamicMethods(){
-		if( !isNull( variables.dynamicMethods ) ){
-			return variables.dynamicMethods;
+	function getDynamicProcessor(){
+		if( !isNull( variables.dynamicProcessor ) ){
+			return variables.dynamicProcessor;
 		}
 
-		variables.dynamicMethods = variables.wirebox.getInstance( "cborm.models.DynamicMethods" );
-		return variables.dynamicMethods;
+		variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
+		return variables.dynamicProcessor;
 	}
 
 	/**
@@ -1643,8 +1643,8 @@ component accessors="true"{
 
 		// Dynamic Find Unique Finders
 		if( left( method, 6 ) eq "findBy" and len( method ) GT 6 ){
-			return getDynamicMethods().
-				findDynamically(
+			return getDynamicProcessor().
+				process(
 					method		= right( method, len( method ) - 6 ),
 					args 		= args,
 					unique		= true,
@@ -1653,8 +1653,8 @@ component accessors="true"{
 		}
 		// Dynamic find All Finders
 		if( left( method, 9 ) eq "findAllBy" and len( method ) GT 9 ){
-			return getDynamicMethods().
-				findDynamically(
+			return getDynamicProcessor().
+				process(
 					method		= right( method, len( method ) - 9 ),
 					args 		= args,
 					unique 		= false,
@@ -1663,8 +1663,8 @@ component accessors="true"{
 		}
 		// Dynamic countBy Finders
 		if( left( method, 7 ) eq "countBy" and len( method ) GT 7 ){
-			return getDynamicMethods().
-				findDynamically(
+			return getDynamicProcessor().
+				process(
 					method 		= right( method, len( method ) - 7 ),
 					args 		= args,
 					unique 		= true,
@@ -1801,7 +1801,7 @@ component accessors="true"{
 		// mix in yourself as a dependency
 		arguments.ORMService = this;
 		// create new criteria builder
-		return new CriteriaBuilder( argumentCollection=arguments );
+		return new cborm.models.criterion.CriteriaBuilder( argumentCollection=arguments );
 	}
 
 	/**

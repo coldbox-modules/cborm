@@ -63,10 +63,11 @@ component accessors="true" singleton{
 
 
 	/**
-	 * A method for finding entity's dynamically, for example:
+	 * A method for finding/counting entity's dynamically, for example:
 	 * findByLastNameAndFirstName('User', 'Tester', 'Test');
 	 * findByLastNameOrFirstName('User', 'Tester', 'Test')
 	 * findAllByLastNameIsNotNull('User');
+	 *
 	 * The first argument must be the 'entityName' or a named agument called 'entityname'
 	 * Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
 	 *
@@ -78,7 +79,7 @@ component accessors="true" singleton{
 	 *
 	 * @throws NonUniqueResultException, HQLQueryException
 	 */
-	any function findDynamically(
+	any function process(
 		string method,
 		struct args,
 		boolean unique=true,

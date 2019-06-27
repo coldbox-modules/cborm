@@ -35,7 +35,7 @@ this.ROOT_ENTITY
 
 */
 import cborm.models.*;
-component accessors="true" extends="cborm.models.BaseBuilder" {
+component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 	// The criteria values this criteria builder builds upon.
 	property name="criterias" type="array";
@@ -139,28 +139,27 @@ component accessors="true" extends="cborm.models.BaseBuilder" {
 	}
 
 	// pass off arguments to higher-level restriction builder, and handle the results
-	any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments) {
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
 		// get the restriction/new criteria
 		var r = createRestriction( argumentCollection=arguments );
+
 		// switch on the object type
-		switch( getMetaData( r ).name ) {
+		if( structKeyExists( r, "CFML" ) ){
 			// if it's a builder, just return this
-			case 'cborm.models.CriteriaBuilder':
-				break;
-			// everything else is a real restriction; add it to native criteria, then return this
-			default:
-				nativeCriteria.add( r );
-
-				// process interception
-				if( ORMService.getEventHandling() ){
-					variables.eventManager.processState( "onCriteriaBuilderAddition", {
-						"type" = "Restriction",
-						"criteriaBuilder" = this
-					});
-				}
-
-				break;
+			return this;
 		}
+
+		// Add Restriction to native criteria
+		nativeCriteria.add( r );
+
+		// process interception
+		if( ORMService.getEventHandling() ){
+			variables.eventManager.processState( "onCriteriaBuilderAddition", {
+				"type" = "Restriction",
+				"criteriaBuilder" = this
+			});
+		}
+
 		return this;
 	}
 
