@@ -139,7 +139,7 @@ component accessors="true"{
 			return variables.dynamicMethods;
 		}
 
-		variables.dynamicMethods = new cborm.models.DynamicMethods( this );
+		variables.dynamicMethods = variables.wirebox.getInstance( "cborm.models.DynamicMethods" );
 		return variables.dynamicMethods;
 	}
 
@@ -1624,14 +1624,15 @@ component accessors="true"{
 	 * You can pass in the arguments a structure of options by calling it `options` or the last
 	 * argument which is a struct will be used.  Options can contain the following keys:
 	 *
-	 * - ignoreCase:boolean
-	 * - maxResults:numeric
-	 * - offset:numeric
-	 * - cacheable:boolean
-	 * - cacheName:string
-	 * - timeout:numeric
-	 * - datasource:string
-	 * - sortBy:hql
+	 * - ignoreCase:boolean (false)
+	 * - maxResults:numeric (0)
+	 * - offset:numeric (0)
+	 * - cacheable:boolean (false)
+	 * - cacheName:string ("default")
+	 * - timeout:numeric (0=no timeout)
+	 * - datasource:string (default datasource)
+	 * - sortBy:hql (empty)
+	 * - autoCast:boolean (true)
 	 *
 	 * Else it throws a method does not exist exception
 	 * @throws MissingMethodException
@@ -1646,7 +1647,8 @@ component accessors="true"{
 				findDynamically(
 					method		= right( method, len( method ) - 6 ),
 					args 		= args,
-					unique		= true
+					unique		= true,
+					ormService 	= this
 				);
 		}
 		// Dynamic find All Finders
@@ -1655,7 +1657,8 @@ component accessors="true"{
 				findDynamically(
 					method		= right( method, len( method ) - 9 ),
 					args 		= args,
-					unique 		= false
+					unique 		= false,
+					ormService 	= this
 				);
 		}
 		// Dynamic countBy Finders
@@ -1665,7 +1668,8 @@ component accessors="true"{
 					method 		= right( method, len( method ) - 7 ),
 					args 		= args,
 					unique 		= true,
-					isCounting 	= true
+					isCounting 	= true,
+					ormService 	= this
 				);
 		}
 

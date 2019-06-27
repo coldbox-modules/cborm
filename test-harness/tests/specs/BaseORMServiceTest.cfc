@@ -79,6 +79,9 @@
 		assert( isNull( t ) , "Conditionals between" );
 		t = ormservice.findByLastLoginNotBetween( "User", "2008-01-01", "2013-01-01" );
 		assert( !isNull( t ) , "Conditionals not between" );
+
+		writeDump( var=ormService.getDynamicMethods() );
+		abort;
 	}
 
 	function testFindByDynamicallyBadProperty(){

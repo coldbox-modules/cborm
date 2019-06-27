@@ -72,12 +72,14 @@ moduleSettings = {
 	cacheName  : string (default)
 	timeout    : numeric (0)
 	datasource : string (defaults)
-	sortBy     : hql to sort by
+	sortBy     : hql to sort by,
+	autoCast   : boolean (true)
 }
 
 results = ormservice.findByLastLoginBetween( "User", "01/01/2008", "11/01/2008", { sortBy="LastName" } );
 ```
 
+* All dynamic finders/counters values are autocasted, you no longer need to cast the values, we will do this for you. You can turn it off via the `autocast:false` in the options to the calls.
 
 ### Virtual Entity Service
 
