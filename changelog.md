@@ -40,6 +40,7 @@ moduleSettings = {
 
 * They have been adapted to work with Hibernate 3, 4 and 5
 * When calling native restrictions, no more reflection is used to discover the restriction type thus increasing over 70% in performance when creating criteria queries
+* You can now negate any criteria restriction by prefixing it with a `not`.  So you can do: `.notEq(), notBetween(), notIsNull(), notIsIn()` and much more.
 
 ### Base ORM Service
 

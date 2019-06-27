@@ -31,7 +31,7 @@ component singleton{
 	 * @maxValue The max value
 	 */
 	any function between( required string property, required any minValue, required any maxValue ){
-		return variables.restrictions.between(arguments.property, arguments.minValue, arguments.maxValue);
+		return variables.restrictions.between( arguments.property, arguments.minValue, arguments.maxValue );
 	}
 
 	/**
@@ -41,7 +41,7 @@ component singleton{
 	 * @propertyValue The value
 	 */
 	any function isEq( required string property, required any propertyValue ){
-		return variables.restrictions.eq(arguments.property, arguments.propertyValue);
+		return variables.restrictions.eq( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -50,7 +50,7 @@ component singleton{
 	 * @property
 	 */
 	any function isTrue( required string property ){
-		return variables.restrictions.eq(arguments.property, javaCast( "boolean", true ) );
+		return variables.restrictions.eq( arguments.property, javaCast( "boolean", true ) );
 	}
 
 	/**
@@ -59,7 +59,7 @@ component singleton{
 	 * @property
 	 */
 	any function isFalse( required string property ){
-		return variables.restrictions.eq(arguments.property, javaCast( "boolean", false ) );
+		return variables.restrictions.eq( arguments.property, javaCast( "boolean", false ) );
 	}
 
 	/**
@@ -69,7 +69,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function eqProperty( required string property, required string otherProperty ){
-		return variables.restrictions.eqProperty(arguments.property, arguments.otherProperty);
+		return variables.restrictions.eqProperty( arguments.property, arguments.otherProperty);
 	}
 
 	/**
@@ -79,7 +79,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function isGt( required string property, required any propertyValue ){
-		return variables.restrictions.gt(arguments.property, arguments.propertyValue);
+		return variables.restrictions.gt( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -89,7 +89,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function gtProperty( required string property, required string otherProperty ){
-		return variables.restrictions.gtProperty(arguments.property, arguments.otherProperty);
+		return variables.restrictions.gtProperty( arguments.property, arguments.otherProperty);
 	}
 
 	/**
@@ -99,7 +99,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function isGe( required string property, required any propertyValue ){
-		return variables.restrictions.ge(arguments.property, arguments.propertyValue);
+		return variables.restrictions.ge( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -109,7 +109,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function geProperty( required string property, required string otherProperty ){
-		return variables.restrictions.geProperty(arguments.property, arguments.otherProperty);
+		return variables.restrictions.geProperty( arguments.property, arguments.otherProperty);
 	}
 
 	/**
@@ -119,14 +119,14 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function idEQ( required any propertyValue ){
-		return variables.restrictions.idEQ(arguments.propertyValue);
+		return variables.restrictions.idEQ( arguments.propertyValue );
 	}
 
 	/**
 	 * A case-insensitive 'like' expression
 	 */
 	any function ilike( required string property, required string propertyValue ){
-		return variables.restrictions.ilike(arguments.property, arguments.propertyValue);
+		return variables.restrictions.ilike( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -137,8 +137,8 @@ component singleton{
 	 */
 	any function isIn( required string property, required any propertyValue ){
 		// infalte to array if simple values
-		if( isSimpleValue(arguments.propertyValue)  ){ arguments.propertyValue = listToArray( arguments.propertyValue); }
-		return variables.restrictions.in(arguments.property, arguments.propertyValue);
+		if( isSimpleValue( arguments.propertyValue)  ){ arguments.propertyValue = listToArray( arguments.propertyValue ); }
+		return variables.restrictions.in( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -147,7 +147,7 @@ component singleton{
 	 * @property
 	 */
 	any function isEmpty( required string property ){
-		return variables.restrictions.isEmpty(arguments.property);
+		return variables.restrictions.isEmpty( arguments.property);
 	}
 
 	/**
@@ -156,14 +156,14 @@ component singleton{
 	 * @property
 	 */
 	any function isNotEmpty( required string property ){
-		return variables.restrictions.isNotEmpty(arguments.property);
+		return variables.restrictions.isNotEmpty( arguments.property);
 	}
 
 	/**
 	 * Where a property is null
 	 */
 	any function isNull( required string property ){
-		return variables.restrictions.isNull(arguments.property);
+		return variables.restrictions.isNull( arguments.property);
 	}
 
 	/**
@@ -173,7 +173,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function isNotNull( required string property ){
-		return variables.restrictions.isNotNull(arguments.property);
+		return variables.restrictions.isNotNull( arguments.property);
 	}
 
 	/**
@@ -183,7 +183,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function islt( required string property, required any propertyValue ){
-		return variables.restrictions.lt(arguments.property, arguments.propertyValue);
+		return variables.restrictions.lt( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -193,7 +193,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function ltProperty( required string property, required string otherProperty ){
-		return variables.restrictions.ltProperty(arguments.property, arguments.otherProperty);
+		return variables.restrictions.ltProperty( arguments.property, arguments.otherProperty);
 	}
 
 	/**
@@ -203,7 +203,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function isle( required string property, required any propertyValue ){
-		return variables.restrictions.le(arguments.property, arguments.propertyValue);
+		return variables.restrictions.le( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -213,7 +213,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function leProperty( required string property, required string otherProperty ){
-		return variables.restrictions.leProperty(arguments.property, arguments.otherProperty);
+		return variables.restrictions.leProperty( arguments.property, arguments.otherProperty);
 	}
 
 	/**
@@ -223,7 +223,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function like( required string property, required string propertyValue ){
-		return variables.restrictions.like(arguments.property, arguments.propertyValue);
+		return variables.restrictions.like( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -233,7 +233,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function ne( required string property, required any propertyValue ){
-		return variables.restrictions.ne(arguments.property, arguments.propertyValue);
+		return variables.restrictions.ne( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -243,7 +243,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function neProperty( required string property, required any otherProperty ){
-		return variables.restrictions.neProperty(arguments.property, arguments.otherProperty);
+		return variables.restrictions.neProperty( arguments.property, arguments.otherProperty);
 	}
 
 	/**
@@ -253,7 +253,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function sizeEq( required string property, required any propertyValue ){
-		return variables.restrictions.sizeEq(arguments.property, arguments.propertyValue);
+		return variables.restrictions.sizeEq( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -263,7 +263,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function sizeGT( required string property, required any propertyValue ){
-		return variables.restrictions.sizeGT(arguments.property, arguments.propertyValue);
+		return variables.restrictions.sizeGT( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -273,7 +273,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function sizeGE( required string property, required any propertyValue ){
-		return variables.restrictions.sizeGE(arguments.property, arguments.propertyValue);
+		return variables.restrictions.sizeGE( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -283,7 +283,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function sizeLT( required string property, required any propertyValue ){
-		return variables.restrictions.sizeLT(arguments.property, arguments.propertyValue);
+		return variables.restrictions.sizeLT( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -293,7 +293,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function sizeLE( required string property, required any propertyValue ){
-		return variables.restrictions.sizeLE(arguments.property, arguments.propertyValue);
+		return variables.restrictions.sizeLE( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -303,7 +303,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function sizeNE( required string property, required any propertyValue ){
-		return variables.restrictions.sizeNE(arguments.property, arguments.propertyValue);
+		return variables.restrictions.sizeNE( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -312,7 +312,7 @@ component singleton{
 	 * @sql
 	 */
 	any function sqlRestriction( required string sql ){
-		return variables.restrictions.sqlRestriction(arguments.sql);
+		return variables.restrictions.sqlRestriction( arguments.sql );
 	}
 
 	/**
@@ -323,7 +323,7 @@ component singleton{
 	any function conjunction( required array restrictionValues ){
 		var cj = variables.restrictions.conjunction();
 
-		for(var i=1; i LTE ArrayLen(arguments.restrictionValues); i++ ){
+		for( var i=1; i LTE ArrayLen( arguments.restrictionValues ); i++ ){
 			cj.add( arguments.restrictionValues[i] );
 		}
 
@@ -335,21 +335,21 @@ component singleton{
 	 */
 	any function $and( ){
 		var expressions = [];
-		for(var key in arguments ){
-			arrayAppend(expressions, arguments[key]);
+		for( var key in arguments ){
+			arrayAppend( expressions, arguments[ key ] );
 		}
-		return this.conjunction(expressions);
+		return this.conjunction( expressions );
 	}
 
 	/**
 	 * Return the disjunction of N expressions as arguments
 	 */
-	any function $or( ){
+	any function $or(){
 		var expressions = [];
-		for(var key in arguments ){
-			arrayAppend(expressions, arguments[key]);
+		for( var key in arguments ){
+			arrayAppend( expressions, arguments[ key ] );
 		}
-		return this.disjunction(expressions);
+		return this.disjunction( expressions );
 	}
 
 	/**
@@ -360,7 +360,7 @@ component singleton{
 	any function disjunction( required array restrictionValues ){
 		var dj = variables.restrictions.disjunction();
 
-		for(var i=1; i LTE ArrayLen(arguments.restrictionValues); i++ ){
+		for( var i=1; i LTE ArrayLen( arguments.restrictionValues ); i++ ){
 			dj.add( arguments.restrictionValues[i] );
 		}
 
@@ -373,16 +373,29 @@ component singleton{
 	 * @criterion
 	 */
 	any function isNot( required any criterion ){
-		return variables.restrictions.not(arguments.criterion);
+		return variables.restrictions.not( arguments.criterion );
 	}
 
 	/**
-	 * If a method does not exist, we will try to match it to a Hibernate native function
+	 * If a method does not exist, we will try to match it to a Hibernate native function, if not an exception is thrown
 	 *
 	 * @missingMethodName
 	 * @missingMethodArguments
+	 *
+	 * @throws RuntimeException
 	 */
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
+
+		// detect dynamic negation
+		if( left( arguments.missingMethodName, 3 ) eq "not" && len( arguments.missingMethodName ) > 3 ){
+			// remove NOT
+			arguments.missingMethodName = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 3 );
+			return this.isNot(
+				invoke( this, arguments.missingMethodName, missingMethodArguments )
+			);
+		}
+
+		// Aliases
 		switch( arguments.missingMethodName ){
 			case "eq":
 				return isEq( argumentCollection=arguments.missingMethodArguments );
@@ -412,6 +425,7 @@ component singleton{
 				return isNot( argumentCollection=arguments.missingMethodArguments );
 				break;
 			default:{
+				// Funnel call to native class, if it throws an exepction, well, so be it!
 				return invoke( variables.restrictions, arguments.missingMethodName, arguments.missingMethodArguments );
 			}
 		}
