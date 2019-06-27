@@ -40,12 +40,9 @@ component singleton{
 
 	/**
 	 * Constructor
-	 *
-	 * @ormService A link to an orm service
 	 */
-	Restrictions function init( required ormService ){
+	Restrictions function init(){
 		variables.restrictions = createObject( "java", "org.hibernate.criterion.Restrictions" );
-		variables.ormService = arguments.ormService;
 		return this;
 	}
 
