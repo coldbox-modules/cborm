@@ -1773,9 +1773,9 @@ component accessors="true"{
 	}
 
 	/**
-	* Get the record count using hibernate projections and criterion for specific queries
-	*/
-	numeric function criteriaCount(required entityName, array criteria=ArrayNew(1)){
+	 * Get the record count using hibernate projections and criterion for specific queries
+	 */
+	numeric function criteriaCount( required entityName, array criteria=ArrayNew(1)){
 		// create a new criteria query object
 		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
 		var projections = CreateObject("java","org.hibernate.criterion.Projections");
@@ -1786,36 +1786,46 @@ component accessors="true"{
 	}
 
 	/**
-	* Get a brand new criteria builder object
-	* @entityName The name of the entity to bind this criteria query to
-	* @useQueryCaching Activate query caching for the list operations
-	* @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
-	* @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
-	*/
+	 * Get a brand new criteria builder object
+	 *
+	 * @entityName The name of the entity to bind this criteria query to
+	 * @useQueryCaching Activate query caching for the list operations
+	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
+	 * @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	 *
+	 * @return cborm.models.criterion.CriteriaBuilder
+	 */
 	any function newCriteria(
 		required string entityName,
 		boolean useQueryCaching=false,
 		string queryCacheRegion=""
 	){
-
 		// mix in yourself as a dependency
-		arguments.ORMService = this;
+		arguments.ormService = this;
 		// create new criteria builder
 		return new cborm.models.criterion.CriteriaBuilder( argumentCollection=arguments );
 	}
 
-	/**
-	* Create a new hibernate criteria object according to entityname and criterion array objects
-	*/
-	private any function createCriteriaQuery(required entityName, array criteria=ArrayNew(1)){
-		var qry = orm.getSession(orm.getEntityDatasource(arguments.entityName)).createCriteria( arguments.entityName );
+	/*****************************************************************************************/
+	/********************************* PRIVATE METHODS **************************************/
+	/*****************************************************************************************/
 
-		for(var i=1; i LTE ArrayLen(arguments.criteria); i++) {
-			if( isSimpleValue( arguments.criteria[i] ) ){
+	/**
+	 * Create a new hibernate criteria object according to entityname and criterion array objects
+	 *
+	 * @entityName The entity name to root the query on
+	 * @criteria The array of criterias to query on
+	 */
+	private any function createCriteriaQuery( required entityName, array criteria=[] ){
+		var qry = variables.orm
+			.getSession( variables.orm.getEntityDatasource( arguments.entityName ) )
+			.createCriteria( arguments.entityName );
+
+		for( var i=1; i LTE ArrayLen( arguments.criteria ); i++) {
+			if( isSimpleValue( arguments.criteria[ i ] ) ){
 				// create criteria out of simple values for associations with alias
 				qry.createCriteria( arguments.criteria[i], arguments.criteria[i] );
-			}
-			else{
+			} else {
 				// add criterion
 				qry.add( arguments.criteria[i] );
 			}
@@ -1823,10 +1833,6 @@ component accessors="true"{
 
 		return qry;
 	}
-
-	/*****************************************************************************************/
-	/********************************* PRIVATE METHODS **************************************/
-	/*****************************************************************************************/
 
 	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis

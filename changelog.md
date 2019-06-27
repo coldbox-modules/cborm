@@ -23,6 +23,7 @@ moduleSettings = {
 * `deleteByQuery()` reworked entirely to do native bulk delete queries.  It now also returns the number of records removed
 * The `evict()` method was renamed to `evictCollection()` to better satisfy the same contract in hibernate
 * The `evictEntity()` method was renamed to `evict()` to better satisfay the same contract in hibernate
+* Removed `byExample` on many listing methods
 
 ### General Updates
 
@@ -47,9 +48,8 @@ moduleSettings = {
 * Lazy loading `ORMEventHandler` for performance on creations
 * Lazy loading `restrictions` for performance on creations
 * Base service can now be initialized with a `datasource`, or uses the default one declared
-* Removed `byExample` on many listing methods
 * Added optional `datasource` to many listing methods
-* Added consistency on querying options to all major functions to include ignoreCase, sorting and timeouts.
+* Added consistency on querying options to all major functions to include `ignoreCase, sorting and timeouts`.
 * Added ability to `getAll()` to retrieve read only entities using the `readOnly` argument.
 * The `getAll()` method has a new `properties` argument that if passed will allow you to retrieve an array of structs according to the passed in properties.
 * New method: `idCast( entity, id )` to auto cast your entity `id` value to java type automatically for you, no more javacasting

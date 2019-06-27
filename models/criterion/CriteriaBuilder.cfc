@@ -51,7 +51,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		required string entityName,
 		boolean useQueryCaching=false,
 		string queryCacheRegion="",
-		required any ORMService
+		required any ormService
 	){
 
 		// Determine datasource for given entityName
@@ -59,15 +59,18 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		var datasource 	 = orm.getEntityDatasource( arguments.entityName );
 
 		// setup basebuilder with criteria query and restrictions
-		super.init( entityName=arguments.entityName,
-					criteria=orm.getSession( datasource ).createCriteria( arguments.entityName ),
-					restrictions=new criterion.Restrictions(),
-					ORMService=arguments.ORMService );
+		super.init(
+			entityName   = arguments.entityName,
+			criteria     = orm.getSession( datasource ).createCriteria( arguments.entityName ),
+			restrictions = new Restrictions(),
+			ormService   = arguments.ormService
+		);
 
 		// local criterion values
 		variables.criterias = [];
 		// caching?
 		variables.useQueryCaching = arguments.useQueryCaching;
+
 		// caching region?
 		if( len( trim( arguments.queryCacheRegion ) ) EQ 0 ){
 			arguments.queryCacheRegion = "criterias.#arguments.entityName#";
