@@ -81,15 +81,17 @@ component accessors="true"{
 		// add SQL Helper
 		variables.SQLHelper = new cborm.models.sql.SQLHelper( this );
 
-		// Setup pseudo-static join types and transformer types:
+		// Transformer types
 		this.ALIAS_TO_ENTITY_MAP	= nativeCriteria.ALIAS_TO_ENTITY_MAP;
 		this.DISTINCT_ROOT_ENTITY	= nativeCriteria.DISTINCT_ROOT_ENTITY;
+		this.ROOT_ENTITY			= nativeCriteria.ROOT_ENTITY;
+		this.ROOT_ALIAS				= nativeCriteria.ROOT_ALIAS;
+
+		// Joins
 		this.FULL_JOIN				= nativeCriteria.FULL_JOIN;
 		this.INNER_JOIN				= nativeCriteria.INNER_JOIN;
 		this.LEFT_JOIN				= nativeCriteria.LEFT_JOIN;
 		this.PROJECTION				= nativeCriteria.PROJECTION;
-		this.ROOT_ALIAS				= nativeCriteria.ROOT_ALIAS;
-		this.ROOT_ENTITY			= nativeCriteria.ROOT_ENTITY;
 
 		return this;
 	}
@@ -269,11 +271,30 @@ component accessors="true"{
 	}
 
 	/**
-	* Sets a valid hibernate result transformer: org.hibernate.transform.ResultTransform to use on the results
-	* @resultTransformer a custom result transform or you can use the included ones: criteria.ALIAS_TO_ENTITY_MAP, criteria.DISTINCT_ROOT_ENTITY, criteria.PROJECTION, criteria.ROOT_ENTITY.
-	*/
-	any function resultTransformer(any resultTransformer){
+	 * Sets a valid hibernate result transformer: org.hibernate.transform.ResultTransform to use on the results
+	 *
+	 * @resultTransformer a custom result transform or you can use the included ones: criteria.ALIAS_TO_ENTITY_MAP, criteria.DISTINCT_ROOT_ENTITY, criteria.PROJECTION, criteria.ROOT_ENTITY.
+	 */
+	any function resultTransformer( any resultTransformer ){
 		nativeCriteria.setResultTransformer( arguments.resultTransformer );
+		return this;
+	}
+
+	// Aliases for prettier result transformers //
+
+	/**
+	 * Applies a result transformer of DISTINCT_ROOT_ENTITY
+	 */
+	function asDistinct(){
+		nativeCriteria.setResultTransformer( this.DISTINCT_ROOT_ENTITY );
+		return this;
+	}
+
+	/**
+	 * Applies a result transformer of ALIAS_TO_ENTITY_MAP
+	 */
+	function asStruct(){
+		nativeCriteria.setResultTransformer( this.ALIAS_TO_ENTITY_MAP );
 		return this;
 	}
 

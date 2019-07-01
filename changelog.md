@@ -39,6 +39,7 @@ moduleSettings = {
 ### Criteria Queries
 
 * They have been adapted to work with Hibernate 3, 4 and 5
+* New alias methods for controlling the result transformations `asStruct(), asDistinct()` that will apply result transformers for you instead of doing `.resultTransformer( c.ALIAS_TO_ENTITY_MAP )`, whish is long and boring
 * When calling native restrictions, no more reflection is used to discover the restriction type thus increasing over 70% in performance when creating criteria queries
 * You can now negate any criteria restriction by prefixing it with a `not`.  So you can do: `.notEq(), notBetween(), notIsNull(), notIsIn()` and much more.
 * `sqlRestriction()` deprecated in favor of the shorthand notation: `sql()`
