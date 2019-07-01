@@ -48,7 +48,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @useQueryCaching Activate query caching, defaults to false
 	 * @eventHandling Activate event handling, defaults to true
 	 * @useTransactions Activate transaction blocks on calls, defaults to true
-	 * @defaultAsQuery Return query or array of objects on list(), executeQuery(), criteriaQuery(), defaults to true
+	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to true
 	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
 	 */
 	VirtualEntityService function init(
@@ -66,7 +66,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		}
 
 		// init base service
-		super.init(  argumentCollection=arguments  );
+		super.init( argumentCollection=arguments );
 
 		// Set the local entity to be used in this virtual entity service
 		variables.entityName = arguments.entityName;
@@ -135,10 +135,8 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		boolean ignoreCase=false,
 		boolean asQuery=getDefaultAsQuery()
 	){
-
 		arguments.entityName = this.getEntityName();
-		var results = super.list( argumentCollection=arguments );
-		return results;
+		return super.list( argumentCollection=arguments );
 	}
 
 	/**
