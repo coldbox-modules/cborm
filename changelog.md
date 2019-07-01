@@ -146,6 +146,7 @@ Remember this entity extends Base Service, so we get all the features above plus
 Remember this entity extends the Virtual Service, so we get all the features above plus the following:
 
 * Faster creation speeds due to lazy loading of dependencies and better datasource determination.
+* `refresh(), merge(), evict()` refactored to encapsulate login in the base orm service and not itself
 
 ## 1.5.0
 

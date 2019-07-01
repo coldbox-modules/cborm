@@ -329,7 +329,7 @@ component accessors="true"{
 		if( len( arguments.datasource ) ){
 			options.datasource = arguments.datasource;
 		} else {
-			options.datasource = variables.datasource;
+			options.datasource = getDatasource();
 		}
 		options.ignorecase = arguments.ignorecase;
 
@@ -416,6 +416,7 @@ component accessors="true"{
 	 * @entityName The entity to get
 	 * @id The id or a list/array of Ids to retrieve
 	 * @sortOrder The sorting of the returning array, defaults to natural sorting
+	 * @readOnly Return full or read only entities, defaults to false
 	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
      */
 	array function getAll(
@@ -741,7 +742,6 @@ component accessors="true"{
 	 * @nullEmptyInclude A list of keys to NULL when empty
      * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-     * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
      */
 	any function populateFromJson(
 		required any target,
@@ -1016,7 +1016,7 @@ component accessors="true"{
 	function getEntityMetadata( required entity ){
 		return variables.ORM.getEntityMetadata(
 			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
-			datasource = variables.ORM.getEntityDatasource( arguments.entity, variables.datasource )
+			datasource = variables.ORM.getEntityDatasource( arguments.entity, getDatasource() )
 		);
 	}
 

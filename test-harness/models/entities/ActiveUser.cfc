@@ -27,4 +27,7 @@
 	this.constraints = {
 		firstName = {required=true}, lastName = {required=true}, username={required=true,min=5}, password={required=true,min=6}
 	};
+
+	// Set name
+	variables.entityname = "ActiveUser";
 }

@@ -22,7 +22,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	function testCreateDetachedSQLProjection(){
 		criteria.withProjections( count = "Role.role" );
 		var r = criteria.createDetachedSQLProjection();
-		assertTrue( isInstanceOf( r, "org.hibernate.criterion.SQLProjection" ) );
+		expect( getMetadata( r ).name ).toInclude( "org.hibernate.criterion" );
 	}
 
 	function testGetNativeCriteria(){
