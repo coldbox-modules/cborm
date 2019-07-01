@@ -86,6 +86,10 @@ this.TYPES = {
 };
 ```
 
+* Detached Criteria builder now has a `maxResults( maxResults )` method to limit the results by
+* Detached Criteria sql projections now take aliases into account
+* SQL Projections and SQL Group By projections now respect aliases
+
 
 ### Base ORM Service
 

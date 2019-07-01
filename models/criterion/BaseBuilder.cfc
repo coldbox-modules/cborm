@@ -379,7 +379,14 @@ component accessors="true"{
 			// loop over sqlProjections
 			for( var projection in sqlargs ) {
 				var projectionArgs = prepareSQLProjection( projection );
-				projectionList.add( this.PROJECTIONS.sqlProjection( projectionArgs.sql, projectionArgs.alias, projectionArgs.types ) );
+				projectionList.add(
+					this.PROJECTIONS.sqlProjection(
+						projectionArgs.sql,
+						projectionArgs.alias,
+						projectionArgs.types
+					),
+					arrayToList( projectionArgs.alias )
+				);
 			}
 
 		}
@@ -391,7 +398,15 @@ component accessors="true"{
 			// loop over sqlGroupProjections
 			for( var projection in sqlargs ) {
 				var projectionArgs = prepareSQLProjection( projection );
-				projectionList.add( this.PROJECTIONS.sqlGroupProjection( projectionArgs.sql, projectionArgs.group, projectionArgs.alias, projectionArgs.types ) );
+				projectionList.add(
+					this.PROJECTIONS.sqlGroupProjection(
+						projectionArgs.sql,
+						projectionArgs.group,
+						projectionArgs.alias,
+						projectionArgs.types
+					),
+					arrayToList( projectionArgs.alias )
+				);
 			}
 		}
 		// add all the projections

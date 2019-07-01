@@ -14,21 +14,24 @@ import cborm.models.*;
 component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 	/**
-	* Constructor
-	*/
+	 * Constructor
+	 */
 	DetachedCriteriaBuilder function init(
 		required string entityName,
 		required string alias,
 		required any ORMService
 	){
 		// create new DetachedCriteria
-		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName( arguments.entityName, arguments.alias );
+		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" )
+			.forEntityName( arguments.entityName, arguments.alias );
 
 		// setup base builder with detached criteria and subqueries
-		super.init( entityName=arguments.entityName,
-					criteria=criteria,
-					restrictions=new criterion.Subqueries( criteria ),
-					ORMService=arguments.ORMService );
+		super.init(
+			entityName   = arguments.entityName,
+			criteria     = criteria,
+			restrictions = new Subqueries( criteria ),
+			ORMService   = arguments.ORMService
+		);
 
 		return this;
 	}
@@ -37,16 +40,21 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ) {
 		// get the restriction/new criteria
 		var r = createRestriction( argumentCollection=arguments );
+
+		// switch on the object type
+		if( structKeyExists( r, "CFML" ) ){
+			// if it's a builder, just return this
+			return this;
+		}
+
 		// switch on the object type
 		switch( getMetaData( r ).name ) {
-			// if a detached criteria builder, just return this so we can keep chaining
-			case 'cborm.models.criterion.DetachedCriteriaBuilder':
-				break;
 			// if a subquery, we *need* to return the restrictino itself, or bad things happen
 			case 'org.hibernate.criterion.PropertySubqueryExpression':
 			case 'org.hibernate.criterion.ExistsSubqueryExpression':
 			case 'org.hibernate.criterion.SimpleSubqueryExpression':
 				return r;
+
 			// otherwise, just a restriction; add it to nativeCriteria, then return this so we can keep chaining
 			default:
 				nativeCriteria.add( r );
@@ -57,6 +65,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 				});
 				break;
 		}
+
 		return this;
 	}
 
@@ -74,8 +83,11 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			sql = replaceNoCase( sql, "this_", SQLHelper.getRootSQLAlias(), 'all' );
 			// wrap it up and uniquely alias it
 			sql = "( #sql# ) as " & alias;
-		// now that we have the sql string, we can create the sqlProjection
-		return this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
+
+			// now that we have the sql string, we can create the sqlProjection
+		var projection =  this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
+        // finally, add the alias to the projection list so we can sort on the column if needed
+        return this.PROJECTIONS.alias( projection, alias );
 	}
 
 	/**
@@ -105,4 +117,28 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			return super.createCriteria( associationName=arguments.associationName, joinType=arguments.joinType );
 		}
 	}
+
+	/**
+	 * Set a limit upon the number of objects to be retrieved.
+	 *
+	 * @maxResults The max results to limit by
+	 */
+	any function maxResults( required numeric maxResults ){
+		getNativeCriteria().setMaxResults( javaCast("int", arguments.maxResults) );
+		if( SQLHelper.canLogLimitOffset() ) {
+
+			// process interception
+			if( ORMService.getEventHandling() ){
+				variables.eventManager.processState( "onCriteriaBuilderAddition", {
+					"type" = "Max",
+					"criteriaBuilder" = this
+				});
+			}
+
+		}
+
+		return this;
+	}
+
+
 }
