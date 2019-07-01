@@ -23,7 +23,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	/**
 	 * If populated, it will be from the last cbValidation made on the entity
 	 */
-	property name="validationResult";
+	property name="validationResult" persistent="false";
 
 	/**
 	 * Active Entity Constructor, if you override it, make sure you call super.init()
