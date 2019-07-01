@@ -1694,95 +1694,8 @@ component accessors="true"{
 		if( !isNull( variables.restrictions ) ){
 			return variables.restrictions;
 		}
-		variables.restrictions = new cborm.models.criterion.Restrictions();
+		variables.restrictions = variables.wirebox.getInstance( "cborm.models.criterion.Restrictions" );
 		return variables.restrictions;
-	}
-
-	/**
-	 * Do a hibernate criteria based query with projections. You must pass an array of criterion objects by using the Hibernate Restrictions object that can be retrieved from this service using ''getRestrictions()''.  The Criteria interface allows to create and execute object-oriented queries. It is powerful alternative to the HQL but has own limitations. Criteria Query is used mostly in case of multi criteria search screens, where HQL is not very effective.
-	 */
-	any function criteriaQuery(required entityName,
-									  array criteria=ArrayNew(1),
-					  		 		  string sortOrder="",
-					  		 		  numeric offset=0,
-					  				  numeric max=0,
-					  		 		  numeric timeout=0,
-					  		 		  boolean ignoreCase=false,
-					  		 		  boolean asQuery=getDefaultAsQuery()){
-		// create Criteria query object
-		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
-
-		// Setup listing options
-		if( arguments.offset NEQ 0 ){
-			qry.setFirstResult(arguments.offset);
-		}
-		if(arguments.max GT 0){
-			qry.setMaxResults(arguments.max);
-		}
-		if( arguments.timeout NEQ 0 ){
-			qry.setTimeout(arguments.timeout);
-		}
-
-		// Caching
-		if( getUseQueryCaching() ){
-			qry.setCacheRegion(getQueryCacheRegion());
-			qry.setCacheable(true);
-		}
-
-		// Sort Order Case
-		if( Len(Trim(arguments.sortOrder)) ){
-			var sortTypes = listToArray(arguments.sortOrder);
-			for(var sortType in sortTypes) {
-				var sortField = Trim(ListFirst(sortType," "));
-				var sortDir = "ASC";
-				var Order = CreateObject("java","org.hibernate.criterion.Order");
-
-				if(ListLen(sortType," ") GTE 2){
-					sortDir = ListGetAt(sortType,2," ");
-				}
-
-				switch(UCase(sortDir)) {
-					case "DESC":
-						var orderBy = Order.desc(sortField);
-						break;
-					default:
-						var orderBy = Order.asc(sortField);
-						break;
-				}
-				// ignore case
-				if(arguments.ignoreCase){
-					orderBy.ignoreCase();
-				}
-				// add order to query
-				qry.addOrder(orderBy);
-			}
-		}
-
-		// Get listing
-		var results = qry.list();
-
-		// Is it Null? If yes, return empty array
-		if( isNull(results) ){ results = []; }
-
-		// Objects or Query?
-		if( arguments.asQuery ){
-			results = EntityToQuery(results);
-		}
-
-		return results;
-	}
-
-	/**
-	 * Get the record count using hibernate projections and criterion for specific queries
-	 */
-	numeric function criteriaCount( required entityName, array criteria=ArrayNew(1)){
-		// create a new criteria query object
-		var qry = createCriteriaQuery(arguments.entityName, arguments.criteria);
-		var projections = CreateObject("java","org.hibernate.criterion.Projections");
-
-		qry.setProjection( projections.rowCount() );
-
-		return qry.uniqueResult();
 	}
 
 	/**
@@ -1803,36 +1716,16 @@ component accessors="true"{
 		// mix in yourself as a dependency
 		arguments.ormService = this;
 		// create new criteria builder
-		return new cborm.models.criterion.CriteriaBuilder( argumentCollection=arguments );
+		return variables.wirebox.getInstance(
+			name = "cborm.models.criterion.CriteriaBuilder",
+			initArguments = arguments
+		);
 	}
+
 
 	/*****************************************************************************************/
 	/********************************* PRIVATE METHODS **************************************/
 	/*****************************************************************************************/
-
-	/**
-	 * Create a new hibernate criteria object according to entityname and criterion array objects
-	 *
-	 * @entityName The entity name to root the query on
-	 * @criteria The array of criterias to query on
-	 */
-	private any function createCriteriaQuery( required entityName, array criteria=[] ){
-		var qry = variables.orm
-			.getSession( variables.orm.getEntityDatasource( arguments.entityName ) )
-			.createCriteria( arguments.entityName );
-
-		for( var i=1; i LTE ArrayLen( arguments.criteria ); i++) {
-			if( isSimpleValue( arguments.criteria[ i ] ) ){
-				// create criteria out of simple values for associations with alias
-				qry.createCriteria( arguments.criteria[i], arguments.criteria[i] );
-			} else {
-				// add criterion
-				qry.add( arguments.criteria[i] );
-			}
-		}
-
-		return qry;
-	}
 
 	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis

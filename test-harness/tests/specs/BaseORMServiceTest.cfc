@@ -722,6 +722,8 @@
 
 	function testNewCriteria(){
 		c = ormservice.newCriteria( "User" );
+		expect( c ).toBeComponent();
+		expect( c.getEntityName() ).toBe( "User" );
 	}
 
 	function testMerge(){
@@ -757,6 +759,11 @@
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 1, stats.entityCount );
 		expect(	aTests ).toBeArray();
+	}
+
+	function testGetRestrictions(){
+		var r = ormservice.getRestrictions();
+		expect( r ).toBeComponent();
 	}
 
 	private function deleteCategories(){

@@ -11,7 +11,7 @@ moduleSettings = {
 
 	cborm = {
 		inject = {
-			enabled = true, 
+			enabled = true,
 			includes = "",
 			excludes = ""
 		}
@@ -89,6 +89,7 @@ this.TYPES = {
 
 ### Base ORM Service
 
+* Removed `criteriaCount(), criteriaQuery()` from BaseService, this was the legacy criteria builder approach, please use `newCriteria()` instead.
 * Update `getEntityGivenName` to support ACF2018
 * Lazy loading `BeanPopulator` for performance on creations
 * Lazy loading `ORMEventHandler` for performance on creations
