@@ -1,15 +1,14 @@
 /**
- * ********************************************************************************
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ********************************************************************************
+ * ---
  * Validates if the field has a unique value in the database, this only applies to ORM objects
  */
 component accessors="true" implements="cbvalidation.models.validators.IValidator" singleton{
 
 	// Properties
 	property name="name";
-	property name="ORMService";
+	property name="ormService";
 
 	/**
 	 * Constructor
