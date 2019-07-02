@@ -342,6 +342,22 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	}
 
 	/**
+	 * Convenience method to return a single instance that matches the built up criterias query, or throws an exception if the query returns no results
+	 *
+	 * @throws EntityNotFound
+	 */
+	any function getOrFail(){
+		var result = this.get();
+		if( isNull( result ) ){
+			throw(
+				message = "No entity found for ID #arguments.id.toString()#",
+				type 	= "EntityNotFound"
+			);
+		}
+		return result;
+	}
+
+	/**
 	 * Convenience method to return a single instance that matches the built up criterias query, or null if the query returns no results.
 	 *
 	 * @throws HibernateException - if there is more than one matching result

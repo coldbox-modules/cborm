@@ -765,6 +765,12 @@
 		expect( r ).toBeComponent();
 	}
 
+	function testGetOrFail(){
+		expect( function(){
+			ormService.getOrFail( "User", 10000 );
+		}).toThrow();
+	}
+
 	private function deleteCategories(){
 		var q = new Query(datasource="coolblog" );
 		q.execute(sql="delete from categories where category = 'unitTest'" );

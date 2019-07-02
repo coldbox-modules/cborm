@@ -201,9 +201,19 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 *
 	 * @return Requested entity, new entity or `null`
      */
-	any function get( required any id,boolean returnNew=true ) {
+	any function get( required any id, boolean returnNew=true ){
 		arguments.entityName = this.getEntityName();
 		return super.get( argumentCollection=arguments );
+	}
+
+	/**
+	 * Get an entity using a primary key, if the id is not found this method throws an EntityNotFound Exception
+	 *
+	 * @throws EntityNotFound
+	 */
+	any function getOrFail( required any id ){
+		arguments.entityName = this.getEntityName();
+		return super.getOrFail( argumentCollection=arguments );
 	}
 
 	/**

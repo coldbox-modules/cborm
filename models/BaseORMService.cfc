@@ -387,6 +387,25 @@ component accessors="true"{
 	}
 
 	/**
+	 * Get an entity using a primary key, if the id is not found this method throws an EntityNotFound Exception
+	 *
+	 * @throws EntityNotFound
+	 */
+	any function getOrFail(
+		required string entityName,
+		required any id
+	){
+		var result = this.get( argumentCollection=arguments );
+		if( isNull( result ) ){
+			throw(
+				message = "No entity found for ID #arguments.id.toString()#",
+				type 	= "EntityNotFound"
+			);
+		}
+		return result;
+	}
+
+	/**
 	 * Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
 	 *
 	 * @entityName The name of the entity to retrieve
@@ -508,6 +527,27 @@ component accessors="true"{
 	}
 
 	/**
+	 * Finds and returns the first result for the given query or throws an exception if not found,
+	 * this method delegates to the `findIt()` method
+	 */
+	any function findOrFail(
+		required string query,
+		any params=structnew(),
+		numeric timeout=0,
+		boolean ignoreCase=false,
+		string datasource=getDatasource()
+	){
+		var result = findIt( argumentCollection = arguments );
+		if( isNull( result ) ){
+			throw(
+				message = "No entity found",
+				type 	= "EntityNotFound"
+			);
+		}
+		return result;
+	}
+
+	/**
 	 * Finds and returns the first result for the given query or null if no entity was found.
 	 * You can either use the query and params combination
 	 *
@@ -522,7 +562,7 @@ component accessors="true"{
 		any params=structnew(),
 		numeric timeout=0,
 		boolean ignoreCase=false,
-		string datasource
+		string datasource=getDatasource()
 	){
 		// One result
 		arguments.max = 1;

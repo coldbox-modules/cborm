@@ -41,6 +41,7 @@ moduleSettings = {
 ### Criteria Queries
 
 * They have been adapted to work with Hibernate 3, 4 and 5
+* New fail fast method for `get()` -> `getOrFail()` to throw an entity not found exception
 * New alias methods for controlling the result transformations `asStruct(), asStream(), asDistinct()` that will apply result transformers for you instead of doing `.resultTransformer( c.ALIAS_TO_ENTITY_MAP )`, whish is long and boring, or return to you a java stream via cbStreams.
 * When calling native restrictions, no more reflection is used to discover the restriction type thus increasing over 70% in performance when creating criteria queries
 * You can now negate any criteria restriction by prefixing it with a `not`.  So you can do: `.notEq(), notBetween(), notIsNull(), notIsIn()` and much more.
@@ -100,6 +101,7 @@ this.TYPES = {
 
 ### Base ORM Service
 
+* New Fail fast methods: `getOrFail() proxies to get(), findOrFail() proxies to findIt()` that if not entity is produced will throw a `EntityNotFound` exception
 * All listing methods can now return the results as a cbStream by passing the `asStream` boolean argument.
 * Removed `criteriaCount(), criteriaQuery()` from BaseService, this was the legacy criteria builder approach, please use `newCriteria()` instead.
 * Update `getEntityGivenName` to support ACF2018
