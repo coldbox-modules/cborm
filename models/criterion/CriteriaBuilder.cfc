@@ -104,6 +104,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @sortOrder The sorting order
 	 * @ignoreCase For the sorting and SQL
 	 * @asQuery Return a query or array of data (objects/struct), defaults to arrays
+	 * @asStream Return a cbStream of array data, defaults to the `asStream` property
 	 */
 	any function list(
 		numeric offset=0,
@@ -111,7 +112,8 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		numeric timeout=0,
 		string  sortOrder="",
 		boolean ignoreCase=false,
-		boolean asQuery=false
+		boolean asQuery=false,
+		boolean asStream=getAsStream()
 	){
 
 		// Setup listing options
@@ -145,9 +147,16 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		// Get listing
 		var results = nativeCriteria.list() ?: [];
 
-		// Objects or Query?
+		// Query?
 		if( arguments.asQuery ){
 			results = entityToQuery( results );
+		}
+
+		// Stream?
+		if( arguments.asStream ){
+			return variables.ormService.getWireBox()
+				.getInstance( "StreamBuilder@cbStreams" )
+				.new( results );
 		}
 
 		// process interception

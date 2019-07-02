@@ -233,6 +233,7 @@ component accessors="true"{
 	 * @timeout A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
 	 * @asQuery The return format as either a query or array of objects
+	 * @asStream The return format will be a cbStream
 	 */
 	any function list(
 		required string entityName,
@@ -242,7 +243,8 @@ component accessors="true"{
 		numeric max=0,
 		numeric timeout=0,
 		boolean ignoreCase=false,
-		boolean asQuery=getDefaultAsQuery()
+		boolean asQuery=getDefaultAsQuery(),
+		boolean asStream=false
 	){
 		var options = {};
 
@@ -281,9 +283,14 @@ component accessors="true"{
 			results = [];
 		}
 
-		// Objects or Query?
-		if( arguments.asQuery ){
-			results = entityToQuery( results );
+
+		// As Stream or Query
+		if( arguments.asStream ){
+			return variables.wirebox
+				.getInstance( "StreamBuilder@cbStreams" )
+				.new( results );
+		} else if ( arguments.asQuery ){
+			return entityToQuery( results );
 		}
 
 		return results;
@@ -302,6 +309,7 @@ component accessors="true"{
 	 * @asQuery The return format as either a query or array of objects
 	 * @unique Return array or a unique record, defaults to array
 	 * @datasource The datasource to use
+	 * @asStream The return format will be a cbStream
 	 */
 	any function executeQuery(
 		required string query,
@@ -312,7 +320,8 @@ component accessors="true"{
 		boolean ignorecase=false,
 		boolean asQuery=getDefaultAsQuery(),
 		boolean unique=false,
-		string datasource=""
+		string datasource="",
+		boolean asStream=false
 	){
 		var options = {};
 
@@ -349,9 +358,15 @@ component accessors="true"{
 
 		// Null Checks
 		if( isNull( results ) ){
-			if( arguments.asQuery ){
+
+			if( arguments.stream ){
+				return variables.wirebox
+				.getInstance( "StreamBuilder@cbStreams" )
+				.new();
+			} else if( arguments.asQuery ){
 				return queryNew( "" );
 			}
+
 			if( arguments.unique ){
 				return; //NULL
 			} else {
@@ -359,9 +374,13 @@ component accessors="true"{
 			}
 		}
 
-		// Objects or Query?
-		if( arguments.asQuery ){
-			results = entityToQuery( results );
+		// As Stream or Query
+		if( arguments.asStream ){
+			return variables.wirebox
+				.getInstance( "StreamBuilder@cbStreams" )
+				.new( results );
+		} else if ( arguments.asQuery ){
+			return entityToQuery( results );
 		}
 
 		return results;
@@ -418,13 +437,15 @@ component accessors="true"{
 	 * @sortOrder The sorting of the returning array, defaults to natural sorting
 	 * @readOnly Return full or read only entities, defaults to false
 	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
+	 * @asStream Return a stream if true
      */
-	array function getAll(
+	any function getAll(
 		required string entityName,
 		any id,
 		string sortOrder="",
 		boolean readOnly=false,
-		string properties
+		string properties,
+		boolean asStream=false
 	){
 		var results = [];
 
@@ -465,6 +486,24 @@ component accessors="true"{
 		// Read Only
 		query.setReadOnly( javaCast( "boolean", arguments.readOnly ) );
 
+		// Streams Support
+		if( arguments.asStream ){
+
+			// If Hibernate 5, return native stream
+			if( listFirst( server.coldfusion.productVersion ) == 2018 ){
+				return variables.wirebox
+					.getInstance( "StreamBuilder@cbStreams" )
+					.new()
+					.setJStream( query.stream() );
+			} else {
+				return variables.wirebox
+					.getInstance( "StreamBuilder@cbStreams" )
+					.new( query.list() );
+			}
+
+		}
+
+		// Normal execution
 		return query.list();
 	}
 
@@ -517,17 +556,19 @@ component accessors="true"{
 	 * @timeout A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
 	 * @datasource The datasource to use
+	 * @asStream Return a stream if true
 	 *
-	 * @return array of entities
+	 * @return array of entities or a cbstream
 	 */
-	array function findAll(
+	any function findAll(
 		string query,
 		any params=structnew(),
 		numeric offset=0,
 		numeric max=0,
 		numeric timeout=0,
 		boolean ignoreCase=false,
-		string datasource
+		string datasource,
+		boolean asStream=false
 	){
 		// Normal Execute Query
 		arguments.asQuery=false;
@@ -560,13 +601,15 @@ component accessors="true"{
 	 * @entityName The entity to search for
 	 * @criteria The filtering criteria to search for.
 	 * @sortOrder The sorting order
+	 *
 	 */
 	array function findAllWhere(
 		required string entityName,
 		struct criteria={},
 		string sortOrder="",
 		boolean ignoreCase=false,
-		numeric timeout=0
+		numeric timeout=0,
+		boolean asStream=false
 	){
 		var options = {
 			ignorecase 	= arguments.ignoreCase,
@@ -579,7 +622,16 @@ component accessors="true"{
 			options.cacheable  = true;
 		}
 
-		return entityLoad( arguments.entityName, arguments.criteria, arguments.sortOrder, options );
+		var results = entityLoad( arguments.entityName, arguments.criteria, arguments.sortOrder, options );
+
+		// As stream
+		if( arguments.asStream ){
+			return variables.wirebox
+					.getInstance( "StreamBuilder@cbStreams" )
+					.new( results );
+		}
+
+		return results;
 	}
 
 	/*****************************************************************************************/

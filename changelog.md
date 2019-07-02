@@ -27,7 +27,8 @@ moduleSettings = {
 
 ### General Updates
 
-* **Mementifier** is now a dependency for cborm. (www.forgebox.io/view/mementifier), which can be used for producing state out of ORM entities for auditing or building JSON Api's.
+* **Mementifier** is now a dependency for cborm (www.forgebox.io/view/mementifier), which can be used for producing state out of ORM entities for auditing or building JSON Api's.
+* **cbStreams** is now a dependency for cborm (www.forgebox.io/view/cbstreams), all criteria queries and major listing methods support the return of streams instead of array of objects
 * Full Null Support
 * Performance update on creating active entities as datasource discovery has been reworked
 * Updated build process to latest in Ortus template
@@ -40,9 +41,10 @@ moduleSettings = {
 ### Criteria Queries
 
 * They have been adapted to work with Hibernate 3, 4 and 5
-* New alias methods for controlling the result transformations `asStruct(), asDistinct()` that will apply result transformers for you instead of doing `.resultTransformer( c.ALIAS_TO_ENTITY_MAP )`, whish is long and boring
+* New alias methods for controlling the result transformations `asStruct(), asStream(), asDistinct()` that will apply result transformers for you instead of doing `.resultTransformer( c.ALIAS_TO_ENTITY_MAP )`, whish is long and boring, or return to you a java stream via cbStreams.
 * When calling native restrictions, no more reflection is used to discover the restriction type thus increasing over 70% in performance when creating criteria queries
 * You can now negate any criteria restriction by prefixing it with a `not`.  So you can do: `.notEq(), notBetween(), notIsNull(), notIsIn()` and much more.
+* The `list()` method has a new `asStream` boolean argument that if true, will return the results as a cbStream. ((www.forgebox.io/view/cbStreams))
 * New Methods: `idCast()` and `autoCast()` added for quick casting of values
 * New method: `queryHint()` so you can add your own vendor specific query hints for optimizers.
 * New method: `comment( string )` so you can add arbitrary comments to the generated SQL, great for debugging
@@ -98,6 +100,7 @@ this.TYPES = {
 
 ### Base ORM Service
 
+* All listing methods can now return the results as a cbStream by passing the `asStream` boolean argument.
 * Removed `criteriaCount(), criteriaQuery()` from BaseService, this was the legacy criteria builder approach, please use `newCriteria()` instead.
 * Update `getEntityGivenName` to support ACF2018
 * Lazy loading `BeanPopulator` for performance on creations
@@ -122,19 +125,21 @@ this.TYPES = {
 * New properties: `wirebox` : a WireBox reference already injected, `logger` : a prepared logger for the class, `datasource` The default datasource or constructed datasource for the class.
 * Logging of all activity now available via the `debug` level, even for dynamic methods.
 * Refactored all dynamic finders and counters to their own class, which improves not only performance but weight of orm service based entities.
+* All dynamic method calls can now return cbStreams as the results
 * All dynamic method calls accept a structure as an argument or named as `options` that can have the following keys now:
 
 ```json
 {
-	ignoreCase : boolean (false)
-	maxResults : numeric (0)
-	offset     : numeric (0)
-	cacheable  : boolean (false)
-	cacheName  : string (default)
-	timeout    : numeric (0)
-	datasource : string (defaults)
-	sortBy     : hql to sort by,
-	autoCast   : boolean (true)
+	ignoreCase 	: boolean (false)
+	maxResults 	: numeric (0)
+	offset     	: numeric (0)
+	cacheable  	: boolean (false)
+	cacheName  	: string (default)
+	timeout    	: numeric (0)
+	datasource 	: string (defaults)
+	sortBy     	: hql to sort by,
+	autoCast   	: boolean (true),
+	asStream	: boolean (false)
 }
 
 results = ormservice.findByLastLoginBetween( "User", "01/01/2008", "11/01/2008", { sortBy="LastName" } );

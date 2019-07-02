@@ -40,6 +40,11 @@ component accessors="true"{
 	 */
 	property name="logger";
 
+	/**
+	 * If marked as a stream, we will use cbStreams to return to you an array of streams
+	 */
+	property name="asStream" type="boolean" default="false";
+
 	// CFML Criteria Marker, used for distinction between Java and CFML classes
 	this.CFML = true;
 
@@ -80,6 +85,8 @@ component accessors="true"{
 		variables.eventManager 		= arguments.ormService.getORMEventHandler().getEventManager();
 		// set sql logger usage
 		variables.sqlLoggerActive 	= false;
+		// If the return type will be a stream or not
+		variables.asStream 			= false;
 		// add SQL Helper
 		variables.SQLHelper 		= new cborm.models.sql.SQLHelper( this );
 		// Setup Logging
@@ -295,6 +302,14 @@ component accessors="true"{
 	 */
 	BaseBuilder function asStruct(){
 		nativeCriteria.setResultTransformer( this.ALIAS_TO_ENTITY_MAP );
+		return this;
+	}
+
+	/**
+	 * Get the results as a CBstream
+	 */
+	BaseBuilder function asStream(){
+		variables.asStream = true;
 		return this;
 	}
 

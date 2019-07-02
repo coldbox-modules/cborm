@@ -122,7 +122,8 @@ component accessors="true" singleton{
 		arguments.options.append( {
 			autoCast 	: true,
 			sortBy 		: "",
-			datasource 	: arguments.ormService.getDatasource()
+			datasource 	: arguments.ormService.getDatasource(),
+			asStream 	: false
 		}, false );
 
 		// Check if we have already the signature for this request
@@ -135,8 +136,7 @@ component accessors="true" singleton{
 			variables.HQLDynamicCache[ dynamicCacheKey ] = hql;
 		}
 
-		//results struct used for testing
-		var results = {
+		var debugData = {
 			"method"     : arguments.method,
 			"params"     : params,
 			"options"    : arguments.options,
@@ -153,12 +153,24 @@ component accessors="true" singleton{
 
 		// Logging
 		if( variables.logger.canDebug() ){
-			variables.logger.debug( "Dynamic method requested: #arguments.method# with the following bindings:", results );
+			variables.logger.debug( "Dynamic method requested: #arguments.method# with the following bindings:", debugData );
 		}
 
 		try{
 
-			return ORMExecuteQuery( hql, params, arguments.unique, arguments.options );
+			var results = ORMExecuteQuery( hql, params, arguments.unique, arguments.options );
+
+			// Streams?
+			if( arguments.options.asStream ){
+				return arguments.ormService
+					.getWireBox()
+					.getInstance( "StreamBuilder@cbStreams" )
+					.new( results ?: [] );
+			}
+
+			if( !isNull( results ) ){
+				return results;
+			}
 
 		} catch( Any e ) {
 			if( findNoCase( "org.hibernate.NonUniqueResultException", e.detail ) ){
@@ -171,7 +183,7 @@ component accessors="true" singleton{
 			throw(
 				message = e.message & e.detail,
 				type    = "HQLQueryException",
-				detail  = "Dynamic compiled query: #results.toString()#"
+				detail  = "Dynamic compiled query: #debugData.toString()#"
 			);
 		}
 

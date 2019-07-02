@@ -2,22 +2,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 
 	function beforeTests(){
 		super.beforeTests();
-		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
 	}
 
 	function setup(){
-		/**
-			mockController = getMockBox().createEmptyMock("coldbox.system.web.Controller");
-		mockLogger   = getMockBox().createEmptyMock("coldbox.system.logging.Logger").$("canDebug",true).$("debug");
-		mockLogBox   = getMockBox().createEmptyMock("coldbox.system.logging.LogBox")
-			.$("getLogger", mockLogger);
-		mockController.$("getLogBox", mockLogBox);
-		mockController.$("getCacheBox", "");
-		**/
+		super.setup();
 
-		application.wirebox = new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
-		criteria   = getMockBox().createMock("cborm.models.criterion.CriteriaBuilder");
+		criteria   = createMock( "cborm.models.criterion.CriteriaBuilder" );
 		criteria.init( entityName="User", ormService=new cborm.models.BaseORMService() );
 
 		// Test ID's
@@ -90,8 +80,35 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		assertTrue( arrayLen(r) );
 	}
 
+	function testListAsStreams(){
+		criteria.init( entityName="User", ormService=new cborm.models.BaseORMService() );
+		r = criteria
+			.asStream()
+			.list( sortOrder="lastName asc, firstName desc" )
+			.filter( function( item ){
+				return item.getFirstName().findNoCase( "ken" );
+			} )
+			.collect();
+
+		expect( r )
+			.toBeArray()
+			.toHaveLength( 1 );
+
+		criteria.init( entityName="User", ormService=new cborm.models.BaseORMService() );
+		r = criteria
+			.list( sortOrder="lastName asc, firstName desc", asStream=true )
+			.filter( function( item ){
+				return item.getFirstName().findNoCase( "ken" );
+			} )
+			.collect();
+
+		expect( r )
+			.toBeArray()
+			.toHaveLength( 1 );
+	}
+
 	function testCreateSubcriteria(){
-		s = getMockBox().createMock("cborm.models.criterion.DetachedCriteriaBuilder");
+		s = createMock("cborm.models.criterion.DetachedCriteriaBuilder");
 		assertTrue( isInstanceOf( s, "cborm.models.criterion.DetachedCriteriaBuilder" ) );
 	}
 

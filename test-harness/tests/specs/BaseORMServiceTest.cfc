@@ -578,7 +578,6 @@
 		ormservice.setDefaultAsQuery( false );
 		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
 		assertTrue( arrayLen( test ) );
-
 	}
 
 	function testExecuteQuery(){
