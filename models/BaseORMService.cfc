@@ -1705,13 +1705,15 @@ component accessors="true"{
 	 * @useQueryCaching Activate query caching for the list operations
 	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
 	 * @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	 * @dataSource The datasource to bind the criteria query on, defaults to the one in this ORM service
 	 *
 	 * @return cborm.models.criterion.CriteriaBuilder
 	 */
 	any function newCriteria(
 		required string entityName,
 		boolean useQueryCaching=false,
-		string queryCacheRegion=""
+		string queryCacheRegion="",
+		datasource=getDatasource()
 	){
 		// mix in yourself as a dependency
 		arguments.ormService = this;

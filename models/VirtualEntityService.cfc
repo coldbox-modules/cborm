@@ -372,7 +372,8 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	any function newCriteria(
 		boolean useQueryCaching=false,
-		string queryCacheRegion=""
+		string queryCacheRegion="",
+		datasource=getDatasource()
 	){
 		arguments.entityName = this.getEntityName();
 		return super.newCriteria( argumentCollection=arguments );

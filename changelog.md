@@ -28,6 +28,7 @@ moduleSettings = {
 ### General Updates
 
 * **Mementifier** is now a dependency for cborm. (www.forgebox.io/view/mementifier), which can be used for producing state out of ORM entities for auditing or building JSON Api's.
+* Full Null Support
 * Performance update on creating active entities as datasource discovery has been reworked
 * Updated build process to latest in Ortus template
 * Dropped Railo, Lucee 4.5, ACF11 support
@@ -42,6 +43,9 @@ moduleSettings = {
 * New alias methods for controlling the result transformations `asStruct(), asDistinct()` that will apply result transformers for you instead of doing `.resultTransformer( c.ALIAS_TO_ENTITY_MAP )`, whish is long and boring
 * When calling native restrictions, no more reflection is used to discover the restriction type thus increasing over 70% in performance when creating criteria queries
 * You can now negate any criteria restriction by prefixing it with a `not`.  So you can do: `.notEq(), notBetween(), notIsNull(), notIsIn()` and much more.
+* New Methods: `idCast()` and `autoCast()` added for quick casting of values
+* New method: `queryHint()` so you can add your own vendor specific query hints for optimizers.
+* New method: `comment( string )` so you can add arbitrary comments to the generated SQL, great for debugging
 * `sqlRestriction()` deprecated in favor of the shorthand notation: `sql()`
 * The `sql()` restriction now supports binding positional parameters. You can pass them in an array and we will infer the types: `sql( "id = ? and isActive = ?", [ "123", true ] )`.  Or you can pass in a struct of `{value:"", type:""}` instead:
 

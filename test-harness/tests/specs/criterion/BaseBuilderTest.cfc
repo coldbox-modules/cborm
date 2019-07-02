@@ -9,15 +9,14 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 	function setup(){
 		super.setup();
 
-		ormService = getMockBox().createMock("cborm.models.BaseORMService").init();
-
-		mockEventHandler = getMockBox().createMock( "cborm.models.EventHandler" )
-			.$( "getEventManager", getMockBox().createStub().$( "processState" ) );
+		ormService = createMock("cborm.models.BaseORMService").init();
+		mockEventHandler = createMock( "cborm.models.EventHandler" )
+			.$( "getEventManager", createStub().$( "processState" ) );
 		ormService.setORMEventHandler( mockEventHandler );
 		ormservice.seteventHandling( false );
 
 		criteria   		= new cborm.models.criterion.CriteriaBuilder( entityName="User", ORMService=ormService );
-		subCriteria   	= getMockBox().createMock("cborm.models.criterion.DetachedCriteriaBuilder");
+		subCriteria   	= createMock("cborm.models.criterion.DetachedCriteriaBuilder");
 		subCriteria.init( entityName="User", alias="User2", ormService=ormService );
 
 		// Test ID's
