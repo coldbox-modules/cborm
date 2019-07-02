@@ -3,14 +3,16 @@
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox" );
+		new coldbox.system.ioc.Injector( "tests.resources.WireBox" );
 	}
 
 	function teardown(){
-		ormservice.clear();
+		ormClearSession();
 	}
 
 	function setup(){
+		super.setup();
+
 		ormservice 	= createMock( "cborm.models.BaseORMService" );
 		mockEH 		= createMock( "cborm.models.EventHandler" );
 
@@ -23,58 +25,69 @@
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
-		test2 = ["1","2"];
+		test2 = [ "1", "2" ];
 	}
 
 	function testCountByDynamically(){
 		// Test simple Equals
 		t = ormservice.countByLastName( "User", "majano" );
 		assert( 1 eq t, "CountBylastName" );
-
 	}
+
+	function testFindAllByDynamically(){
+		// Using Conditionals
+		t = ormservice.findAllByLastNameLessThan( "User", "Majano" );
+		assert( arraylen( t ) , "Conditionals LessThan" );
+
+		t = ormservice.findAllByLastNameLessThanEquals( "User", "Majano", { sortBy = "LastName" } );
+		assert( arraylen( t ) , "Conditionals LessThanEquals" );
+
+		t = ormservice.findAllByLastNameGreaterThan( "User", "Majano" );
+		assert( arraylen( t ) , "Conditionals GreaterThan" );
+
+		t = ormservice.findAllByLastNameGreaterThanEquals( "User", "Majano" );
+		assert( arraylen( t ) , "Conditionals GreaterThanEqauls" );
+
+		t = ormservice.findAllByLastNameNotEqual( "User", "Majano" );
+		assert( arrayLen( t ) , "Conditionals Equal" );
+
+		t = ormservice.findAllByLastNameIsNotNull( "User" );
+		assert( arrayLen( t ) , "Conditionals isNull" );
+
+		t = ormservice.findAllByLastNameInList( "User", "Majano,Fernando" );
+		assert( arrayLen( t ) , "Conditionals inList" );
+
+		t = ormservice.findAllByLastNameInList( "User", listToArray(  "Majano,Fernando" ));
+		assert( arrayLen( t ) , "Conditionals inList" );
+
+		t = ormservice.findAllByLastNameNotInList( "User", listToArray(  "Majano,Fernando" ));
+		assert( arrayLen( t ) , "Conditionals NotinList" );
+	}
+
 	function testFindByDynamically(){
+		t = ormservice.findByLastNameLike( "User", "ma%" );
+		assert( isObject( t ) , "Conditionals Like" );
+		t = ormservice.findByLastNameIsNull( "User" );
+		assert( isNull( t ) , "Conditionals isNull" );
 		// Test simple Equals
 		t = ormservice.findByLastName( "User", "majano" );
 		assert( isObject( t ), "FindBylastName" );
 		// Test simple Equals with invalid
 		t = ormservice.findByLastName( "User", "d" );
 		assert( isNull( t ), "Invalid last name" );
-		// Using Conditionals
-		t = ormservice.findAllByLastNameLessThanEquals( "User", "Majano" );
-		assert( arraylen( t ) , "Conditionals LessThanEquals" );
-		t = ormservice.findAllByLastNameLessThan( "User", "Majano" );
-		assert( arraylen( t ) , "Conditionals LessThan" );
-		t = ormservice.findAllByLastNameGreaterThan( "User", "Majano" );
-		assert( arraylen( t ) , "Conditionals GreaterThan" );
-		t = ormservice.findAllByLastNameGreaterThanEquals( "User", "Majano" );
-		assert( arraylen( t ) , "Conditionals GreaterThanEqauls" );
-		t = ormservice.findByLastNameLike( "User", "ma%" );
-		assert( isObject( t ) , "Conditionals Like" );
-		t = ormservice.findAllByLastNameNotEqual( "User", "Majano" );
-		assert( arrayLen( t ) , "Conditionals Equal" );
-		t = ormservice.findByLastNameIsNull( "User" );
-		assert( isNull( t ) , "Conditionals isNull" );
-		t = ormservice.findAllByLastNameIsNotNull( "User" );
-		assert( arrayLen( t ) , "Conditionals isNull" );
 		t = ormservice.findByLastLoginBetween( "User", "01/01/2008", "11/01/2008" );
 		assert( isNull( t ) , "Conditionals between" );
 		t = ormservice.findByLastLoginNotBetween( "User", "2008-01-01", "2013-01-01" );
 		assert( !isNull( t ) , "Conditionals not between" );
-		t = ormservice.findAllByLastNameInList( "User", "Majano,Fernando" );
-		assert( arrayLen( t ) , "Conditionals inList" );
-		t = ormservice.findAllByLastNameInList( "User", listToArray(  "Majano,Fernando" ));
-		assert( arrayLen( t ) , "Conditionals inList" );
-		t = ormservice.findAllByLastNameNotInList( "User", listToArray(  "Majano,Fernando" ));
-		assert( arrayLen( t ) , "Conditionals NotinList" );
 	}
 
 	function testFindByDynamicallyBadProperty(){
-		expectException( "BaseORMService.InvalidMethodGrammar" );
+		expectException( "InvalidMethodGrammar" );
 		t = ormservice.findByLastAndFirst( "User" );
 	}
 
 	function testFindByDynamicallyFailure(){
-		expectException( "BaseORMService.HQLQueryException" );
+		expectException( "HQLQueryException" );
 		t = ormservice.findByLastName( "User" );
 	}
 
@@ -114,11 +127,26 @@
 	}
 
 	function testSessionContains(){
-		assertFalse( ormservice.sessionContains( entityNew( "User" ) ));
-		test = entityLoad( "User",{firstName="Luis"},true);
-		assertTrue( ormservice.sessionContains( test ));
-		ORMEvictEntity( "User" );
-		assertFalse( ormservice.sessionContains( entityNew( "User" ) ));
+		expect( ormservice.sessionContains( entityNew( "User" ) ) ).toBeFalse();
+		var  test = entityLoad( "User", {firstName="Luis"}, true );
+		expect( ormservice.sessionContains( test ) ).toBeTrue();
+
+		ormservice.evict( test );
+		expect( ormservice.sessionContains( test ) ).toBeFalse();
+	}
+
+	function testEvictionByEntityObject(){
+		ormClearSession();
+		var test = entityLoad( "User", {firstName="Luis"}, true );
+		ormservice.evict( test );
+		expect( ormservice.sessionContains( test ) ).toBeFalse();
+	}
+
+	function testEvictionByEntityObjects(){
+		ormClearSession();
+		var test = entityLoad( "User" );
+		ormservice.evict( test );
+		expect( ormservice.getSessionStatistics().entityCount ).toBe( 0 );
 	}
 
 	function testNew(){
@@ -187,11 +215,51 @@
 		user = ormService.get(entityName="User",id=0,returnNew=false);
 		assertTrue( isNull( user ) );
 	}
+
+	function testgetKeyValue(){
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		var targetID = ormService.getKeyValue( test );
+		expect( targetID ).toBe( "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91" );
+
+		var targetID = ormService.getKeyValue( entityNew( "Category" ) );
+		expect( isNull( targetID ) ).toBeTrue();
+	}
+
+	function testIsDirty(){
+		var role = entityLoad( "Role", { role = "Administrator" }, true );
+		expect( ormService.isDirty( role ) ).toBeFalse();
+
+		expect( ormService.isDirty( entityNew( "Category" ) ) ).toBeFalse();
+
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		test.setCategory( "dirty" );
+		test.setDescription( "dirty dirty" );
+		expect( ormService.isDirty( test ) ).toBeTrue();
+
+		ormclearSession();
+
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		expect( ormService.isDirty( test ) ).toBeFalse();
+	}
+
+	function testgetDirtyPropertyNames(){
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+		test.setCategory( "dirty" );
+		test.setDescription( "dirty dirty" );
+
+		var properties = ormService.getDirtyPropertyNames( test );
+		debug( properties );
+		expect( properties ).toHaveLength( 2 );
+
+	}
+
 	function testGetAll(){
-		r = ormService.getAll('Category');
+		var test = entityLoad( "category", "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", true );
+
+		r = ormService.getAll( entityName='Category', properties="catid as id,category as category" );
 		assertTrue( arrayLen(r) );
 
-		r = ormService.getAll('Category',"A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91","category" );
+		r = ormService.getAll( 'Category', "A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91", "category asc" );
 		assertTrue( arraylen( r ) eq 1 );
 
 		r = ormService.getAll('Category',[1,2]);
@@ -206,6 +274,9 @@
 		r = ormService.getAll(entityName='Category',sortOrder="category desc" );
 		assertTrue( arrayLen(r) );
 
+		// readonly
+		r = ormService.getAll( entityName='Category', readOnly=true );
+		assertTrue( arrayLen(r) );
 	}
 
 	function testDelete(){
@@ -263,18 +334,23 @@
 	}
 
 	function testDeleteByID(){
-		cat = entityNew( "Category" );
+		var cat = entityNew( "Category" );
 		cat.setCategory('unitTest');
 		cat.setDescription('unitTest');
-		entitySave(cat);ORMFlush();
+
+		entitySave( cat );
+		ORMFlush();
 
 		try{
-			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
+			ORMCloseSession();
+			ORMClearSession();
+
 			count=ormservice.deleteByID( "Category", cat.getCatID() );
+
 			assertTrue( count gt 0 );
 		}
 		catch(any e){
-			fail(e.detail & e.message);
+			fail( e.detail & e.message );
 		}
 		finally{
 			deleteCategories();
@@ -293,9 +369,10 @@
 
 		try{
 			if( structKeyExists( server, "lucee" ) ){ ORMCloseSession(); }
-			ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'}, transactional=false);
+			var results = ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'}, transactional=false);
+			debug( "Removed #results# records");
 			ormFlush();
-			result = q.execute(sql="select * from categories where category = 'unitTest'" );
+			var result = q.execute(sql="select * from categories where category = 'unitTest'" );
 			assertEquals( 0, result.getResult().recordcount );
 		}
 		catch(any e){
@@ -317,10 +394,14 @@
 		q = new Query(datasource="coolblog" );
 
 		try{
-			count=ormService.deleteWhere( entityName="Category",category="unitTest", transactional=false );
-			debug(count);
+			var count=ormService.deleteWhere(
+				entityName="Category",
+				category="unitTest",
+				transactional=false
+			);
+			debug( "Delete where: #count#" );
 
-			result = q.execute(sql="select * from categories where category = 'unitTest'" );
+			var result = q.execute(sql="select * from categories where category = 'unitTest'" );
 			assertEquals( 0, result.getResult().recordcount );
 		}
 		catch(any e){
@@ -497,7 +578,6 @@
 		ormservice.setDefaultAsQuery( false );
 		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
 		assertTrue( arrayLen( test ) );
-
 	}
 
 	function testExecuteQuery(){
@@ -510,16 +590,12 @@
 		assertTrue( test.recordcount );
 	}
 
-	function testFind(){
+	function testFindIt(){
 
-		test = ormservice.findit( "from Category where category = ?",['Training']);
+		test = ormservice.findIt( "from Category where category = ?",['Training']);
 		assertEquals( 'Training', test.getCategory() );
 
-		test = ormservice.findit( "from Category where category = :category",{category="Training"});
-		assertEquals( 'Training', test.getCategory() );
-
-		sample = entityLoad( "Category",{category="Training"},true);
-		test = ormService.findit(example=sample);
+		test = ormservice.findIt( "from Category where category = :category",{category="Training"});
 		assertEquals( 'Training', test.getCategory() );
 	}
 
@@ -539,10 +615,6 @@
 		assertEquals( 1, arrayLen(test) );
 
 		test = ormservice.findAll( "from Category where category = :category",{category="Training"});
-		assertEquals( 1, arrayLen(test) );
-
-		sample = entityLoad( "Category",{category="Training"},true);
-		test = ormService.findAll(example=sample);
 		assertEquals( 1, arrayLen(test) );
 
 		test = ormService.findAll(query="from Category",max=2,offset=1);
@@ -574,28 +646,30 @@
 
 	function testGetKey(){
 
-		test = ormservice.getKey(entityName="Category" );
+		test = ormservice.getKey("Category" );
 		assertEquals( 'catid', test );
 
-		test = ormservice.getKey(entityName="User" );
+		test = ormservice.getKey("User" );
 		assertEquals( 'id', test );
 	}
 
 	function testGetPropertyNames(){
 
-		test = ormservice.getPropertyNames(entityName="Category" );
+		test = ormservice.getPropertyNames("Category" );
 		assertEquals( 4, arrayLen(test) );
 
-		test = ormservice.getPropertyNames(entityName="User" );
+		test = ormservice.getPropertyNames("User" );
 		assertEquals( 6, arrayLen(test) );
 	}
 
 	function testGetTableName(){
-
-		test = ormservice.getTableName(entityName="Category" );
+		test = ormservice.getTableName( "Category" );
 		assertEquals( 'categories', test );
 
-		test = ormservice.getTableName(entityName="User" );
+		test = ormservice.getTableName( "User" );
+		assertEquals( 'users', test );
+
+		test = ormservice.getTableName( entityNew( "User" ) );
 		assertEquals( 'users', test );
 	}
 
@@ -647,6 +721,8 @@
 
 	function testNewCriteria(){
 		c = ormservice.newCriteria( "User" );
+		expect( c ).toBeComponent();
+		expect( c.getEntityName() ).toBe( "User" );
 	}
 
 	function testMerge(){
@@ -682,6 +758,17 @@
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 1, stats.entityCount );
 		expect(	aTests ).toBeArray();
+	}
+
+	function testGetRestrictions(){
+		var r = ormservice.getRestrictions();
+		expect( r ).toBeComponent();
+	}
+
+	function testGetOrFail(){
+		expect( function(){
+			ormService.getOrFail( "User", 10000 );
+		}).toThrow();
 	}
 
 	private function deleteCategories(){

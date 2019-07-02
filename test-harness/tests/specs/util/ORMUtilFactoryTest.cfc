@@ -26,12 +26,6 @@ component extends="testbox.system.BaseSpec"{
 				expect(	u ).toBeInstanceOf( "cborm.models.util.CFORMUtil" );
 			}, skip=isLucee);
 
-			it( "can get lucee < 4.3 instance", function(){
-				factory.$("getPlatform", "railo" ).$("getLuceeVersion", "4.1.000");
-				var u = factory.getORMUtil();
-				expect(	u ).toBeInstanceOf( "cborm.models.util.ORMUtil" );
-			});
-
 			it( title="can get lucee > 4.3 instance", body=function(){
 				factory.$("getPlatform", "lucee" ).$("getLuceeVersion", "4.3.000");
 				var u = factory.getORMUtil();

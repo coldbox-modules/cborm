@@ -1,29 +1,40 @@
 {
-	"name" 		: "ColdBox ORM Extensions",
-	"version"   : "@build.version@+@build.number@",
-    "location"  : "http://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
-	"author" 	: "Ortus Solutions <info@ortussolutions.com",
-	"homepage"	: "https://github.com/coldbox-modules/cbox-cborm",
-	"documentation"		: "https://github.com/coldbox-modules/cbox-cborm/wiki",
-	"repository"		: { "type" : "git", "url" : "https://github.com/coldbox-modules/cbox-cborm" },
-	"bugs" : "https://github.com/coldbox-modules/cbox-cborm/issues",
-	"shortDescription"	: "Enhances the ColdFusion ORM with tons of utilities.",
-	"slug"		: "cborm",
-	"type"		: "modules",
-	"keywords":"hibernate, orm extensions, orm, coldfusion orm, cfml orm",
-	"license"			: [
-		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" }
-	],
-	"contributors"		: [
-		"Brad Wood <bdw429s@gmail.com>",
-		"Curt Gratz <gratz@computerknowhow.com>",
-		"Joel Watson <existdissolve@gmail.com>"
-	],
-	"dependencies" 	:{
-		"cbvalidation" : "^1.3.1"
-	},
-	"ignore":[
+    "name":"ColdBox ORM Extensions",
+    "version":"2.0.0",
+    "location":"http://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
+    "author":"Ortus Solutions <info@ortussolutions.com",
+    "homepage":"https://github.com/coldbox-modules/cborm",
+    "documentation":"https://github.com/coldbox-modules/cborm/wiki",
+    "repository":{
+        "type":"git",
+        "url":"https://github.com/coldbox-modules/cborm"
+    },
+    "bugs":"https://github.com/coldbox-modules/cborm/issues",
+    "shortDescription":"Enhances the ColdFusion ORM with tons of utilities.",
+    "slug":"cborm",
+    "type":"modules",
+    "keywords":"hibernate, orm extensions, orm, coldfusion orm, cfml orm",
+    "license":[
+        {
+            "type":"Apache2",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    ],
+    "contributors":[
+        "Brad Wood <bdw429s@gmail.com>",
+        "Curt Gratz <gratz@computerknowhow.com>",
+        "Joel Watson <existdissolve@gmail.com>"
+    ],
+    "dependencies":{
+        "cbvalidation":"^1.3.1",
+        "mementifier":"^1.4.0",
+        "cbstreams":"^1.5.0"
+    },
+    "ignore":[
         "**/.*",
         "test-harness"
-    ]
+    ],
+    "scripts":{
+        "toMaster":"recipe build/toMaster.boxr"
+    }
 }

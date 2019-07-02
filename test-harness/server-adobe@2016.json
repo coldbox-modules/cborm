@@ -11,8 +11,8 @@
         "rewrites":{
             "enable":"true"
         }
-	},
-	"jvm":{
+    },
+    "jvm":{
         "heapSize":"1024"
     },
     "openBrowser":"false"

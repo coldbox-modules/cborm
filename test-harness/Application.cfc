@@ -8,7 +8,7 @@ component{
 
 	// UPDATE THE NAME OF THE MODULE IN TESTING BELOW
 	request.MODULE_NAME = "cborm";
-	request.MODULE_PATH = "cbox-cborm";
+	request.MODULE_PATH = "cborm";
 
 	// Application properties
 	this.name              = hash( getCurrentTemplatePath() );
@@ -58,6 +58,7 @@ component{
 		dbcreate = "update",
 		secondarycacheenabled = false,
 		cacheProvider = "ehcache",
+		automanageSession = false,
 		flushAtRequestEnd = false,
 		eventhandling = true,
 		eventHandler = "cborm.models.EventHandler",

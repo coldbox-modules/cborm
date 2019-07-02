@@ -1,9 +1,9 @@
-﻿/********************************************************************************
-* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-********************************************************************************
-* The ORM WireBox DSL
-*/
+﻿/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * The ColdBox 4< DSL Spec
+ */
 component implements="coldbox.system.ioc.dsl.IDSLBuilder" extends="DslSpec" accessors="true"{
 
 	/**

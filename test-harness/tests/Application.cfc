@@ -8,7 +8,7 @@ component{
 
 	// UPDATE THE NAME OF THE MODULE IN TESTING BELOW
 	request.MODULE_NAME = "cborm";
-	request.MODULE_PATH = "cbox-cborm";
+	request.MODULE_PATH = "cborm";
 
 	// APPLICATION CFC PROPERTIES
 	this.name 				= "#request.MODULE_NAME# Testing Suite";
@@ -25,6 +25,7 @@ component{
 	this.mappings[ "/root" ]   			= rootPath;
 	this.mappings[ "/cbvalidation" ]   	= rootPath & "/modules/cbvalidation";
 	this.mappings[ "/cbi18n" ]   		= rootPath & "/modules/cbvalidation/modules/cbi18n";
+	this.mappings[ "/cbstreams" ]   	= rootPath & "/modules/cbstreams";
 
 	// The module root path
 	moduleRootPath = REReplaceNoCase( rootPath, "#request.MODULE_PATH#(\\|/)test-harness(\\|/)", "" );

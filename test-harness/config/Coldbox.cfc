@@ -62,12 +62,26 @@
 					properties = {
 						filename = "tester", filePath="/#appMapping#/logs"
 					}
+				},
+				console = {
+					class="coldbox.system.logging.appenders.ConsoleAppender"
 				}
 			},
 			// Root Logger
 			root = { levelmax="DEBUG", appenders="*" },
 			// Implicit Level Categories
-			info = [ "coldbox.system" ]
+			info = [ "coldbox.system" ],
+			debug = [ "cborm.*" ]
+		};
+
+		moduleSettings = {
+			cborm = {
+				injection = {
+					enabled = true,
+					include = "",
+					exclude = ""
+				}
+			}
 		};
 
 	}

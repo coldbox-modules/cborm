@@ -9,126 +9,127 @@ Description :
 	for criteria based subquerying
 */
 component singleton extends="cborm.models.criterion.Restrictions"{
-	
+
 	// Constructor
 	Subqueries function init( required criteria ) {
-		detachedCriteria = arguments.criteria;
-		subqueries   = CreateObject( "java", "org.hibernate.criterion.Subqueries" );  
-		restrictions = CreateObject( "java", "org.hibernate.criterion.Restrictions" );
+		variables.detachedCriteria 	= arguments.criteria;
+		variables.subqueries   		= createObject( "java", "org.hibernate.criterion.Subqueries" );
+		variables.restrictions 		= createObject( "java", "org.hibernate.criterion.Restrictions" );
 		return this;
 	}
+
 	// Get the native hibernate subqueries object: org.hibernate.criterion.Subqueries
 	any function getNativeClass(){
-		return subqueries;
+		return variables.subqueries;
 	}
 	any function subEq( required any value ) {
-		return subqueries.eq( arguments.value, detachedCriteria );
+		return variables.subqueries.eq( arguments.value, variables.detachedCriteria );
 	}
 	any function subEqAll( required any value ) {
-		return subqueries.eqAll( arguments.value, detachedCriteria );
+		return variables.subqueries.eqAll( arguments.value, variables.detachedCriteria );
 	}
 	any function subGe( required any value ) {
-		return subqueries.ge( arguments.value, detachedCriteria );
+		return variables.subqueries.ge( arguments.value, variables.detachedCriteria );
 	}
 	any function subGeAll( required any value ) {
-		return subqueries.geAll( arguments.value, detachedCriteria );
+		return variables.subqueries.geAll( arguments.value, variables.detachedCriteria );
 	}
 	any function subGeSome( required any value ) {
-		return subqueries.geSome( arguments.value, detachedCriteria );
+		return variables.subqueries.geSome( arguments.value, variables.detachedCriteria );
 	}
 	any function subGt( required any value ) {
-		return subqueries.gt( arguments.value, detachedCriteria );
+		return variables.subqueries.gt( arguments.value, variables.detachedCriteria );
 	}
 	any function subGtAll( required any value ) {
-		return subqueries.gtAll( arguments.value, detachedCriteria );
+		return variables.subqueries.gtAll( arguments.value, variables.detachedCriteria );
 	}
 	any function subGtSome( required any value ) {
-		return subqueries.gtSome( arguments.value, detachedCriteria );
+		return variables.subqueries.gtSome( arguments.value, variables.detachedCriteria );
 	}
 	any function subIn( required any value ) {
-		return subqueries.in( arguments.value, detachedCriteria );
+		return variables.subqueries.in( arguments.value, variables.detachedCriteria );
 	}
 	any function subLe( required any value ) {
-		return subqueries.le( arguments.value, detachedCriteria );
+		return variables.subqueries.le( arguments.value, variables.detachedCriteria );
 	}
 	any function subLeAll( required any value ) {
-		return subqueries.leAll( arguments.value, detachedCriteria );
+		return variables.subqueries.leAll( arguments.value, variables.detachedCriteria );
 	}
 	any function subLeSome( required any value ) {
-		return subqueries.leSome( arguments.value, detachedCriteria );
+		return variables.subqueries.leSome( arguments.value, variables.detachedCriteria );
 	}
 	any function subLt( required any value ) {
-		return subqueries.lt( arguments.value, detachedCriteria );
+		return variables.subqueries.lt( arguments.value, variables.detachedCriteria );
 	}
 	any function subLtAll( required any value ) {
-		return subqueries.ltAll( arguments.value, detachedCriteria );
+		return variables.subqueries.ltAll( arguments.value, variables.detachedCriteria );
 	}
 	any function subLtSome( required any value ) {
-		return subqueries.ltSome( arguments.value, detachedCriteria );
+		return variables.subqueries.ltSome( arguments.value, variables.detachedCriteria );
 	}
 	any function subNe( required any value ) {
-		return subqueries.ne( arguments.value, detachedCriteria );
+		return variables.subqueries.ne( arguments.value, variables.detachedCriteria );
 	}
 	any function subNotIn( required any value ) {
-		return subqueries.notIn( arguments.value, detachedCriteria );
+		return variables.subqueries.notIn( arguments.value, variables.detachedCriteria );
 	}
 	// where subquery returns a result
 	any function exists() {
-		return subqueries.exists( detachedCriteria );
+		return variables.subqueries.exists( variables.detachedCriteria );
 	}
 	// where subquery returns no result
 	any function notExists() {
-		return subqueries.notExists( detachedCriteria );
+		return variables.subqueries.notExists( variables.detachedCriteria );
 	}
 	any function propertyEq( required string property ){
-		return subqueries.propertyEq( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyEq( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyEqAll( required string property ){
-		return subqueries.propertyEqAll( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyEqAll( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyGe( required string property ){
-		return subqueries.propertyGe( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyGe( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyGeAll( required string property ){
-		return subqueries.propertyGeAll( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyGeAll( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyGeSome( required string property ){
-		return subqueries.propertyGeSome( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyGeSome( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyGt( required string property ){
-		return subqueries.propertyGt( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyGt( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyGtAll( required string property ){
-		return subqueries.propertyGtAll( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyGtAll( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyGtSome( required string property ){
-		return subqueries.propertyGtSome( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyGtSome( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyIn( required string property ){
-		return subqueries.propertyIn( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyIn( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyLe( required string property ){
-		return subqueries.propertyLe( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyLe( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyLeAll( required string property ){
-		return subqueries.propertyLeAll( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyLeAll( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyLeSome( required string property ){
-		return subqueries.propertyLeSome( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyLeSome( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyLt( required string property ){
-		return subqueries.propertyLt( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyLt( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyLtAll( required string property ){
-		return subqueries.propertyLtAll( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyLtAll( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyLtSome( required string property ){
-		return subqueries.propertyLtSome( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyLtSome( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyNe( required string property ){
-		return subqueries.propertyNe( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyNe( arguments.property, variables.detachedCriteria );
 	}
 	any function propertyNotIn( required string property ){
-		return subqueries.propertyNotIn( arguments.property, detachedCriteria );
+		return variables.subqueries.propertyNotIn( arguments.property, variables.detachedCriteria );
 	}
 }

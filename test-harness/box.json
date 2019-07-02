@@ -1,20 +1,24 @@
 {
-    "name":"Tester",
+    "name":"CBORM Tester",
     "version":"0.0.0",
     "slug":"tester",
     "private":true,
     "description":"",
     "dependencies":{
         "coldbox":"^5.0.0",
-        "cbvalidation":"^1.3.1+51"
+        "cbvalidation":"^1.3.1+51",
+        "mementifier":"^1.4.0+27",
+        "cbstreams":"^1.4.0+48"
     },
     "devDependencies":{
-        "testbox":"^2.8.0"
+        "testbox":"^3.0.0"
     },
     "installPaths":{
-        "coldbox":"coldbox",
-        "testbox":"testbox",
-        "cbvalidation":"modules/cbvalidation/"
+        "coldbox":"coldbox/",
+        "testbox":"testbox/",
+        "cbvalidation":"modules/cbvalidation/",
+        "mementifier":"modules/mementifier/",
+        "cbstreams":"modules/cbstreams/"
     },
     "testbox":{
         "runner":"http://localhost:60299/tests/runner.cfm"

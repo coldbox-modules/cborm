@@ -1,172 +1,187 @@
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
+component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 
 	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector(binder="tests.resources.WireBox");
+		new coldbox.system.ioc.Injector( "tests.resources.WireBox" );
 	}
 	function setup(){
-		ormService = getMockBox().createMock("cborm.models.BaseORMService")
-					.init();
-		rootcriteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
-		rootcriteria.init( entityName="User", ORMService=ormService );
-		criteria   = getMockBox().createMock("cborm.models.DetachedCriteriaBuilder");
+		ormService = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
+		rootcriteria = getMockBox().createMock( "cborm.models.criterion.CriteriaBuilder" );
+		rootcriteria.init( entityName = "User", ORMService = ormService );
+		criteria = getMockBox().createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
 		mockEventManager = getMockBox().createStub();
 		mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
-		mockService = getMockBox().createEmptyMock( "cborm.models.BaseORMService" )
+		mockService = getMockBox()
+			.createEmptyMock( "cborm.models.BaseORMService" )
 			.$( "getORMEventHandler", mockEventHandler );
 		criteria.init( "Role", "Role", ormService );
 		orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
 
-	function testCreateDetachedSQLProjection() {
-		criteria.withProjections( count="Role.role" );
+	function testCreateDetachedSQLProjection(){
+		criteria.withProjections( count = "Role.role" );
 		var r = criteria.createDetachedSQLProjection();
-		assertTrue( isInstanceOf( r, 'org.hibernate.criterion.SQLProjection' ) );
+		expect( getMetadata( r ).name ).toInclude( "org.hibernate.criterion" );
 	}
 
-	function testGetNativeCriteria() {
-		criteria.withProjections( count="Role.role" );
-		expect(	criteria.getNativeCriteria().getClass().getName() ).toInclude( 'CriteriaImpl' );
+	function testGetNativeCriteria(){
+		criteria.withProjections( count = "Role.role" );
+		expect(
+			criteria
+				.getNativeCriteria()
+				.getClass()
+				.getName()
+		).toInclude( "CriteriaImpl" );
 	}
 
 	function testCreateAlias(){
 		// just association and alias
-		r = rootcriteria.init( entityName="Role", ormService = ormService )
+		r = rootcriteria
+			.init( entityName = "Role", ormService = ormService )
 			.add(
-                rootcriteria.createSubcriteria( "Role", "role" )
-                .withProjections( property="roleID" )
-                .createAlias( "users", "user" )
-                .like("user.lastName","M%")
-                .propertyIn( "roleID" )
-            )
+				rootcriteria
+					.createSubcriteria( "Role", "role" )
+					.withProjections( property = "roleID" )
+					.createAlias( "users", "user" )
+					.like( "user.lastName", "M%" )
+					.propertyIn( "roleID" )
+			)
 			.list();
-		assertEquals("Administrator", r[1].getRole() );
+		assertEquals( "Administrator", r[ 1 ].getRole() );
 
 		// association and alias and jointype
-		r = rootcriteria.init( entityName="Role", ormService = ormService )
+		r = rootcriteria
+			.init( entityName = "Role", ormService = ormService )
 			.add(
-                rootcriteria.createSubcriteria( "Role", "role" )
-                .withProjections( property="roleID" )
-                .createAlias( "users", "user", rootcriteria.LEFT_JOIN )
-                .like("user.lastName","M%")
-                .propertyIn( "roleID" )
-            )
+				rootcriteria
+					.createSubcriteria( "Role", "role" )
+					.withProjections( property = "roleID" )
+					.createAlias( "users", "user", rootcriteria.LEFT_JOIN )
+					.like( "user.lastName", "M%" )
+					.propertyIn( "roleID" )
+			)
 			.list();
-		assertEquals("Administrator", r[1].getRole() );
+		assertEquals( "Administrator", r[ 1 ].getRole() );
 	}
 
 	function testCreateCriteria(){
 		// just association
-		r = rootcriteria.init( entityName="Role", ormService = ormService )
+		r = rootcriteria
+			.init( entityName = "Role", ormService = ormService )
 			.add(
-                rootcriteria.createSubcriteria( "Role", "role" )
-                .withProjections( property="roleID" )
-                .createCriteria( "users" )
-                .like("lastName","M%")
-                .propertyIn( "roleID" )
-            )
+				rootcriteria
+					.createSubcriteria( "Role", "role" )
+					.withProjections( property = "roleID" )
+					.createCriteria( "users" )
+					.like( "lastName", "M%" )
+					.propertyIn( "roleID" )
+			)
 			.list();
-		assertEquals("Administrator", r[1].getRole() );
+		assertEquals( "Administrator", r[ 1 ].getRole() );
 		// association and join type
-		r = rootcriteria.init( entityName="Role", ormService = ormService )
+		r = rootcriteria
+			.init( entityName = "Role", ormService = ormService )
 			.add(
-                rootcriteria.createSubcriteria( "Role", "role" )
-                .withProjections( property="roleID" )
-                .createCriteria( associationName="users", joinType=rootcriteria.LEFT_JOIN )
-                .like("lastName","M%")
-                .propertyIn( "roleID" )
-            )
+				rootcriteria
+					.createSubcriteria( "Role", "role" )
+					.withProjections( property = "roleID" )
+					.createCriteria( associationName = "users", joinType = rootcriteria.LEFT_JOIN )
+					.like( "lastName", "M%" )
+					.propertyIn( "roleID" )
+			)
 			.list();
-		assertEquals("Administrator", r[1].getRole() );
+		assertEquals( "Administrator", r[ 1 ].getRole() );
 		// association and join type and alias
-		r = rootcriteria.init( entityName="Role", ormService = ormService )
+		r = rootcriteria
+			.init( entityName = "Role", ormService = ormService )
 			.add(
-                rootcriteria.createSubcriteria( "Role", "role" )
-                .withProjections( property="roleID" )
-                .createCriteria( associationName="users", alias="user", joinType=rootcriteria.LEFT_JOIN )
-                .like("user.lastName","M%")
-                .propertyIn( "roleID" )
-            )
+				rootcriteria
+					.createSubcriteria( "Role", "role" )
+					.withProjections( property = "roleID" )
+					.createCriteria( associationName = "users", alias = "user", joinType = rootcriteria.LEFT_JOIN )
+					.like( "user.lastName", "M%" )
+					.propertyIn( "roleID" )
+			)
 			.list();
-		assertEquals("Administrator", r[1].getRole() );
+		assertEquals( "Administrator", r[ 1 ].getRole() );
 	}
 
 	// test missingmethod handler functions
-	function testSubEq() {
-		criteria.withProjection( property="fkentry_id" );
-		s = criteria.subEq( '88B82629-B264-B33E-D1A144F97641614E', criteria );
+	function testSubEq(){
+		criteria.withProjection( property = "fkentry_id" );
+		s = criteria.subEq( "88B82629-B264-B33E-D1A144F97641614E", criteria );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubEqAll() {
+	function testSubEqAll(){
 		s = criteria.subEqAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGe() {
+	function testSubGe(){
 		s = criteria.subGe( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGeAll() {
+	function testSubGeAll(){
 		s = criteria.subGeAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGeSome() {
+	function testSubGeSome(){
 		s = criteria.subGeSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGt() {
+	function testSubGt(){
 		s = criteria.subGt( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGtAll() {
+	function testSubGtAll(){
 		s = criteria.subGtAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGtSome() {
+	function testSubGtSome(){
 		s = criteria.subGtSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubIn() {
+	function testSubIn(){
 		s = criteria.subIn( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLe() {
+	function testSubLe(){
 		s = criteria.subLe( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLeAll() {
+	function testSubLeAll(){
 		s = criteria.subLeAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLeSome() {
+	function testSubLeSome(){
 		s = criteria.subLeSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLt() {
+	function testSubLt(){
 		s = criteria.subLt( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLtAll() {
+	function testSubLtAll(){
 		s = criteria.subLtAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLtSome() {
+	function testSubLtSome(){
 		s = criteria.subLtSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubNe() {
+	function testSubNe(){
 		s = criteria.subNe( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubNotIn() {
+	function testSubNotIn(){
 		s = criteria.subNotIn( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testExists() {
+	function testExists(){
 		s = criteria.exists();
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.ExistsSubqueryExpression" ) );
 	}
-	function testNotExists() {
+	function testNotExists(){
 		s = criteria.notExists();
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.ExistsSubqueryExpression" ) );
 	}
@@ -238,4 +253,5 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		s = criteria.propertyNotIn( "entry_id" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
+
 }

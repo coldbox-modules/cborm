@@ -13,7 +13,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 			.$( "getEventManager", getMockBox().createStub().$( "processState" ) );
 		ormService.setORMEventHandler( mockEventHandler );
 
-		criteria   = getMockBox().createMock("cborm.models.CriteriaBuilder");
+		criteria   = getMockBox().createMock("cborm.models.criterion.CriteriaBuilder");
 		criteria.init( entityName="User", ormservice=ormservice );
 		SQLHelper = getMockBox().createMock("cborm.models.sql.SQLHelper");
 		SQLHelper.init( criteria );

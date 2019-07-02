@@ -59,12 +59,12 @@
 	}
 
 	function testFindByDynamicallyBadProperty(){
-		expectException("BaseORMService.InvalidMethodGrammar");
+		expectException("InvalidMethodGrammar");
 		t = ormservice.findByLastAndFirst();
 	}
 
 	function testFindByDynamicallyFailure(){
-		expectException("BaseORMService.HQLQueryException");
+		expectException("HQLQueryException");
 		t = ormservice.findByLastName();
 	}
 
