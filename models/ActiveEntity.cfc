@@ -70,12 +70,15 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
      * Save an entity using hibernate transactions or not. You can optionally flush the session also
+	 *
 	 * @entity The entity to save
 	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
 	 * @flush Do a flush after saving the entity, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 *
+	 * @return the entity or array of entities saved
      */
-	BaseORMService function save(
+	any function save(
 		any entity=this,
 		boolean forceInsert=false,
 		boolean flush=false,
@@ -135,36 +138,6 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	/**
      * Populate/bind an entity's properties and relationships from an incoming structure or map of flat data.
 	 *
-	 * @target The entity to populate, yourself
-	 * @memento	The map/struct to populate the entity with
-	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	 * @include A list of keys to include in the population ONLY
-	 * @exclude A list of keys to exclude from the population
-     * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-     * @nullEmptyExclude A list of keys to NOT NULL when empty
-	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-     */
-	any function populate(
-		any target=this,
-		required struct memento,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=true
-	){
-		return getBeanPopulator().populateFromStruct( argumentCollection=arguments );
-	}
-
-	/**
-     * Simple map to property population for entities with structure key prefixes
-	 *
-	 * @target The entity to populate
 	 * @memento	The map/struct to populate the entity with
 	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
 	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
@@ -172,12 +145,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @exclude A list of keys to exclude from the population
 	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
 	 * @nullEmptyInclude A list of keys to NULL when empty
-     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-     * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @target The entity to populate, yourself
      */
-	any function populateWithPrefix(
-		any target=this,
+	any function populate(
 		required struct memento,
 		string scope="",
 		boolean trustedSetter=false,
@@ -187,7 +159,38 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
 		boolean composeRelationships=true,
-		required string prefix
+		any target=this
+	){
+		return getBeanPopulator().populateFromStruct( argumentCollection=arguments );
+	}
+
+	/**
+     * Simple map to property population for entities with structure key prefixes
+	 *
+	 * @memento	The map/struct to populate the entity with
+	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include A list of keys to include in the population ONLY
+	 * @exclude A list of keys to exclude from the population
+	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude A list of keys to NULL when empty
+	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @target The entity to populate
+     */
+	any function populateWithPrefix(
+		required struct memento,
+		string scope="",
+		boolean trustedSetter=false,
+		string include="",
+		string exclude="",
+		boolean ignoreEmpty=false,
+		string nullEmptyInclude="",
+		string nullEmptyExclude="",
+		boolean composeRelationships=true,
+		required string prefix,
+		any target=this
 	){
 		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection=arguments );
 	}
@@ -195,7 +198,6 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	/**
 	 * Populate from JSON, for argument definitions look at the populate method
 	 *
-	 * @target The entity to populate
 	 * @jsonString The Json string to use for population
 	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
 	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
@@ -203,11 +205,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @exclude A list of keys to exclude from the population
 	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
 	 * @nullEmptyInclude A list of keys to NULL when empty
-     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @target The entity to populate
      */
 	any function populateFromJSON(
-		any target=this,
 		required string JSONString,
 		string scope="",
 		boolean trustedSetter=false,
@@ -216,7 +218,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=true
+		boolean composeRelationships=true,
+		any target=this
 	){
 		return getBeanPopulator().populateFromJSON( argumentCollection=arguments );
 	}
@@ -224,7 +227,6 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	/**
 	 * Populate from XML, for argument definitions look at the populate method
 	 *
-	 * @target The entity to populate
 	 * @xml	The XML string or packet or XML object to populate from
 	 * @root The XML root element to start from
 	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -233,11 +235,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @exclude A list of keys to exclude from the population
 	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
 	 * @nullEmptyInclude A list of keys to NULL when empty
-     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @target The entity to populate
      */
 	any function populateFromXML(
-		any target=this,
 		required string xml,
 		string root="",
 		string scope="",
@@ -247,7 +249,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=true
+		boolean composeRelationships=true,
+		any target=this
 	){
 		return getBeanPopulator().populateFromXML( argumentCollection=arguments );
 	}
@@ -255,7 +258,6 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	/**
 	 * Populate from Query, for argument definitions look at the populate method
 	 *
-	 * @target The entity to populate
 	 * @qry The query to use for population
 	 * @rowNumber The row number to use for population
 	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -264,11 +266,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @exclude A list of keys to exclude from the population
 	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
 	 * @nullEmptyInclude A list of keys to NULL when empty
-     * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @target The entity to populate
      */
 	any function populateFromQuery(
-		any target=this,
 		required any qry,
 		numeric rowNumber=1,
 		string scope="",
@@ -278,7 +280,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		boolean ignoreEmpty=false,
 		string nullEmptyInclude="",
 		string nullEmptyExclude="",
-		boolean composeRelationships=true
+		boolean composeRelationships=true,
+		any target=this
 	){
 		return getBeanPopulator().populateFromQuery( argumentCollection=arguments );
 	}
