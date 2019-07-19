@@ -1416,12 +1416,15 @@ component accessors="true"{
 
 	/**
      * Save an entity using hibernate transactions or not. You can optionally flush the session also
+	 *
 	 * @entity The entity to save
 	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
 	 * @flush Do a flush after saving the entity, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 *
+	 * @return saved entity or array of entities
      */
-	BaseORMService function save(
+	any function save(
 		required any entity,
 		boolean forceInsert=false,
 		boolean flush=false,
@@ -1439,7 +1442,7 @@ component accessors="true"{
 			}
 
 			// save
-			entitySave(arguments.entity, arguments.forceInsert );
+			entitySave( arguments.entity, arguments.forceInsert );
 
 			// Auto Flush
 			if( arguments.flush ){
@@ -1451,7 +1454,7 @@ component accessors="true"{
 				getORMEventHandler().postSave( arguments.entity );
 			}
 
-			return this;
+			return arguments.entity;
 		}
 		, arguments, arguments.transactional );
 

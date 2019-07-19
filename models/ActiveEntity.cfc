@@ -70,12 +70,15 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 
 	/**
      * Save an entity using hibernate transactions or not. You can optionally flush the session also
+	 *
 	 * @entity The entity to save
 	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
 	 * @flush Do a flush after saving the entity, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 *
+	 * @return the entity or array of entities saved
      */
-	BaseORMService function save(
+	any function save(
 		any entity=this,
 		boolean forceInsert=false,
 		boolean flush=false,
