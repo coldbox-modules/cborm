@@ -1000,7 +1000,8 @@ component accessors="true"{
 			);
 		}
 
-		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
+		var modified = hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession );
+		var dirtyArray 	= !isNull( modified ) ? modified : [];
 
 		return arrayMap( dirtyArray, function( index ){
 			return hibernateMD.getSubclassPropertyName( index );
@@ -1032,7 +1033,9 @@ component accessors="true"{
 				arguments.entity
 			);
 		}
-		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
+		
+		var modified = hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession );
+		var dirtyArray 	= !isNull( modified ) ? modified : [];
 
 		return ( arrayLen( dirtyArray ) > 0 );
 	}
