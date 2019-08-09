@@ -1001,7 +1001,7 @@ component accessors="true"{
 		}
 
 		var modified = hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession );
-		var dirtyArray 	= !isNull( modified ) ? modified : [];
+		var dirtyArray 	= !isNull( local.modified ) ? modified : [];
 
 		return arrayMap( dirtyArray, function( index ){
 			return hibernateMD.getSubclassPropertyName( index );
@@ -1035,7 +1035,7 @@ component accessors="true"{
 		}
 		
 		var modified = hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession );
-		var dirtyArray 	= !isNull( modified ) ? modified : [];
+		var dirtyArray 	= !isNull( local.modified ) ? modified : [];
 
 		return ( arrayLen( dirtyArray ) > 0 );
 	}
