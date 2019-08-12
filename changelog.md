@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v2.2.0
+
+* ACF2016 issues with elvis operator.
+
 ## v2.1.0
 
 * Change `populate()` in ActiveEntity so the target is the last argument so you can just pass a struct as the first argument [#29](https://github.com/coldbox-modules/cborm/issues/29)
