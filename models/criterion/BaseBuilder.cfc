@@ -500,6 +500,13 @@ component accessors="true"{
 	}
 
 	/**
+	 * Return a null value
+	 */
+	function nullValue(){
+		return javaCast( "null", "" );
+	}
+
+	/**
 	 * Returns the SQL string that will be prepared for the criteria object at the time of request
 	 *
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
