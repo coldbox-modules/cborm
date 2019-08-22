@@ -30,6 +30,9 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		// with join Type
 		r = new cborm.models.criterion.CriteriaBuilder( entityName="Role", ormService = ormService )
 			.withusers( criteria.LEFT_JOIN ).like("lastName","M%")
+			.peek( function( criteria ){
+				debug( "running in a peek" );
+			})
 			.list();
 
 		assertEquals("Administrator", r[1].getRole() );

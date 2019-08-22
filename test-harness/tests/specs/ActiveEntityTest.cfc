@@ -86,6 +86,15 @@
 		assertTrue( r );
 	}
 
+	function testValidateOrFail(){
+		activeUser.setFirstName("Luis");
+		activeUser.setLastName("Majano");
+		activeUser.setPassword("LuisMajano");
+		expect( function(){
+			activeUser.validateOrFail();
+		} ).toThrow();
+	}
+
 	function testValidationResults(){
 		r = activeUser.getValidationResults();
 		assertTrue( isInstanceOf(r, "cbvalidation.models.result.IValidationResult") );

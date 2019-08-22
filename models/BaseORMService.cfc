@@ -1000,7 +1000,8 @@ component accessors="true"{
 			);
 		}
 
-		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
+		var modified = hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession );
+		var dirtyArray 	= !isNull( local.modified ) ? modified : [];
 
 		return arrayMap( dirtyArray, function( index ){
 			return hibernateMD.getSubclassPropertyName( index );
@@ -1032,7 +1033,9 @@ component accessors="true"{
 				arguments.entity
 			);
 		}
-		var dirtyArray 		= hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession ) ?: [];
+
+		var modified = hibernateMD.findModified( dbState, currentState, arguments.entity, thisSession );
+		var dirtyArray 	= !isNull( local.modified ) ? modified : [];
 
 		return ( arrayLen( dirtyArray ) > 0 );
 	}
@@ -1209,7 +1212,10 @@ component accessors="true"{
 	}
 
 	/**
-	 * Delete using an entity name and an incoming id, you can also flush the session if needed. The id parameter can be a single id or an array of IDs to delete
+	 * Delete using an entity name and an id, you can also flush the session if needed.
+	 * Please note that this runs an HQL bulk delete operations so no cascades will take effect.  If you want cascades to occur
+	 * then use the `delete()` operation instead.
+	 * The id parameter can be a single id or an array of IDs to delete
 	 * The method returns the count of deleted entities.
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
 	 *

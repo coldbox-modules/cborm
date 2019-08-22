@@ -294,12 +294,14 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @constraints An optional shared constraints name or an actual structure of constraints to validate on.
 	 * @locale An optional locale to use for i18n messages
 	 * @excludeFields An optional list of fields to exclude from the validation.
+	 * @IncludeFields An optional list of fields to include in the validation.
 	 */
 	boolean function isValid(
 		string fields="*",
 		any constraints="",
 		string locale="",
-		string excludeFields=""
+		string excludeFields="",
+		string includeFields=""
 	){
 		// Get validation manager
 		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" );
@@ -336,6 +338,39 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 			return variables.validationResults;
 		}
 		return new cbvalidation.models.result.ValidationResult();
+	}
+
+	/**
+	 * Validate the ActiveEntity with the coded constraints -> this.constraints,
+	 * or passed in shared or implicit constraints
+	 * The entity must have been populated with data before the validation
+	 *
+	 * This throws an exception if the validation fails. The validation errors will be in the exception extended information
+	 *
+	 * @fields One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
+	 * @constraints An optional shared constraints name or an actual structure of constraints to validate on.
+	 * @locale An optional locale to use for i18n messages
+	 * @excludeFields An optional list of fields to exclude from the validation.
+	 * @IncludeFields An optional list of fields to include in the validation.
+	 *
+	 * @throws ValidationException
+	 * @returns The entity back
+	 */
+	ActiveEntity function validateOrFail(
+		string fields="*",
+		any constraints="",
+		string locale="",
+		string excludeFields="",
+		string includeFields=""
+	){
+		if( !this.isValid( argumentCollection=arguments ) ){
+			throw(
+				type 			= "ValidationException",
+				message 		= "The active entity failed to pass validation",
+				extendedInfo 	= getValidationResults().getAllErrorsAsJson()
+			);
+		}
+		return this;
 	}
 
 }

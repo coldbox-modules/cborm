@@ -21,6 +21,28 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		assertEquals( testUserID, r.getID() );
 	}
 
+	function testWhen(){
+		var r = criteria
+			.when( true, function( c ){
+				c.idEQ( testUserID );
+			} )
+			.get();
+		expect( r.getId(), testUserId );
+	}
+
+	function testWhenFalse(){
+		var r = criteria
+			.when( false, function( c ){
+				throw("exception");
+				c.idEQ( testUserID );
+			} )
+			.when( true, function( c ){
+				c.idEQ( testUserID );
+			} )
+			.get();
+		expect( r.getId(), testUserId );
+	}
+
 	function testGetOrFail(){
 		expect( function(){
 			criteria.idEQ( "32234234234234" ).getOrFail();

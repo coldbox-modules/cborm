@@ -11,7 +11,7 @@
         "cbstreams":"^1.4.0+48"
     },
     "devDependencies":{
-        "testbox":"^3.0.0"
+        "testbox":"^3.0.0-snapshot"
     },
     "installPaths":{
         "coldbox":"coldbox/",
