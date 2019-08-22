@@ -344,13 +344,13 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Convenience method to return a single instance that matches the built up criterias query, or throws an exception if the query returns no results
 	 *
-	 * @throws EntityNotFound
+	 * @throws EntityNotFound, NonUniqueResultException
 	 */
 	any function getOrFail(){
 		var result = this.get();
 		if( isNull( result ) ){
 			throw(
-				message = "No entity found for ID #arguments.id.toString()#",
+				message = "No entity found for the specific criteria",
 				type 	= "EntityNotFound"
 			);
 		}
@@ -360,7 +360,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Convenience method to return a single instance that matches the built up criterias query, or null if the query returns no results.
 	 *
-	 * @throws HibernateException - if there is more than one matching result
+	 * @throws NonUniqueResultException - if there is more than one matching result
 	 */
 	any function get(){
 		return nativeCriteria.uniqueResult();

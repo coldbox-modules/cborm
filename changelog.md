@@ -2,10 +2,12 @@
 
 ## v2.2.0
 
-* ACF2016 issues with elvis operator.
-* Better documentation for `deleteById()` since it does bulk deletion, which does not do any type of cascading.
-* Missing `nullValue()` is BaseBuilder class
-* Timeout hints for criteria builder
+* Improvement: Better documentation for `deleteById()` since it does bulk deletion, which does not do any type of cascading.
+* New: Missing `nullValue()` is BaseBuilder class
+* Improvement: Timeout hints for criteria builder
+* Improvement: Updated exception type for criteria builder `get()`
+* Bug: ACF2016 issues with elvis operator.
+* Bug: `getOrFail()` had an invalid throw statement
 
 ## v2.1.0
 
