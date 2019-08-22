@@ -584,6 +584,59 @@ component accessors="true"{
 	boolean function canLogSql() {
 		return variables.sqlLoggerActive;
 	}
+
+	/**
+	 * Peek into the criteria build process with your own closure that accepts the criteria itself.
+	 * You can use this for logging, auditing, etc for that moment in time.
+	 *
+	 * <pre>
+	 * newCriteria()
+	 * 	.eq( "this", value )
+	 *  .peek( (criteria) => {
+	 * 		systemOutput( "CurrentSQL: #criteria.getSQLLog()#" )
+	 *  })
+	 *  .list()
+	 * </pre>
+	 *
+	 * @target The closure to peek into, it receives the current criteria as the argument
+	 */
+	BaseBuilder function peek( required target ){
+		arguments.target( this );
+		return this;
+	}
+
+	/**
+	 * A nice functional method to allow you to pass a boolean evaulation and if true,
+	 * the target closure will be executed for you, which will pass in the criteria object to it.
+	 *
+	 * <pre>
+	 * newCriteria()
+	 * 	.when( isBoolean( arguments.isPublished ), function( c ){
+	 * 		// Published bit
+	 *		c.isEq( "isPublished", isPublished );
+	 *		// Published eq true evaluate other params
+	 *		if( isPublished ){
+	 *			c.isLt( "publishedDate", now() )
+	 *			.$or( c.restrictions.isNull( "expireDate" ), c.restrictions.isGT( "expireDate", now() ) )
+	 *			.isEq( "passwordProtection","" );
+	 *		}
+	 *  } )
+	 * 	.when( !isNull( arguments.showInSearch ), function( criteria ){
+	 * 		c.isEq( "showInSearch", showInSearch );
+	 *  } )
+	 * .list()
+	 * </pre>
+	 *
+	 * @test The boolean evaluation
+	 * @target The closure to execute if test is true, it receives the current criteria as the argument
+	 */
+	BaseBuilder function when( required boolean test, required target ){
+		if( arguments.test ){
+			arguments.target( this );
+		}
+		return this;
+	}
+
 	/************************************** PRIVATE *********************************************/
 
 	/**

@@ -2,7 +2,9 @@
 
 ## v2.2.0
 
+* `Features`: New function for criteria query `when( boolean, target )` that you can use to build functional criterias without the use of if statements.
 * `Feature`: Missing `nullValue()` is BaseBuilder class
+* `Feature`: Added new criteria query `peek( closure )` function to allow for peeking into the building process.  Pass in your closure that receives the criteria and interact with it.
 * `Feature`: Added a `validateOrFail()` to the active entity, which if the validation fails it will throw an exception or return back to you the same entity validated now.
 * `Improvement`: Better documentation for `deleteById()` since it does bulk deletion, which does not do any type of cascading.
 * `Improvement`: `isValid()` in active entity missing `includeFields` argument
