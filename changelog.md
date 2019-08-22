@@ -5,6 +5,7 @@
 * ACF2016 issues with elvis operator.
 * Better documentation for `deleteById()` since it does bulk deletion, which does not do any type of cascading.
 * Missing `nullValue()` is BaseBuilder class
+* Timeout hints for criteria builder
 
 ## v2.1.0
 

@@ -322,12 +322,12 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	}
 
 	/**
-	 * Set a timeout for the underlying JDBC query.
+	 * Set a timeout for the underlying JDBC query in milliseconds
 	 *
-	 * @timeout The timeout value to apply
+	 * @timeout The timeout value to apply in milliseconds
 	 */
 	any function timeout( required numeric timeout ){
-		nativeCriteria.setTimeout( javaCast("int", arguments.timeout) );
+		nativeCriteria.setTimeout( javaCast( "int", arguments.timeout ) );
 		return this;
 	}
 
