@@ -3,6 +3,25 @@
 ## v2.2.0
 
 * `Features`: New function for criteria query `when( boolean, target )` that you can use to build functional criterias without the use of if statements.
+
+```
+newCriteria()
+    .when( isBoolean( arguments.isPublished ), function( c ){
+            // Published bit
+        c.isEq( "isPublished", isPublished );
+        // Published eq true evaluate other params
+        if( isPublished ){
+            c.isLt( "publishedDate", now() )
+            .$or( c.restrictions.isNull( "expireDate" ), c.restrictions.isGT( "expireDate", now() ) )
+            .isEq( "passwordProtection","" );
+        }
+    } )
+  .when( !isNull( arguments.showInSearch ), function( criteria ){
+          c.isEq( "showInSearch", showInSearch );
+   } )
+  .list()
+```
+
 * `Feature`: Missing `nullValue()` is BaseBuilder class
 * `Feature`: Added new criteria query `peek( closure )` function to allow for peeking into the building process.  Pass in your closure that receives the criteria and interact with it.
 * `Feature`: Added a `validateOrFail()` to the active entity, which if the validation fails it will throw an exception or return back to you the same entity validated now.
