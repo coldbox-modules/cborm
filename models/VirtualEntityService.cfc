@@ -428,11 +428,10 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	/**
 	 * Coverts a value to the correct javaType for the property passed in.
 	 *
-	 * @entity The entity name or entity object
 	 * @propertyName The property name
 	 * @value The property value
 	 */
-	any function autoCast( required entity, required propertyName, required value ){
+	any function autoCast( required propertyName, required value ){
 		arguments.entity = this.getEntityName();
 		return super.autoCast( argumentCollection=arguments );
 	}

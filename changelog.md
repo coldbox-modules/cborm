@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v2.2.1
+
+* `bug` : virtual entity service still had `entity` required for casting methods
+
 ## v2.2.0
 
 * `Features`: New function for criteria query `when( boolean, target )` that you can use to build functional criterias without the use of if statements.
