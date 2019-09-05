@@ -380,7 +380,14 @@ component accessors="true"{
 				.getInstance( "StreamBuilder@cbStreams" )
 				.new( results );
 		} else if ( arguments.asQuery ){
-			return entityToQuery( results );
+			try
+			{
+				return entityToQuery( results );
+			}
+			catch(any e)
+			{
+				return true;
+			}
 		}
 
 		return results;
