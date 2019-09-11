@@ -596,7 +596,7 @@
 			params 	= [ 'LM' ],
 			asQuery = true
 		);
-		expect( test ).toBe( 1 )
+		expect( test ).toBe( 1 );
 	}
 
 	function testFindIt(){
