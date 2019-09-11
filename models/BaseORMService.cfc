@@ -374,6 +374,11 @@ component accessors="true"{
 			}
 		}
 
+		// Determine if we are in a UPDATE, INSERT or DELETE, if we do, just return the results, it is a numeric
+		if( reFindNoCase( "(delete|insert|update)\s", arguments.query ) ){
+			return results;
+		}
+
 		// As Stream or Query
 		if( arguments.asStream ){
 			return variables.wirebox

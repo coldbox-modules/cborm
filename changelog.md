@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v2.3.0
+
+* `improvement` : In `executeQuery()` Determine if we are in a UPDATE, INSERT or DELETE, if we do, just return the results instead of a stream or query as the result is always numeric, the rows that were altered.
+
 ## v2.2.1
 
 * `bug` : virtual entity service still had `entity` required for casting methods
