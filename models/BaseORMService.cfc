@@ -359,7 +359,7 @@ component accessors="true"{
 		// Null Checks
 		if( isNull( results ) ){
 
-			if( arguments.stream ){
+			if( arguments.asStream ){
 				return variables.wirebox
 				.getInstance( "StreamBuilder@cbStreams" )
 				.new();
