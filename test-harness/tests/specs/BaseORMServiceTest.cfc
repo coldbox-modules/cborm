@@ -590,6 +590,15 @@
 		assertTrue( test.recordcount );
 	}
 
+	function testExecuteQueryWithUpdate(){
+		var test = ormservice.executeQuery(
+			query 	= "UPDATE Category SET category = ? where category = 'LM' ",
+			params 	= [ 'LM' ],
+			asQuery = true
+		);
+		expect( test ).toBe( 1 );
+	}
+
 	function testFindIt(){
 
 		test = ormservice.findIt( "from Category where category = ?",['Training']);

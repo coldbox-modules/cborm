@@ -359,7 +359,7 @@ component accessors="true"{
 		// Null Checks
 		if( isNull( results ) ){
 
-			if( arguments.stream ){
+			if( arguments.asStream ){
 				return variables.wirebox
 				.getInstance( "StreamBuilder@cbStreams" )
 				.new();
@@ -372,6 +372,11 @@ component accessors="true"{
 			} else {
 				return [];
 			}
+		}
+
+		// Determine if we are in a UPDATE, INSERT or DELETE, if we do, just return the results, it is a numeric
+		if( reFindNoCase( "(delete|insert|update)\s", arguments.query ) ){
+			return results;
 		}
 
 		// As Stream or Query
