@@ -400,7 +400,11 @@ component accessors="true"{
 		required string entityName,
 		required any id
 	){
-		var result = this.get( argumentCollection=arguments );
+		var result = this.get(
+		    entityName = arguments.entityName,
+		    id = arguments.id,
+			returnNew = false
+		);
 		if( isNull( result ) ){
 			throw(
 				message = "No entity found for ID #arguments.id.toString()#",
