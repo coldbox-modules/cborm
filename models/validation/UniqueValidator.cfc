@@ -45,7 +45,7 @@ component accessors="true" singleton{
 		// process entity setups.
 		var entityName 		= ORMService.getEntityGivenName( arguments.target );
 		var identityField 	= ORMService.getKey( entityName );
-		var identityValue 	= invoke( arguments.target, "get#identityField#" )
+		var identityValue 	= invoke( arguments.target, "get#identityField#" );
 
 		// create criteria for uniqueness
 		var c = ORMService.newCriteria( entityName )
