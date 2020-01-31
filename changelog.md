@@ -3,6 +3,7 @@
 ## v2.4.0
 
 * `Feature` : Upgraded to `cbValidation` 2.0.0
+* `Feature` : Updated the unique validator to match 2.0.0 standards
 * `Feature` : Upgraded to `mementifier` 2.0.0
 
 ## v2.3.0

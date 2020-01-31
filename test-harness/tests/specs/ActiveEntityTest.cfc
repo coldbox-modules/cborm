@@ -97,7 +97,7 @@
 
 	function testValidationResults(){
 		r = activeUser.getValidationResults();
-		assertTrue( isInstanceOf(r, "cbvalidation.models.result.IValidationResult") );
+		expect( r.hasErrors() ).toBeFalse();
 	}
 
 	function testNew(){
