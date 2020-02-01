@@ -331,9 +331,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	}
 
 	/**
-	* Get the validation results object.  This will be an empty validation object if isValid() has not being called yet.
-	*/
-	cbvalidation.models.result.IValidationResult function getValidationResults(){
+	 * Get the validation results object.  This will be an empty validation object if isValid() has not being called yet.
+	 *
+	 * @return cbvalidation.models.result.IValidationResult
+	 */
+	any function getValidationResults(){
 		if( !isNull( variables.validationResults ) && isObject( variables.validationResults ) ){
 			return variables.validationResults;
 		}

@@ -21,8 +21,8 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root"{
 		var category = entityNew("Category");
 
 		// null
-		r = model.validate(result, category, 'category', javacast("null",""), "true");
-		assertEquals( false, r );
+		r = model.validate(result, category, 'category', javacast("null",""), "true" );
+		assertEquals( true, r );
 
 		// 1: No ID, Unique
 		r = model.validate(result, category, 'category', "luis", "true");

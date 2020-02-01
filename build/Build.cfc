@@ -56,6 +56,10 @@ component{
         buildID=createUUID(),
         branch="development"
     ){
+		// Create project mapping
+		fileSystemUtil.createMapping( arguments.projectName, variables.cwd );
+		// Create project mapping
+		fileSystemUtil.createMapping( "cbvalidation", variables.cwd & "test-harness/modules/cbvalidation" );
 
         // Run the tests
         runTests();

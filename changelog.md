@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v2.4.0
+
+* `Feature` : Upgraded to `cbValidation` 2.0.0
+* `Feature` : Updated the unique validator to match 2.0.0 standards
+* `Feature` : Upgraded to `mementifier` 2.0.0
+
 ## v2.3.0
 
 * `improvement` : In `executeQuery()` Determine if we are in a UPDATE, INSERT or DELETE, if we do, just return the results instead of a stream or query as the result is always numeric, the rows that were altered.
@@ -12,7 +18,7 @@
 
 ## v2.2.0
 
-* `Features`: New function for criteria query `when( boolean, target )` that you can use to build functional criterias without the use of if statements.
+* `Feature`: New function for criteria query `when( boolean, target )` that you can use to build functional criterias without the use of if statements.
 
 ```
 newCriteria()
