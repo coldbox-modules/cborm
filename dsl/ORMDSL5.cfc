@@ -4,20 +4,24 @@
  * ---
  * The ColdBox 5+ DSL Spec
  */
-component implements="coldbox.system.ioc.dsl.IDSLBuilder" extends="DslSpec" accessors="true"{
+component
+	implements="coldbox.system.ioc.dsl.IDSLBuilder"
+	extends   ="DslSpec"
+	accessors ="true"
+{
 
 	/**
-	* Constructor as per interface
-	*/
+	 * Constructor as per interface
+	 */
 	public any function init( required any injector ){
-		return super.init( argumentCollection=arguments );
+		return super.init( argumentCollection = arguments );
 	}
 
 	/**
-	* Process an incoming DSL definition and produce an object with it.
-	*/
+	 * Process an incoming DSL definition and produce an object with it.
+	 */
 	public any function process( required definition, targetObject ){
-		return super.process( argumentCollection=arguments );
+		return super.process( argumentCollection = arguments );
 	}
 
 }

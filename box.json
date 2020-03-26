@@ -35,6 +35,7 @@
         "test-harness"
     ],
     "scripts":{
-        "toMaster":"recipe build/toMaster.boxr"
+		"toMaster":"recipe build/toMaster.boxr",
+		"format:check" : "cfformat check *.cfc,dsl/,interceptors,models,test-harness/specs"
     }
 }

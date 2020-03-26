@@ -22,8 +22,10 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		required any ORMService
 	){
 		// create new DetachedCriteria
-		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" )
-			.forEntityName( arguments.entityName, arguments.alias );
+		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName(
+			arguments.entityName,
+			arguments.alias
+		);
 
 		// setup base builder with detached criteria and subqueries
 		super.init(
@@ -37,84 +39,107 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	}
 
 	// pass off arguments to higher-level restriction builder, and handle the results
-	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ) {
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
 		// get the restriction/new criteria
-		var r = createRestriction( argumentCollection=arguments );
+		var r = createRestriction( argumentCollection = arguments );
 
 		// switch on the object type
-		if( structKeyExists( r, "CFML" ) ){
+		if ( structKeyExists( r, "CFML" ) ) {
 			// if it's a builder, just return this
 			return this;
 		}
 
 		// switch on the object type
-		switch( getMetaData( r ).name ) {
+		switch ( getMetadata( r ).name ) {
 			// if a subquery, we *need* to return the restrictino itself, or bad things happen
-			case 'org.hibernate.criterion.PropertySubqueryExpression':
-			case 'org.hibernate.criterion.ExistsSubqueryExpression':
-			case 'org.hibernate.criterion.SimpleSubqueryExpression':
+			case "org.hibernate.criterion.PropertySubqueryExpression":
+			case "org.hibernate.criterion.ExistsSubqueryExpression":
+			case "org.hibernate.criterion.SimpleSubqueryExpression":
 				return r;
 
-			// otherwise, just a restriction; add it to nativeCriteria, then return this so we can keep chaining
+				// otherwise, just a restriction; add it to nativeCriteria, then return this so we can keep chaining
 			default:
 				nativeCriteria.add( r );
 				// process interception
-				variables.eventManager.processState( "onCriteriaBuilderAddition", {
-					"type" = "Subquery Restriction",
-					"CriteriaBuilder" = this
-				});
+				variables.eventManager.processState(
+					"onCriteriaBuilderAddition",
+					{
+						"type"            : "Subquery Restriction",
+						"CriteriaBuilder" : this
+					}
+				);
 				break;
 		}
 
 		return this;
 	}
 
-	public any function getNativeCriteria() {
+	public any function getNativeCriteria(){
 		var ormsession = variables.ORMService.getORM().getSession();
 		return variables.nativeCriteria.getExecutableCriteria( ormsession );
 	}
 
-	public any function createDetachedSQLProjection() {
+	public any function createDetachedSQLProjection(){
 		// get the sql with replaced parameters
-		var sql = SQLHelper.getSql( returnExecutableSql=true );
-		var alias = SQLHelper.getProjectionAlias();
+		var sql         = SQLHelper.getSql( returnExecutableSql = true );
+		var alias       = SQLHelper.getProjectionAlias();
 		var uniqueAlias = SQLHelper.generateSQLAlias();
-			// by default, alias is this_...convert it to the alias provided
-			sql = replaceNoCase( sql, "this_", SQLHelper.getRootSQLAlias(), 'all' );
-			// wrap it up and uniquely alias it
-			sql = "( #sql# ) as " & alias;
+		// by default, alias is this_...convert it to the alias provided
+		sql             = replaceNoCase(
+			sql,
+			"this_",
+			SQLHelper.getRootSQLAlias(),
+			"all"
+		);
+		// wrap it up and uniquely alias it
+		sql = "( #sql# ) as " & alias;
 
-			// now that we have the sql string, we can create the sqlProjection
-		var projection =  this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
-        // finally, add the alias to the projection list so we can sort on the column if needed
-        return this.PROJECTIONS.alias( projection, alias );
+		// now that we have the sql string, we can create the sqlProjection
+		var projection = this.PROJECTIONS.sqlProjection(
+			sql,
+			[ alias ],
+			SQLHelper.getProjectedTypes()
+		);
+		// finally, add the alias to the projection list so we can sort on the column if needed
+		return this.PROJECTIONS.alias( projection, alias );
 	}
 
 	/**
-	* Join an association, assigning an alias to the joined association.
-	* @associationName The name of the association property
-	* @alias The alias to use for this association property on restrictions
-	* @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
-	*/
-	public any function createAlias( required string associationName, required string alias, numeric joinType=this.INNER_JOIN ) {
-		return super.createAlias( arguments.associationName, arguments.alias, arguments.joinType );
+	 * Join an association, assigning an alias to the joined association.
+	 * @associationName The name of the association property
+	 * @alias The alias to use for this association property on restrictions
+	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 */
+	public any function createAlias(
+		required string associationName,
+		required string alias,
+		numeric joinType = this.INNER_JOIN
+	){
+		return super.createAlias(
+			arguments.associationName,
+			arguments.alias,
+			arguments.joinType
+		);
 	}
 	/**
-	* Create a new Criteria, "rooted" at the associated entity and using an Inner Join
-	* @associationName The name of the association property to root the restrictions with
-	* @alias The alias to use for this association property on restrictions
-	* @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
-	*/
-	public any function createCriteria( required string associationName, string alias, numeric joinType=this.INNER_JOIN ) {
-		if( structKeyExists( arguments, "alias" ) ) {
+	 * Create a new Criteria, "rooted" at the associated entity and using an Inner Join
+	 * @associationName The name of the association property to root the restrictions with
+	 * @alias The alias to use for this association property on restrictions
+	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 */
+	public any function createCriteria(
+		required string associationName,
+		string alias,
+		numeric joinType = this.INNER_JOIN
+	){
+		if ( structKeyExists( arguments, "alias" ) ) {
 			return super.createCriteria(
-				associationName=arguments.associationName,
-				alias=arguments.alias,
-				joinType=arguments.joinType
+				associationName = arguments.associationName,
+				alias           = arguments.alias,
+				joinType        = arguments.joinType
 			);
-		}
-		else {
-			return super.createCriteria( associationName=arguments.associationName, joinType=arguments.joinType );
+		} else {
+			return super.createCriteria( associationName = arguments.associationName, joinType = arguments.joinType );
 		}
 	}
 
@@ -124,21 +149,21 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @maxResults The max results to limit by
 	 */
 	any function maxResults( required numeric maxResults ){
-		getNativeCriteria().setMaxResults( javaCast("int", arguments.maxResults) );
-		if( SQLHelper.canLogLimitOffset() ) {
-
+		getNativeCriteria().setMaxResults( javacast( "int", arguments.maxResults ) );
+		if ( SQLHelper.canLogLimitOffset() ) {
 			// process interception
-			if( ORMService.getEventHandling() ){
-				variables.eventManager.processState( "onCriteriaBuilderAddition", {
-					"type" = "Max",
-					"criteriaBuilder" = this
-				});
+			if ( ORMService.getEventHandling() ) {
+				variables.eventManager.processState(
+					"onCriteriaBuilderAddition",
+					{
+						"type"            : "Max",
+						"criteriaBuilder" : this
+					}
+				);
 			}
-
 		}
 
 		return this;
 	}
-
 
 }

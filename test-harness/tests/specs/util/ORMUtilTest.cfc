@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase" skip="isCF"{
+component extends="coldbox.system.testing.BaseTestCase" skip="isCF" {
 
 	this.loadColdBox = false;
 
@@ -8,7 +8,7 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isCF"{
 	}
 
 	function setup(){
-		ormUtil   = getMockBox().createMock("cborm.models.util.ORMUtil");
+		ormUtil = getMockBox().createMock( "cborm.models.util.ORMUtil" );
 	}
 
 	function testflush(){
@@ -33,22 +33,22 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isCF"{
 
 	function testevictQueries(){
 		t = ormutil.evictQueries();
-		t = ormutil.evictQueries('users');
+		t = ormutil.evictQueries( "users" );
 	}
 
 	function testGetEntityDatasource(){
-		d = ormutil.getEntityDatasource('User');
-		assertEquals('coolblog', d);
+		d = ormutil.getEntityDatasource( "User" );
+		assertEquals( "coolblog", d );
 
-		d = ormutil.getEntityDatasource( entityNew('User') );
-		assertEquals('coolblog', d);
+		d = ormutil.getEntityDatasource( entityNew( "User" ) );
+		assertEquals( "coolblog", d );
 
-		d = ormutil.getEntityDatasource( entityNew('Category') );
-		assertEquals('coolblog', d);
+		d = ormutil.getEntityDatasource( entityNew( "Category" ) );
+		assertEquals( "coolblog", d );
 	}
 
 	function testGetDefaultDatasource(){
-		assertEquals('coolblog', ormutil.getDefaultDatasource() );
+		assertEquals( "coolblog", ormutil.getDefaultDatasource() );
 	}
 
 }

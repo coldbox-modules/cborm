@@ -1,88 +1,89 @@
-component extends="coldbox.system.testing.BaseTestCase"{
+component extends="coldbox.system.testing.BaseTestCase" {
+
 	this.loadColdBox = false;
 	function setup(){
 		subCriteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName( "User", "u" );
-		subqueries   = getMockBox().createMock("cborm.models.criterion.Subqueries");
+		subqueries  = getMockBox().createMock( "cborm.models.criterion.Subqueries" );
 		subqueries.init( subCriteria );
 	}
 	function testGetNativeClass(){
 		r = subqueries.getNativeClass();
-		assertTrue( isInstanceOf(r,"org.hibernate.criterion.Subqueries") );
+		assertTrue( isInstanceOf( r, "org.hibernate.criterion.Subqueries" ) );
 	}
-	
-	function testSubEq() {
-		s = subqueries.subEq( '88B82629-B264-B33E-D1A144F97641614E' );
+
+	function testSubEq(){
+		s = subqueries.subEq( "88B82629-B264-B33E-D1A144F97641614E" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubEqAll() {
+	function testSubEqAll(){
 		s = subqueries.subEqAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGe() {
+	function testSubGe(){
 		s = subqueries.subGe( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGeAll() {
+	function testSubGeAll(){
 		s = subqueries.subGeAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGeSome() {
+	function testSubGeSome(){
 		s = subqueries.subGeSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGt() {
+	function testSubGt(){
 		s = subqueries.subGt( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGtAll() {
+	function testSubGtAll(){
 		s = subqueries.subGtAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubGtSome() {
+	function testSubGtSome(){
 		s = subqueries.subGtSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubIn() {
+	function testSubIn(){
 		s = subqueries.subIn( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLe() {
+	function testSubLe(){
 		s = subqueries.subLe( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLeAll() {
+	function testSubLeAll(){
 		s = subqueries.subLeAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLeSome() {
+	function testSubLeSome(){
 		s = subqueries.subLeSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLt() {
+	function testSubLt(){
 		s = subqueries.subLt( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLtAll() {
+	function testSubLtAll(){
 		s = subqueries.subLtAll( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubLtSome() {
+	function testSubLtSome(){
 		s = subqueries.subLtSome( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubNe() {
+	function testSubNe(){
 		s = subqueries.subNe( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testSubNotIn() {
+	function testSubNotIn(){
 		s = subqueries.subNotIn( 500 );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.SimpleSubqueryExpression" ) );
 	}
-	function testexists() {
+	function testexists(){
 		s = subqueries.exists();
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.ExistsSubqueryExpression" ) );
 	}
-	function testNotExists() {
+	function testNotExists(){
 		s = subqueries.notExists();
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.ExistsSubqueryExpression" ) );
 	}
@@ -154,4 +155,5 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		s = subqueries.propertyNotIn( "entry_id" );
 		assertTrue( isInstanceOf( s, "org.hibernate.criterion.PropertySubqueryExpression" ) );
 	}
+
 }

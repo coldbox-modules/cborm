@@ -4,38 +4,38 @@
  * ---
  * A proxy to hibernate org.hibernate.criterion.Restrictions object to allow for criteria based querying
  */
-component singleton{
+component singleton {
 
 	// Lookup map of Hibernate to CF Types. Used for auto casting.
 	this.TYPES = {
-		"string" 		: "StringType",
-		"clob"			: "ClobType",
-		"text"			: "TextType",
-		"char"			: "ChareacterType",
-		"boolean" 		: "BooleanType",
-		"yesno" 		: "YesNoType",
-		"truefalse"		: "TrueFalseType",
-		"byte" 			: "ByteType",
-		"short" 		: "ShortType",
-		"integer" 		: "IntegerType",
-		"long" 			: "LongType",
-		"float"			: "FloatType",
-		"double" 		: "DoubleType",
-		"bigInteger"	: "BigIntegerType",
-		"bigDecimal"	: "BigDecimalType",
-		"timestamp" 	: "TimestampType",
-		"time" 			: "TimeType",
-		"date" 			: "DateType",
-		"calendar"		: "CalendarType",
-		"currency"		: "CurrencyType",
-		"locale" 		: "LocaleType",
-		"timezone"		: "TimeZoneType",
-		"url" 			: "UrlType",
-		"class" 		: "ClassType",
-		"blob" 			: "BlobType",
-		"binary" 		: "BinaryType",
-		"uuid" 			: "UUIDCharType",
-		"serializable"	: "SerializableType"
+		"string"       : "StringType",
+		"clob"         : "ClobType",
+		"text"         : "TextType",
+		"char"         : "ChareacterType",
+		"boolean"      : "BooleanType",
+		"yesno"        : "YesNoType",
+		"truefalse"    : "TrueFalseType",
+		"byte"         : "ByteType",
+		"short"        : "ShortType",
+		"integer"      : "IntegerType",
+		"long"         : "LongType",
+		"float"        : "FloatType",
+		"double"       : "DoubleType",
+		"bigInteger"   : "BigIntegerType",
+		"bigDecimal"   : "BigDecimalType",
+		"timestamp"    : "TimestampType",
+		"time"         : "TimeType",
+		"date"         : "DateType",
+		"calendar"     : "CalendarType",
+		"currency"     : "CurrencyType",
+		"locale"       : "LocaleType",
+		"timezone"     : "TimeZoneType",
+		"url"          : "UrlType",
+		"class"        : "ClassType",
+		"blob"         : "BlobType",
+		"binary"       : "BinaryType",
+		"uuid"         : "UUIDCharType",
+		"serializable" : "SerializableType"
 	};
 
 	/**
@@ -62,8 +62,16 @@ component singleton{
 	 * @minValue The min value
 	 * @maxValue The max value
 	 */
-	any function between( required string property, required any minValue, required any maxValue ){
-		return variables.restrictions.between( arguments.property, arguments.minValue, arguments.maxValue );
+	any function between(
+		required string property,
+		required any minValue,
+		required any maxValue
+	){
+		return variables.restrictions.between(
+			arguments.property,
+			arguments.minValue,
+			arguments.maxValue
+		);
 	}
 
 	/**
@@ -82,7 +90,7 @@ component singleton{
 	 * @property
 	 */
 	any function isTrue( required string property ){
-		return variables.restrictions.eq( arguments.property, javaCast( "boolean", true ) );
+		return variables.restrictions.eq( arguments.property, javacast( "boolean", true ) );
 	}
 
 	/**
@@ -91,7 +99,7 @@ component singleton{
 	 * @property
 	 */
 	any function isFalse( required string property ){
-		return variables.restrictions.eq( arguments.property, javaCast( "boolean", false ) );
+		return variables.restrictions.eq( arguments.property, javacast( "boolean", false ) );
 	}
 
 	/**
@@ -101,7 +109,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function eqProperty( required string property, required string otherProperty ){
-		return variables.restrictions.eqProperty( arguments.property, arguments.otherProperty);
+		return variables.restrictions.eqProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
@@ -121,7 +129,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function gtProperty( required string property, required string otherProperty ){
-		return variables.restrictions.gtProperty( arguments.property, arguments.otherProperty);
+		return variables.restrictions.gtProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
@@ -141,7 +149,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function geProperty( required string property, required string otherProperty ){
-		return variables.restrictions.geProperty( arguments.property, arguments.otherProperty);
+		return variables.restrictions.geProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
@@ -169,7 +177,9 @@ component singleton{
 	 */
 	any function isIn( required string property, required any propertyValue ){
 		// infalte to array if simple values
-		if( isSimpleValue( arguments.propertyValue)  ){ arguments.propertyValue = listToArray( arguments.propertyValue ); }
+		if ( isSimpleValue( arguments.propertyValue ) ) {
+			arguments.propertyValue = listToArray( arguments.propertyValue );
+		}
 		return variables.restrictions.in( arguments.property, arguments.propertyValue );
 	}
 
@@ -179,7 +189,7 @@ component singleton{
 	 * @property
 	 */
 	any function isEmpty( required string property ){
-		return variables.restrictions.isEmpty( arguments.property);
+		return variables.restrictions.isEmpty( arguments.property );
 	}
 
 	/**
@@ -188,14 +198,14 @@ component singleton{
 	 * @property
 	 */
 	any function isNotEmpty( required string property ){
-		return variables.restrictions.isNotEmpty( arguments.property);
+		return variables.restrictions.isNotEmpty( arguments.property );
 	}
 
 	/**
 	 * Where a property is null
 	 */
 	any function isNull( required string property ){
-		return variables.restrictions.isNull( arguments.property);
+		return variables.restrictions.isNull( arguments.property );
 	}
 
 	/**
@@ -205,7 +215,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function isNotNull( required string property ){
-		return variables.restrictions.isNotNull( arguments.property);
+		return variables.restrictions.isNotNull( arguments.property );
 	}
 
 	/**
@@ -225,7 +235,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function ltProperty( required string property, required string otherProperty ){
-		return variables.restrictions.ltProperty( arguments.property, arguments.otherProperty);
+		return variables.restrictions.ltProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
@@ -245,7 +255,7 @@ component singleton{
 	 * @otherProperty
 	 */
 	any function leProperty( required string property, required string otherProperty ){
-		return variables.restrictions.leProperty( arguments.property, arguments.otherProperty);
+		return variables.restrictions.leProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
@@ -275,7 +285,7 @@ component singleton{
 	 * @propertyValue
 	 */
 	any function neProperty( required string property, required any otherProperty ){
-		return variables.restrictions.neProperty( arguments.property, arguments.otherProperty);
+		return variables.restrictions.neProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
@@ -345,7 +355,7 @@ component singleton{
 	 * @type The class type to build: StringType, BooleanType, YesNoType, LongType
 	 */
 	function buildHibernateType( required type ){
-		if( structKeyExists( server, "lucee" ) ){
+		if ( structKeyExists( server, "lucee" ) ) {
 			return createObject( "java", "org.hibernate.type.#arguments.type#" );
 		}
 		return createObject( "java", "org.hibernate.type.#arguments.type#" ).INSTANCE;
@@ -357,39 +367,39 @@ component singleton{
 	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
 	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
-	function sql( required string sql, array params=[] ){
+	function sql( required string sql, array params = [] ){
 		// No params, just execute
-		if( !params.len() ){
+		if ( !params.len() ) {
 			return variables.restrictions.sqlRestriction( arguments.sql );
 		}
 
 		// Discover Types, not perfect, but hey :)
 		var discoverType = function( target ){
-			if( isValid( "Binary", arguments.target ) ){
+			if ( isValid( "Binary", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "binary" ] );
 			}
-			if( isValid( "Boolean", arguments.target ) ){
+			if ( isValid( "Boolean", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "boolean" ] );
 			}
-			if( isValid( "time", arguments.target ) ){
+			if ( isValid( "time", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "time" ] );
 			}
-			if( isValid( "date", arguments.target ) ){
+			if ( isValid( "date", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "timestamp" ] );
 			}
-			if( isValid( "uuid", arguments.target ) ){
+			if ( isValid( "uuid", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "uuid" ] );
 			}
-			if( isValid( "float", arguments.target ) ){
+			if ( isValid( "float", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "float" ] );
 			}
-			if( isValid( "numeric", arguments.target ) ){
+			if ( isValid( "numeric", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "integer" ] );
 			}
-			if( isValid( "url", arguments.target ) ){
+			if ( isValid( "url", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "url" ] );
 			}
-			if( len( arguments.target ) <= 255 ){
+			if ( len( arguments.target ) <= 255 ) {
 				return buildHibernateType( this.TYPES[ "string" ] );
 			} else {
 				return buildHibernateType( this.TYPES[ "text" ] );
@@ -397,22 +407,21 @@ component singleton{
 		};
 
 		// Build out types
-		var types 	= [];
-		var values 	= arguments.params
-			.map( function( item ){
-				// Infer the Type if just the value
-				if( isSimpleValue( item ) ){
-					var thisType = discoverType( item );
-					types.append( thisType );
-					return thisType.fromStringValue( item );
-				}
-				// Else Strict Types: { value, type }
-				else {
-					var thisType = buildHibernateType( this.TYPES[ item.type ] );
-					types.append( thisType );
-					return thisType.fromStringValue( item.value );
-				}
-			} );
+		var types  = [];
+		var values = arguments.params.map( function( item ){
+			// Infer the Type if just the value
+			if ( isSimpleValue( item ) ) {
+				var thisType = discoverType( item );
+				types.append( thisType );
+				return thisType.fromStringValue( item );
+			}
+			// Else Strict Types: { value, type }
+			else {
+				var thisType = buildHibernateType( this.TYPES[ item.type ] );
+				types.append( thisType );
+				return thisType.fromStringValue( item.value );
+			}
+		} );
 
 		// Return with values and types
 		return variables.restrictions.sqlRestriction( arguments.sql, values, types );
@@ -426,8 +435,8 @@ component singleton{
 	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
 	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
-	any function sqlRestriction( required string sql, array params=[] ){
-		return this.sql( argumentCollection=arguments );
+	any function sqlRestriction( required string sql, array params = [] ){
+		return this.sql( argumentCollection = arguments );
 	}
 
 	/**
@@ -438,8 +447,8 @@ component singleton{
 	any function conjunction( required array restrictionValues ){
 		var cj = variables.restrictions.conjunction();
 
-		for( var i=1; i LTE ArrayLen( arguments.restrictionValues ); i++ ){
-			cj.add( arguments.restrictionValues[i] );
+		for ( var i = 1; i LTE arrayLen( arguments.restrictionValues ); i++ ) {
+			cj.add( arguments.restrictionValues[ i ] );
 		}
 
 		return cj;
@@ -448,9 +457,9 @@ component singleton{
 	/**
 	 * Return the conjuction of N expressions as arguments
 	 */
-	any function $and( ){
+	any function $and(){
 		var expressions = [];
-		for( var key in arguments ){
+		for ( var key in arguments ) {
 			arrayAppend( expressions, arguments[ key ] );
 		}
 		return this.conjunction( expressions );
@@ -461,7 +470,7 @@ component singleton{
 	 */
 	any function $or(){
 		var expressions = [];
-		for( var key in arguments ){
+		for ( var key in arguments ) {
 			arrayAppend( expressions, arguments[ key ] );
 		}
 		return this.disjunction( expressions );
@@ -475,8 +484,8 @@ component singleton{
 	any function disjunction( required array restrictionValues ){
 		var dj = variables.restrictions.disjunction();
 
-		for( var i=1; i LTE ArrayLen( arguments.restrictionValues ); i++ ){
-			dj.add( arguments.restrictionValues[i] );
+		for ( var i = 1; i LTE arrayLen( arguments.restrictionValues ); i++ ) {
+			dj.add( arguments.restrictionValues[ i ] );
 		}
 
 		return dj;
@@ -500,50 +509,57 @@ component singleton{
 	 * @throws RuntimeException
 	 */
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
-
 		// detect dynamic negation
-		if( left( arguments.missingMethodName, 3 ) eq "not" && len( arguments.missingMethodName ) > 3 ){
+		if ( left( arguments.missingMethodName, 3 ) eq "not" && len( arguments.missingMethodName ) > 3 ) {
 			// remove NOT
 			arguments.missingMethodName = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 3 );
 			return this.isNot(
-				invoke( this, arguments.missingMethodName, missingMethodArguments )
+				invoke(
+					this,
+					arguments.missingMethodName,
+					missingMethodArguments
+				)
 			);
 		}
 
 		// Aliases
-		switch( arguments.missingMethodName ){
+		switch ( arguments.missingMethodName ) {
 			case "eq":
-				return isEq( argumentCollection=arguments.missingMethodArguments );
+				return isEq( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "in":
-				return isIn( argumentCollection=arguments.missingMethodArguments );
+				return isIn( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "gt":
-				return isGt( argumentCollection=arguments.missingMethodArguments );
+				return isGt( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "lt":
-				return isLT( argumentCollection=arguments.missingMethodArguments );
+				return isLT( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "le":
-				return isLE( argumentCollection=arguments.missingMethodArguments );
+				return isLE( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "ge":
-				return isGe( argumentCollection=arguments.missingMethodArguments );
+				return isGe( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "and":
-				return $and( argumentCollection=arguments.missingMethodArguments );
+				return $and( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "or":
-				return $or( argumentCollection=arguments.missingMethodArguments );
+				return $or( argumentCollection = arguments.missingMethodArguments );
 				break;
 			case "not":
-				return isNot( argumentCollection=arguments.missingMethodArguments );
+				return isNot( argumentCollection = arguments.missingMethodArguments );
 				break;
-			default:{
+			default: {
 				// Funnel call to native class, if it throws an exepction, well, so be it!
-				return invoke( variables.restrictions, arguments.missingMethodName, arguments.missingMethodArguments );
+				return invoke(
+					variables.restrictions,
+					arguments.missingMethodName,
+					arguments.missingMethodArguments
+				);
 			}
 		}
-
 	}
+
 }

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v2.5.0
+
+* `bug` : Fix on `getOrFail()` where if the id was 0, it would still return an empty object.
+* `task` : Added formatting via cfformat
+
 ## v2.4.0
 
 * `Feature` : Upgraded to `cbValidation` 2.0.0

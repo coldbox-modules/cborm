@@ -6,7 +6,7 @@
  *
  * Adobe CF Based ORM Utility
  */
-component implements="cborm.models.util.IORMUtil" extends="cborm.models.util.ORMUtilSupport"{
+component implements="cborm.models.util.IORMUtil" extends="cborm.models.util.ORMUtilSupport" {
 
 	/**
 	 * Retrieve the entity mode in effect for this session.
