@@ -16,14 +16,23 @@ component {
 	// CF Mapping
 	this.cfmapping      = "cborm";
 	// Dependencies
-	this.dependencies   = [ "cbvalidation" ];
+	this.dependencies   = [ "cbvalidation", "cbPaginator" ];
 
 	/**
 	 * Configure Module
 	 */
 	function configure(){
-		// cbORM Settings
+		// cborm Settings
 		settings = {
+			// Resource Settings
+			resources : {
+				// Enable the ORM Resource Event Loader
+				eventLoader 	: false,
+				// Pagination max rows
+				maxRows 		: 25,
+				// Pagination max row limit: 0 = no limit
+				maxRowsLimit 	: 500
+			},
 			// WireBox Injection Bridge
 			injection : {
 				enabled : true,
@@ -75,6 +84,9 @@ component {
 	 * Fired when the module is registered and activated.
 	 */
 	function onLoad(){
+		if( settings.resources.eventLoader ){
+			wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();
+		}
 	}
 
 	/**

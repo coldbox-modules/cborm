@@ -18,6 +18,8 @@
 		setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/");
 	}
 
+	resources( "roles" );
+
 	// Your Application Routes
 	addRoute(pattern=":handler/:action?");
 

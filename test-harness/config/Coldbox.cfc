@@ -48,6 +48,31 @@
 			exclude = []
 		};
 
+		interceptorSettings = {
+			customInterceptionPoints : [
+				// CriteriaBuilder Events
+				"onCriteriaBuilderAddition",
+				"beforeCriteriaBuilderList",
+				"afterCriteriaBuilderList",
+				"beforeCriteriaBuilderCount",
+				"afterCriteriaBuilderCount",
+				// ORM Bridge Events
+				"ORMPostNew",
+				"ORMPreLoad",
+				"ORMPostLoad",
+				"ORMPostDelete",
+				"ORMPreDelete",
+				"ORMPreUpdate",
+				"ORMPostUpdate",
+				"ORMPreInsert",
+				"ORMPostInsert",
+				"ORMPreSave",
+				"ORMPostSave",
+				"ORMPostFlush",
+				"ORMPreFlush"
+			]
+		};
+
 		//Register interceptors as an array, we need order
 		interceptors = [
 			 //SES
@@ -76,11 +101,15 @@
 
 		moduleSettings = {
 			cborm = {
-				injection = {
-					enabled = true,
-					include = "",
-					exclude = ""
+				resourceEventLoader : true,
+				injection : {
+					enabled : true,
+					include : "",
+					exclude : ""
 				}
+			},
+			mementifier = {
+				ormAutoIncludes : true
 			}
 		};
 

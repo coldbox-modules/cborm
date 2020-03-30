@@ -5,20 +5,24 @@
     "private":true,
     "description":"",
     "dependencies":{
-        "coldbox":"^5.0.0",
         "cbvalidation":"^2.0.0",
         "mementifier":"^2.0.0",
-        "cbstreams":"^1.4.0+48"
+        "cbstreams":"^1.4.0+48",
+        "coldbox":"be",
+        "cbpaginator":"^2.0.0"
     },
     "devDependencies":{
-        "testbox":"^3.0.0-snapshot"
+        "testbox":"^3.0.0-snapshot",
+        "route-visualizer":"^1.4.0+21"
     },
     "installPaths":{
-        "coldbox":"coldbox/",
         "testbox":"testbox/",
         "cbvalidation":"modules/cbvalidation/",
         "mementifier":"modules/mementifier/",
-        "cbstreams":"modules/cbstreams/"
+        "cbstreams":"modules/cbstreams/",
+        "coldbox":"coldbox/",
+        "cbpaginator":"modules/cbpaginator/",
+        "route-visualizer":"modules/route-visualizer/"
     },
     "testbox":{
         "runner":"http://localhost:60299/tests/runner.cfm"

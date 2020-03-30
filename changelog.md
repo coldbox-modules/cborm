@@ -2,8 +2,9 @@
 
 ## v2.5.0
 
-* `bug` : Fix on `getOrFail()` where if the id was 0, it would still return an empty object.
-* `task` : Added formatting via cfformat
+* `Features` : Introduction of the automatic resource handler for ORM Entities based on ColdBox's 6 resources and RestHandler
+* `Bug` : Fix on `getOrFail()` where if the id was 0, it would still return an empty object.
+* `Task` : Added formatting via cfformat
 
 ## v2.4.0
 
