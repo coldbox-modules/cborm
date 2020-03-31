@@ -18,28 +18,30 @@ component {
 	// Dependencies
 	this.dependencies   = [ "cbvalidation", "cbPaginator" ];
 
+	variables.SETTING_DEFAULTS = {
+		// Resource Settings
+		resources : {
+			// Enable the ORM Resource Event Loader
+			eventLoader 	: false,
+			// Pagination max rows
+			maxRows 		: 25,
+			// Pagination max row limit: 0 = no limit
+			maxRowsLimit 	: 500
+		},
+		// WireBox Injection Bridge
+		injection : {
+			enabled : true,
+			include : "",
+			exclude : ""
+		}
+	};
+
 	/**
 	 * Configure Module
 	 */
 	function configure(){
 		// cborm Settings
-		settings = {
-			// Resource Settings
-			resources : {
-				// Enable the ORM Resource Event Loader
-				eventLoader 	: false,
-				// Pagination max rows
-				maxRows 		: 25,
-				// Pagination max row limit: 0 = no limit
-				maxRowsLimit 	: 500
-			},
-			// WireBox Injection Bridge
-			injection : {
-				enabled : true,
-				include : "",
-				exclude : ""
-			}
-		};
+		settings = structCopy( variables.SETTING_DEFAULTS );
 
 		// ColdBox 5 or 4 DSL Builder
 		var dslPath = "#moduleMapping#.dsl.ORMDSL";
@@ -84,6 +86,10 @@ component {
 	 * Fired when the module is registered and activated.
 	 */
 	function onLoad(){
+		// Prepare setting defaults
+		settings.resources.append( variables.SETTING_DEFAULTS.resources, false );
+		settings.injection.append( variables.SETTING_DEFAULTS.injection, false );
+		// Are we loading the event loader
 		if( settings.resources.eventLoader ){
 			wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();
 		}

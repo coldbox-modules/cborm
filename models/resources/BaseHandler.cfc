@@ -145,19 +145,22 @@ component extends="coldbox.system.RestHandler" {
 		param rc.ignoreDefaults = false;
 
 		// Population arguments
-		arguments.populate.memento = rc;
+		arguments.populate.memento 	= rc;
+		arguments.populate.model 	= variables.ormService.new();
 
-		// New, populate and validate
-		prc.oEntity = ormService
-			.new()
-			.populate( argumentCollection = arguments.populate )
-			.validateOrFail( argumentCollection = arguments.validate );
+		// Validation Arguments
+		arguments.validate.target 	= populateModel( argumentCollection = arguments.populate );
+
+		// Validate
+		prc.oEntity = validateOrFail(
+			argumentCollection = arguments.validate
+		);
 
 		// announce it
 		announceInterception( "pre#variables.entity#Save", { entity : prc.oEntity } );
 
 		// Save it
-		prc.oEntity.save();
+		variables.ormService.save( prc.oEntity );
 
 		// announce it
 		announceInterception( "post#variables.entity#Save", { entity : prc.oEntity } );
@@ -186,7 +189,7 @@ component extends="coldbox.system.RestHandler" {
 		announceInterception( "pre#variables.entity#Show", {} );
 
 		// Get by id
-		prc.oEntity = ormService.getOrFail( rc.id );
+		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
 		announceInterception( "post#variables.entity#Show", { entity : prc.oEntity } );
@@ -221,19 +224,22 @@ component extends="coldbox.system.RestHandler" {
 		param rc.id             = 0;
 
 		// Population arguments
-		arguments.populate.memento = rc;
+		arguments.populate.memento 	= rc;
+		arguments.populate.model 	= variables.ormService.getOrFail( rc.id );
 
-		// Get, populate and validate
-		prc.oEntity = ormService
-			.getOrFail( rc.id )
-			.populate( argumentCollection = arguments.populate )
-			.validateOrFail( argumentCollection = arguments.validate );
+		// Validation Arguments
+		arguments.validate.target 	= populateModel( argumentCollection = arguments.populate );
+
+		// Validate
+		prc.oEntity = validateOrFail(
+			argumentCollection = arguments.validate
+		);
 
 		// announce it
 		announceInterception( "pre#variables.entity#Update", { entity : prc.oEntity } );
 
 		// Save it
-		prc.oEntity.save();
+		variables.ormService.save( prc.oEntity );
 
 		// announce it
 		announceInterception( "post#variables.entity#Update", { entity : prc.oEntity } );
@@ -255,12 +261,12 @@ component extends="coldbox.system.RestHandler" {
 	function delete( event, rc, prc ){
 		param rc.id = 0;
 
-		prc.oEntity = ormService.getOrFail( rc.id );
+		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
 		announceInterception( "pre#variables.entity#Delete", { entity : prc.oEntity } );
 
-		prc.oEntity.delete();
+		variables.ormService.delete( prc.oEntity );
 
 		// announce it
 		announceInterception( "post#variables.entity#Delete", { id : rc.id } );
@@ -289,9 +295,14 @@ component extends="coldbox.system.RestHandler" {
 	 */
 	private function getMaxRows( event = getRequestContext() ){
 		var maxRows = event.getValue( "maxRows", variables.settings.resources.maxRows );
+		// if limit = 0, then don't block
+		if( variables.settings.resources.maxRowsLimit == 0 ){
+			return maxRows;
+		}
+		// Else use limiter
 		return (
 			maxRows > variables.settings.resources.maxRowsLimit ?
-			variables.settings.resources.paginatorSettings.maxRowsLimit
+			variables.settings.resources.maxRowsLimit
 			: maxRows
 		);
 	}

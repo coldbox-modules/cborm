@@ -75,8 +75,6 @@
 
 		//Register interceptors as an array, we need order
 		interceptors = [
-			 //SES
-			 { class="coldbox.system.interceptors.SES" }
 		];
 
 		//LogBox DSL
@@ -101,7 +99,11 @@
 
 		moduleSettings = {
 			cborm = {
-				resourceEventLoader : true,
+				resources  : {
+					eventLoader : true
+					//maxRows : 25,
+					//maxRowsLimit : 250
+				},
 				injection : {
 					enabled : true,
 					include : "",

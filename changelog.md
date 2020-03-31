@@ -3,6 +3,7 @@
 ## v2.5.0
 
 * `Features` : Introduction of the automatic resource handler for ORM Entities based on ColdBox's 6 resources and RestHandler
+* `Improvement` : Natively allow for nested transactions and savepoitns by not doing preemptive transaction commits when using transactions.
 * `Bug` : Fix on `getOrFail()` where if the id was 0, it would still return an empty object.
 * `Task` : Added formatting via cfformat
 
