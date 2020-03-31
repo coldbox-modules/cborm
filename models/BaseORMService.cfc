@@ -1876,22 +1876,20 @@ process(
 		boolean transactional = getUseTransactions()
 	){
 		// Clean up the arg collection
-		structDelete( argCollection, "transactional" );
+		structDelete( arguments.argCollection, "transactional" );
 
 		// If in transaction, just execute the incoming target
 		if ( request.keyExists( "cbox_aop_transaction" ) OR !arguments.transactional ) {
 			return arguments.target( argumentCollection = arguments.argCollection );
 		}
-
 		// transaction safe call, start one, so we can support nested transactions
 		// mark transaction began
 		request[ "cbox_aop_transaction" ] = true;
-		transaction action               ="begin" {
+
+		transaction{
 			try {
 				// Call method
 				var results = arguments.target( argumentCollection = arguments.argCollection );
-				// commit transaction
-				transactionCommit();
 			} catch ( Any e ) {
 				// RollBack Transaction
 				transactionRollback();
