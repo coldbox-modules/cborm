@@ -4,7 +4,7 @@
  * ---
  * Validates if the field has a unique value in the database, this only applies to ORM objects
  */
-component accessors="true" singleton{
+component accessors="true" singleton {
 
 	// Properties
 	property name="name";
@@ -14,8 +14,8 @@ component accessors="true" singleton{
 	 * Constructor
 	 */
 	UniqueValidator function init(){
-		variables.name 			= "Unique";
-		variables.ORMService 	= new cborm.models.BaseORMService();
+		variables.name       = "Unique";
+		variables.ORMService = new cborm.models.BaseORMService();
 		return this;
 	}
 
@@ -36,36 +36,36 @@ component accessors="true" singleton{
 		any targetValue,
 		any validationData
 	){
-
 		// return true if no data to check, type needs a data element to be checked.
-		if ( isNull( arguments.targetValue ) || ( isSimpleValue( arguments.targetValue ) && !len( arguments.targetValue ) ) ) {
+		if (
+			isNull( arguments.targetValue ) || ( isSimpleValue( arguments.targetValue ) && !len( arguments.targetValue ) )
+		) {
 			return true;
 		}
 
 		// process entity setups.
-		var entityName 		= ORMService.getEntityGivenName( arguments.target );
-		var identityField 	= ORMService.getKey( entityName );
-		var identityValue 	= invoke( arguments.target, "get#identityField#" );
+		var entityName    = ORMService.getEntityGivenName( arguments.target );
+		var identityField = ORMService.getKey( entityName );
+		var identityValue = invoke( arguments.target, "get#identityField#" );
 
 		// create criteria for uniqueness
-		var c = ORMService.newCriteria( entityName )
-			.isEq( field, arguments.targetValue );
+		var c = ORMService.newCriteria( entityName ).isEq( field, arguments.targetValue );
 
 		// validate with ID? then add to restrictions
-		if( !isNull( identityValue ) ){
+		if ( !isNull( identityValue ) ) {
 			c.ne( identityField, identityValue );
 		}
 
 		// validate uniqueness
-		if( c.count() GT 0 ){
+		if ( c.count() GT 0 ) {
 			var args = {
-				message        = "The '#arguments.field#' value '#arguments.targetValue#' is not unique in the database",
-				field          = arguments.field,
-				validationType = getName(),
-				validationData = arguments.validationData,
-				rejectedValue  = arguments.targetValue
+				message        : "The '#arguments.field#' value '#arguments.targetValue#' is not unique in the database",
+				field          : arguments.field,
+				validationType : getName(),
+				validationData : arguments.validationData,
+				rejectedValue  : arguments.targetValue
 			};
-			validationResult.addError( validationResult.newError( argumentCollection=args ) );
+			validationResult.addError( validationResult.newError( argumentCollection = args ) );
 			return false;
 		}
 
@@ -73,8 +73,8 @@ component accessors="true" singleton{
 	}
 
 	/**
-	* Get the name of the validator
-	*/
+	 * Get the name of the validator
+	 */
 	string function getName(){
 		return name;
 	}

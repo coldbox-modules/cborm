@@ -16,7 +16,7 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 	 * @override
 	 */
 	any function getSession( string datasource ){
-		return ( !isNull( arguments.datasource ) ? ORMGetSession( arguments.datasource ) : ORMGetSession() );
+		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
 	}
 
 	/**

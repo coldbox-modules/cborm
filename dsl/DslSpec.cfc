@@ -4,43 +4,43 @@
  * ---
  * The ORM WireBox DSL
  */
-component accessors="true"{
+component accessors="true" {
 
 	property name="injector";
 	property name="log";
 
 
 	/**
-	* Constructor as per interface
-	*/
+	 * Constructor as per interface
+	 */
 	public any function init( required any injector ){
-		variables.injector 	= arguments.injector;
-		variables.log		= arguments.injector.getLogBox().getLogger( this );
+		variables.injector = arguments.injector;
+		variables.log      = arguments.injector.getLogBox().getLogger( this );
 
 		return this;
 	}
 
 	/**
-	* Process an incoming DSL definition and produce an object with it.
-	*/
+	 * Process an incoming DSL definition and produce an object with it.
+	 */
 	public any function process( required definition, targetObject ){
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
-		switch( DSLNamespace ){
-			case "entityService" : {
-				return getEntityServiceDSL( argumentCollection=arguments );
+		switch ( DSLNamespace ) {
+			case "entityService": {
+				return getEntityServiceDSL( argumentCollection = arguments );
 			}
 		}
 	}
 
 	/**
-	* Get an EntityService Dependency
-	*/
+	 * Get an EntityService Dependency
+	 */
 	function getEntityServiceDSL( required definition, targetObject ){
-		var entityName  = getToken( arguments.definition.dsl, 2, ":" );
+		var entityName = getToken( arguments.definition.dsl, 2, ":" );
 
 		// Do we have an entity name? If we do create virtual entity service
-		if( len( entityName ) ){
+		if ( len( entityName ) ) {
 			return new cborm.models.VirtualEntityService( entityName );
 		}
 

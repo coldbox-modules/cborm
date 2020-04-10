@@ -62,7 +62,7 @@ component{
 		flushAtRequestEnd = false,
 		eventhandling = true,
 		eventHandler = "cborm.models.EventHandler",
-		skipcfcWithError = true
+		skipcfcWithError = false
 	};
 
 	// application start

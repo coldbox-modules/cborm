@@ -6,13 +6,13 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		new coldbox.system.ioc.Injector( "tests.resources.WireBox" );
 	}
 	function setup(){
-		ormService = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
+		ormService   = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
 		rootcriteria = getMockBox().createMock( "cborm.models.criterion.CriteriaBuilder" );
 		rootcriteria.init( entityName = "User", ORMService = ormService );
-		criteria = getMockBox().createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
+		criteria         = getMockBox().createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
 		mockEventManager = getMockBox().createStub();
 		mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
-		mockService = getMockBox()
+		mockService      = getMockBox()
 			.createEmptyMock( "cborm.models.BaseORMService" )
 			.$( "getORMEventHandler", mockEventHandler );
 		criteria.init( "Role", "Role", ormService );
@@ -57,7 +57,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 				rootcriteria
 					.createSubcriteria( "Role", "role" )
 					.withProjections( property = "roleID" )
-					.createAlias( "users", "user", rootcriteria.LEFT_JOIN )
+					.createAlias(
+						"users",
+						"user",
+						rootcriteria.LEFT_JOIN
+					)
 					.like( "user.lastName", "M%" )
 					.propertyIn( "roleID" )
 			)
@@ -99,7 +103,11 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 				rootcriteria
 					.createSubcriteria( "Role", "role" )
 					.withProjections( property = "roleID" )
-					.createCriteria( associationName = "users", alias = "user", joinType = rootcriteria.LEFT_JOIN )
+					.createCriteria(
+						associationName = "users",
+						alias           = "user",
+						joinType        = rootcriteria.LEFT_JOIN
+					)
 					.like( "user.lastName", "M%" )
 					.propertyIn( "roleID" )
 			)

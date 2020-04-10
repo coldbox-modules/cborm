@@ -18,7 +18,7 @@
  *
  * These methods are only active if WireBox entity injection is available.
  */
-component extends="cborm.models.VirtualEntityService" accessors="true"{
+component extends="cborm.models.VirtualEntityService" accessors="true" {
 
 	/**
 	 * If populated, it will be from the last cbValidation made on the entity
@@ -42,20 +42,20 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		boolean defaultAsQuery
 	){
 		// Calculate name via md
-		var md = getMetadata( this );
+		var md               = getMetadata( this );
 		arguments.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
 
 		// query cache region just in case
-		if( isNull( arguments.queryCacheRegion ) ){
+		if ( isNull( arguments.queryCacheRegion ) ) {
 			arguments.queryCacheRegion = "#arguments.entityName#.activeEntityCache";
 		}
 
 		// datasource discovery, done here for perf considerations.
-		if( md.keyExists( "datasource" ) ){
+		if ( md.keyExists( "datasource" ) ) {
 			arguments.datasource = md.datasource;
 		} else {
 			var appMD = getApplicationMetadata();
-			if( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ){
+			if ( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ) {
 				arguments.datasource = appMD.ormsettings.datasource;
 			} else {
 				arguments.datasource = appMD.datasource;
@@ -63,13 +63,13 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 		}
 
 		// init the super class with our own arguments
-		super.init( argumentCollection=arguments );
+		super.init( argumentCollection = arguments );
 
 		return this;
 	}
 
 	/**
-     * Save an entity using hibernate transactions or not. You can optionally flush the session also
+	 * Save an entity using hibernate transactions or not. You can optionally flush the session also
 	 *
 	 * @entity The entity to save
 	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
@@ -77,66 +77,66 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 *
 	 * @return the entity or array of entities saved
-     */
+	 */
 	any function save(
-		any entity=this,
-		boolean forceInsert=false,
-		boolean flush=false,
-		boolean transactional=getUseTransactions()
+		any entity            = this,
+		boolean forceInsert   = false,
+		boolean flush         = false,
+		boolean transactional = getUseTransactions()
 	){
-		return super.save( argumentCollection=arguments );
+		return super.save( argumentCollection = arguments );
 	}
 
 	/**
-     * Delete an entity. The entity argument can be a single entity
+	 * Delete an entity. The entity argument can be a single entity
 	 * or an array of entities. You can optionally flush the session also after committing
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
 	 *
 	 * @entity The entity or array of entities to delete
 	 * @flush Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
-     */
+	 */
 	BaseORMService function delete(
-		any entity=this,
-		boolean flush=false,
-		boolean transactional=getUseTransactions()
+		any entity            = this,
+		boolean flush         = false,
+		boolean transactional = getUseTransactions()
 	){
-		return super.delete( argumentCollection=arguments );
+		return super.delete( argumentCollection = arguments );
 	}
 
 	/**
-     * Refresh the state of an entity or array of entities from the database
+	 * Refresh the state of an entity or array of entities from the database
 	 *
 	 * @entity The entity or array of entities to refresh
-     */
-	any function refresh( any entity=this ){
+	 */
+	any function refresh( any entity = this ){
 		return super.refresh( arguments.entity );
 	}
 
 	/**
-    * Merge an entity or array of entities back into a session
-    * @entity A single or an array of entities to re-merge
-    *
-    * @return Same entity if one passed, array if an array of entities passed.
-    */
-	any function merge( any entity=this ){
+	 * Merge an entity or array of entities back into a session
+	 * @entity A single or an array of entities to re-merge
+	 *
+	 * @return Same entity if one passed, array if an array of entities passed.
+	 */
+	any function merge( any entity = this ){
 		return super.merge( arguments.entity );
 	}
 
 	/**
-     * Evict entity object(s) from the hibernate session or first-level cache
+	 * Evict entity object(s) from the hibernate session or first-level cache
 	 *
 	 * 1) An entity object
 	 * 2) An array of entity objects
 	 *
 	 * @entity The argument can be one persistence entity or an array of entities to evict
-     */
-	any function evict( any entity=this ){
+	 */
+	any function evict( any entity = this ){
 		return super.evictEntity( arguments.entities );
 	}
 
 	/**
-     * Populate/bind an entity's properties and relationships from an incoming structure or map of flat data.
+	 * Populate/bind an entity's properties and relationships from an incoming structure or map of flat data.
 	 *
 	 * @memento	The map/struct to populate the entity with
 	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -148,24 +148,24 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target The entity to populate, yourself
-     */
+	 */
 	any function populate(
 		required struct memento,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=true,
-		any target=this
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = true,
+		any target                   = this
 	){
-		return getBeanPopulator().populateFromStruct( argumentCollection=arguments );
+		return getBeanPopulator().populateFromStruct( argumentCollection = arguments );
 	}
 
 	/**
-     * Simple map to property population for entities with structure key prefixes
+	 * Simple map to property population for entities with structure key prefixes
 	 *
 	 * @memento	The map/struct to populate the entity with
 	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
@@ -178,21 +178,21 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
 	 * @target The entity to populate
-     */
+	 */
 	any function populateWithPrefix(
 		required struct memento,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=true,
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = true,
 		required string prefix,
-		any target=this
+		any target = this
 	){
-		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection=arguments );
+		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
 
 	/**
@@ -208,20 +208,20 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target The entity to populate
-     */
+	 */
 	any function populateFromJSON(
 		required string JSONString,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=true,
-		any target=this
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = true,
+		any target                   = this
 	){
-		return getBeanPopulator().populateFromJSON( argumentCollection=arguments );
+		return getBeanPopulator().populateFromJSON( argumentCollection = arguments );
 	}
 
 	/**
@@ -238,21 +238,21 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target The entity to populate
-     */
+	 */
 	any function populateFromXML(
 		required string xml,
-		string root="",
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=true,
-		any target=this
+		string root                  = "",
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = true,
+		any target                   = this
 	){
-		return getBeanPopulator().populateFromXML( argumentCollection=arguments );
+		return getBeanPopulator().populateFromXML( argumentCollection = arguments );
 	}
 
 	/**
@@ -269,21 +269,21 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @nullEmptyExclude A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target The entity to populate
-     */
+	 */
 	any function populateFromQuery(
 		required any qry,
-		numeric rowNumber=1,
-		string scope="",
-		boolean trustedSetter=false,
-		string include="",
-		string exclude="",
-		boolean ignoreEmpty=false,
-		string nullEmptyInclude="",
-		string nullEmptyExclude="",
-		boolean composeRelationships=true,
-		any target=this
+		numeric rowNumber            = 1,
+		string scope                 = "",
+		boolean trustedSetter        = false,
+		string include               = "",
+		string exclude               = "",
+		boolean ignoreEmpty          = false,
+		string nullEmptyInclude      = "",
+		string nullEmptyExclude      = "",
+		boolean composeRelationships = true,
+		any target                   = this
 	){
-		return getBeanPopulator().populateFromQuery( argumentCollection=arguments );
+		return getBeanPopulator().populateFromQuery( argumentCollection = arguments );
 	}
 
 	/**
@@ -297,33 +297,33 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @IncludeFields An optional list of fields to include in the validation.
 	 */
 	boolean function isValid(
-		string fields="*",
-		any constraints="",
-		string locale="",
-		string excludeFields="",
-		string includeFields=""
+		string fields        = "*",
+		any constraints      = "",
+		string locale        = "",
+		string excludeFields = "",
+		string includeFields = ""
 	){
 		// Get validation manager
 		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" );
 		// validate constraints
-		var thisConstraints = "";
+		var thisConstraints   = "";
 
-		if( structKeyExists( this, "constraints" ) ){
+		if ( structKeyExists( this, "constraints" ) ) {
 			thisConstraints = this.constraints;
 		}
 
 		// argument override
-		if( !isSimpleValue( arguments.constraints ) OR len( arguments.constraints ) ){
+		if ( !isSimpleValue( arguments.constraints ) OR len( arguments.constraints ) ) {
 			thisConstraints = arguments.constraints;
 		}
 
 		// validate and save results in private scope
 		variables.validationResults = validationManager.validate(
-			target			= this,
-			fields			= arguments.fields,
-			constraints		= thisConstraints,
-			locale			= arguments.locale,
-			excludeFields	= arguments.excludeFields
+			target        = this,
+			fields        = arguments.fields,
+			constraints   = thisConstraints,
+			locale        = arguments.locale,
+			excludeFields = arguments.excludeFields
 		);
 
 		// return it
@@ -336,7 +336,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @return cbvalidation.models.result.IValidationResult
 	 */
 	any function getValidationResults(){
-		if( !isNull( variables.validationResults ) && isObject( variables.validationResults ) ){
+		if ( !isNull( variables.validationResults ) && isObject( variables.validationResults ) ) {
 			return variables.validationResults;
 		}
 		return new cbvalidation.models.result.ValidationResult();
@@ -359,17 +359,17 @@ component extends="cborm.models.VirtualEntityService" accessors="true"{
 	 * @returns The entity back
 	 */
 	ActiveEntity function validateOrFail(
-		string fields="*",
-		any constraints="",
-		string locale="",
-		string excludeFields="",
-		string includeFields=""
+		string fields        = "*",
+		any constraints      = "",
+		string locale        = "",
+		string excludeFields = "",
+		string includeFields = ""
 	){
-		if( !this.isValid( argumentCollection=arguments ) ){
+		if ( !this.isValid( argumentCollection = arguments ) ) {
 			throw(
-				type 			= "ValidationException",
-				message 		= "The active entity failed to pass validation",
-				extendedInfo 	= getValidationResults().getAllErrorsAsJson()
+				type         = "ValidationException",
+				message      = "The active entity failed to pass validation",
+				extendedInfo = getValidationResults().getAllErrorsAsJson()
 			);
 		}
 		return this;

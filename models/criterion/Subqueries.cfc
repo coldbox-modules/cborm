@@ -8,13 +8,13 @@ Description :
 	A proxy to hibernate org.hibernate.criterion.Subqueries object to allow
 	for criteria based subquerying
 */
-component singleton extends="cborm.models.criterion.Restrictions"{
+component singleton extends="cborm.models.criterion.Restrictions" {
 
 	// Constructor
-	Subqueries function init( required criteria ) {
-		variables.detachedCriteria 	= arguments.criteria;
-		variables.subqueries   		= createObject( "java", "org.hibernate.criterion.Subqueries" );
-		variables.restrictions 		= createObject( "java", "org.hibernate.criterion.Restrictions" );
+	Subqueries function init( required criteria ){
+		variables.detachedCriteria = arguments.criteria;
+		variables.subqueries       = createObject( "java", "org.hibernate.criterion.Subqueries" );
+		variables.restrictions     = createObject( "java", "org.hibernate.criterion.Restrictions" );
 		return this;
 	}
 
@@ -22,63 +22,63 @@ component singleton extends="cborm.models.criterion.Restrictions"{
 	any function getNativeClass(){
 		return variables.subqueries;
 	}
-	any function subEq( required any value ) {
+	any function subEq( required any value ){
 		return variables.subqueries.eq( arguments.value, variables.detachedCriteria );
 	}
-	any function subEqAll( required any value ) {
+	any function subEqAll( required any value ){
 		return variables.subqueries.eqAll( arguments.value, variables.detachedCriteria );
 	}
-	any function subGe( required any value ) {
+	any function subGe( required any value ){
 		return variables.subqueries.ge( arguments.value, variables.detachedCriteria );
 	}
-	any function subGeAll( required any value ) {
+	any function subGeAll( required any value ){
 		return variables.subqueries.geAll( arguments.value, variables.detachedCriteria );
 	}
-	any function subGeSome( required any value ) {
+	any function subGeSome( required any value ){
 		return variables.subqueries.geSome( arguments.value, variables.detachedCriteria );
 	}
-	any function subGt( required any value ) {
+	any function subGt( required any value ){
 		return variables.subqueries.gt( arguments.value, variables.detachedCriteria );
 	}
-	any function subGtAll( required any value ) {
+	any function subGtAll( required any value ){
 		return variables.subqueries.gtAll( arguments.value, variables.detachedCriteria );
 	}
-	any function subGtSome( required any value ) {
+	any function subGtSome( required any value ){
 		return variables.subqueries.gtSome( arguments.value, variables.detachedCriteria );
 	}
-	any function subIn( required any value ) {
+	any function subIn( required any value ){
 		return variables.subqueries.in( arguments.value, variables.detachedCriteria );
 	}
-	any function subLe( required any value ) {
+	any function subLe( required any value ){
 		return variables.subqueries.le( arguments.value, variables.detachedCriteria );
 	}
-	any function subLeAll( required any value ) {
+	any function subLeAll( required any value ){
 		return variables.subqueries.leAll( arguments.value, variables.detachedCriteria );
 	}
-	any function subLeSome( required any value ) {
+	any function subLeSome( required any value ){
 		return variables.subqueries.leSome( arguments.value, variables.detachedCriteria );
 	}
-	any function subLt( required any value ) {
+	any function subLt( required any value ){
 		return variables.subqueries.lt( arguments.value, variables.detachedCriteria );
 	}
-	any function subLtAll( required any value ) {
+	any function subLtAll( required any value ){
 		return variables.subqueries.ltAll( arguments.value, variables.detachedCriteria );
 	}
-	any function subLtSome( required any value ) {
+	any function subLtSome( required any value ){
 		return variables.subqueries.ltSome( arguments.value, variables.detachedCriteria );
 	}
-	any function subNe( required any value ) {
+	any function subNe( required any value ){
 		return variables.subqueries.ne( arguments.value, variables.detachedCriteria );
 	}
-	any function subNotIn( required any value ) {
+	any function subNotIn( required any value ){
 		return variables.subqueries.notIn( arguments.value, variables.detachedCriteria );
 	}
 	// where subquery returns a result
-	any function exists() {
+	any function exists(){
 		return variables.subqueries.exists( variables.detachedCriteria );
 	}
 	// where subquery returns no result
-	any function notExists() {
+	any function notExists(){
 		return variables.subqueries.notExists( variables.detachedCriteria );
 	}
 	any function propertyEq( required string property ){
@@ -132,4 +132,5 @@ component singleton extends="cborm.models.criterion.Restrictions"{
 	any function propertyNotIn( required string property ){
 		return variables.subqueries.propertyNotIn( arguments.property, variables.detachedCriteria );
 	}
+
 }

@@ -31,12 +31,15 @@
  * }
  * </pre>
  */
-component extends="cborm.models.BaseORMService" accessors="true"{
+component extends="cborm.models.BaseORMService" accessors="true" {
 
 	/**
 	 * The entityName property for this "version" of the Virtual Service
 	 */
- 	property name="entityName" type="string" persistent="false";
+	property
+		name      ="entityName"
+		type      ="string"
+		persistent="false";
 
 	/************************************** CONSTRUCTOR *********************************************/
 
@@ -61,19 +64,19 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 		string datasource
 	){
 		// create cache region
-		if( isNull( arguments.queryCacheRegion ) ){
+		if ( isNull( arguments.queryCacheRegion ) ) {
 			arguments.queryCacheRegion = "#arguments.entityName#.defaultVSCache";
 		}
 
 		// init base service
-		super.init( argumentCollection=arguments );
+		super.init( argumentCollection = arguments );
 
 		// Set the local entity to be used in this virtual entity service
 		variables.entityName = arguments.entityName;
 
 		// Set the datasource of the local entity to be used in this virtual entity service
 		// Only if not passed
-		if( isNull( arguments.datasource ) ){
+		if ( isNull( arguments.datasource ) ) {
 			setDatasource( variables.orm.getEntityDatasource( arguments.entityName ) );
 		} else {
 			setDatasource( arguments.datasource );
@@ -99,16 +102,16 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	any function executeQuery(
 		required string query,
-		any params=structnew(),
-		numeric offset=0,
-		numeric max=0,
-		numeric timeout=0,
-		boolean ignorecase=false,
-		boolean asQuery=getDefaultAsQuery(),
-		boolean unique=false
+		any params         = structNew(),
+		numeric offset     = 0,
+		numeric max        = 0,
+		numeric timeout    = 0,
+		boolean ignorecase = false,
+		boolean asQuery    = getDefaultAsQuery(),
+		boolean unique     = false
 	){
 		arguments.datasource = this.getDatasource();
-		return super.executeQuery( argumentCollection=arguments );
+		return super.executeQuery( argumentCollection = arguments );
 	}
 
 	/**
@@ -127,16 +130,16 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @asQuery The return format as either a query or array of objects
 	 */
 	any function list(
-		struct criteria=structnew(),
-		string sortOrder="",
-		numeric offset=0,
-		numeric max=0,
-		numeric timeout=0,
-		boolean ignoreCase=false,
-		boolean asQuery=getDefaultAsQuery()
+		struct criteria    = structNew(),
+		string sortOrder   = "",
+		numeric offset     = 0,
+		numeric max        = 0,
+		numeric timeout    = 0,
+		boolean ignoreCase = false,
+		boolean asQuery    = getDefaultAsQuery()
 	){
 		arguments.entityName = this.getEntityName();
-		return super.list( argumentCollection=arguments );
+		return super.list( argumentCollection = arguments );
 	}
 
 	/**
@@ -154,43 +157,47 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @criteria The filtering criteria to search for.
 	 * @sortOrder The sorting order
 	 */
-	array function findAllWhere( required struct criteria, string sortOrder="" ){
-		return super.findAllWhere( this.getEntityName(), arguments.criteria, arguments.sortOrder );
+	array function findAllWhere( required struct criteria, string sortOrder = "" ){
+		return super.findAllWhere(
+			this.getEntityName(),
+			arguments.criteria,
+			arguments.sortOrder
+		);
 	}
 
 	/**
-     * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
+	 * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
 	 *
-     * @entityName The entity to create
-     * @properties The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
-     * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-     * @nullEmptyInclude A list of keys to NULL when empty
-     * @nullEmptyExclude A list of keys to NOT NULL when empty
-     * @ignoreEmpty Ignore empty values on populations, great for ORM population
-     * @include A list of keys to include in the population from the incoming properties memento
-     * @exclude A list of keys to exclude in the population from the incoming properties memento
-    */
+	 * @entityName The entity to create
+	 * @properties The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
+	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @nullEmptyInclude A list of keys to NULL when empty
+	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
+	 * @include A list of keys to include in the population from the incoming properties memento
+	 * @exclude A list of keys to exclude in the population from the incoming properties memento
+	 */
 	any function new(
-		struct properties=structnew(),
-		boolean composeRelationships=true,
-		nullEmptyInclude="",
-		nullEmptyExclude="",
-		boolean ignoreEmpty=false,
-		include="",
-		exclude=""
+		struct properties            = structNew(),
+		boolean composeRelationships = true,
+		nullEmptyInclude             = "",
+		nullEmptyExclude             = "",
+		boolean ignoreEmpty          = false,
+		include                      = "",
+		exclude                      = ""
 	){
 		arguments.entityName = this.getEntityName();
-		return super.new( argumentCollection=arguments );
+		return super.new( argumentCollection = arguments );
 	}
 
 	/**
-     * Checks if the given entityName and id exists in the database, this method does not load the entity into session
+	 * Checks if the given entityName and id exists in the database, this method does not load the entity into session
 	 *
 	 * @id The id to lookup
 	 */
-	boolean function exists( required any id) {
+	boolean function exists( required any id ){
 		arguments.entityName = this.getEntityName();
-		return super.exists( argumentCollection=arguments );
+		return super.exists( argumentCollection = arguments );
 	}
 
 	/**
@@ -200,10 +207,10 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @returnNew By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
 	 *
 	 * @return Requested entity, new entity or `null`
-     */
-	any function get( required any id, boolean returnNew=true ){
+	 */
+	any function get( required any id, boolean returnNew = true ){
 		arguments.entityName = this.getEntityName();
-		return super.get( argumentCollection=arguments );
+		return super.get( argumentCollection = arguments );
 	}
 
 	/**
@@ -213,7 +220,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	any function getOrFail( required any id ){
 		arguments.entityName = this.getEntityName();
-		return super.getOrFail( argumentCollection=arguments );
+		return super.getOrFail( argumentCollection = arguments );
 	}
 
 	/**
@@ -226,15 +233,15 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @sortOrder The sorting of the returning array, defaults to natural sorting
 	 * @readOnly Return full or read only entities, defaults to false
 	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
-     */
+	 */
 	array function getAll(
 		any id,
-		string sortOrder="",
-		boolean readOnly=false,
+		string sortOrder = "",
+		boolean readOnly = false,
 		string properties
 	){
 		arguments.entityName = this.getEntityName();
-		return super.getAll( argumentCollection=arguments );
+		return super.getAll( argumentCollection = arguments );
 	}
 
 	/**
@@ -244,7 +251,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @flush Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
-	numeric function deleteAll( boolean flush=false,boolean transactional=getUseTransactions() ){
+	numeric function deleteAll( boolean flush = false, boolean transactional = getUseTransactions() ){
 		arguments.entityName = this.getEntityName();
 		return super.deleteAll( arguments.entityName, arguments.flush );
 	}
@@ -260,11 +267,11 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	numeric function deleteByID(
 		required any id,
-		boolean flush=false,
-		boolean transactional=getUseTransactions()
+		boolean flush         = false,
+		boolean transactional = getUseTransactions()
 	){
 		arguments.entityName = this.getEntityName();
-		return super.deleteByID( argumentCollection=arguments );
+		return super.deleteByID( argumentCollection = arguments );
 	}
 
 	/**
@@ -280,11 +287,11 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	numeric function deleteByQuery(
 		required string query,
 		any params,
-		boolean flush=false,
-		boolean transactional=getUseTransactions()
+		boolean flush         = false,
+		boolean transactional = getUseTransactions()
 	){
 		arguments.datasource = this.getDatasource();
-		return super.deleteByQuery( argumentCollection=arguments );
+		return super.deleteByQuery( argumentCollection = arguments );
 	}
 
 	/**
@@ -302,12 +309,12 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @datasource The datasource to use or the default one
 	 */
 	numeric function deleteWhere(
-		boolean flush=false,
-		boolean transactional=getUseTransactions(),
-		datasource=getDatasource()
+		boolean flush         = false,
+		boolean transactional = getUseTransactions(),
+		datasource            = getDatasource()
 	){
 		arguments.entityName = this.getEntityName();
-		return super.deleteWhere( argumentCollection=arguments );
+		return super.deleteWhere( argumentCollection = arguments );
 	}
 
 	/**
@@ -318,9 +325,9 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @where The HQL where statement
 	 * @params Any params to bind in the where argument
 	 */
-	numeric function count( string where="", any params=structNew() ){
+	numeric function count( string where = "", any params = structNew() ){
 		arguments.entityName = this.getEntityName();
-		return super.count( argumentCollection=arguments );
+		return super.count( argumentCollection = arguments );
 	}
 
 	/**
@@ -330,19 +337,19 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	numeric function countWhere(){
 		arguments.entityName = this.getEntityName();
-		return super.countWhere( argumentCollection=arguments );
+		return super.countWhere( argumentCollection = arguments );
 	}
 
 	/**
-     * Evict all the collection or association data for a given entity name and collection name from the secondary cache ONLY, not the hibernate session
+	 * Evict all the collection or association data for a given entity name and collection name from the secondary cache ONLY, not the hibernate session
 	 * Evict an entity name with or without an ID from the secondary cache ONLY, not the hibernate session
 	 *
 	 * @relationName The name of the relation in the entity to evict
 	 * @id The id to use for eviction according to entity name or relation name
-     */
+	 */
 	any function evictCollection( string relationName, any id ){
 		arguments.entityName = this.getEntityName();
-		super.evictCollection( argumentCollection=arguments );
+		super.evictCollection( argumentCollection = arguments );
 	}
 
 	/**
@@ -360,14 +367,14 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * Returns the Property Names of the entity via hibernate metadata
 	 */
 	array function getPropertyNames(){
-		return super.getPropertyNames(this.getEntityName());
+		return super.getPropertyNames( this.getEntityName() );
 	}
 
 	/**
 	 * Returns the table name that the current entity belongs to via hibernate metadata
 	 */
 	string function getTableName(){
-		return super.getTableName(this.getEntityName());
+		return super.getTableName( this.getEntityName() );
 	}
 
 
@@ -381,12 +388,12 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 * @return cborm.models.criterion.CriteriaBuilder
 	 */
 	any function newCriteria(
-		boolean useQueryCaching=false,
-		string queryCacheRegion="",
-		datasource=getDatasource()
+		boolean useQueryCaching = false,
+		string queryCacheRegion = "",
+		datasource              = getDatasource()
 	){
 		arguments.entityName = this.getEntityName();
-		return super.newCriteria( argumentCollection=arguments );
+		return super.newCriteria( argumentCollection = arguments );
 	}
 
 	/**
@@ -399,7 +406,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	any function convertIdValueToJavaType( required id ){
 		arguments.entity = this.getEntityName();
-		return super.idCast( argumentCollection=arguments );
+		return super.idCast( argumentCollection = arguments );
 	}
 
 	/**
@@ -409,7 +416,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	any function idCast( required id ){
 		arguments.entity = this.getEntityName();
-		return super.idCast( argumentCollection=arguments );
+		return super.idCast( argumentCollection = arguments );
 	}
 
 	/**
@@ -420,9 +427,9 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 *
 	 * @id The id value to convert
 	 */
-	any function convertValueToJavaType( required propertyName, required value){
+	any function convertValueToJavaType( required propertyName, required value ){
 		arguments.entity = this.getEntityName();
-		return super.autoCast( argumentCollection=arguments );
+		return super.autoCast( argumentCollection = arguments );
 	}
 
 	/**
@@ -433,7 +440,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	 */
 	any function autoCast( required propertyName, required value ){
 		arguments.entity = this.getEntityName();
-		return super.autoCast( argumentCollection=arguments );
+		return super.autoCast( argumentCollection = arguments );
 	}
 
 	/**
@@ -442,6 +449,7 @@ component extends="cborm.models.BaseORMService" accessors="true"{
 	any function onMissingMethod( string missingMethodName, struct missingMethodArguments ){
 		// Add the entity name
 		arguments.missingMethodArguments.entityName = this.getEntityName();
-		return super.onMissingMethod( argumentCollection=arguments );
+		return super.onMissingMethod( argumentCollection = arguments );
 	}
+
 }

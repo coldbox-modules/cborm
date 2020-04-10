@@ -1,10 +1,14 @@
-component extends="coldbox.system.testing.BaseTestCase" skip="isLucee" appMapping="/root"{
+component
+	extends   ="coldbox.system.testing.BaseTestCase"
+	skip      ="isLucee"
+	appMapping="/root"
+{
 
 	function setup(){
 		super.setup();
-		ormUtil   = getMockBox().createMock("cborm.models.util.CFORMUtil");
+		ormUtil = getMockBox().createMock( "cborm.models.util.CFORMUtil" );
 		// CF ENGINE MUST HAVE coolblog as a DSN
-		dsn = "coolblog";
+		dsn     = "coolblog";
 	}
 
 	function testflush(){
@@ -34,26 +38,27 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isLucee" appMappin
 
 	function testevictQueries(){
 		t = ormutil.evictQueries();
-		t = ormutil.evictQueries('users');
-		t = ormutil.evictQueries('users', dsn );
+		t = ormutil.evictQueries( "users" );
+		t = ormutil.evictQueries( "users", dsn );
 	}
 
 	function testGetEntityDatasource(){
-		d = ormutil.getEntityDatasource('User');
-		assertEquals('coolblog', d);
+		d = ormutil.getEntityDatasource( "User" );
+		assertEquals( "coolblog", d );
 
-		d = ormutil.getEntityDatasource( entityNew('User') );
-		assertEquals('coolblog', d);
+		d = ormutil.getEntityDatasource( entityNew( "User" ) );
+		assertEquals( "coolblog", d );
 
-		d = ormutil.getEntityDatasource( entityNew('Category') );
-		assertEquals('coolblog', d);
+		d = ormutil.getEntityDatasource( entityNew( "Category" ) );
+		assertEquals( "coolblog", d );
 	}
 
 	function testGetDefaultDatasource(){
-		assertEquals('coolblog', ormutil.getDefaultDatasource() );
+		assertEquals( "coolblog", ormutil.getDefaultDatasource() );
 	}
 
 	function isLucee(){
 		return structKeyExists( server, "lucee" );
 	}
+
 }
