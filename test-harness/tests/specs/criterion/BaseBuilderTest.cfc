@@ -1,12 +1,12 @@
 component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 
-	function beforeTests(){
+	function beforeTests() {
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 		new coldbox.system.ioc.Injector( "tests.resources.WireBox" );
 	}
 
-	function setup(){
+	function setup() {
 		super.setup();
 
 		ormService       = createMock( "cborm.models.BaseORMService" ).init();
@@ -31,12 +31,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		test2      = [ "1", "2" ];
 	}
 
-	function testCreateCriteria(){
+	function testCreateCriteria() {
 		// with join Type
 		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
 			.withusers( criteria.LEFT_JOIN )
 			.like( "lastName", "M%" )
-			.peek( function( criteria ){
+			.peek( function( criteria ) {
 				debug( "running in a peek" );
 			} )
 			.list();
@@ -85,7 +85,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 	}
 
-	function testCreateAlias(){
+	function testCreateAlias() {
 		// with alias and join type
 		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -120,17 +120,17 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 	}
 
-	function testResultTransformer(){
+	function testResultTransformer() {
 		r = criteria.resultTransformer( criteria.DISTINCT_ROOT_ENTITY ).list();
 	}
 
-	function testsetProjection(){
+	function testsetProjection() {
 		r = criteria.setProjection( criteria.projections.rowCount() ).get();
 
 		assertTrue( r gt 0 );
 	}
 
-	function testWithProjections(){
+	function testWithProjections() {
 		r = criteria
 			.withProjections(
 				avg      = "lastLogin",
@@ -157,7 +157,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( isArray( r ) );
 	}
 
-	function testOrder(){
+	function testOrder() {
 		r = criteria.order( "id" );
 		r = criteria.order( "id", "desc" );
 		r = criteria.order( "id", "desc", true );
@@ -167,12 +167,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		s = subCriteria.order( "id", "desc", true );
 	}
 
-	function testBetween(){
+	function testBetween() {
 		r = criteria.between( "balance", 500, 1000 );
 		s = subCriteria.between( "balance", 500, 1000 );
 	}
 
-	function testEQ(){
+	function testEQ() {
 		r = criteria.eq( "balance", 500 );
 		r = criteria.isEq( "balance", 500 );
 
@@ -180,12 +180,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		s = subCriteria.isEq( "balance", 500 );
 	}
 
-	function testEqProperty(){
+	function testEqProperty() {
 		r = criteria.eqProperty( "balance", "balance2" );
 		s = subCriteria.eqProperty( "balance", "balance2" );
 	}
 
-	function testGT(){
+	function testGT() {
 		r = criteria.gt( "balance", 500 );
 		r = criteria.isGT( "balance", 500 );
 
@@ -193,12 +193,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		s = subCriteria.isGT( "balance", 500 );
 	}
 
-	function testgtProperty(){
+	function testgtProperty() {
 		r = criteria.gtProperty( "balance", "balance2" );
 		s = subCriteria.gtProperty( "balance", "balance2" );
 	}
 
-	function testGE(){
+	function testGE() {
 		r = criteria.ge( "balance", 500 );
 		r = criteria.isGe( "balance", 500 );
 
@@ -206,22 +206,22 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		s = subCriteria.isGe( "balance", 500 );
 	}
 
-	function testgeProperty(){
+	function testgeProperty() {
 		r = criteria.geProperty( "balance", "balance2" );
 		s = subCriteria.geProperty( "balance", "balance2" );
 	}
 
-	function testIDEq(){
+	function testIDEq() {
 		r = criteria.idEq( 45 );
 		s = subCriteria.idEq( 45 );
 	}
 
-	function testilike(){
+	function testilike() {
 		r = criteria.ilike( "firstname", "lu%" );
 		s = subCriteria.ilike( "firstname", "lu%" );
 	}
 
-	function testin(){
+	function testin() {
 		r = criteria.in( "id", [ 1, 2, 3 ] );
 		r = criteria.in( "id", "1,2,3" );
 		r = criteria.isIn( "id", "1,2,3" );
@@ -231,25 +231,25 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		s = subCriteria.isIn( "id", "1,2,3" );
 	}
 
-	function testisEmpty(){
+	function testisEmpty() {
 		r = criteria.isEmpty( "comments" );
 		s = subCriteria.isEmpty( "comments" );
 	}
-	function testisNotEmpty(){
+	function testisNotEmpty() {
 		r = criteria.isNotEmpty( "comments" );
 		s = subCriteria.isNotEmpty( "comments" );
 	}
 
-	function testIsNull(){
+	function testIsNull() {
 		r = criteria.isNull( "lastName" );
 		s = subCriteria.isNull( "lastName" );
 	}
-	function testIsNotNull(){
+	function testIsNotNull() {
 		r = criteria.isNotNull( "lastName" );
 		s = subCriteria.isNotNull( "lastName" );
 	}
 
-	function testlT(){
+	function testlT() {
 		r = criteria.lt( "balance", 500 );
 		r = criteria.islt( "balance", 500 );
 
@@ -257,12 +257,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		s = subCriteria.islt( "balance", 500 );
 	}
 
-	function testltProperty(){
+	function testltProperty() {
 		r = criteria.ltProperty( "balance", "balance2" );
 		s = subCriteria.ltProperty( "balance", "balance2" );
 	}
 
-	function testle(){
+	function testle() {
 		r = criteria.le( "balance", 500 );
 		r = criteria.isle( "balance", 500 );
 
@@ -270,53 +270,53 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		s = subCriteria.isle( "balance", 500 );
 	}
 
-	function testleProperty(){
+	function testleProperty() {
 		r = criteria.leProperty( "balance", "balance2" );
 		s = subCriteria.leProperty( "balance", "balance2" );
 	}
 
-	function testlike(){
+	function testlike() {
 		r = criteria.like( "balance", "lui%" );
 		s = subCriteria.like( "balance", "lui%" );
 	}
 
-	function testne(){
+	function testne() {
 		r = criteria.ne( "balance", 500 );
 		s = subCriteria.ne( "balance", 500 );
 	}
 
-	function testneProperty(){
+	function testneProperty() {
 		r = criteria.neProperty( "balance", "balance2" );
 		s = subCriteria.neProperty( "balance", "balance2" );
 	}
 
-	function testsizeEq(){
+	function testsizeEq() {
 		r = criteria.sizeEQ( "comments", 500 );
 		s = subCriteria.sizeEQ( "comments", 500 );
 	}
 
-	function testsizeGT(){
+	function testsizeGT() {
 		r = criteria.sizeGT( "comments", 500 );
 		s = subCriteria.sizeGT( "comments", 500 );
 	}
-	function testsizeGE(){
+	function testsizeGE() {
 		r = criteria.sizeGE( "comments", 500 );
 		s = subCriteria.sizeGE( "comments", 500 );
 	}
-	function testsizeLT(){
+	function testsizeLT() {
 		r = criteria.sizeLT( "comments", 500 );
 		s = subCriteria.sizeLT( "comments", 500 );
 	}
-	function testsizeLE(){
+	function testsizeLE() {
 		r = criteria.sizeLE( "comments", 500 );
 		s = subCriteria.sizeLE( "comments", 500 );
 	}
-	function testsizeNE(){
+	function testsizeNE() {
 		r = criteria.sizeNE( "comments", 500 );
 		s = subCriteria.sizeNE( "comments", 500 );
 	}
 
-	function testConjunction(){
+	function testConjunction() {
 		r = criteria.conjunction( [
 			criteria.restrictions.between( "balance", 100, 200 ),
 			criteria.restrictions.lt( "salary", 20000 )
@@ -327,7 +327,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		] );
 	}
 
-	function testDisjunction(){
+	function testDisjunction() {
 		r = criteria.disjunction( [
 			criteria.restrictions.between( "balance", 100, 200 ),
 			criteria.restrictions.lt( "salary", 20000 )
@@ -338,7 +338,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		] );
 	}
 
-	function testAnd(){
+	function testAnd() {
 		r = criteria.and(
 			criteria.restrictions.between( "balance", 100, 200 ),
 			criteria.restrictions.isLt( "salary", 20000 )
@@ -349,7 +349,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		);
 	}
 
-	function testOr(){
+	function testOr() {
 		r = criteria.or(
 			criteria.restrictions.between( "balance", 100, 200 ),
 			criteria.restrictions.lt( "salary", 20000 )
@@ -360,17 +360,17 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		);
 	}
 
-	function testNot(){
+	function testNot() {
 		r = criteria.not( criteria.restrictions.gt( "salary", 200 ) );
 		s = subCriteria.not( subCriteria.restrictions.gt( "salary", 200 ) );
 	}
 
-	function testAdd(){
+	function testAdd() {
 		r = criteria.add( criteria.restrictions.gt( "salary", 200 ) );
 		s = subCriteria.add( subCriteria.restrictions.gt( "salary", 200 ) );
 	}
 
-	function testGetSQL(){
+	function testGetSQL() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -387,7 +387,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( findNoCase( "<pre>", r.getSQL( formatSql = true ) ) );
 	}
 
-	function testGetSqlLog(){
+	function testGetSqlLog() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -396,7 +396,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertIsArray( r.getSqlLog() );
 	}
 
-	function testStartSqlLog(){
+	function testStartSqlLog() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -406,7 +406,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( r.getSQLLoggerActive() );
 	}
 
-	function testStopSqlLog(){
+	function testStopSqlLog() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.startSqlLog()
@@ -417,7 +417,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertFalse( r.getSQLLoggerActive() );
 	}
 
-	function testLogSql(){
+	function testLogSql() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -430,7 +430,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( r.getSqlLog()[ 1 ].Type == "FullQuery" );
 	}
 
-	function testCanLogSql(){
+	function testCanLogSql() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -445,7 +445,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertFalse( r.getSQLLoggerActive() );
 	}
 
-	function testHasProjection(){
+	function testHasProjection() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -460,7 +460,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( r.hasProjection() );
 	}
 
-	function testGetPositionalSQLParameterValues(){
+	function testGetPositionalSQLParameterValues() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -472,7 +472,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( arrayLen( values ) == 1 );
 	}
 
-	function testGetPositionalSQLParameterTypes(){
+	function testGetPositionalSQLParameterTypes() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
@@ -487,7 +487,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( isObject( complexttypes[ 1 ] ) );
 	}
 
-	function testGetPositionalSQLParameters(){
+	function testGetPositionalSQLParameters() {
 		r = criteria
 			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )

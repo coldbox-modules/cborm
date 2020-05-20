@@ -5,6 +5,7 @@ notifications:
     secure: FIHlTn/YO7Wgumm1uIqmoEsqjQA7fV0AE94Rjc5yKzM3AquQa8HicgDVVk0d2GrKRnl0xt3j4ZJV//VJyIjlCd/QVKuj48R2ChjEY2im3+99HFPafCUI5/S2uyowKU6mJTFonH9v6p41eqxdbiAxJdDGOT0V2Gpt3UBSNuHz8ED9/aIHqv+P7M+VD6Xd2XYwctPniWlaSWx57sWcnG/VkFG45qFQAyha64uxOOe4M3ZmG/n5FfauZ8cBVLiRKEIr+CyNhh1ujfzi7+4uzMlSNL5t/BbZamAQuZzqGzGQ9RVvIlyPgUGNJtDEE/hWS09aagXF5T6EMj00szizErh4J1/x4qZwml5+TcBN31E0QmAhCtZe85sr3tYgic+hEz9XX1yymQzf/C7n4to2yNvq0r4g51xDk8IuP95WEh7zaqLlvFZvBFgxpHZBMYlRvhytjOYDeIFRMcGwHZcXosaG2ejqDwcGq/LC4oeG4sSwmg9sdRrtcmcanrNqrBka86WYO6LntI3JdZ86/1ACEUHzhCCwvrKELc9Ji1xxGAgS7QKH+s2/hnJuiMyv73gOVLKYC+wPMLt+fvOmPLSEl+PJiAIlToBq1KUBg03RSQLfPOLD7OrJ8VvDZsEPwejqlGDyc4wRglS9OTi7SnN5LYHSDNDdGdREegWqq9qDHEYEVLI=
 
 env:
+  # Fill out these global variables for build process
   global:
     - MODULE_ID=cborm
   matrix:
@@ -17,16 +18,9 @@ branches:
   - development
   - master
 
-sudo: required
-
 dist: trusty
 
-addons:
-  apt:
-    packages:
-    - mysql-server-5.6
-    - mysql-client-core-5.6
-    - mysql-client-5.6
+sudo: required
 
 before_install:
   # CommandBox Keys
@@ -35,30 +29,17 @@ before_install:
     /etc/apt/sources.list.d/commandbox.list
 
 install:
-# Install Commandbox
-- sudo apt-get update && sudo apt-get --assume-yes install rsync jq commandbox
-# Install CommandBox Supporting Librarires
-- box install commandbox-cfconfig,commandbox-dotenv,commandbox-docbox
-# Store the Ortus API Key for forgebox publishing in `master`
-- box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
-
-before_script:
-  # create database
-  - mysql -u root -e 'create database coolblog;'
-  # import database
-  - mysql -u root < test-harness/tests/resources/coolblog.sql
-  - echo "Database created and loaded with test data"
-  # Seed .env
-  - echo "Seeding database .env file at /test-harness/.env"
-  - touch test-harness/.env
-  - printf "DB_HOST=localhost\n" >> test-harness/.env
-  - printf "DB_DATABASE=coolblog\n" >> test-harness/.env
-  - printf "DB_USER=root\n" >> test-harness/.env
-  - printf "DB_PASSWORD=\n" >> test-harness/.env
+  # Install Commandbox
+  - sudo apt-get update && sudo apt-get --assume-yes install rsync jq commandbox
+  # Install CommandBox Supporting Librarires
+  - box install commandbox-cfconfig,commandbox-dotenv,commandbox-docbox
+  # If using auto-publish, you will need to provide your API token with this line:
+  - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
 script:
-  # Set Current Version
+  # Set Current Version and Travis Tag
   - TARGET_VERSION=`cat $TRAVIS_BUILD_DIR/box.json | jq '.version' -r`
+  - TRAVIS_TAG=${TARGET_VERSION}
   - echo "Starting build for ${MODULE_ID} v${TARGET_VERSION}"
   # Replace version so builder can issue it
   - box package set version=@build.version@+@build.number@
@@ -68,26 +49,22 @@ script:
   - box install
   # run our matrix server
   - box server start serverConfigFile="server-${ENGINE}.json"
-  # If lucee 5 stop it due to stupid ORM bug that never gets fixed on first start.
-  - echo "Checking if lucee5 so we can do a restart due to a stupid  ORM startup bug."
-  - if [ ${ENGINE} = 'lucee@5' ]; then box server stop; fi
-  - if [ ${ENGINE} = 'lucee@5' ]; then box server start serverConfigFile="server-lucee@5.json"; fi
   # Startup the app
   - curl http://localhost:60299
   # Debugging of tests
   #- curl http://localhost:60299/tests/runner.cfm?reporter=json -o testresults.json && cat testresults.json
   # move back to build dir to build it
   - cd $TRAVIS_BUILD_DIR
-  # Build out the project if tests pass
+  # Build Project
   - box task run taskfile=build/Build target=run :version=${TARGET_VERSION} :projectName=${MODULE_ID} :buildID=${TRAVIS_BUILD_NUMBER} :branch=${TRAVIS_BRANCH}
   # Cat results for debugging
-  - cat build/results.json
+  #- cat build/results.json
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR/test-harness
   # Display the contents of our root directory
   # Spit out our Commandbox log in case we need to debug
-  - box server log name="server-${ENGINE}.json"
+  - box server log server-${ENGINE}.json
   - cat `box system-log`
 
 deploy:
@@ -124,9 +101,26 @@ deploy:
     upload-dir: coldbox-modules/$MODULE_ID/$TARGET_VERSION
     acl: public_read
 
+  # Github Release only on Master
+  - provider: releases
+    api_key: ${GITHUB_TOKEN}
+    on:
+      branch:
+        - master
+      condition: "$ENGINE = lucee@5"
+    skip_cleanup: true
+    edge: true
+    file_glob: true
+    file: $TRAVIS_BUILD_DIR/.artifacts/$MODULE_ID/**/*
+    release_notes_file: changelog.md
+    name: v${TRAVIS_TAG}
+    tag_name: v${TRAVIS_TAG}
+    overwrite: true
+
+# Once API Docs and Binaries are deployed to S3 Publish to ForgeBox
 after_deploy:
   # Move to build out artifact
   - cd ${TRAVIS_BUILD_DIR}/.tmp/${MODULE_ID}
   - cat box.json
-  # Only publish once
+  # Only publish once using the lucee matrix
   - if [ ${ENGINE} = 'lucee@5' ]; then box forgebox publish; fi

@@ -111,7 +111,7 @@ component accessors="true" {
 		boolean useTransactions = true,
 		boolean defaultAsQuery  = true,
 		string datasource
-	){
+	) {
 		// setup local properties
 		variables.queryCacheRegion = arguments.queryCacheRegion;
 		variables.useQueryCaching  = arguments.useQueryCaching;
@@ -143,7 +143,7 @@ component accessors="true" {
 	 *
 	 * @return cborm.models.EventHandler
 	 */
-	function getORMEventHandler(){
+	function getORMEventHandler() {
 		if ( !isNull( variables.ORMEventHandler ) ) {
 			return variables.ORMEventHandler;
 		}
@@ -157,7 +157,7 @@ component accessors="true" {
 	 *
 	 * @return cborm.models.util.DynamicProcessor
 	 */
-	function getDynamicProcessor(){
+	function getDynamicProcessor() {
 		if ( !isNull( variables.dynamicProcessor ) ) {
 			return variables.dynamicProcessor;
 		}
@@ -172,7 +172,7 @@ component accessors="true" {
 	 * @entity The entity name or entity object
 	 * @id The id value to convert
 	 */
-	any function idCast( required entity, required id ){
+	any function idCast( required entity, required id ) {
 		var hibernateMD = getEntityMetadata( arguments.entity );
 
 		// No component type support for identifiers
@@ -185,7 +185,7 @@ component accessors="true" {
 			}
 
 			// Convert to Java Type
-			return arguments.id.map( function( thisID ){
+			return arguments.id.map( function( thisID ) {
 				return identifierType.fromStringValue( thisID );
 			} );
 		}
@@ -204,7 +204,7 @@ component accessors="true" {
 		required entity,
 		required propertyName,
 		required value
-	){
+	) {
 		var hibernateMD = getEntityMetadata( arguments.entity );
 
 		return hibernateMD.getPropertyType( arguments.propertyName ).fromStringValue( arguments.value );
@@ -219,7 +219,7 @@ component accessors="true" {
 	 * @entityName The entity name
 	 * @id The id value to convert
 	 */
-	any function convertIdValueToJavaType( required entityName, required id ){
+	any function convertIdValueToJavaType( required entityName, required id ) {
 		arguments.entity = arguments.entityname;
 		return idCast( argumentCollection = arguments );
 	}
@@ -237,7 +237,7 @@ component accessors="true" {
 		required entityName,
 		required propertyName,
 		required value
-	){
+	) {
 		arguments.entity = arguments.entityName;
 		return autoCast( argumentCollection = arguments );
 	}
@@ -273,7 +273,7 @@ component accessors="true" {
 		boolean ignoreCase = false,
 		boolean asQuery    = getDefaultAsQuery(),
 		boolean asStream   = false
-	){
+	) {
 		var options = {};
 
 		// Setup listing options
@@ -348,7 +348,7 @@ component accessors="true" {
 		boolean unique     = false,
 		string datasource  = "",
 		boolean asStream   = false
-	){
+	) {
 		var options = {};
 
 		// Setup listing options
@@ -417,7 +417,7 @@ component accessors="true" {
 	 *
 	 * @throws EntityNotFound
 	 */
-	any function getOrFail( required string entityName, required any id ){
+	any function getOrFail( required string entityName, required any id ) {
 		var result = this.get(
 			entityName = arguments.entityName,
 			id         = arguments.id,
@@ -442,7 +442,7 @@ component accessors="true" {
 		required string entityName,
 		required any id,
 		boolean returnNew = true
-	){
+	) {
 		// check if id exists so entityLoad does not throw error
 		if (
 			( isSimpleValue( arguments.id ) and len( arguments.id ) )
@@ -486,7 +486,7 @@ component accessors="true" {
 		boolean readOnly = false,
 		string properties,
 		boolean asStream = false
-	){
+	) {
 		var results = [];
 
 		// Prepare HQL, it is way faster with HQL
@@ -554,7 +554,7 @@ component accessors="true" {
 		numeric timeout    = 0,
 		boolean ignoreCase = false,
 		string datasource  = getDatasource()
-	){
+	) {
 		var result = findIt( argumentCollection = arguments );
 		if ( isNull( result ) ) {
 			throw( message = "No entity found", type = "EntityNotFound" );
@@ -578,7 +578,7 @@ component accessors="true" {
 		numeric timeout    = 0,
 		boolean ignoreCase = false,
 		string datasource  = getDatasource()
-	){
+	) {
 		// One result
 		arguments.max     = 1;
 		arguments.unique  = true;
@@ -597,7 +597,7 @@ component accessors="true" {
 	 * @example The example entity
 	 * @unique Unique or array of entities (default)
 	 */
-	any function findByExample( any example, boolean unique = false ){
+	any function findByExample( any example, boolean unique = false ) {
 		return entityLoadByExample( arguments.example, arguments.unique );
 	}
 
@@ -624,7 +624,7 @@ component accessors="true" {
 		boolean ignoreCase = false,
 		string datasource,
 		boolean asStream = false
-	){
+	) {
 		// Normal Execute Query
 		arguments.asQuery = false;
 		return executeQuery( argumentCollection = arguments );
@@ -636,7 +636,7 @@ component accessors="true" {
 	 * @entityName The entity to search for
 	 * @criteria The filtering criteria to search for.
 	 */
-	any function findWhere( required string entityName, struct criteria = {} ){
+	any function findWhere( required string entityName, struct criteria = {} ) {
 		// Caching?
 		if ( getUseQueryCaching() ) {
 			// if we are caching, we will use find all and return an array since entityLoad does not support both unique and caching
@@ -666,7 +666,7 @@ component accessors="true" {
 		boolean ignoreCase = false,
 		numeric timeout    = 0,
 		boolean asStream   = false
-	){
+	) {
 		var options = {
 			ignorecase : arguments.ignoreCase,
 			timeout    : arguments.timeout
@@ -700,7 +700,7 @@ component accessors="true" {
 	/**
 	 * Return a null value
 	 */
-	function nullValue(){
+	function nullValue() {
 		return javacast( "null", "" );
 	}
 
@@ -725,7 +725,7 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		include                      = "",
 		exclude                      = ""
-	){
+	) {
 		var entity = entityNew( arguments.entityName );
 
 		// Properties exists?
@@ -771,7 +771,7 @@ component accessors="true" {
 		boolean useTransactions = getUseTransactions(),
 		boolean defaultAsQuery  = getDefaultAsQuery(),
 		string datasource       = getDatasource()
-	){
+	) {
 		return new cborm.models.VirtualEntityService( argumentCollection = arguments );
 	}
 
@@ -804,7 +804,7 @@ component accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
-	){
+	) {
 		return getBeanPopulator().populateFromStruct( argumentCollection = arguments );
 	}
 
@@ -835,7 +835,7 @@ component accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		required string prefix
-	){
+	) {
 		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
 
@@ -864,7 +864,7 @@ component accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
-	){
+	) {
 		return getBeanPopulator().populateFromJSON( argumentCollection = arguments );
 	}
 
@@ -896,7 +896,7 @@ component accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
-	){
+	) {
 		return getBeanPopulator().populateFromXML( argumentCollection = arguments );
 	}
 
@@ -927,7 +927,7 @@ component accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
-	){
+	) {
 		return getBeanPopulator().populateFromQuery( argumentCollection = arguments );
 	}
 
@@ -936,7 +936,7 @@ component accessors="true" {
 	 *
 	 * @return coldbox.system.core.dynamic.BeanPopulator
 	 */
-	function getBeanPopulator(){
+	function getBeanPopulator() {
 		if ( !isNull( variables.beanPopulator ) ) {
 			return variables.beanPopulator;
 		}
@@ -954,7 +954,7 @@ component accessors="true" {
 	 *
 	 * @return Same entity if one passed, array if an array of entities passed.
 	 */
-	any function merge( required any entity ){
+	any function merge( required any entity ) {
 		if ( !isArray( arguments.entity ) ) {
 			return entityMerge( arguments.entity );
 		}
@@ -972,7 +972,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity or array of entities to refresh
 	 */
-	BaseORMService function refresh( required any entity ){
+	BaseORMService function refresh( required any entity ) {
 		var aObjects = [];
 
 		if ( !isArray( arguments.entity ) ) {
@@ -981,7 +981,7 @@ component accessors="true" {
 			aObjects = arguments.entity;
 		}
 
-		aObjects.each( function( item ){
+		aObjects.each( function( item ) {
 			variables.ORM.getSession( variables.ORM.getEntityDatasource( item ) ).refresh( item );
 		} );
 
@@ -996,7 +996,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity to check
 	 */
-	array function getDirtyPropertyNames( required entity ){
+	array function getDirtyPropertyNames( required entity ) {
 		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
 		var hibernateMD = getEntityMetadata( arguments.entity );
 		var dbState     = hibernateMD.getDatabaseSnapshot( getKeyValue( entity ), thisSession );
@@ -1023,7 +1023,7 @@ component accessors="true" {
 		);
 		var dirtyArray = !isNull( local.modified ) ? modified : [];
 
-		return arrayMap( dirtyArray, function( index ){
+		return arrayMap( dirtyArray, function( index ) {
 			return hibernateMD.getSubclassPropertyName( index );
 		} );
 	}
@@ -1033,7 +1033,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity to check if lazy
 	 */
-	boolean function isDirty( required entity ){
+	boolean function isDirty( required entity ) {
 		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
 		var hibernateMD = getEntityMetadata( arguments.entity );
 		var dbState     = hibernateMD.getDatabaseSnapshot( getKeyValue( arguments.entity ), thisSession );
@@ -1068,7 +1068,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity to inspect for it's id
 	 */
-	any function getKeyValue( required entity ){
+	any function getKeyValue( required entity ) {
 		try {
 			return variables.ORM
 				.getSession( variables.ORM.getEntityDatasource( arguments.entity ) )
@@ -1087,7 +1087,7 @@ component accessors="true" {
 	 *
 	 * @return string or array
 	 */
-	any function getKey( required entity ){
+	any function getKey( required entity ) {
 		var hibernateMD = getEntityMetadata( arguments.entity );
 
 		// Is this a simple key?
@@ -1109,7 +1109,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity name or the actual entity object
 	 */
-	array function getPropertyNames( required entity ){
+	array function getPropertyNames( required entity ) {
 		return getEntityMetadata( arguments.entity ).getPropertyNames();
 	}
 
@@ -1118,7 +1118,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity name or the actual entity object
 	 */
-	string function getTableName( required entity ){
+	string function getTableName( required entity ) {
 		return getEntityMetadata( arguments.entity ).getTableName();
 	}
 
@@ -1131,7 +1131,7 @@ component accessors="true" {
 	 *
 	 * @return The Hibernate Java ClassMetadata Object
 	 */
-	function getEntityMetadata( required entity ){
+	function getEntityMetadata( required entity ) {
 		return variables.ORM.getEntityMetadata(
 			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
 			datasource = variables.ORM.getEntityDatasource( arguments.entity, getDatasource() )
@@ -1143,7 +1143,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity to get it's name from
 	 */
-	function getEntityGivenName( required entity ){
+	function getEntityGivenName( required entity ) {
 		// Short-cut discovery via ActiveEntity
 		if ( structKeyExists( arguments.entity, "getEntityName" ) ) {
 			return arguments.entity.getEntityName();
@@ -1180,9 +1180,9 @@ component accessors="true" {
 		required any entity,
 		boolean flush         = false,
 		boolean transactional = getUseTransactions()
-	){
+	) {
 		return $transactioned(
-			function( entity, flush ){
+			function( entity, flush ) {
 				var objects = [];
 
 				if ( !isArray( arguments.entity ) ) {
@@ -1191,7 +1191,7 @@ component accessors="true" {
 					objects = arguments.entity;
 				}
 
-				objects.each( function( item ){
+				objects.each( function( item ) {
 					entityDelete( item );
 				} );
 
@@ -1221,9 +1221,9 @@ component accessors="true" {
 		required string entityName,
 		boolean flush         = false,
 		boolean transactional = getUseTransactions()
-	){
+	) {
 		return $transactioned(
-			function( entityName, flush ){
+			function( entityName, flush ) {
 				var options = { "datasource" : variables.ORM.getEntityDatasource( arguments.entityName ) };
 
 				var count = ormExecuteQuery(
@@ -1262,9 +1262,9 @@ component accessors="true" {
 		required any id,
 		boolean flush         = false,
 		boolean transactional = getUseTransactions()
-	){
+	) {
 		return $transactioned(
-			function( entityName, id, flush ){
+			function( entityName, id, flush ) {
 				// Bulk Execute
 				var count = ormExecuteQuery(
 					"delete FROM #arguments.entityName# where id in (:idlist)",
@@ -1302,9 +1302,9 @@ component accessors="true" {
 		boolean flush         = false,
 		boolean transactional = getUseTransactions(),
 		string datasource     = getDatasource()
-	){
+	) {
 		return $transactioned(
-			function( query, params, flush, datasource ){
+			function( query, params, flush, datasource ) {
 				// Bulk Execute
 				var count = ormExecuteQuery(
 					"delete #arguments.query#",
@@ -1345,9 +1345,9 @@ component accessors="true" {
 		boolean flush         = false,
 		boolean transactional = getUseTransactions(),
 		datasource            = getDatasource()
-	){
+	) {
 		return $transactioned(
-			function( entityName, flush, datasource ){
+			function( entityName, flush, datasource ) {
 				var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
 					"delete from #arguments.entityName#"
 				);
@@ -1366,10 +1366,10 @@ component accessors="true" {
 				// Go over Params and incorporate them
 				var params = arguments
 					// filter out reserved names
-					.filter( function( key, value ){
+					.filter( function( key, value ) {
 						return ( !listFindNoCase( "entityName,flush,datasource", arguments.key ) );
 					} )
-					.reduce( function( accumulator, key, value ){
+					.reduce( function( accumulator, key, value ) {
 						accumulator[ key ] = value;
 						sqlBuffer.append( " #key# = :#key# AND" );
 						return accumulator;
@@ -1420,9 +1420,9 @@ component accessors="true" {
 		forceInsert           = false,
 		boolean flush         = false,
 		boolean transactional = getUseTransactions()
-	){
+	) {
 		return $transactioned(
-			function( entities, forceInsert, flush ){
+			function( entities, forceInsert, flush ) {
 				var eventHandling = getEventHandling();
 
 				// iterate and save
@@ -1468,9 +1468,9 @@ component accessors="true" {
 		boolean forceInsert   = false,
 		boolean flush         = false,
 		boolean transactional = getUseTransactions()
-	){
+	) {
 		return $transactioned(
-			function( entity, forceInsert, flush ){
+			function( entity, forceInsert, flush ) {
 				// Event handling flag
 				var eventHandling = getEventHandling();
 
@@ -1509,7 +1509,7 @@ component accessors="true" {
 	 * @entityName The name of the entity
 	 * @id The id to lookup
 	 */
-	boolean function exists( required entityName, required any id ){
+	boolean function exists( required entityName, required any id ) {
 		// Do it DLM style
 		var count = ormExecuteQuery(
 			"select count( id ) from #arguments.entityName# where id = ?",
@@ -1534,7 +1534,7 @@ component accessors="true" {
 		required string entityName,
 		string where = "",
 		any params   = structNew()
-	){
+	) {
 		var buffer  = createObject( "java", "java.lang.StringBuilder" ).init( "" );
 		var options = { "datasource" : variables.orm.getEntityDatasource( arguments.entityName ) };
 
@@ -1577,7 +1577,7 @@ component accessors="true" {
 	 *
 	 * @entityName The entity name to count on
 	 */
-	numeric function countWhere( required string entityName ){
+	numeric function countWhere( required string entityName ) {
 		var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
 			"select count(id) from #arguments.entityName#"
 		);
@@ -1591,10 +1591,10 @@ component accessors="true" {
 		// Go over Params and incorporate them
 		var params = arguments
 			// filter out reserved names
-			.filter( function( key, value ){
+			.filter( function( key, value ) {
 				return ( !listFindNoCase( "entityName", arguments.key ) );
 			} )
-			.reduce( function( accumulator, key, value ){
+			.reduce( function( accumulator, key, value ) {
 				accumulator[ key ] = value;
 				sqlBuffer.append( " #key# = :#key# AND" );
 				return accumulator;
@@ -1644,7 +1644,7 @@ component accessors="true" {
 		required string entityName,
 		string relationName,
 		any id
-	){
+	) {
 		// With Relation
 		if ( !isNull( arguments.relationName ) ) {
 			if ( !isNull( arguments.id ) )
@@ -1673,12 +1673,12 @@ component accessors="true" {
 	 *
 	 * @entities The argument can be one persistence entity or an array of entities to evict
 	 */
-	BaseORMService function evict( required any entities ){
+	BaseORMService function evict( required any entities ) {
 		if ( !isArray( arguments.entities ) ) {
 			arguments.entities = [ arguments.entities ];
 		}
 
-		arguments.entities.each( function( item ){
+		arguments.entities.each( function( item ) {
 			variables.ORM.getSession( variables.orm.getEntityDatasource( item ) ).evict( item );
 		} );
 
@@ -1691,7 +1691,7 @@ component accessors="true" {
 	 * @cacheName The cache region to evict from or if empty from the default cache region
 	 * @datasource The specific datasource to use or the default datasource
 	 */
-	BaseORMService function evictQueries( string cacheName, string datasource = getDatasource() ){
+	BaseORMService function evictQueries( string cacheName, string datasource = getDatasource() ) {
 		variables.orm.evictQueries( argumentCollection = arguments );
 		return this;
 	}
@@ -1706,7 +1706,7 @@ component accessors="true" {
 	 *
 	 * @datasource The datasource to use
 	 */
-	BaseORMService function clear( string datasource = getDatasource() ){
+	BaseORMService function clear( string datasource = getDatasource() ) {
 		variables.ORM.clearSession( arguments.datasource );
 		return this;
 	}
@@ -1714,7 +1714,7 @@ component accessors="true" {
 	/**
 	 * Checks if the hibernate session contains dirty objects that are awaiting persistence
 	 */
-	boolean function isSessionDirty( string datasource = getDatasource() ){
+	boolean function isSessionDirty( string datasource = getDatasource() ) {
 		return variables.orm.getSession( arguments.datasource ).isDirty();
 	}
 
@@ -1723,7 +1723,7 @@ component accessors="true" {
 	 *
 	 * @entity The entity object
 	 */
-	boolean function sessionContains( required any entity ){
+	boolean function sessionContains( required any entity ) {
 		var ormSession = orm.getSession( orm.getEntityDatasource( arguments.entity ) );
 		// ACF 2018 regression
 		if ( server.coldfusion.productVersion.listFirst() == 2018 ) {
@@ -1737,7 +1737,7 @@ component accessors="true" {
 	 *
 	 * @datasource The datasource to use
 	 */
-	struct function getSessionStatistics( string datasource = getDatasource() ){
+	struct function getSessionStatistics( string datasource = getDatasource() ) {
 		var stats = variables.ORM.getSession( arguments.datasource ).getStatistics();
 
 		return {
@@ -1771,7 +1771,7 @@ component accessors="true" {
 	 * Else it throws a method does not exist exception
 	 * @throws MissingMethodException
 	 */
-	any function onMissingMethod( string missingMethodName, struct missingMethodArguments ){
+	any function onMissingMethod( string missingMethodName, struct missingMethodArguments ) {
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
 
@@ -1824,7 +1824,7 @@ process(
 	 *
 	 * @return cborm.models.criterion.Restrictions
 	 */
-	function getRestrictions(){
+	function getRestrictions() {
 		if ( !isNull( variables.restrictions ) ) {
 			return variables.restrictions;
 		}
@@ -1848,7 +1848,7 @@ process(
 		boolean useQueryCaching = false,
 		string queryCacheRegion = "",
 		datasource              = getDatasource()
-	){
+	) {
 		// mix in yourself as a dependency
 		arguments.ormService = this;
 		// create new criteria builder
@@ -1874,7 +1874,7 @@ process(
 		required target,
 		argCollection         = {},
 		boolean transactional = getUseTransactions()
-	){
+	) {
 		// Clean up the arg collection
 		structDelete( arguments.argCollection, "transactional" );
 
@@ -1886,7 +1886,7 @@ process(
 		// mark transaction began
 		request[ "cbox_aop_transaction" ] = true;
 
-		transaction{
+		transaction {
 			try {
 				// Call method
 				var results = arguments.target( argumentCollection = arguments.argCollection );

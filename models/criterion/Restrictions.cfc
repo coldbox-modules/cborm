@@ -41,7 +41,7 @@ component singleton {
 	/**
 	 * Constructor
 	 */
-	Restrictions function init(){
+	Restrictions function init() {
 		variables.restrictions = createObject( "java", "org.hibernate.criterion.Restrictions" );
 		return this;
 	}
@@ -51,7 +51,7 @@ component singleton {
 	 *
 	 * @return org.hibernate.criterion.Restrictions
 	 */
-	function getNativeClass(){
+	function getNativeClass() {
 		return variables.restrictions;
 	}
 
@@ -66,7 +66,7 @@ component singleton {
 		required string property,
 		required any minValue,
 		required any maxValue
-	){
+	) {
 		return variables.restrictions.between(
 			arguments.property,
 			arguments.minValue,
@@ -80,7 +80,7 @@ component singleton {
 	 * @property The target property
 	 * @propertyValue The value
 	 */
-	any function isEq( required string property, required any propertyValue ){
+	any function isEq( required string property, required any propertyValue ) {
 		return variables.restrictions.eq( arguments.property, arguments.propertyValue );
 	}
 
@@ -89,7 +89,7 @@ component singleton {
 	 *
 	 * @property
 	 */
-	any function isTrue( required string property ){
+	any function isTrue( required string property ) {
 		return variables.restrictions.eq( arguments.property, javacast( "boolean", true ) );
 	}
 
@@ -98,7 +98,7 @@ component singleton {
 	 *
 	 * @property
 	 */
-	any function isFalse( required string property ){
+	any function isFalse( required string property ) {
 		return variables.restrictions.eq( arguments.property, javacast( "boolean", false ) );
 	}
 
@@ -108,7 +108,7 @@ component singleton {
 	 * @property
 	 * @otherProperty
 	 */
-	any function eqProperty( required string property, required string otherProperty ){
+	any function eqProperty( required string property, required string otherProperty ) {
 		return variables.restrictions.eqProperty( arguments.property, arguments.otherProperty );
 	}
 
@@ -118,7 +118,7 @@ component singleton {
 	 * @property
 	 * @otherProperty
 	 */
-	any function isGt( required string property, required any propertyValue ){
+	any function isGt( required string property, required any propertyValue ) {
 		return variables.restrictions.gt( arguments.property, arguments.propertyValue );
 	}
 
@@ -128,7 +128,7 @@ component singleton {
 	 * @property
 	 * @otherProperty
 	 */
-	any function gtProperty( required string property, required string otherProperty ){
+	any function gtProperty( required string property, required string otherProperty ) {
 		return variables.restrictions.gtProperty( arguments.property, arguments.otherProperty );
 	}
 
@@ -138,7 +138,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function isGe( required string property, required any propertyValue ){
+	any function isGe( required string property, required any propertyValue ) {
 		return variables.restrictions.ge( arguments.property, arguments.propertyValue );
 	}
 
@@ -148,7 +148,7 @@ component singleton {
 	 * @property
 	 * @otherProperty
 	 */
-	any function geProperty( required string property, required string otherProperty ){
+	any function geProperty( required string property, required string otherProperty ) {
 		return variables.restrictions.geProperty( arguments.property, arguments.otherProperty );
 	}
 
@@ -158,14 +158,14 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function idEQ( required any propertyValue ){
+	any function idEQ( required any propertyValue ) {
 		return variables.restrictions.idEQ( arguments.propertyValue );
 	}
 
 	/**
 	 * A case-insensitive 'like' expression
 	 */
-	any function ilike( required string property, required string propertyValue ){
+	any function ilike( required string property, required string propertyValue ) {
 		return variables.restrictions.ilike( arguments.property, arguments.propertyValue );
 	}
 
@@ -175,7 +175,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function isIn( required string property, required any propertyValue ){
+	any function isIn( required string property, required any propertyValue ) {
 		// infalte to array if simple values
 		if ( isSimpleValue( arguments.propertyValue ) ) {
 			arguments.propertyValue = listToArray( arguments.propertyValue );
@@ -188,7 +188,7 @@ component singleton {
 	 *
 	 * @property
 	 */
-	any function isEmpty( required string property ){
+	any function isEmpty( required string property ) {
 		return variables.restrictions.isEmpty( arguments.property );
 	}
 
@@ -197,14 +197,14 @@ component singleton {
 	 *
 	 * @property
 	 */
-	any function isNotEmpty( required string property ){
+	any function isNotEmpty( required string property ) {
 		return variables.restrictions.isNotEmpty( arguments.property );
 	}
 
 	/**
 	 * Where a property is null
 	 */
-	any function isNull( required string property ){
+	any function isNull( required string property ) {
 		return variables.restrictions.isNull( arguments.property );
 	}
 
@@ -214,7 +214,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function isNotNull( required string property ){
+	any function isNotNull( required string property ) {
 		return variables.restrictions.isNotNull( arguments.property );
 	}
 
@@ -224,7 +224,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function islt( required string property, required any propertyValue ){
+	any function islt( required string property, required any propertyValue ) {
 		return variables.restrictions.lt( arguments.property, arguments.propertyValue );
 	}
 
@@ -234,7 +234,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function ltProperty( required string property, required string otherProperty ){
+	any function ltProperty( required string property, required string otherProperty ) {
 		return variables.restrictions.ltProperty( arguments.property, arguments.otherProperty );
 	}
 
@@ -244,7 +244,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function isle( required string property, required any propertyValue ){
+	any function isle( required string property, required any propertyValue ) {
 		return variables.restrictions.le( arguments.property, arguments.propertyValue );
 	}
 
@@ -254,7 +254,7 @@ component singleton {
 	 * @property
 	 * @otherProperty
 	 */
-	any function leProperty( required string property, required string otherProperty ){
+	any function leProperty( required string property, required string otherProperty ) {
 		return variables.restrictions.leProperty( arguments.property, arguments.otherProperty );
 	}
 
@@ -264,7 +264,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function like( required string property, required string propertyValue ){
+	any function like( required string property, required string propertyValue ) {
 		return variables.restrictions.like( arguments.property, arguments.propertyValue );
 	}
 
@@ -274,7 +274,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function ne( required string property, required any propertyValue ){
+	any function ne( required string property, required any propertyValue ) {
 		return variables.restrictions.ne( arguments.property, arguments.propertyValue );
 	}
 
@@ -284,7 +284,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function neProperty( required string property, required any otherProperty ){
+	any function neProperty( required string property, required any otherProperty ) {
 		return variables.restrictions.neProperty( arguments.property, arguments.otherProperty );
 	}
 
@@ -294,7 +294,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function sizeEq( required string property, required any propertyValue ){
+	any function sizeEq( required string property, required any propertyValue ) {
 		return variables.restrictions.sizeEq( arguments.property, arguments.propertyValue );
 	}
 
@@ -304,7 +304,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function sizeGT( required string property, required any propertyValue ){
+	any function sizeGT( required string property, required any propertyValue ) {
 		return variables.restrictions.sizeGT( arguments.property, arguments.propertyValue );
 	}
 
@@ -314,7 +314,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function sizeGE( required string property, required any propertyValue ){
+	any function sizeGE( required string property, required any propertyValue ) {
 		return variables.restrictions.sizeGE( arguments.property, arguments.propertyValue );
 	}
 
@@ -324,7 +324,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function sizeLT( required string property, required any propertyValue ){
+	any function sizeLT( required string property, required any propertyValue ) {
 		return variables.restrictions.sizeLT( arguments.property, arguments.propertyValue );
 	}
 
@@ -334,7 +334,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function sizeLE( required string property, required any propertyValue ){
+	any function sizeLE( required string property, required any propertyValue ) {
 		return variables.restrictions.sizeLE( arguments.property, arguments.propertyValue );
 	}
 
@@ -344,7 +344,7 @@ component singleton {
 	 * @property
 	 * @propertyValue
 	 */
-	any function sizeNE( required string property, required any propertyValue ){
+	any function sizeNE( required string property, required any propertyValue ) {
 		return variables.restrictions.sizeNE( arguments.property, arguments.propertyValue );
 	}
 
@@ -354,7 +354,7 @@ component singleton {
 	 *
 	 * @type The class type to build: StringType, BooleanType, YesNoType, LongType
 	 */
-	function buildHibernateType( required type ){
+	function buildHibernateType( required type ) {
 		if ( structKeyExists( server, "lucee" ) ) {
 			return createObject( "java", "org.hibernate.type.#arguments.type#" );
 		}
@@ -367,14 +367,14 @@ component singleton {
 	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
 	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
-	function sql( required string sql, array params = [] ){
+	function sql( required string sql, array params = [] ) {
 		// No params, just execute
 		if ( !params.len() ) {
 			return variables.restrictions.sqlRestriction( arguments.sql );
 		}
 
 		// Discover Types, not perfect, but hey :)
-		var discoverType = function( target ){
+		var discoverType = function( target ) {
 			if ( isValid( "Binary", arguments.target ) ) {
 				return buildHibernateType( this.TYPES[ "binary" ] );
 			}
@@ -408,7 +408,7 @@ component singleton {
 
 		// Build out types
 		var types  = [];
-		var values = arguments.params.map( function( item ){
+		var values = arguments.params.map( function( item ) {
 			// Infer the Type if just the value
 			if ( isSimpleValue( item ) ) {
 				var thisType = discoverType( item );
@@ -435,7 +435,7 @@ component singleton {
 	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
 	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
-	any function sqlRestriction( required string sql, array params = [] ){
+	any function sqlRestriction( required string sql, array params = [] ) {
 		return this.sql( argumentCollection = arguments );
 	}
 
@@ -444,7 +444,7 @@ component singleton {
 	 *
 	 * @restrictionValues
 	 */
-	any function conjunction( required array restrictionValues ){
+	any function conjunction( required array restrictionValues ) {
 		var cj = variables.restrictions.conjunction();
 
 		for ( var i = 1; i LTE arrayLen( arguments.restrictionValues ); i++ ) {
@@ -457,7 +457,7 @@ component singleton {
 	/**
 	 * Return the conjuction of N expressions as arguments
 	 */
-	any function $and(){
+	any function $and() {
 		var expressions = [];
 		for ( var key in arguments ) {
 			arrayAppend( expressions, arguments[ key ] );
@@ -468,7 +468,7 @@ component singleton {
 	/**
 	 * Return the disjunction of N expressions as arguments
 	 */
-	any function $or(){
+	any function $or() {
 		var expressions = [];
 		for ( var key in arguments ) {
 			arrayAppend( expressions, arguments[ key ] );
@@ -481,7 +481,7 @@ component singleton {
 	 *
 	 * @restrictionValues
 	 */
-	any function disjunction( required array restrictionValues ){
+	any function disjunction( required array restrictionValues ) {
 		var dj = variables.restrictions.disjunction();
 
 		for ( var i = 1; i LTE arrayLen( arguments.restrictionValues ); i++ ) {
@@ -496,7 +496,7 @@ component singleton {
 	 *
 	 * @criterion
 	 */
-	any function isNot( required any criterion ){
+	any function isNot( required any criterion ) {
 		return variables.restrictions.not( arguments.criterion );
 	}
 
@@ -508,7 +508,7 @@ component singleton {
 	 *
 	 * @throws RuntimeException
 	 */
-	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ) {
 		// detect dynamic negation
 		if ( left( arguments.missingMethodName, 3 ) eq "not" && len( arguments.missingMethodName ) > 3 ) {
 			// remove NOT

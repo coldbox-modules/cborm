@@ -1,6 +1,6 @@
 component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 
-	function setup(){
+	function setup() {
 		super.setup();
 		hTransaction = createMock( "cborm.aop.HibernateTransaction" ).init();
 
@@ -10,7 +10,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		hTransaction.setLog( mockLogger );
 	}
 
-	function testInvokeMethodInTransaction(){
+	function testInvokeMethodInTransaction() {
 		// default Datasource mock
 		var md = {
 			name          : "save",
@@ -38,7 +38,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( mockLogger.$once( "canDebug" ) );
 	}
 
-	function testInvokeMethodNotInTransaction(){
+	function testInvokeMethodNotInTransaction() {
 		// default Datasource mock
 		var md = {
 			name          : "save",
@@ -66,7 +66,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( mockLogger.$once( "canDebug" ) );
 	}
 
-	function testInvokeMethodNotInTransactionDiffDatasource(){
+	function testInvokeMethodNotInTransactionDiffDatasource() {
 		// With Datasource mock
 		var md = {
 			name          : "save",

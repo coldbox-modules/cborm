@@ -58,8 +58,6 @@ component{
     ){
 		// Create project mapping
 		fileSystemUtil.createMapping( arguments.projectName, variables.cwd );
-		// Create project mapping
-		fileSystemUtil.createMapping( "cbvalidation", variables.cwd & "test-harness/modules/cbvalidation" );
 
         // Run the tests
         runTests();
@@ -80,7 +78,7 @@ component{
             .toConsole();
     }
 
-     /**
+    /**
      * Run the test suites
      */
     function runTests(){

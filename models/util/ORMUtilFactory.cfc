@@ -15,7 +15,7 @@ component {
 	 *
 	 * @return IORMUtil
 	 */
-	function getORMUtil(){
+	function getORMUtil() {
 		// Adobe ColdFusion
 		if ( getPlatform() == "ColdFusion Server" ) {
 			return new CFORMUtil();
@@ -28,14 +28,14 @@ component {
 	/**
 	 * Get platform name
 	 */
-	private string function getPlatform(){
+	private string function getPlatform() {
 		return server.coldfusion.productname;
 	}
 
 	/**
 	 * Get lucee version
 	 */
-	private string function getLuceeVersion(){
+	private string function getLuceeVersion() {
 		return server.lucee.version;
 	}
 

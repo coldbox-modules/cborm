@@ -4,45 +4,45 @@ component
 	appMapping="/root"
 {
 
-	function setup(){
+	function setup() {
 		super.setup();
 		ormUtil = getMockBox().createMock( "cborm.models.util.CFORMUtil" );
 		// CF ENGINE MUST HAVE coolblog as a DSN
 		dsn     = "coolblog";
 	}
 
-	function testflush(){
+	function testflush() {
 		ormutil.flush();
 		ormutil.flush( dsn );
 	}
 
-	function testGetSession(){
+	function testGetSession() {
 		t = ormutil.getSession();
 		t = ormutil.getSession( dsn );
 	}
 
-	function testgetSessionFactory(){
+	function testgetSessionFactory() {
 		t = ormutil.getSessionFactory();
 		t = ormutil.getSessionFactory( dsn );
 	}
 
-	function testclearSession(){
+	function testclearSession() {
 		t = ormutil.clearSession();
 		t = ormutil.clearSession( dsn );
 	}
 
-	function testcloseSession(){
+	function testcloseSession() {
 		t = ormutil.closeSession();
 		t = ormutil.closeSession( dsn );
 	}
 
-	function testevictQueries(){
+	function testevictQueries() {
 		t = ormutil.evictQueries();
 		t = ormutil.evictQueries( "users" );
 		t = ormutil.evictQueries( "users", dsn );
 	}
 
-	function testGetEntityDatasource(){
+	function testGetEntityDatasource() {
 		d = ormutil.getEntityDatasource( "User" );
 		assertEquals( "coolblog", d );
 
@@ -53,11 +53,11 @@ component
 		assertEquals( "coolblog", d );
 	}
 
-	function testGetDefaultDatasource(){
+	function testGetDefaultDatasource() {
 		assertEquals( "coolblog", ormutil.getDefaultDatasource() );
 	}
 
-	function isLucee(){
+	function isLucee() {
 		return structKeyExists( server, "lucee" );
 	}
 

@@ -10,22 +10,22 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
-	function beforeAll(){
+	function beforeAll() {
 		super.beforeAll();
 		getWireBox().autowire( this );
 	}
 
 	// executes after all suites+specs in the run() method
-	function afterAll(){
+	function afterAll() {
 		super.afterAll();
 	}
 
-	function reset(){
+	function reset() {
 		structDelete( application, "wirebox" );
 		structDelete( application, "cbController" );
 	}
 
-	function withRollback( target ){
+	function withRollback( target ) {
 		transaction {
 			try {
 				arguments.target();

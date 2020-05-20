@@ -23,7 +23,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	/**
 	 * Constructor
 	 */
-	function init(){
+	function init() {
 		orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
 		return this;
 	}
@@ -31,7 +31,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	/**
 	 * The AOP around advice for hibernate transactions
 	 */
-	any function invokeMethod( required invocation ) output=false{
+	any function invokeMethod( required invocation ) output=false {
 		// Are we already in a transaction?
 		if ( structKeyExists( request, "cbox_aop_transaction" ) ) {
 			// debug?

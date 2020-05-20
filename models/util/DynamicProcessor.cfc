@@ -63,7 +63,7 @@ component accessors="true" singleton {
 	/**
 	 * Constructor
 	 */
-	function init(){
+	function init() {
 		variables.HQLDynamicCache     = {};
 		variables.propertyNamesCache  = {};
 		variables.entityMetadataCache = {};
@@ -95,7 +95,7 @@ component accessors="true" singleton {
 		boolean unique     = true,
 		boolean isCounting = false,
 		any ormService
-	){
+	) {
 		// Setup the call hash
 		var dynamicCacheKey = hash( arguments.toString() );
 
@@ -219,7 +219,7 @@ component accessors="true" singleton {
 		entityName,
 		struct options,
 		any ormService
-	){
+	) {
 		// Get all real property names
 		var realPropertyNames = getRealPropertyNames( arguments.entityName, arguments.ormService );
 
@@ -337,7 +337,7 @@ component accessors="true" singleton {
 		struct params,
 		struct options,
 		any ormService
-	){
+	) {
 		// Build the HQL
 		var where = "";
 		// Begin building the hql statement with or without counts
@@ -444,7 +444,7 @@ component accessors="true" singleton {
 		required propertyName,
 		required value,
 		required ormService
-	){
+	) {
 		return getEntityMetadata( arguments.entityName, arguments.ormService )
 			.getPropertyType( arguments.propertyName )
 			.fromStringValue( arguments.value );
@@ -456,7 +456,7 @@ component accessors="true" singleton {
 	 * @entityName The target entity name
 	 * @ormService The reference ORM service
 	 */
-	private any function getEntityMetadata( required entityName, required ormService ){
+	private any function getEntityMetadata( required entityName, required ormService ) {
 		if ( !variables.entityMetadataCache.keyExists( arguments.entityName ) ) {
 			lock
 				name          ="orm.dynamic.metadatacache.#arguments.entityName#"
@@ -480,7 +480,7 @@ component accessors="true" singleton {
 	 * @entityName The entity name to get
 	 * @ormService The referred orm service
 	 */
-	private array function getRealPropertyNames( required entityName, required ormService ){
+	private array function getRealPropertyNames( required entityName, required ormService ) {
 		if ( !variables.propertyNamesCache.keyExists( arguments.entityName ) ) {
 			lock
 				name          ="orm.dynamic.propertycache.#arguments.entityName#"
@@ -503,10 +503,10 @@ component accessors="true" singleton {
 	 *
 	 * @target The target to test
 	 */
-	private boolean function isOptionsStruct( required target ){
+	private boolean function isOptionsStruct( required target ) {
 		if ( isStruct( arguments.target ) ) {
 			return structKeyArray( target )
-				.filter( function( item ){
+				.filter( function( item ) {
 					return listFindNoCase( variables.OPTIONS_KEYS, item ) > 0;
 				} )
 				.len() > 0;

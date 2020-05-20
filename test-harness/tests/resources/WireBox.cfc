@@ -2,7 +2,7 @@
 	/**
 	 * Configure WireBox, that's it!
 	 */
-	function configure(){
+	function configure() {
 		// WireBox Mappings
 		map( "WireBoxURL" ).toValue( "TEST" );
 		map( "testService" ).to( "root.models.TestService" );

@@ -16,14 +16,14 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/**
 	 * preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
 	 */
-	public void function preLoad( any entity ){
+	public void function preLoad( any entity ) {
 		announceInterception( "ORMPreLoad", { entity : arguments.entity } );
 	}
 
 	/**
 	 * postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
 	 */
-	public void function postLoad( any entity ){
+	public void function postLoad( any entity ) {
 		var args = {
 			entity     : arguments.entity,
 			entityName : ""
@@ -45,21 +45,21 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/**
 	 * postDelete called by hibernate which in turn announces a coldbox interception: ORMPostDelete
 	 */
-	public void function postDelete( any entity ){
+	public void function postDelete( any entity ) {
 		announceInterception( "ORMPostDelete", { entity : arguments.entity } );
 	}
 
 	/**
 	 * preDelete called by hibernate which in turn announces a coldbox interception: ORMPreDelete
 	 */
-	public void function preDelete( any entity ){
+	public void function preDelete( any entity ) {
 		announceInterception( "ORMPreDelete", { entity : arguments.entity } );
 	}
 
 	/**
 	 * preUpdate called by hibernate which in turn announces a coldbox interception: ORMPreUpdate
 	 */
-	public void function preUpdate( any entity, Struct oldData = {} ){
+	public void function preUpdate( any entity, Struct oldData = {} ) {
 		announceInterception(
 			"ORMPreUpdate",
 			{
@@ -72,56 +72,56 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/**
 	 * postUpdate called by hibernate which in turn announces a coldbox interception: ORMPostUpdate
 	 */
-	public void function postUpdate( any entity ){
+	public void function postUpdate( any entity ) {
 		announceInterception( "ORMPostUpdate", { entity : arguments.entity } );
 	}
 
 	/**
 	 * preInsert called by hibernate which in turn announces a coldbox interception: ORMPreInsert
 	 */
-	public void function preInsert( any entity ){
+	public void function preInsert( any entity ) {
 		announceInterception( "ORMPreInsert", { entity : arguments.entity } );
 	}
 
 	/**
 	 * postInsert called by hibernate which in turn announces a coldbox interception: ORMPostInsert
 	 */
-	public void function postInsert( any entity ){
+	public void function postInsert( any entity ) {
 		announceInterception( "ORMPostInsert", { entity : arguments.entity } );
 	}
 
 	/**
 	 * preSave called by ColdBox Base service before save() calls
 	 */
-	public void function preSave( any entity ){
+	public void function preSave( any entity ) {
 		announceInterception( "ORMPreSave", { entity : arguments.entity } );
 	}
 
 	/**
 	 * postSave called by ColdBox Base service after transaction commit or rollback via the save() method
 	 */
-	public void function postSave( any entity ){
+	public void function postSave( any entity ) {
 		announceInterception( "ORMPostSave", { entity : arguments.entity } );
 	}
 
 	/**
 	 * Called before the session is flushed.
 	 */
-	public void function preFlush( any entities ){
+	public void function preFlush( any entities ) {
 		announceInterception( "ORMPreFlush", { entities : arguments.entities } );
 	}
 
 	/**
 	 * Called after the session is flushed.
 	 */
-	public void function postFlush( any entities ){
+	public void function postFlush( any entities ) {
 		announceInterception( "ORMPostFlush", { entities : arguments.entities } );
 	}
 
 	/**
 	 * postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
 	 */
-	public void function postNew( any entity, any entityName ){
+	public void function postNew( any entity, any entityName ) {
 		var args = {
 			entity     : arguments.entity,
 			entityName : ""
@@ -144,7 +144,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	/**
 	 * Get the system Event Manager
 	 */
-	public any function getEventManager(){
+	public any function getEventManager() {
 		return getWireBox().getEventManager();
 	}
 
@@ -156,7 +156,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * @entityName the entity to process, we use hash codes to identify builders
 	 * @entity The entity object
 	 */
-	private function processEntityInjection( required entityName, required entity ){
+	private function processEntityInjection( required entityName, required entity ) {
 		var ormSettings     = getController().getConfigSettings().modules[ "cborm" ].settings;
 		var injectorInclude = ormSettings.injection.include;
 		var injectorExclude = ormSettings.injection.exclude;

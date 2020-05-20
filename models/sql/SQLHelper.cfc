@@ -39,7 +39,7 @@ component accessors="true" {
 		required any criteriaBuilder,
 		boolean returnExecutableSql = false,
 		boolean formatSql           = false
-	){
+	) {
 		// Setup properties
 		variables.cb           = arguments.criteriaBuilder;
 		variables.entityName   = variables.cb.getEntityName();
@@ -61,7 +61,7 @@ component accessors="true" {
 	/**
 	 * Setup hibernate class properties according to Hibernate version with CFML Engine
 	 */
-	private function setupHibernateProperties(){
+	private function setupHibernateProperties() {
 		// get formatter for sql string beautification: ACF vs Lucee
 		if ( findNoCase( "coldfusion", server.coldfusion.productName ) ) {
 			// Formatter Support
@@ -118,7 +118,7 @@ component accessors="true" {
 	 *
 	 * @label The label for the log record
 	 */
-	SQLHelper function log( string label = "Criteria" ){
+	SQLHelper function log( string label = "Criteria" ) {
 		var logentry = {
 			"type" : arguments.label,
 			"sql"  : getSQL( argumentCollection = arguments )
@@ -137,7 +137,7 @@ component accessors="true" {
 	string function getSQL(
 		boolean returnExecutableSql = getReturnExecutableSql(),
 		boolean formatSql           = getFormatSql()
-	){
+	) {
 		var sql         = getCriteriaJoinWalker().getSQLstring();
 		var selection   = getQueryParameters().getRowSelection();
 		var useLimit    = useLimit( selection );
@@ -171,7 +171,7 @@ component accessors="true" {
 	 *
 	 * @sql The SQL string to format
 	 */
-	string function applyFormatting( required string sql ){
+	string function applyFormatting( required string sql ) {
 		return "<pre>" & variables.formatter.format( arguments.sql ) & "</pre>";
 	}
 
@@ -180,7 +180,7 @@ component accessors="true" {
 	 *
 	 * @return array
 	 */
-	array function getPositionalSQLParameterValues(){
+	array function getPositionalSQLParameterValues() {
 		return getCriteriaQueryTranslator().getQueryParameters().getPositionalParameterValues();
 	}
 
@@ -188,7 +188,7 @@ component accessors="true" {
 	 * Gets positional SQL parameter types from the criteria query
 	 * @simple Whether to return a simply array or full objects
 	 */
-	any function getPositionalSQLParameterTypes( required Boolean simple = true ){
+	any function getPositionalSQLParameterTypes( required Boolean simple = true ) {
 		var types = getCriteriaQueryTranslator().getQueryParameters().getPositionalParameterTypes();
 		if ( !arguments.simple ) {
 			return types;
@@ -203,7 +203,7 @@ component accessors="true" {
 	/**
 	 * Returns a formatted array of parameter value and types
 	 */
-	array function getPositionalSQLParameters(){
+	array function getPositionalSQLParameters() {
 		var params = [];
 		var values = getPositionalSQLParameterValues();
 		var types  = getPositionalSQLParameterTypes( true );
@@ -223,42 +223,42 @@ component accessors="true" {
 	/**
 	 * Generates a unique SQL Alias within the criteria query
 	 */
-	string function generateSQLAlias(){
+	string function generateSQLAlias() {
 		return getCriteriaQueryTranslator().generateSQLAlias();
 	}
 
 	/**
 	 * Retrieves the "rooted" SQL alias for the criteria query
 	 */
-	string function getRootSQLAlias(){
+	string function getRootSQLAlias() {
 		return getCriteriaQueryTranslator().getRootSQLAlias();
 	}
 
 	/**
 	 * Retrieves the projected types of the criteria query
 	 */
-	any function getProjectedTypes(){
+	any function getProjectedTypes() {
 		return getCriteriaQueryTranslator().getProjectedTypes();
 	}
 
 	/**
 	 * Get the alias of the current projection
 	 */
-	string function getProjectionAlias(){
+	string function getProjectionAlias() {
 		return getCriteriaQueryTranslator().getProjectedAliases()[ 1 ];
 	}
 
 	/**
 	 * Retrieves the correct dialect of the database engine
 	 */
-	any function getDialect(){
+	any function getDialect() {
 		return variables.dialect;
 	}
 
 	/**
 	 * Is there a limit in the logging offset
 	 */
-	Boolean function canLogLimitOffset(){
+	Boolean function canLogLimitOffset() {
 		var max = !isNull( variables.criteriaImpl.getMaxResults() ) ? variables.criteriaImpl.getMaxResults() : 0;
 		return variables.dialectSupport.limitOffset && max > 0;
 	}
@@ -270,7 +270,7 @@ component accessors="true" {
 	 * @array {Array} The array to convert
 	 * return Array
 	 */
-	private array function convertToCFArray( required any array ){
+	private array function convertToCFArray( required any array ) {
 		var newArray = [];
 		newArray.addAll( createObject( "java", "java.util.Arrays" ).asList( arguments.array ) );
 		return newArray;
@@ -280,7 +280,7 @@ component accessors="true" {
 	 * Gets currently applied query parameters for the query object
 	 * return org.hibernate.engine.QueryParameters
 	 */
-	private any function getQueryParameters(){
+	private any function getQueryParameters() {
 		var translator = getCriteriaQueryTranslator();
 		return translator.getQueryParameters();
 	}
@@ -289,7 +289,7 @@ component accessors="true" {
 	 * replace query parameter placeholders with their actual values (for detachedSQLProjection)
 	 * @sql The sql string to massage
 	 */
-	private string function replaceQueryParameters( required string sql ){
+	private string function replaceQueryParameters( required string sql ) {
 		var dialect                  = getDialect();
 		var parameters               = getQueryParameters();
 		// get parameter values and types
@@ -395,7 +395,7 @@ component accessors="true" {
 		required Array positionalValues,
 		required Boolean append,
 		required any selection
-	){
+	) {
 		var dialect             = getDialect();
 		// trackers
 		var newPositionalValues = [];
@@ -439,7 +439,7 @@ component accessors="true" {
 	 * Determines whether the database engine allows for the use of "limit/offset" syntax
 	 * @selection The current row selection
 	 */
-	private Boolean function useLimit( required any selection ){
+	private Boolean function useLimit( required any selection ) {
 		return variables.dialectSupport.limit && hasMaxRows( argumentCollection = arguments );
 	}
 
@@ -447,7 +447,7 @@ component accessors="true" {
 	 * Determines whether the current row selection has a limit already applied
 	 * @selection The current row selection
 	 */
-	private Boolean function hasMaxRows( required any selection ){
+	private Boolean function hasMaxRows( required any selection ) {
 		return !isNull( arguments.selection.getMaxRows() );
 	}
 
@@ -455,7 +455,7 @@ component accessors="true" {
 	 * Gets the first row (or 0) for the current row selection
 	 * @selection The current row selection
 	 */
-	private Numeric function getFirstRow( required any selection ){
+	private Numeric function getFirstRow( required any selection ) {
 		return isNull( arguments.selection.getFirstRow() ) ? 0 : arguments.selection.getFirstRow().intValue();
 	}
 
@@ -463,7 +463,7 @@ component accessors="true" {
 	 * Gets correct "limit" value for the current row selection
 	 * @selection The current row selection
 	 */
-	private Numeric function getMaxOrLimit( required any selection ){
+	private Numeric function getMaxOrLimit( required any selection ) {
 		var firstRow = getDialect().convertToFirstRowValue( getFirstRow( arguments.selection ) );
 		var lastRow  = arguments.selection.getMaxRows().intValue();
 		return variables.dialectSupport.useMaxForLimit ? lastRow + firstRow : lastRow;
@@ -473,7 +473,7 @@ component accessors="true" {
 	 * gets an instance of CriteriaJoinWalker, which can allow for translating criteria query into a sql string
 	 * @return org.hibernate.loader.criteria.CriteriaJoinWalker
 	 */
-	private any function getCriteriaJoinWalker(){
+	private any function getCriteriaJoinWalker() {
 		// More Diff on Hibernate Versions: Remove when standardized
 		if ( variables.hibernateVersion gte 5 ) {
 			var persister = variables.ormFactory
@@ -498,7 +498,7 @@ component accessors="true" {
 	 * gets an instance of CriteriaQueryTranslator, which can prepares criteria query for conversion to SQL
 	 * @return org.hibernate.loader.criteria.CriteriaQueryTranslator
 	 */
-	private any function getCriteriaQueryTranslator(){
+	private any function getCriteriaQueryTranslator() {
 		// create new criteria query translator; we'll use this to build up the query string
 		return createObject( "java", "org.hibernate.loader.criteria.CriteriaQueryTranslator" ).init(
 			variables.ormFactory, // factory

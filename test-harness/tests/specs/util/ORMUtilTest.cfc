@@ -2,41 +2,41 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isCF" {
 
 	this.loadColdBox = false;
 
-	function isCF(){
+	function isCF() {
 		// skip tests for Adobe, this is a railo only suite
 		return ( structKeyExists( server, "railo" ) ? false : true );
 	}
 
-	function setup(){
+	function setup() {
 		ormUtil = getMockBox().createMock( "cborm.models.util.ORMUtil" );
 	}
 
-	function testflush(){
+	function testflush() {
 		ormutil.flush();
 	}
 
-	function testGetSession(){
+	function testGetSession() {
 		t = ormutil.getSession();
 	}
 
-	function testgetSessionFactory(){
+	function testgetSessionFactory() {
 		t = ormutil.getSessionFactory();
 	}
 
-	function testclearSession(){
+	function testclearSession() {
 		t = ormutil.clearSession();
 	}
 
-	function testcloseSession(){
+	function testcloseSession() {
 		t = ormutil.closeSession();
 	}
 
-	function testevictQueries(){
+	function testevictQueries() {
 		t = ormutil.evictQueries();
 		t = ormutil.evictQueries( "users" );
 	}
 
-	function testGetEntityDatasource(){
+	function testGetEntityDatasource() {
 		d = ormutil.getEntityDatasource( "User" );
 		assertEquals( "coolblog", d );
 
@@ -47,7 +47,7 @@ component extends="coldbox.system.testing.BaseTestCase" skip="isCF" {
 		assertEquals( "coolblog", d );
 	}
 
-	function testGetDefaultDatasource(){
+	function testGetDefaultDatasource() {
 		assertEquals( "coolblog", ormutil.getDefaultDatasource() );
 	}
 
