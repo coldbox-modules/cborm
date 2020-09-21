@@ -1,10 +1,5 @@
 component extends="tests.resources.BaseTest" skip="isCF" {
 
-	function isCF() {
-		// skip tests for Adobe, this is a railo only suite
-		return ( structKeyExists( server, "railo" ) ? false : true );
-	}
-
 	function setup() {
 		ormUtil = getMockBox().createMock( "cborm.models.util.ORMUtil" );
 	}

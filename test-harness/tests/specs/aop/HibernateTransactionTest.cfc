@@ -1,4 +1,7 @@
-component extends="tests.resources.BaseTest" {
+/**
+ * Skipping on ACF2018 due to a Hibernate but in 5.2.  Uncomment once they update Hibernate to 5.3+
+ */
+component extends="tests.resources.BaseTest" skip="isCF2018"{
 
 	function setup() {
 		super.setup();

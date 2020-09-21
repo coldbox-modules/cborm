@@ -41,4 +41,15 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		}
 	}
 
+	function isCF() {
+		return ( structKeyExists( server, "lucee" ) ? false : true );
+	}
+
+	function isCF2018() {
+		if( !structKeyExists( server, "lucee" ) && listFirst( server.coldfusion.productVersion ) eq 2018 ){
+			return true;
+		}
+		return false;
+	}
+
 }
