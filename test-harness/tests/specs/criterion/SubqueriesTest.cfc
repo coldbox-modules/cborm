@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase" {
+component extends="tests.resources.BaseTest" {
 
 	this.loadColdBox = false;
 	function setup() {

@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase" skip="isCF" {
+component extends="tests.resources.BaseTest" skip="isCF" {
 
 	this.loadColdBox = false;
 

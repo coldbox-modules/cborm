@@ -12,7 +12,7 @@
         "cbpaginator":"^2.0.0"
     },
     "devDependencies":{
-        "testbox":"^3.0.0-snapshot",
+        "testbox":"^4.0.0",
         "route-visualizer":"^1.4.0+21"
     },
     "installPaths":{

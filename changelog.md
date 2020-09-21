@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Formatting according to new rules
 * Updated changelogs to new standards
 * Added auto-publishing of changelogs to github
+* Pinning to ColdBox 6 for base testing
+* Increased timeouts for tests
 
 ### Fixed
 

@@ -1,7 +1,6 @@
 component
-	extends   ="coldbox.system.testing.BaseTestCase"
+	extends   ="tests.resources.BaseTest"
 	skip      ="isLucee"
-	appMapping="/root"
 {
 
 	function setup() {

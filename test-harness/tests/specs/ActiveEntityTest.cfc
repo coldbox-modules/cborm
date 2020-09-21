@@ -1,7 +1,5 @@
-﻿component extends = "coldbox.system.testing.BaseTestCase" appMapping = "/root"{
-	// Do not unload per test bundle to improve performance.
-	this.unloadColdBox = false;
-
+﻿component extends = "tests.resources.BaseTest"{
+	
 	function beforeTests() {
 		super.beforeTests();
 	}

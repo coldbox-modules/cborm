@@ -1,4 +1,4 @@
-component extends="coldbox.system.testing.BaseTestCase" {
+component extends="tests.resources.BaseTest" {
 
 	function setup() {
 		restrictions = createMock( "cborm.models.criterion.Restrictions" ).init( new cborm.models.BaseORMService() );

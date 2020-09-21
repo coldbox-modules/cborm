@@ -21,6 +21,10 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	}
 
 	function reset() {
+		// CB 6 graceful shutdown
+		if( !isNull( application.cbController ) ){
+			application.cbController.getLoaderService().processShutdown();
+		}
 		structDelete( application, "wirebox" );
 		structDelete( application, "cbController" );
 	}
