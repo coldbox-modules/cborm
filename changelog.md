@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * compose relationships was `false` for resource handler and it needed to be `true`
 * Increased timeouts for tests, due to Adobe issues with long compile times in latest patch levels that suck!
+* Unique validator test was clearing the full app scope and trigger multiple testing issues
 
 ----
 
