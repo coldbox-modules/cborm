@@ -8,7 +8,7 @@
         "cbvalidation":"^2.0.0",
         "mementifier":"^2.0.0",
         "cbstreams":"^1.4.0+48",
-        "coldbox":"be",
+        "coldbox":"^6.0.0",
         "cbpaginator":"^2.0.0"
     },
     "devDependencies":{
