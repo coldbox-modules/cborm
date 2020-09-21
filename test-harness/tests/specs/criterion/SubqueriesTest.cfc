@@ -1,6 +1,5 @@
 component extends="tests.resources.BaseTest" {
 
-	this.loadColdBox = false;
 	function setup() {
 		subCriteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName( "User", "u" );
 		subqueries  = getMockBox().createMock( "cborm.models.criterion.Subqueries" );

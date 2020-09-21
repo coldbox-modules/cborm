@@ -15,11 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Updated changelogs to new standards
 * Added auto-publishing of changelogs to github
 * Pinning to ColdBox 6 for base testing
-* Increased timeouts for tests
+* ColdBox 6 graceful shutdowns for tests
+* Base Test Case for all tests for faster executions and cleanup due to base reusability
 
 ### Fixed
 
 * compose relationships was `false` for resource handler and it needed to be `true`
+* Increased timeouts for tests, due to Adobe issues with long compile times in latest patch levels that suck!
 
 ----
 

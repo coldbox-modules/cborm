@@ -3,7 +3,6 @@
 	function beforeTests() {
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
-		new coldbox.system.ioc.Injector( "tests.resources.WireBox" );
 	}
 
 	function teardown() {

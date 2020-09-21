@@ -5,10 +5,6 @@ component extends="tests.resources.BaseTest"{
 
 		model = getWireBox().getInstance( "UniqueValidator@cborm" );
 	}
-	function teardown() {
-		super.teardown();
-		structClear( application );
-	}
 
 	function testValidate() {
 		result       = getMockBox().createMock( "cbvalidation.models.result.ValidationResult" ).init();

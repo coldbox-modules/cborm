@@ -1,7 +1,5 @@
 component extends="tests.resources.BaseTest" skip="isCF" {
 
-	this.loadColdBox = false;
-
 	function isCF() {
 		// skip tests for Adobe, this is a railo only suite
 		return ( structKeyExists( server, "railo" ) ? false : true );
