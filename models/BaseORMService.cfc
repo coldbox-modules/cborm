@@ -424,7 +424,7 @@ component accessors="true" {
 			returnNew  = false
 		);
 		if ( isNull( result ) ) {
-			throw( message = "No entity found for ID #arguments.id.toString()#", type = "EntityNotFound" );
+			throw( message = "No entity found for ID #arguments.id.toString()#", type = "EntityNotFound", extendedinfo = arguments.entityName );
 		}
 		return result;
 	}
