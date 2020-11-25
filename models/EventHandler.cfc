@@ -127,17 +127,24 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 			entityName : ""
 		};
 
-		// Short-cut discovery via ActiveEntity
-		if ( structKeyExists( arguments.entity, "getEntityName" ) ) {
-			args.entityName = arguments.entity.getEntityName();
-		} else {
-			// Long Discovery
-			var md          = getMetadata( arguments.entity );
-			args.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+		// Do we have an incoming name
+		if( !isNull( arguments.entityName ) && len( arguments.entityName ) ){
+			args.entityName = arguments.entityName;
 		}
 
-		processEntityInjection( args.entityName, args.entity );
+		// If we don't have the entity name, then look it up
+		if( !len( args.entityName ) ){
+			// Short-cut discovery via ActiveEntity
+			if ( structKeyExists( arguments.entity, "getEntityName" ) ) {
+				args.entityName = arguments.entity.getEntityName();
+			} else {
+				// Long Discovery
+				var md          = getMetadata( arguments.entity );
+				args.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+			}
+		}
 
+		// Process the announcement
 		announceInterception( "ORMPostNew", args );
 	}
 
@@ -148,35 +155,37 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 		return getWireBox().getEventManager();
 	}
 
-	/********************************* PRIVATE *********************************/
-
 	/**
 	 * process entity injection
 	 *
 	 * @entityName the entity to process, we use hash codes to identify builders
 	 * @entity The entity object
+	 *
+	 * @return The processed entity
 	 */
-	private function processEntityInjection( required entityName, required entity ) {
+	public function processEntityInjection( required entityName, required entity ) {
 		var ormSettings     = getController().getConfigSettings().modules[ "cborm" ].settings;
 		var injectorInclude = ormSettings.injection.include;
 		var injectorExclude = ormSettings.injection.exclude;
 
 		// Enabled?
 		if ( NOT ormSettings.injection.enabled ) {
-			return;
+			return arguments.entity;
 		}
 
 		// Include,Exclude?
 		if (
-			( len( injectorInclude ) AND listContainsNoCase( injectorInclude, entityName ) )
+			( len( injectorInclude ) AND listContainsNoCase( injectorInclude, arguments.entityName ) )
 			OR
-			( len( injectorExclude ) AND NOT listContainsNoCase( injectorExclude, entityName ) )
+			( len( injectorExclude ) AND NOT listContainsNoCase( injectorExclude, arguments.entityName ) )
 			OR
 			( NOT len( injectorInclude ) AND NOT len( injectorExclude ) )
 		) {
 			// Process DI
-			getWireBox().autowire( target = entity, targetID = "ORMEntity-#entityName#" );
+			getWireBox().autowire( target = arguments.entity, targetID = "ORMEntity-#arguments.entityName#" );
 		}
+
+		return arguments.entity;
 	}
 
 }

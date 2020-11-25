@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [v2.6.0] => 2020-MAY-20
+## [v2.6.0] => 2020-NOV-25
 
 ### Added
 
+* Entities are now created, auto-wired and THEN populated when using the `new()` method instead of being auto-wired after population.
+* Made `processEntityInjection()` public so it can be reused in other locations
+* `processEntityInjection()` returns the passed entity so you can do chaining
+* `getOrFail()` now includes in the `extendedInfo` the actual entity that caused the exception
 * Formatting according to new rules
 * Updated changelogs to new standards
 * Added auto-publishing of changelogs to github
@@ -20,13 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* `postNew` was not using the actual entity name so we where hitting performance on lookups for name
 * compose relationships was `false` for resource handler and it needed to be `true`
 * Increased timeouts for tests, due to Adobe issues with long compile times in latest patch levels that suck!
 * Unique validator test was clearing the full app scope and trigger multiple testing issues
 
 ----
 
-## [v2.5.0]
+## [v2.5.0] => 2020-APR-20
 
 * `Features` : Introduction of the automatic resource handler for ORM Entities based on ColdBox's 6 resources and RestHandler
 * `Improvement` : Natively allow for nested transactions and savepoints by not doing preemptive transaction commits when using transactions.
@@ -35,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [v2.4.0]
+## [v2.4.0] => 2020-JAN-31
 
 * `Feature` : Upgraded to `cbValidation` 2.0.0
 * `Feature` : Updated the unique validator to match 2.0.0 standards

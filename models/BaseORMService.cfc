@@ -726,9 +726,14 @@ component accessors="true" {
 		include                      = "",
 		exclude                      = ""
 	) {
-		var entity = entityNew( arguments.entityName );
+		var eventHandler = getORMEventHandler();
+		// Build and autowire
+		var entity = eventHandler.processEntityInjection(
+			entityName 	: arguments.entityName,
+			entity 		: entityNew( arguments.entityName )
+		);
 
-		// Properties exists?
+		// Population of properties
 		if ( NOT structIsEmpty( arguments.properties ) ) {
 			populate(
 				target               = entity,
@@ -744,7 +749,7 @@ component accessors="true" {
 
 		// Event Handling? If enabled, call the postNew() interception
 		if ( getEventHandling() ) {
-			getORMEventHandler().postNew( entity, arguments.entityName );
+			eventHandler.postNew( entity, arguments.entityName );
 		}
 
 		return entity;
