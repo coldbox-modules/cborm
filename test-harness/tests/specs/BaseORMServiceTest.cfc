@@ -1,5 +1,5 @@
 ﻿component extends = "tests.resources.BaseTest" {
-	
+
 	function beforeTests() {
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
@@ -156,15 +156,6 @@
 	}
 
 	function testNew() {
-		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		mockEventHandler.$( "postNew" );
-		ormService.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEventHandler
-		);
-
 		ormservice.new( "User" );
 
 		// Test with arguments.
@@ -178,19 +169,9 @@
 		debug( user );
 		assertEquals( "luis", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
-
-		assertTrue( arrayLen( mockEventHandler.$callLog().postNew ) );
 	}
 
 	function testNewWithProperties() {
-		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		mockEventHandler.$( "postNew" );
-		ormService.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEventHandler
-		);
 		// Test Porperties
 		user = ormService.new(
 			"User",
@@ -205,32 +186,17 @@
 	}
 
 	function testNewWithEvents() {
-		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		mockEventHandler.$( "postNew" );
 		ormService.setEventHandling( true );
-		ormService.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEventHandler
-		);
+		var eventHandler = prepareMock( ormService.getORMEventHandler() )
+			.$( "postNew" );
 
 		// Call it
 		ormservice.new( "User" );
 
-		assertTrue( arrayLen( mockEventHandler.$callLog().postNew ) );
+		assertTrue( arrayLen( eventHandler.$callLog().postNew ) );
 	}
 
 	function testGet() {
-		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		mockEventHandler.$( "postNew" );
-		ormService.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEventHandler
-		);
-
 		user = ormService.get( "User", "123" );
 		assertTrue( isNull( user ) );
 

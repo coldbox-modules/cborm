@@ -68,15 +68,6 @@
 
 
 	function testNew() {
-		// mocks
-		mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
-		mockEventHandler.$( "postNew" );
-		ormService.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEventHandler
-		);
-
 		user = ormservice.new();
 		assertFalse( isNull( user ) );
 

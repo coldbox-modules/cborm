@@ -1,5 +1,5 @@
 ﻿component extends = "tests.resources.BaseTest"{
-	
+
 	function beforeTests() {
 		super.beforeTests();
 	}
@@ -97,15 +97,6 @@
 	}
 
 	function testNew() {
-		// mocks
-		mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
-		mockEventHandler.$( "postNew" );
-		activeUser.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEventHandler
-		);
-
 		user = activeUser.new();
 		assertFalse( isNull( user ) );
 
