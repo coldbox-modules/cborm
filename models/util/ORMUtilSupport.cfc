@@ -99,7 +99,7 @@ component {
 	 */
 	string function getEntityDatasource( required entity, string defaultDatasource ) {
 		// DEFAULT datasource
-		var datasource = ( isNull( arguments.defaultDatsource ) ? getDefaultDatasource() : arguments.defaultDatsource );
+		var datasource = ( isNull( arguments.defaultDatasource ) ? getDefaultDatasource() : arguments.defaultDatasource );
 
 		if ( !isObject( arguments.entity ) ) {
 			arguments.entity = entityNew( arguments.entity );

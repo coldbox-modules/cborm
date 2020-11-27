@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Typo on `ORMUtilSupport` when detecting datasources, if you passed a default it would never be used
 * `postNew` was not using the actual entity name so we where hitting performance on lookups for name
 * compose relationships was `false` for resource handler and it needed to be `true`
 * Increased timeouts for tests, due to Adobe issues with long compile times in latest patch levels that suck!
