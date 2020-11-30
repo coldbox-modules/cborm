@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Entities are now created, auto-wired and THEN populated when using the `new()` method instead of being auto-wired after population.
-* Made `processEntityInjection()` public so it can be reused in other locations
+* Made `processEntityInjection()` public on the ORM Event Handler so it can be reused in other locations
 * `processEntityInjection()` returns the passed entity so you can do chaining
 * `getOrFail()` now includes in the `extendedInfo` the actual entity that caused the exception
 * Formatting according to new rules
