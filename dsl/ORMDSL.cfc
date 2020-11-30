@@ -13,14 +13,14 @@ component
 	/**
 	 * Constructor as per interface
 	 */
-	public any function init( required any injector ) output=false{
+	public any function init( required any injector ) output=false {
 		return super.init( argumentCollection = arguments );
 	}
 
 	/**
 	 * Process an incoming DSL definition and produce an object with it.
 	 */
-	public any function process( required definition, targetObject ) output=false{
+	public any function process( required definition, targetObject ) output=false {
 		return super.process( argumentCollection = arguments );
 	}
 

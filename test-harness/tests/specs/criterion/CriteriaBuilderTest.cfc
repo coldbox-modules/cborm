@@ -1,10 +1,10 @@
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
+component extends="tests.resources.BaseTest" {
 
-	function beforeTests(){
+	function beforeTests() {
 		super.beforeTests();
 	}
 
-	function setup(){
+	function setup() {
 		super.setup();
 
 		criteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
@@ -16,71 +16,71 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		test2      = [ "1", "2" ];
 	}
 
-	function testGet(){
+	function testGet() {
 		r = criteria.idEQ( testUserID ).get();
 		assertEquals( testUserID, r.getID() );
 	}
 
-	function testWhen(){
+	function testWhen() {
 		var r = criteria
-			.when( true, function( c ){
+			.when( true, function( c ) {
 				c.idEQ( testUserID );
 			} )
 			.get();
 		expect( r.getId(), testUserId );
 	}
 
-	function testWhenFalse(){
+	function testWhenFalse() {
 		var r = criteria
-			.when( false, function( c ){
+			.when( false, function( c ) {
 				throw( "exception" );
 				c.idEQ( testUserID );
 			} )
-			.when( true, function( c ){
+			.when( true, function( c ) {
 				c.idEQ( testUserID );
 			} )
 			.get();
 		expect( r.getId(), testUserId );
 	}
 
-	function testGetOrFail(){
-		expect( function(){
+	function testGetOrFail() {
+		expect( function() {
 			criteria.idEQ( "32234234234234" ).getOrFail();
 		} ).toThrow();
 	}
 
-	function testTimeout(){
+	function testTimeout() {
 		r = criteria.timeout( 10 );
 	}
 
-	function testReadOnly(){
+	function testReadOnly() {
 		r = criteria.readOnly();
 		r = criteria.readOnly( false );
 	}
 
-	function testMaxResults(){
+	function testMaxResults() {
 		r = criteria.maxResults( 10 );
 	}
 
-	function testFirstResult(){
+	function testFirstResult() {
 		r = criteria.firstResult( 10 );
 	}
 
-	function testFetchSize(){
+	function testFetchSize() {
 		r = criteria.fetchSize( 10 );
 	}
 
-	function testCache(){
+	function testCache() {
 		r = criteria.cache();
 		r = criteria.cache( false );
 		r = criteria.cache( true, "pio" );
 	}
 
-	function testCacheRegion(){
+	function testCacheRegion() {
 		r = criteria.cacheRegion( "pio" );
 	}
 
-	function testCount(){
+	function testCount() {
 		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r     = criteria.count();
 		count = new Query( datasource = "coolblog", sql = "select count(*) allCount from users" ).execute().getResult();
@@ -90,7 +90,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertEquals( count.allCount, r );
 	}
 
-	function testList(){
+	function testList() {
 		r = criteria.list();
 		assertTrue( arrayLen( r ) );
 
@@ -108,12 +108,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertTrue( arrayLen( r ) );
 	}
 
-	function testListAsStreams(){
+	function testListAsStreams() {
 		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r = criteria
 			.asStream()
 			.list( sortOrder = "lastName asc, firstName desc" )
-			.filter( function( item ){
+			.filter( function( item ) {
 				return item.getFirstName().findNoCase( "ken" );
 			} )
 			.collect();
@@ -123,7 +123,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r = criteria
 			.list( sortOrder = "lastName asc, firstName desc", asStream = true )
-			.filter( function( item ){
+			.filter( function( item ) {
 				return item.getFirstName().findNoCase( "ken" );
 			} )
 			.collect();
@@ -131,12 +131,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		expect( r ).toBeArray().toHaveLength( 1 );
 	}
 
-	function testCreateSubcriteria(){
+	function testCreateSubcriteria() {
 		s = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
 		assertTrue( isInstanceOf( s, "cborm.models.criterion.DetachedCriteriaBuilder" ) );
 	}
 
-	function testConvertIDValueToJavaType(){
+	function testConvertIDValueToJavaType() {
 		test = criteria.convertIDValueToJavaType( id = 1 );
 		assertEquals( [ 1 ], test );
 
@@ -144,7 +144,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		assertEquals( [ 1, 2, 3 ], test );
 	}
 
-	function testConvertValueToJavaType(){
+	function testConvertValueToJavaType() {
 		test = criteria.convertValueToJavaType( propertyName = "id", value = testUserID );
 		assertEquals( testUserID, test );
 	}

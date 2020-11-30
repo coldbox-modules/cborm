@@ -13,7 +13,7 @@ component accessors="true" singleton {
 	/**
 	 * Constructor
 	 */
-	UniqueValidator function init(){
+	UniqueValidator function init() {
 		variables.name       = "Unique";
 		variables.ORMService = new cborm.models.BaseORMService();
 		return this;
@@ -35,7 +35,7 @@ component accessors="true" singleton {
 		required string field,
 		any targetValue,
 		any validationData
-	){
+	) {
 		// return true if no data to check, type needs a data element to be checked.
 		if (
 			isNull( arguments.targetValue ) || ( isSimpleValue( arguments.targetValue ) && !len( arguments.targetValue ) )
@@ -75,7 +75,7 @@ component accessors="true" singleton {
 	/**
 	 * Get the name of the validator
 	 */
-	string function getName(){
+	string function getName() {
 		return name;
 	}
 

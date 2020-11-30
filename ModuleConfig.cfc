@@ -22,11 +22,11 @@ component {
 		// Resource Settings
 		resources : {
 			// Enable the ORM Resource Event Loader
-			eventLoader 	: false,
+			eventLoader  : false,
 			// Pagination max rows
-			maxRows 		: 25,
+			maxRows      : 25,
 			// Pagination max row limit: 0 = no limit
-			maxRowsLimit 	: 500
+			maxRowsLimit : 500
 		},
 		// WireBox Injection Bridge
 		injection : {
@@ -39,7 +39,7 @@ component {
 	/**
 	 * Configure Module
 	 */
-	function configure(){
+	function configure() {
 		// cborm Settings
 		settings = structCopy( variables.SETTING_DEFAULTS );
 
@@ -85,12 +85,12 @@ component {
 	/**
 	 * Fired when the module is registered and activated.
 	 */
-	function onLoad(){
+	function onLoad() {
 		// Prepare setting defaults
 		settings.resources.append( variables.SETTING_DEFAULTS.resources, false );
 		settings.injection.append( variables.SETTING_DEFAULTS.injection, false );
 		// Are we loading the event loader
-		if( settings.resources.eventLoader ){
+		if ( settings.resources.eventLoader ) {
 			wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();
 		}
 	}
@@ -98,7 +98,7 @@ component {
 	/**
 	 * Fired when the module is unregistered and unloaded
 	 */
-	function onUnload(){
+	function onUnload() {
 	}
 
 }

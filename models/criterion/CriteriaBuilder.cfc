@@ -67,7 +67,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		string queryCacheRegion = "",
 		required any ormService,
 		string datasource
-	){
+	) {
 		// Determine datasource for given entityName
 		var orm = arguments.ormService.getOrm();
 
@@ -119,7 +119,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		boolean ignoreCase = false,
 		boolean asQuery    = false,
 		boolean asStream   = getAsStream()
-	){
+	) {
 		// Setup listing options
 		if ( arguments.offset NEQ 0 ) {
 			firstResult( arguments.offset );
@@ -185,7 +185,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @missingMethodName
 	 * @missingMethodArguments
 	 */
-	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ) {
 		// get the restriction/new criteria
 		var thisRestriction = createRestriction( argumentCollection = arguments );
 
@@ -220,7 +220,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @return DetachedCriteriaBuilder
 	 */
-	any function createSubcriteria( required string entityName, string alias = "" ){
+	any function createSubcriteria( required string entityName, string alias = "" ) {
 		// create detached builder
 		arguments.ORMService = variables.ORMService;
 		var subcriteria      = new DetachedCriteriaBuilder( argumentCollection = arguments );
@@ -246,7 +246,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @cache Cache or not
 	 * @cacheRegion The cache region
 	 */
-	any function cache( required boolean cache = true, string cacheRegion ){
+	any function cache( required boolean cache = true, string cacheRegion ) {
 		nativeCriteria.setCacheable( javacast( "boolean", arguments.cache ) );
 		if ( !isNull( arguments.cacheRegion ) ) {
 			nativeCriteria.setCacheRegion( arguments.cacheRegion );
@@ -259,7 +259,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @cacheRegion
 	 */
-	any function cacheRegion( required string cacheRegion ){
+	any function cacheRegion( required string cacheRegion ) {
 		nativeCriteria.setCacheRegion( arguments.cacheRegion );
 		return this;
 	}
@@ -269,7 +269,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @comment a human-readable string
 	 */
-	any function comment( required string comment ){
+	any function comment( required string comment ) {
 		nativeCriteria.setComment( arguments.comment );
 		return this;
 	}
@@ -279,7 +279,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @fetchSize An integer number
 	 */
-	any function fetchSize( required numeric fetchSize ){
+	any function fetchSize( required numeric fetchSize ) {
 		nativeCriteria.setFetchSize( javacast( "int", arguments.fetchSize ) );
 		return this;
 	}
@@ -289,7 +289,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @firstResult Which offset to set
 	 */
-	any function firstResult( required numeric firstResult ){
+	any function firstResult( required numeric firstResult ) {
 		nativeCriteria.setFirstResult( javacast( "int", arguments.firstResult ) );
 		if ( variables.SQLHelper.canLogLimitOffset() ) {
 			// process interception
@@ -311,7 +311,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @maxResults The max results to retrieve
 	 */
-	any function maxResults( required numeric maxResults ){
+	any function maxResults( required numeric maxResults ) {
 		nativeCriteria.setMaxResults( javacast( "int", arguments.maxResults ) );
 		if ( variables.SQLHelper.canLogLimitOffset() ) {
 			// process interception
@@ -333,7 +333,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @readOnly Read only or full entities, defaults to true
 	 */
-	any function readOnly( boolean readOnly = true ){
+	any function readOnly( boolean readOnly = true ) {
 		nativeCriteria.setReadOnly( javacast( "boolean", arguments.readOnly ) );
 		return this;
 	}
@@ -343,7 +343,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @timeout The timeout value to apply in milliseconds
 	 */
-	any function timeout( required numeric timeout ){
+	any function timeout( required numeric timeout ) {
 		nativeCriteria.setTimeout( javacast( "int", arguments.timeout ) );
 		return this;
 	}
@@ -353,7 +353,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @string The vendoer specific query hint
 	 */
-	any function queryHint( string hint ){
+	any function queryHint( string hint ) {
 		nativeCriteria.addQueryHint( arguments.hint );
 		return this;
 	}
@@ -363,7 +363,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @throws EntityNotFound, NonUniqueResultException
 	 */
-	any function getOrFail(){
+	any function getOrFail() {
 		var result = this.get();
 		if ( isNull( result ) ) {
 			throw( message = "No entity found for the specific criteria", type = "EntityNotFound" );
@@ -376,7 +376,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @throws NonUniqueResultException - if there is more than one matching result
 	 */
-	any function get(){
+	any function get() {
 		return nativeCriteria.uniqueResult();
 	}
 
@@ -385,7 +385,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @propertyName The name of the property to do the count on or do it for all row results instead
 	 */
-	numeric function count( propertyName = "" ){
+	numeric function count( propertyName = "" ) {
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(

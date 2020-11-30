@@ -8,11 +8,11 @@
         "cbvalidation":"^2.0.0",
         "mementifier":"^2.0.0",
         "cbstreams":"^1.4.0+48",
-        "coldbox":"be",
+        "coldbox":"^6.0.0",
         "cbpaginator":"^2.0.0"
     },
     "devDependencies":{
-        "testbox":"^3.0.0-snapshot",
+        "testbox":"^4.0.0",
         "route-visualizer":"^1.4.0+21"
     },
     "installPaths":{

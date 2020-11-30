@@ -1,22 +1,12 @@
-/**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
-*/
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
+component extends="tests.resources.BaseTest"{
 
-	function setup(){
+	function setup() {
 		super.setup();
 
 		model = getWireBox().getInstance( "UniqueValidator@cborm" );
 	}
-	function teardown(){
-		super.teardown();
-		structClear( application );
-	}
 
-	function testValidate(){
+	function testValidate() {
 		result       = getMockBox().createMock( "cbvalidation.models.result.ValidationResult" ).init();
 		var category = entityNew( "Category" );
 

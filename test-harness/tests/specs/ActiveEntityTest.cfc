@@ -1,12 +1,10 @@
-﻿component extends = "coldbox.system.testing.BaseTestCase" appMapping = "/root"{
-	// Do not unload per test bundle to improve performance.
-	this.unloadColdBox = false;
+﻿component extends = "tests.resources.BaseTest"{
 
-	function beforeTests(){
+	function beforeTests() {
 		super.beforeTests();
 	}
 
-	function setup(){
+	function setup() {
 		ormCloseSession();
 		ormClearSession();
 
@@ -19,12 +17,12 @@
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
-	function testCountByDynamically(){
+	function testCountByDynamically() {
 		// Test simple Equals
 		t = activeUser.countByLastName( "majano" );
 		assert( 1 eq t, "CountBylastName" );
 	}
-	function testFindByDynamically(){
+	function testFindByDynamically() {
 		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
 		assert( arrayLen( t ), "Conditionals LessThanEquals" );
 		// Test simple Equals
@@ -62,17 +60,17 @@
 		assert( arrayLen( t ), "Conditionals NotinList" );
 	}
 
-	function testFindByDynamicallyBadProperty(){
+	function testFindByDynamicallyBadProperty() {
 		expectException( "InvalidMethodGrammar" );
 		t = activeUser.findByLastAndFirst();
 	}
 
-	function testFindByDynamicallyFailure(){
+	function testFindByDynamicallyFailure() {
 		expectException( "HQLQueryException" );
 		t = activeUser.findByLastName();
 	}
 
-	function testIsValid(){
+	function testIsValid() {
 		r = activeUser.isValid();
 		assertFalse( r );
 
@@ -84,30 +82,21 @@
 		assertTrue( r );
 	}
 
-	function testValidateOrFail(){
+	function testValidateOrFail() {
 		activeUser.setFirstName( "Luis" );
 		activeUser.setLastName( "Majano" );
 		activeUser.setPassword( "LuisMajano" );
-		expect( function(){
+		expect( function() {
 			activeUser.validateOrFail();
 		} ).toThrow();
 	}
 
-	function testValidationResults(){
+	function testValidationResults() {
 		r = activeUser.getValidationResults();
 		expect( r.hasErrors() ).toBeFalse();
 	}
 
-	function testNew(){
-		// mocks
-		mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
-		mockEventHandler.$( "postNew" );
-		activeUser.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEventHandler
-		);
-
+	function testNew() {
 		user = activeUser.new();
 		assertFalse( isNull( user ) );
 
@@ -120,7 +109,7 @@
 		assertEquals( "Luis", user.getFirstName() );
 	}
 
-	function testGet(){
+	function testGet() {
 		user = activeUser.get( "123" );
 		assertTrue( isNull( user ) );
 
@@ -128,7 +117,7 @@
 		assertEquals( testUserID, user.getID() );
 	}
 
-	function testGetAll(){
+	function testGetAll() {
 		r = activeUser.getAll();
 		assertTrue( arrayLen( r ) );
 
@@ -142,7 +131,7 @@
 		assertTrue( isObject( r[ 1 ] ) );
 	}
 
-	function testSave(){
+	function testSave() {
 		// mocks
 		mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
 		mockEventHandler.$( "preSave" );
@@ -173,7 +162,7 @@
 		}
 	}
 
-	function testDelete(){
+	function testDelete() {
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
 		user.setFirstName( "unitTest" );
@@ -202,7 +191,7 @@
 		}
 	}
 
-	function testDeleteByID(){
+	function testDeleteByID() {
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
 		user.setFirstName( "unitTest" );
@@ -232,7 +221,7 @@
 		}
 	}
 
-	function testDeleteWhere(){
+	function testDeleteWhere() {
 		for ( var x = 1; x lte 3; x++ ) {
 			user = entityNew( "ActiveUser" );
 			user.setFirstName( "unitTest#x#" );
@@ -261,7 +250,7 @@
 		}
 	}
 
-	function testCount(){
+	function testCount() {
 		count = activeUser.count();
 		assertTrue( count gt 0 );
 
@@ -269,44 +258,44 @@
 		assertEquals( 1, count );
 	}
 
-	function testList(){
+	function testList() {
 		test = activeUser.list( sortorder = "lastName asc" );
 
 		assertTrue( test.recordcount );
 	}
 
-	function testFindWhere(){
+	function testFindWhere() {
 		test = activeUser.findWhere( { firstName : "Luis" } );
 		assertEquals( "Majano", test.getLastName() );
 	}
 
-	function testFindAllWhere(){
+	function testFindAllWhere() {
 		test = activeUser.findAllWhere( { firstName : "Luis" } );
 		assertEquals( 1, arrayLen( test ) );
 	}
 
 
-	function testGetKey(){
+	function testGetKey() {
 		test = activeUser.getKey( entityName = "User" );
 		assertEquals( "id", test );
 	}
 
-	function testGetPropertyNames(){
+	function testGetPropertyNames() {
 		test = activeUser.getPropertyNames( entityName = "User" );
 		assertEquals( 6, arrayLen( test ) );
 	}
 
-	function testGetTableName(){
+	function testGetTableName() {
 		test = activeUser.getTableName();
 		assertEquals( "users", test );
 	}
 
-	function testNewCriteria(){
+	function testNewCriteria() {
 		c = activeUser.newCriteria();
 		assertEquals( "ActiveUser", c.getEntityName() );
 	}
 
-	private function deleteCategories(){
+	private function deleteCategories() {
 		var q = new Query( datasource = "coolblog" );
 		q.execute( sql = "delete from categories where category = 'unitTest'" );
 	}

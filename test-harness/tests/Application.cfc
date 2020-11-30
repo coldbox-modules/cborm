@@ -13,8 +13,8 @@ component {
 	// APPLICATION CFC PROPERTIES
 	this.name               = "#request.MODULE_NAME# Testing Suite";
 	this.sessionManagement  = true;
-	this.sessionTimeout     = createTimespan( 0, 0, 15, 0 );
-	this.applicationTimeout = createTimespan( 0, 0, 15, 0 );
+	this.sessionTimeout     = createTimespan( 0, 0, 30, 0 );
+	this.applicationTimeout = createTimespan( 0, 0, 30, 0 );
 	this.setClientCookies   = true;
 
 	// Create testing mapping
@@ -56,7 +56,7 @@ component {
 	};
 
 	// request start
-	public boolean function onRequestStart( String targetPage ){
+	public boolean function onRequestStart( String targetPage ) {
 		if ( url.keyExists( "fwreinit" ) ) {
 			ormReload();
 			if ( structKeyExists( server, "lucee" ) ) {
@@ -67,7 +67,12 @@ component {
 		return true;
 	}
 
-	public function onRequestEnd(){
+	public function onRequestEnd() {
+		// CB 6 graceful shutdown
+		if( !isNull( application.cbController ) ){
+			application.cbController.getLoaderService().processShutdown();
+		}
+
 		structDelete( application, "cbController" );
 		structDelete( application, "wirebox" );
 	}

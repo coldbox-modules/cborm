@@ -1,29 +1,69 @@
-# CHANGELOG
+# Changelog
 
-## v2.5.0
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+----
+
+## [v2.6.0] => 2020-NOV-25
+
+### Added
+
+* Entities are now created, auto-wired and THEN populated when using the `new()` method instead of being auto-wired after population.
+* Made `processEntityInjection()` public on the ORM Event Handler so it can be reused in other locations
+* `processEntityInjection()` returns the passed entity so you can do chaining
+* `getOrFail()` now includes in the `extendedInfo` the actual entity that caused the exception
+* Formatting according to new rules
+* Updated changelogs to new standards
+* Added auto-publishing of changelogs to github
+* Pinning to ColdBox 6 for base testing
+* ColdBox 6 graceful shutdowns for tests
+* Base Test Case for all tests for faster executions and cleanup due to base reusability
+
+### Fixed
+
+* Typo on `ORMUtilSupport` when detecting datasources, if you passed a default it would never be used
+* `postNew` was not using the actual entity name so we where hitting performance on lookups for name
+* compose relationships was `false` for resource handler and it needed to be `true`
+* Increased timeouts for tests, due to Adobe issues with long compile times in latest patch levels that suck!
+* Unique validator test was clearing the full app scope and trigger multiple testing issues
+
+----
+
+## [v2.5.0] => 2020-APR-20
 
 * `Features` : Introduction of the automatic resource handler for ORM Entities based on ColdBox's 6 resources and RestHandler
 * `Improvement` : Natively allow for nested transactions and savepoints by not doing preemptive transaction commits when using transactions.
 * `Bug` : Fix on `getOrFail()` where if the id was 0, it would still return an empty object.
 * `Task` : Added formatting via cfformat
 
-## v2.4.0
+----
+
+## [v2.4.0] => 2020-JAN-31
 
 * `Feature` : Upgraded to `cbValidation` 2.0.0
 * `Feature` : Updated the unique validator to match 2.0.0 standards
 * `Feature` : Upgraded to `mementifier` 2.0.0
 
-## v2.3.0
+----
+
+## [v2.3.0]
 
 * `improvement` : In `executeQuery()` Determine if we are in a UPDATE, INSERT or DELETE, if we do, just return the results instead of a stream or query as the result is always numeric, the rows that were altered.
 * `bug` : Fixed `asStream` typo on `executeQuery()`
 * `bug` : Missing ACF2016 compat on tests
 
-## v2.2.1
+----
+
+## [v2.2.1]
 
 * `bug` : virtual entity service still had `entity` required for casting methods
 
-## v2.2.0
+----
+
+## [v2.2.0]
 
 * `Feature`: New function for criteria query `when( boolean, target )` that you can use to build functional criterias without the use of if statements.
 
@@ -55,12 +95,16 @@ newCriteria()
 * `Bug`: ACF2016 issues with elvis operator.
 * `Bug`: `getOrFail()` had an invalid throw statement
 
-## v2.1.0
+----
+
+## [v2.1.0]
 
 * Change `populate()` in ActiveEntity so the target is the last argument so you can just pass a struct as the first argument [#29](https://github.com/coldbox-modules/cborm/issues/29)
 *  Make the `save()` operation return the saved entity or array of entities instead of the BaseORM service [#28](https://github.com/coldbox-modules/cborm/issues/28)
 
-## v2.0.0
+----
+
+## [v2.0.0]
 
 ### Compatibility Updates
 
@@ -209,7 +253,9 @@ results = ormservice.findByLastLoginBetween( "User", "01/01/2008", "11/01/2008",
 
 * All dynamic finders/counters values are autocasted, you no longer need to cast the values, we will do this for you. You can turn it off via the `autocast:false` in the options to the calls.
 
-### Virtual Entity Service
+----#
+
+## [Virtual Entity Service]
 
 Remember this entity extends Base Service, so we get all the features above plus the following:
 
