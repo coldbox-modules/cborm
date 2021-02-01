@@ -114,6 +114,15 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	}
 
 	/**
+	 * Verifies if the entity has dirty data or not.  If the entity is not loaded in session, this method will throw an exception.
+	 *
+	 * @entity The entity to check if lazy
+	 */
+	boolean function isDirty( any entity = this ) {
+		return super.isDirty( arguments.entity );
+	}
+
+	/**
 	 * Merge an entity or array of entities back into a session
 	 * @entity A single or an array of entities to re-merge
 	 *
