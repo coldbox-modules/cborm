@@ -295,6 +295,32 @@
 		assertEquals( "ActiveUser", c.getEntityName() );
 	}
 
+	function testIsDirty() {
+
+		user = activeUser.new(
+			properties = {
+				firstName : "Some",
+				lastName  : "Person"
+			}
+		);
+
+		transaction {
+			try {
+				assertFalse( user.isDirty() );
+				user.save( flush=true, transactional = false );
+				assertFalse( user.isDirty() );
+				user.setFirstname( "Another" );
+				user.setLastname( "Person" );
+				assertTrue( user.isDirty() );
+			} catch ( any e ) {
+				fail( e.detail & e.message );
+			} finally {
+				transactionRollback();
+			}
+		}
+
+	}
+
 	private function deleteCategories() {
 		var q = new Query( datasource = "coolblog" );
 		q.execute( sql = "delete from categories where category = 'unitTest'" );
