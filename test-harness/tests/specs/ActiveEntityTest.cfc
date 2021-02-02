@@ -300,7 +300,9 @@
 		user = activeUser.new(
 			properties = {
 				firstName : "Some",
-				lastName  : "Person"
+				lastName  : "Person",
+				username  : "unittest",
+				password  : "password"
 			}
 		);
 
