@@ -9,7 +9,7 @@
         "type":"git",
         "url":"https://github.com/coldbox-modules/cborm"
     },
-    "bugs":"https://github.com/coldbox-modules/cborm/issues",
+    "bugs":"https://ortussolutions.atlassian.net/browse/CBORM",
     "shortDescription":"Enhances the ColdFusion ORM with tons of utilities.",
     "slug":"cborm",
     "type":"modules",

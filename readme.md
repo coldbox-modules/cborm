@@ -68,6 +68,10 @@ Apache License, Version 2.0.
 
 * https://coldbox-orm.ortusbooks.com/
 
+**Issues**
+
+* https://ortussolutions.atlassian.net/browse/CBORM
+
 **Support**
 
 * https://community.ortussolutions.com/c/box-modules/cborm/25
