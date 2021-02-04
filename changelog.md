@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.0.0] => 2021-FEB-04
+
+### Added
+
+* Upgrade to `cbValidation` v3.0. If you are using `cb18n` in your app make sure you read the compatibility guide for v2 https://coldbox-i18n.ortusbooks.com
+
+### Fixed
+
+* ActiveEntity fix for `isDirty()` not passing the actual entity.
+
+----
+
 ## [v2.6.0] => 2020-NOV-25
 
 ### Added
