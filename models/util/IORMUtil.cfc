@@ -13,9 +13,15 @@ interface {
 	void function clearSession( string datasource );
 	void function closeSession( string datasource );
 	void function evictQueries( string cachename, string datasource );
-	string function getEntityDatasource( required entity, string defaultDatasource );
+	string function getEntityDatasource(
+		required entity,
+		string defaultDatasource
+	);
 	string function getDefaultDatasource();
-	any function getEntityMetadata( required string entityName, required string datasource );
+	any function getEntityMetadata(
+		required string entityName,
+		required string datasource
+	);
 	any function getSessionEntityMode( required ormSession, required entity );
 
 }

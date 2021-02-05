@@ -59,7 +59,7 @@ component extends="coldbox.system.RestHandler" {
 		prc,
 		criteria,
 		struct results
-	) {
+	){
 		// Memento params
 		param rc.includes       = "";
 		param rc.excludes       = "";
@@ -116,7 +116,7 @@ component extends="coldbox.system.RestHandler" {
 				)
 			)
 			.setData(
-				prc.records.map( function( item ) {
+				prc.records.map( function( item ){
 					return item.getMemento(
 						includes       = rc.includes,
 						excludes       = rc.excludes,
@@ -139,7 +139,7 @@ component extends="coldbox.system.RestHandler" {
 		prc,
 		struct populate = {},
 		struct validate = {}
-	) {
+	){
 		param rc.includes                             = "";
 		param rc.excludes                             = "";
 		param rc.ignoreDefaults                       = false;
@@ -156,13 +156,19 @@ component extends="coldbox.system.RestHandler" {
 		prc.oEntity = validateOrFail( argumentCollection = arguments.validate );
 
 		// announce it
-		announceInterception( "pre#variables.entity#Save", { entity : prc.oEntity } );
+		announceInterception(
+			"pre#variables.entity#Save",
+			{ entity : prc.oEntity }
+		);
 
 		// Save it
 		variables.ormService.save( prc.oEntity );
 
 		// announce it
-		announceInterception( "post#variables.entity#Save", { entity : prc.oEntity } );
+		announceInterception(
+			"post#variables.entity#Save",
+			{ entity : prc.oEntity }
+		);
 
 		// Marshall it out
 		prc.response.setData(
@@ -178,7 +184,7 @@ component extends="coldbox.system.RestHandler" {
 	 * Show a resource using the id
 	 * GET /api/v1/{resource}/:id
 	 */
-	function show( event, rc, prc ) {
+	function show( event, rc, prc ){
 		param rc.includes       = "";
 		param rc.excludes       = "";
 		param rc.ignoreDefaults = false;
@@ -191,7 +197,10 @@ component extends="coldbox.system.RestHandler" {
 		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
-		announceInterception( "post#variables.entity#Show", { entity : prc.oEntity } );
+		announceInterception(
+			"post#variables.entity#Show",
+			{ entity : prc.oEntity }
+		);
 
 		// Marshall it
 		prc.response.setData(
@@ -216,7 +225,7 @@ component extends="coldbox.system.RestHandler" {
 		prc,
 		struct populate = {},
 		struct validate = {}
-	) {
+	){
 		param rc.includes                             = "";
 		param rc.excludes                             = "";
 		param rc.ignoreDefaults                       = false;
@@ -234,13 +243,19 @@ component extends="coldbox.system.RestHandler" {
 		prc.oEntity = validateOrFail( argumentCollection = arguments.validate );
 
 		// announce it
-		announceInterception( "pre#variables.entity#Update", { entity : prc.oEntity } );
+		announceInterception(
+			"pre#variables.entity#Update",
+			{ entity : prc.oEntity }
+		);
 
 		// Save it
 		variables.ormService.save( prc.oEntity );
 
 		// announce it
-		announceInterception( "post#variables.entity#Update", { entity : prc.oEntity } );
+		announceInterception(
+			"post#variables.entity#Update",
+			{ entity : prc.oEntity }
+		);
 
 		// Marshall it out
 		prc.response.setData(
@@ -256,18 +271,24 @@ component extends="coldbox.system.RestHandler" {
 	 * Delete a resource
 	 * DELETE /api/v1/{resource}/:id
 	 */
-	function delete( event, rc, prc ) {
+	function delete( event, rc, prc ){
 		param rc.id = 0;
 
 		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
-		announceInterception( "pre#variables.entity#Delete", { entity : prc.oEntity } );
+		announceInterception(
+			"pre#variables.entity#Delete",
+			{ entity : prc.oEntity }
+		);
 
 		variables.ormService.delete( prc.oEntity );
 
 		// announce it
-		announceInterception( "post#variables.entity#Delete", { id : rc.id } );
+		announceInterception(
+			"post#variables.entity#Delete",
+			{ id : rc.id }
+		);
 
 		// Marshall it out
 		prc.response.addMessage( "#variables.entity# deleted!" );
@@ -282,7 +303,7 @@ component extends="coldbox.system.RestHandler" {
 	 *
 	 * @return The page start offset
 	 */
-	private function getPageOffset( page = 1 ) {
+	private function getPageOffset( page = 1 ){
 		var maxRows = getMaxRows();
 		return ( arguments.page * maxrows - maxRows );
 	}
@@ -291,8 +312,11 @@ component extends="coldbox.system.RestHandler" {
 	 * Get the max number of rows to retrieve according to global settings
 	 * or passed in through RC
 	 */
-	private function getMaxRows( event = getRequestContext() ) {
-		var maxRows = event.getValue( "maxRows", variables.settings.resources.maxRows );
+	private function getMaxRows( event = getRequestContext() ){
+		var maxRows = event.getValue(
+			"maxRows",
+			variables.settings.resources.maxRows
+		);
 		// if limit = 0, then don't block
 		if ( variables.settings.resources.maxRowsLimit == 0 ) {
 			return maxRows;
@@ -310,7 +334,10 @@ component extends="coldbox.system.RestHandler" {
 	 * @propertyName The property name
 	 * @value The property value
 	 */
-	private function autoCast( required propertyName, required value ) {
+	private function autoCast(
+		required propertyName,
+		required value
+	){
 		return variables.ormService.autoCast( argumentCollection = arguments );
 	}
 
@@ -327,7 +354,7 @@ component extends="coldbox.system.RestHandler" {
 		boolean useQueryCaching = false,
 		string queryCacheRegion = "",
 		datasource
-	) {
+	){
 		return variables.ormService.newCriteria( argumentCollection = arguments );
 	}
 

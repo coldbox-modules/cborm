@@ -20,9 +20,12 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		required string entityName,
 		required string alias,
 		required any ORMService
-	) {
+	){
 		// create new DetachedCriteria
-		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName(
+		var criteria = createObject(
+			"java",
+			"org.hibernate.criterion.DetachedCriteria"
+		).forEntityName(
 			arguments.entityName,
 			arguments.alias
 		);
@@ -39,7 +42,10 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	}
 
 	// pass off arguments to higher-level restriction builder, and handle the results
-	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ) {
+	any function onMissingMethod(
+		required string missingMethodName,
+		required struct missingMethodArguments
+	){
 		// get the restriction/new criteria
 		var r = createRestriction( argumentCollection = arguments );
 
@@ -74,12 +80,12 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		return this;
 	}
 
-	public any function getNativeCriteria() {
+	public any function getNativeCriteria(){
 		var ormsession = variables.ORMService.getORM().getSession();
 		return variables.nativeCriteria.getExecutableCriteria( ormsession );
 	}
 
-	public any function createDetachedSQLProjection() {
+	public any function createDetachedSQLProjection(){
 		// get the sql with replaced parameters
 		var sql         = SQLHelper.getSql( returnExecutableSql = true );
 		var alias       = SQLHelper.getProjectionAlias();
@@ -114,7 +120,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		required string associationName,
 		required string alias,
 		numeric joinType = this.INNER_JOIN
-	) {
+	){
 		return super.createAlias(
 			arguments.associationName,
 			arguments.alias,
@@ -131,7 +137,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		required string associationName,
 		string alias,
 		numeric joinType = this.INNER_JOIN
-	) {
+	){
 		if ( structKeyExists( arguments, "alias" ) ) {
 			return super.createCriteria(
 				associationName = arguments.associationName,
@@ -139,7 +145,10 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 				joinType        = arguments.joinType
 			);
 		} else {
-			return super.createCriteria( associationName = arguments.associationName, joinType = arguments.joinType );
+			return super.createCriteria(
+				associationName = arguments.associationName,
+				joinType        = arguments.joinType
+			);
 		}
 	}
 
@@ -148,7 +157,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @maxResults The max results to limit by
 	 */
-	any function maxResults( required numeric maxResults ) {
+	any function maxResults( required numeric maxResults ){
 		getNativeCriteria().setMaxResults( javacast( "int", arguments.maxResults ) );
 		if ( SQLHelper.canLogLimitOffset() ) {
 			// process interception
