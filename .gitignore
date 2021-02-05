@@ -1,5 +1,4 @@
 .vscode
-.env
 .artifacts/**
 .tmp/**
 
