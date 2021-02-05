@@ -21,7 +21,7 @@
             "host":"${DB_HOST}",
             "metaCacheTimeout":"60000",
             "password":"${DB_PASSWORD}",
-            "port":"3306",
+            "port":"${DB_PORT:3306}",
             "storage":"false",
             "username":"${DB_USERNAME}",
             "validate":"false"
