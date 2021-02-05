@@ -1,10 +1,10 @@
-﻿component extends = "tests.resources.BaseTest"{
+﻿component extends="tests.resources.BaseTest" {
 
-	function beforeTests() {
+	function beforeTests(){
 		super.beforeTests();
 	}
 
-	function setup() {
+	function setup(){
 		ormCloseSession();
 		ormClearSession();
 
@@ -17,14 +17,17 @@
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
-	function testCountByDynamically() {
+	function testCountByDynamically(){
 		// Test simple Equals
 		t = activeUser.countByLastName( "majano" );
 		assert( 1 eq t, "CountBylastName" );
 	}
-	function testFindByDynamically() {
+	function testFindByDynamically(){
 		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
-		assert( arrayLen( t ), "Conditionals LessThanEquals" );
+		assert(
+			arrayLen( t ),
+			"Conditionals LessThanEquals"
+		);
 		// Test simple Equals
 		t = activeUser.findByLastName( "majano" );
 		assert( isObject( t ), "FindBylastName" );
@@ -33,11 +36,20 @@
 		assert( isNull( t ), "Invalid last name" );
 		// Using Conditionals
 		t = activeUser.findAllByLastNameLessThan( "Majano" );
-		assert( arrayLen( t ), "Conditionals LessThan" );
+		assert(
+			arrayLen( t ),
+			"Conditionals LessThan"
+		);
 		t = activeUser.findAllByLastNameGreaterThan( "Majano" );
-		assert( arrayLen( t ), "Conditionals GreaterThan" );
+		assert(
+			arrayLen( t ),
+			"Conditionals GreaterThan"
+		);
 		t = activeUser.findAllByLastNameGreaterThanEquals( "Majano" );
-		assert( arrayLen( t ), "Conditionals GreaterThanEqauls" );
+		assert(
+			arrayLen( t ),
+			"Conditionals GreaterThanEqauls"
+		);
 		t = activeUser.findByLastNameLike( "ma%" );
 		assert( isObject( t ), "Conditionals Like" );
 		t = activeUser.findAllByLastNameNotEqual( "Majano" );
@@ -47,30 +59,39 @@
 		t = activeUser.findAllByLastNameIsNotNull();
 		assert( arrayLen( t ), "Conditionals isNull" );
 		t = activeUser.findAllByLastLoginBetween( "01/01/2009", "01/01/2012" );
-		assert( arrayLen( t ), "Conditionals between" );
+		assert(
+			arrayLen( t ),
+			"Conditionals between"
+		);
 		t = activeUser.findByLastLoginBetween( "01/01/2008", "11/01/2008" );
 		assert( isNull( t ), "Conditionals between" );
 		t = activeUser.findAllByLastLoginNotBetween( "01/01/2009", "01/01/2012" );
-		assert( arrayLen( t ), "Conditionals not between" );
+		assert(
+			arrayLen( t ),
+			"Conditionals not between"
+		);
 		t = activeUser.findAllByLastNameInList( "Majano,Fernando" );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = activeUser.findAllByLastNameInList( listToArray( "Majano,Fernando" ) );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = activeUser.findAllByLastNameNotInList( listToArray( "Majano,Fernando" ) );
-		assert( arrayLen( t ), "Conditionals NotinList" );
+		assert(
+			arrayLen( t ),
+			"Conditionals NotinList"
+		);
 	}
 
-	function testFindByDynamicallyBadProperty() {
+	function testFindByDynamicallyBadProperty(){
 		expectException( "InvalidMethodGrammar" );
 		t = activeUser.findByLastAndFirst();
 	}
 
-	function testFindByDynamicallyFailure() {
+	function testFindByDynamicallyFailure(){
 		expectException( "HQLQueryException" );
 		t = activeUser.findByLastName();
 	}
 
-	function testIsValid() {
+	function testIsValid(){
 		r = activeUser.isValid();
 		assertFalse( r );
 
@@ -82,21 +103,21 @@
 		assertTrue( r );
 	}
 
-	function testValidateOrFail() {
+	function testValidateOrFail(){
 		activeUser.setFirstName( "Luis" );
 		activeUser.setLastName( "Majano" );
 		activeUser.setPassword( "LuisMajano" );
-		expect( function() {
+		expect( function(){
 			activeUser.validateOrFail();
 		} ).toThrow();
 	}
 
-	function testValidationResults() {
+	function testValidationResults(){
 		r = activeUser.getValidationResults();
 		expect( r.hasErrors() ).toBeFalse();
 	}
 
-	function testNew() {
+	function testNew(){
 		user = activeUser.new();
 		assertFalse( isNull( user ) );
 
@@ -109,7 +130,7 @@
 		assertEquals( "Luis", user.getFirstName() );
 	}
 
-	function testGet() {
+	function testGet(){
 		user = activeUser.get( "123" );
 		assertTrue( isNull( user ) );
 
@@ -117,7 +138,7 @@
 		assertEquals( testUserID, user.getID() );
 	}
 
-	function testGetAll() {
+	function testGetAll(){
 		r = activeUser.getAll();
 		assertTrue( arrayLen( r ) );
 
@@ -131,7 +152,7 @@
 		assertTrue( isObject( r[ 1 ] ) );
 	}
 
-	function testSave() {
+	function testSave(){
 		// mocks
 		mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
 		mockEventHandler.$( "preSave" );
@@ -162,7 +183,7 @@
 		}
 	}
 
-	function testDelete() {
+	function testDelete(){
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
 		user.setFirstName( "unitTest" );
@@ -191,7 +212,7 @@
 		}
 	}
 
-	function testDeleteByID() {
+	function testDeleteByID(){
 		// Create test record to delete
 		var user = entityNew( "ActiveUser" );
 		user.setFirstName( "unitTest" );
@@ -221,7 +242,7 @@
 		}
 	}
 
-	function testDeleteWhere() {
+	function testDeleteWhere(){
 		for ( var x = 1; x lte 3; x++ ) {
 			user = entityNew( "ActiveUser" );
 			user.setFirstName( "unitTest#x#" );
@@ -250,7 +271,7 @@
 		}
 	}
 
-	function testCount() {
+	function testCount(){
 		count = activeUser.count();
 		assertTrue( count gt 0 );
 
@@ -258,45 +279,46 @@
 		assertEquals( 1, count );
 	}
 
-	function testList() {
+	function testList(){
 		test = activeUser.list( sortorder = "lastName asc" );
 
 		assertTrue( test.recordcount );
 	}
 
-	function testFindWhere() {
+	function testFindWhere(){
 		test = activeUser.findWhere( { firstName : "Luis" } );
 		assertEquals( "Majano", test.getLastName() );
 	}
 
-	function testFindAllWhere() {
+	function testFindAllWhere(){
 		test = activeUser.findAllWhere( { firstName : "Luis" } );
 		assertEquals( 1, arrayLen( test ) );
 	}
 
 
-	function testGetKey() {
+	function testGetKey(){
 		test = activeUser.getKey( entityName = "User" );
 		assertEquals( "id", test );
 	}
 
-	function testGetPropertyNames() {
+	function testGetPropertyNames(){
 		test = activeUser.getPropertyNames( entityName = "User" );
 		assertEquals( 6, arrayLen( test ) );
 	}
 
-	function testGetTableName() {
+	function testGetTableName(){
 		test = activeUser.getTableName();
 		assertEquals( "users", test );
 	}
 
-	function testNewCriteria() {
+	function testNewCriteria(){
 		c = activeUser.newCriteria();
 		assertEquals( "ActiveUser", c.getEntityName() );
 	}
 
-	private function deleteCategories() {
+	private function deleteCategories(){
 		var q = new Query( datasource = "coolblog" );
 		q.execute( sql = "delete from categories where category = 'unitTest'" );
 	}
+
 }

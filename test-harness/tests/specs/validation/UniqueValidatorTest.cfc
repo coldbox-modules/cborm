@@ -1,12 +1,12 @@
-component extends="tests.resources.BaseTest"{
+component extends="tests.resources.BaseTest" {
 
-	function setup() {
+	function setup(){
 		super.setup();
 
 		model = getWireBox().getInstance( "UniqueValidator@cborm" );
 	}
 
-	function testValidate() {
+	function testValidate(){
 		result       = getMockBox().createMock( "cbvalidation.models.result.ValidationResult" ).init();
 		var category = entityNew( "Category" );
 

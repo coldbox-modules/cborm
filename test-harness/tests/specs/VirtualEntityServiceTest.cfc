@@ -1,11 +1,11 @@
-﻿component extends = "tests.resources.BaseTest" {
+﻿component extends="tests.resources.BaseTest" {
 
-	function beforeTests() {
+	function beforeTests(){
 		super.beforeTests();
 		// Load our test injector for ORM entity binding
 	}
 
-	function setup() {
+	function setup(){
 		ormservice = getMockBox().createMock( "cborm.models.VirtualEntityService" );
 		// Mocks
 		ormservice.init( entityname = "User" );
@@ -15,12 +15,12 @@
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
-	function testCountByDynamically() {
+	function testCountByDynamically(){
 		// Test simple Equals
 		t = ormservice.init( "User" ).countByLastName( "majano" );
 		assert( 1 eq t, "CountBylastName" );
 	}
-	function testFindByDynamically() {
+	function testFindByDynamically(){
 		// Test simple Equals
 		t = ormservice.findByLastName( "majano" );
 		assert( isObject( t ), "FindBylastName" );
@@ -29,13 +29,25 @@
 		assert( isNull( t ), "Invalid last name" );
 		// Using Conditionals
 		t = ormservice.findAllByLastNameLessThanEquals( "Majano" );
-		assert( arrayLen( t ), "Conditionals LessThanEquals" );
+		assert(
+			arrayLen( t ),
+			"Conditionals LessThanEquals"
+		);
 		t = ormservice.findAllByLastNameLessThan( "Majano" );
-		assert( arrayLen( t ), "Conditionals LessThan" );
+		assert(
+			arrayLen( t ),
+			"Conditionals LessThan"
+		);
 		t = ormservice.findAllByLastNameGreaterThan( "Majano" );
-		assert( arrayLen( t ), "Conditionals GreaterThan" );
+		assert(
+			arrayLen( t ),
+			"Conditionals GreaterThan"
+		);
 		t = ormservice.findAllByLastNameGreaterThanEquals( "Majano" );
-		assert( arrayLen( t ), "Conditionals GreaterThanEqauls" );
+		assert(
+			arrayLen( t ),
+			"Conditionals GreaterThanEqauls"
+		);
 		t = ormservice.findByLastNameLike( "ma%" );
 		assert( isObject( t ), "Conditionals Like" );
 		t = ormservice.findAllByLastNameNotEqual( "Majano" );
@@ -45,7 +57,10 @@
 		t = ormservice.findAllByLastNameIsNotNull();
 		assert( arrayLen( t ), "Conditionals isNull" );
 		t = ormservice.findAllByLastLoginBetween( "01/01/2009", "01/01/2012" );
-		assert( arrayLen( t ), "Conditionals between" );
+		assert(
+			arrayLen( t ),
+			"Conditionals between"
+		);
 		t = ormservice.findByLastLoginBetween( "01/01/2008", "11/01/2008" );
 		assert( isNull( t ), "Conditionals between" );
 		t = ormservice.findAllByLastNameInList( "Majano,Fernando" );
@@ -53,21 +68,24 @@
 		t = ormservice.findAllByLastNameInList( listToArray( "Majano,Fernando" ) );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = ormservice.findAllByLastNameNotInList( listToArray( "Majano,Fernando" ) );
-		assert( arrayLen( t ), "Conditionals NotinList" );
+		assert(
+			arrayLen( t ),
+			"Conditionals NotinList"
+		);
 	}
 
-	function testFindByDynamicallyBadProperty() {
+	function testFindByDynamicallyBadProperty(){
 		expectException( "InvalidMethodGrammar" );
 		t = ormservice.findByLastAndFirst();
 	}
 
-	function testFindByDynamicallyFailure() {
+	function testFindByDynamicallyFailure(){
 		expectException( "HQLQueryException" );
 		t = ormservice.findByLastName();
 	}
 
 
-	function testNew() {
+	function testNew(){
 		user = ormservice.new();
 		assertFalse( isNull( user ) );
 
@@ -80,7 +98,7 @@
 		assertEquals( "Luis", user.getFirstName() );
 	}
 
-	function testGet() {
+	function testGet(){
 		user = ormService.get( "123" );
 		assertTrue( isNull( user ) );
 
@@ -88,7 +106,7 @@
 		assertEquals( testUserID, user.getID() );
 	}
 
-	function testGetAll() {
+	function testGetAll(){
 		r = ormService.getAll();
 		assertTrue( arrayLen( r ) );
 
@@ -102,7 +120,7 @@
 		assertTrue( isObject( r[ 1 ] ) );
 	}
 
-	function testDeleteByID() {
+	function testDeleteByID(){
 		user = entityNew( "User" );
 		user.setFirstName( "unitTest" );
 		user.setLastName( "unitTest" );
@@ -130,7 +148,7 @@
 		}
 	}
 
-	function testDeleteWhere() {
+	function testDeleteWhere(){
 		for ( var x = 1; x lte 3; x++ ) {
 			user = entityNew( "User" );
 			user.setFirstName( "unitTest#x#" );
@@ -157,7 +175,7 @@
 		}
 	}
 
-	function testCount() {
+	function testCount(){
 		count = ormService.count();
 		assertTrue( count gt 0 );
 
@@ -165,44 +183,44 @@
 		assertEquals( 1, count );
 	}
 
-	function testList() {
+	function testList(){
 		test = ormservice.list( sortorder = "lastName asc" );
 
 		assertTrue( test.recordcount );
 	}
 
-	function testFindWhere() {
+	function testFindWhere(){
 		test = ormservice.findWhere( { firstName : "Luis" } );
 		assertEquals( "Majano", test.getLastName() );
 	}
 
-	function testFindAllWhere() {
+	function testFindAllWhere(){
 		test = ormservice.findAllWhere( { firstName : "Luis" } );
 		assertEquals( 1, arrayLen( test ) );
 	}
 
 
-	function testGetKey() {
+	function testGetKey(){
 		test = ormservice.getKey( entityName = "User" );
 		assertEquals( "id", test );
 	}
 
-	function testGetPropertyNames() {
+	function testGetPropertyNames(){
 		test = ormservice.getPropertyNames( entityName = "User" );
 		assertEquals( 6, arrayLen( test ) );
 	}
 
-	function testGetTableName() {
+	function testGetTableName(){
 		test = ormservice.getTableName();
 		assertEquals( "users", test );
 	}
 
-	function testNewCriteria() {
+	function testNewCriteria(){
 		c = ormservice.newCriteria();
 		assertEquals( "User", c.getEntityName() );
 	}
 
-	function testConvertIDValueToJavaType() {
+	function testConvertIDValueToJavaType(){
 		test = ormservice.convertIDValueToJavaType( id = 1 );
 		assertEquals( [ 1 ], test );
 
@@ -210,8 +228,12 @@
 		assertEquals( [ 1, 2, 3 ], test );
 	}
 
-	function testConvertValueToJavaType() {
-		test = ormservice.convertValueToJavaType( propertyName = "id", value = testUserID );
+	function testConvertValueToJavaType(){
+		test = ormservice.convertValueToJavaType(
+			propertyName = "id",
+			value        = testUserID
+		);
 		assertEquals( testUserID, test );
 	}
+
 }

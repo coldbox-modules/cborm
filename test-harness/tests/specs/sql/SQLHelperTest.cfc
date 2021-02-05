@@ -1,14 +1,20 @@
 component extends="tests.resources.BaseTest" {
 
-	function setup() {
+	function setup(){
 		ormService       = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
 		mockEventHandler = getMockBox()
 			.createMock( "cborm.models.EventHandler" )
-			.$( "getEventManager", getMockBox().createStub().$( "processState" ) );
+			.$(
+				"getEventManager",
+				getMockBox().createStub().$( "processState" )
+			);
 		ormService.setORMEventHandler( mockEventHandler );
 
 		criteria = getMockBox().createMock( "cborm.models.criterion.CriteriaBuilder" );
-		criteria.init( entityName = "User", ormservice = ormservice );
+		criteria.init(
+			entityName = "User",
+			ormservice = ormservice
+		);
 		SQLHelper = getMockBox().createMock( "cborm.models.sql.SQLHelper" );
 		SQLHelper.init( criteria );
 
@@ -17,7 +23,7 @@ component extends="tests.resources.BaseTest" {
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
-	function testLog() {
+	function testLog(){
 		SQLHelper.log( "Anything" );
 		SQLHelper.log( "Mother" );
 		// check that it's an array
@@ -26,21 +32,41 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( arrayLen( SQLHelper.getLog() ) == 2 );
 	}
 
-	function testGetSQL() {
+	function testGetSQL(){
 		criteria.like( "lastName", "M%" );
 		// test it returns a string
 		assertTrue( isSimpleValue( SQLHelper.getSQL() ) );
 		// test it returns non-executable sql
-		assertTrue( findNoCase( "?", SQLHelper.getSQL( returnExecutableSql = false ) ) );
+		assertTrue(
+			findNoCase(
+				"?",
+				SQLHelper.getSQL( returnExecutableSql = false )
+			)
+		);
 		// test it returns executable sql
-		assertFalse( findNoCase( "?", SQLHelper.getSQL( returnExecutableSql = true ) ) );
+		assertFalse(
+			findNoCase(
+				"?",
+				SQLHelper.getSQL( returnExecutableSql = true )
+			)
+		);
 		// test it returns non-formatted sql
-		assertFalse( findNoCase( "<pre>", SQLHelper.getSQL( formatSql = false ) ) );
+		assertFalse(
+			findNoCase(
+				"<pre>",
+				SQLHelper.getSQL( formatSql = false )
+			)
+		);
 		// test it returns formatted sql
-		assertTrue( findNoCase( "<pre>", SQLHelper.getSQL( formatSql = true ) ) );
+		assertTrue(
+			findNoCase(
+				"<pre>",
+				SQLHelper.getSQL( formatSql = true )
+			)
+		);
 	}
 
-	function testApplyFormatting() {
+	function testApplyFormatting(){
 		criteria.like( "lastName", "M%" );
 		var sql       = SQLHelper.getSql( false, false );
 		var formatted = SQLHelper.applyFormatting( sql );
@@ -48,9 +74,12 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( findNoCase( "<pre>", formatted ) );
 	}
 
-	function testGetPositionalSQLParameterValues() {
+	function testGetPositionalSQLParameterValues(){
 		r = criteria
-			.init( entityName = "Role", ormservice = ormservice )
+			.init(
+				entityName = "Role",
+				ormservice = ormservice
+			)
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var values = r.getPositionalSQLParameterValues();
@@ -60,9 +89,12 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( arrayLen( values ) == 1 );
 	}
 
-	function testGetPositionalSQLParameterTypes() {
+	function testGetPositionalSQLParameterTypes(){
 		r = criteria
-			.init( entityName = "Role", ormservice = ormservice )
+			.init(
+				entityName = "Role",
+				ormservice = ormservice
+			)
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var simpletypes   = r.getPositionalSQLParameterTypes( true );
@@ -75,9 +107,12 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( isObject( complexttypes[ 1 ] ) );
 	}
 
-	function testGetPositionalSQLParameters() {
+	function testGetPositionalSQLParameters(){
 		r = criteria
-			.init( entityName = "Role", ormservice = ormservice )
+			.init(
+				entityName = "Role",
+				ormservice = ormservice
+			)
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var params = r.getPositionalSQLParameters();
@@ -87,40 +122,40 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( arrayLen( params ) == 1 );
 	}
 
-	function testGenerateSQLAlias() {
+	function testGenerateSQLAlias(){
 		assertTrue( isSimpleValue( SQLHelper.generateSQLAlias() ) );
 	}
 
-	function testGetRootSQLAlias() {
+	function testGetRootSQLAlias(){
 		assertTrue( isSimpleValue( SQLHelper.getRootSQLAlias() ) );
 	}
 
-	function testGetProjectedTypes() {
+	function testGetProjectedTypes(){
 		criteria.withProjections( count = "id" );
 		assertIsArray( SQLHelper.getProjectedTypes() );
 	}
 
-	function testGetProjectionAlias() {
+	function testGetProjectionAlias(){
 		criteria.withProjections( count = "id" );
 		assertEquals( SQLHelper.getProjectionAlias(), "id" );
 	}
 
-	function testCanLogLimitOffset() {
+	function testCanLogLimitOffset(){
 		assertTrue( isBoolean( SQLHelper.canLogLimitOffset() ) );
 	}
 
-	function testGetDialect() {
+	function testGetDialect(){
 		expect( getMetadata( SQLHelper.getDialect() ).getSuperClass().getName() ).toInclude( "Dialect" );
 	}
 
-	function testGetQueryParameters() {
+	function testGetQueryParameters(){
 		criteria.like( "lastName", "M%" );
 		makePublic( SQLHelper, "getQueryParameters" );
 
 		assertTrue( isObject( SQLHelper.getQueryParameters() ) );
 	}
 
-	function testReplaceQueryParameters() {
+	function testReplaceQueryParameters(){
 		criteria.like( "lastName", "M%" );
 		var sql = criteria.getSQL( false, false );
 		makePublic( SQLHelper, "replaceQueryParameters" );
@@ -133,7 +168,7 @@ component extends="tests.resources.BaseTest" {
 		assertFalse( findNoCase( "?", replaced ) );
 	}
 
-	function testBindLimitParameters() {
+	function testBindLimitParameters(){
 		criteria.like( "lastName", "M%" );
 		criteria.list( max = 10, offset = 2 );
 		// make public
@@ -162,19 +197,19 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( test2[ 3 ] == 10 );
 	}
 
-	function testUseLimit() {
+	function testUseLimit(){
 		makePublic( SQLHelper, "useLimit" );
 		makePublic( SQLHelper, "getQueryParameters" );
 		assertTrue( isBoolean( SQLHelper.useLimit( SQLHelper.getQueryParameters().getRowSelection() ) ) );
 	}
 
-	function testHasMaxRows() {
+	function testHasMaxRows(){
 		makePublic( SQLHelper, "hasMaxRows" );
 		makePublic( SQLHelper, "getQueryParameters" );
 		assertTrue( isBoolean( SQLHelper.hasMaxRows( SQLHelper.getQueryParameters().getRowSelection() ) ) );
 	}
 
-	function testGetFirstRow() {
+	function testGetFirstRow(){
 		criteria.like( "lastName", "M%" );
 		criteria.list( max = 10, offset = 2 );
 		makePublic( SQLHelper, "getFirstRow" );
@@ -182,7 +217,7 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( isNumeric( SQLHelper.getFirstRow( SQLHelper.getQueryParameters().getRowSelection() ) ) );
 	}
 
-	function testGetMaxOrLimit() {
+	function testGetMaxOrLimit(){
 		criteria.like( "lastName", "M%" );
 		criteria.list( max = 10, offset = 2 );
 		makePublic( SQLHelper, "getMaxOrLimit" );
@@ -190,15 +225,18 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( isNumeric( SQLHelper.getMaxOrLimit( SQLHelper.getQueryParameters().getRowSelection() ) ) );
 	}
 
-	function testGetCriteriaJoinWalker() {
+	function testGetCriteriaJoinWalker(){
 		makePublic( SQLHelper, "getCriteriaJoinWalker" );
 		assertTrue(
 			getMetadata( SQLHelper.getCriteriaJoinWalker() ).getName() == "org.hibernate.loader.criteria.CriteriaJoinWalker"
 		);
 	}
 
-	function testGetCriteriaQueryTranslator() {
-		makePublic( SQLHelper, "getCriteriaQueryTranslator" );
+	function testGetCriteriaQueryTranslator(){
+		makePublic(
+			SQLHelper,
+			"getCriteriaQueryTranslator"
+		);
 		assertTrue(
 			getMetadata( SQLHelper.getCriteriaQueryTranslator() ).getName() == "org.hibernate.loader.criteria.CriteriaQueryTranslator"
 		);
