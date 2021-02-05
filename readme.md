@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/coldbox-modules/cborm.svg?branch=development)](https://travis-ci.org/coldbox-modules/cborm)
+[![Build Status](https://travis-ci.com/coldbox-modules/cborm.svg?branch=development)](https://travis-ci.com/coldbox-modules/cborm)
 
 # Welcome To The ColdBox ORM Module
 
@@ -67,6 +67,14 @@ Apache License, Version 2.0.
 **Documentation**
 
 * https://coldbox-orm.ortusbooks.com/
+
+**Issues**
+
+* https://ortussolutions.atlassian.net/browse/CBORM
+
+**Support**
+
+* https://community.ortussolutions.com/c/box-modules/cborm/25
 
 ## SYSTEM REQUIREMENTS
 

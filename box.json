@@ -1,15 +1,15 @@
 {
     "name":"ColdBox ORM Extensions",
-    "version":"2.7.0",
+    "version":"3.0.0",
     "location":"http://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com",
     "homepage":"https://github.com/coldbox-modules/cborm",
-    "documentation":"https://github.com/coldbox-modules/cborm/wiki",
+    "documentation":"https://coldbox-orm.ortusbooks.com/",
     "repository":{
         "type":"git",
         "url":"https://github.com/coldbox-modules/cborm"
     },
-    "bugs":"https://github.com/coldbox-modules/cborm/issues",
+    "bugs":"https://ortussolutions.atlassian.net/browse/CBORM",
     "shortDescription":"Enhances the ColdFusion ORM with tons of utilities.",
     "slug":"cborm",
     "type":"modules",
@@ -26,7 +26,7 @@
         "Joel Watson <existdissolve@gmail.com>"
     ],
     "dependencies":{
-        "cbvalidation":"^2.0.0",
+        "cbvalidation":"^3.0.0",
         "mementifier":"^2.0.0",
         "cbstreams":"^1.5.0",
         "cbpaginator":"^2.0.0"

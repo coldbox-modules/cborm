@@ -5,7 +5,7 @@
     "private":true,
     "description":"",
     "dependencies":{
-        "cbvalidation":"^2.0.0",
+        "cbvalidation":"^3.0.0",
         "mementifier":"^2.0.0",
         "cbstreams":"^1.4.0+48",
         "coldbox":"^6.0.0",
