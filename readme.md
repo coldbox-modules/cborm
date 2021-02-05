@@ -121,10 +121,6 @@ moduleSettings = {
 We have also migrated the `UniqueValidator` from the **validation** module into our
 ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use in your constraints like so:
 
-```js
-{ fieldName : { validator: "UniqueValidator@cborm" } }
-```
-
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
