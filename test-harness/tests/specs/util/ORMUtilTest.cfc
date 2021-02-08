@@ -1,35 +1,35 @@
 component extends="tests.resources.BaseTest" skip="isCF" {
 
-	function setup() {
+	function setup(){
 		ormUtil = getMockBox().createMock( "cborm.models.util.LuceeORMUtil" );
 	}
 
-	function testflush() {
+	function testflush(){
 		ormutil.flush();
 	}
 
-	function testGetSession() {
+	function testGetSession(){
 		t = ormutil.getSession();
 	}
 
-	function testgetSessionFactory() {
+	function testgetSessionFactory(){
 		t = ormutil.getSessionFactory();
 	}
 
-	function testclearSession() {
+	function testclearSession(){
 		t = ormutil.clearSession();
 	}
 
-	function testcloseSession() {
+	function testcloseSession(){
 		t = ormutil.closeSession();
 	}
 
-	function testevictQueries() {
+	function testevictQueries(){
 		t = ormutil.evictQueries();
 		t = ormutil.evictQueries( "users" );
 	}
 
-	function testGetEntityDatasource() {
+	function testGetEntityDatasource(){
 		d = ormutil.getEntityDatasource( "User" );
 		assertEquals( "coolblog", d );
 
@@ -40,8 +40,11 @@ component extends="tests.resources.BaseTest" skip="isCF" {
 		assertEquals( "coolblog", d );
 	}
 
-	function testGetDefaultDatasource() {
-		assertEquals( "coolblog", ormutil.getDefaultDatasource() );
+	function testGetDefaultDatasource(){
+		assertEquals(
+			"coolblog",
+			ormutil.getDefaultDatasource()
+		);
 	}
 
 }

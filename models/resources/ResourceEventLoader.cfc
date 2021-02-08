@@ -25,20 +25,20 @@ component singleton {
 	/**
 	 * Constructor
 	 */
-	function init() {
+	function init(){
 		return this;
 	}
 
 	/**
 	 * Loads up all the events according to hibernate
 	 */
-	function loadEvents() {
+	function loadEvents(){
 		var sTime = getTickCount();
 
 		variables.log.info( "** Starting to register all Base ORM Resource Events" );
 
 		// Register all Resource Events
-		getEntityMap().each( function( thisEntity ) {
+		getEntityMap().each( function( thisEntity ){
 			variables.interceptorService.appendInterceptionPoints( [
 				"pre#thisEntity#List",
 				"post#thisEntity#List",
@@ -60,8 +60,13 @@ component singleton {
 	/**
 	 * Get the entity map according to engine
 	 */
-	private function getEntityMap() {
-		if ( find( "2018", server.coldfusion.productVersion ) ) {
+	private function getEntityMap(){
+		if (
+			find(
+				"2018",
+				server.coldfusion.productVersion
+			)
+		) {
 			return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 		} else {
 			return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );

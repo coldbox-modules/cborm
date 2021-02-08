@@ -1,13 +1,13 @@
 ﻿/**
-* My Event Handler Hint
-*/
-component{
+ * My Event Handler Hint
+ */
+component {
 
-	property name="userService" inject="entityService:User";
+	property name="userService"     inject="entityService:User";
 	property name="categoryService" inject="entityService:Category";
 
 	// Index
-	any function index( event,rc, prc ){
+	any function index( event, rc, prc ){
 		var cats = entityLoad( "Category" );
 	}
 
@@ -16,32 +16,38 @@ component{
 	}
 
 	/**
-	* uniqueValidation
-	*/
+	 * uniqueValidation
+	 */
 	any function uniqueValidation( event, rc, prc ){
-
-		var vResults = validateModel( target=userService.new( {
-			firstName="luis", lastName="majano", username="#createUUID()#"
-		} ) );
+		var vResults = validateModel(
+			target = userService.new( {
+				firstName : "luis",
+				lastName  : "majano",
+				username  : "#createUUID()#"
+			} )
+		);
 
 		return {
 			"hasErrors" : vResults.hasErrors(),
-			"errors" : vResults.getAllErrors()
+			"errors"    : vResults.getAllErrors()
 		};
 	}
 
 	/**
-	* notUniqueValidation
-	*/
+	 * notUniqueValidation
+	 */
 	any function notUniqueValidation( event, rc, prc ){
-
-		var vResults = validateModel( target=userService.new( {
-			firstName="luis", lastName="majano", username="lui"
-		} ) );
+		var vResults = validateModel(
+			target = userService.new( {
+				firstName : "luis",
+				lastName  : "majano",
+				username  : "lui"
+			} )
+		);
 
 		return {
 			"hasErrors" : vResults.hasErrors(),
-			"errors" : vResults.getAllErrors()
+			"errors"    : vResults.getAllErrors()
 		};
 	}
 

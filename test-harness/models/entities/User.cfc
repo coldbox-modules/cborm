@@ -1,6 +1,10 @@
-﻿component persistent="true" table="users"{
+﻿component persistent="true" table="users" {
 
-	property name="id" column="user_id" fieldType="id" generator="uuid";
+	property
+		name     ="id"
+		column   ="user_id"
+		fieldType="id"
+		generator="uuid";
 	/**
 	 * @display First Name
 	 * @message Please provide firstname
@@ -16,18 +20,31 @@
 	property name="userName";
 	property name="password";
 	property name="lastLogin" ormtype="date";
-	
+
 	// M20 -> Role
-	property name="role" cfc="Role" fieldtype="many-to-one" fkcolumn="FKRoleID" lazy="true" notnull="false";
-	
+	property
+		name     ="role"
+		cfc      ="Role"
+		fieldtype="many-to-one"
+		fkcolumn ="FKRoleID"
+		lazy     ="true"
+		notnull  ="false";
+
 	// DI Test
-	property name="testDI" inject="model:testService" persistent="false" required="false";
-	//property name="controller" inject="coldbox" persistent="false" required="false";
+	property
+		name      ="testDI"
+		inject    ="model:testService"
+		persistent="false"
+		required  ="false";
+	// property name="controller" inject="coldbox" persistent="false" required="false";
 
 	this.constraints = {
-		"firstName" : { required = true },
-		"lastName"  : { required = true },
-		"userName"  : { required = true, validator="cborm.models.validation.UniqueValidator" }
+		"firstName" : { required : true },
+		"lastName"  : { required : true },
+		"userName"  : {
+			required  : true,
+			validator : "cborm.models.validation.UniqueValidator"
+		}
 	};
 
 }

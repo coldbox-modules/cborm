@@ -56,7 +56,7 @@ component {
 	};
 
 	// request start
-	public boolean function onRequestStart( String targetPage ) {
+	public boolean function onRequestStart( String targetPage ){
 		if ( url.keyExists( "fwreinit" ) ) {
 			ormReload();
 			if ( structKeyExists( server, "lucee" ) ) {
@@ -67,9 +67,9 @@ component {
 		return true;
 	}
 
-	public function onRequestEnd() {
+	public function onRequestEnd(){
 		// CB 6 graceful shutdown
-		if( !isNull( application.cbController ) ){
+		if ( !isNull( application.cbController ) ) {
 			application.cbController.getLoaderService().processShutdown();
 		}
 

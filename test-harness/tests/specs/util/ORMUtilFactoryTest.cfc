@@ -6,22 +6,22 @@ component extends="testbox.system.BaseSpec" {
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
-	function beforeAll() {
+	function beforeAll(){
 		factory = createMock( "cborm.models.util.ORMUtilFactory" );
 	}
 
 	// executes after all suites+specs in the run() method
-	function afterAll() {
+	function afterAll(){
 	}
 
 	/*********************************** BDD SUITES ***********************************/
 
-	function run() {
+	function run(){
 		// all your suites go here.
-		describe( "ORM Util Factory", function() {
+		describe( "ORM Util Factory", function(){
 			it(
 				title = "can get adobe instance",
-				body  = function() {
+				body  = function(){
 					factory.$( "getPlatform", "ColdFusion Server" );
 					var u = factory.getORMUtil();
 					expect( u ).toBeInstanceOf( "cborm.models.util.CFORMUtil" );
@@ -31,19 +31,19 @@ component extends="testbox.system.BaseSpec" {
 
 			it(
 				title = "can get lucee > 4.3 instance",
-				body  = function() {
+				body  = function(){
 					factory.$( "getPlatform", "lucee" ).$( "getLuceeVersion", "4.3.000" );
 					var u = factory.getORMUtil();
 					expect( u ).toBeInstanceOf( "cborm.models.util.LuceeORMUtil" );
 				},
-				skip = function() {
+				skip = function(){
 					return ( isLucee() and findNoCase( "4.3", server.lucee.version ) ) ? false : true;
 				}
 			);
 		} );
 	}
 
-	function isLucee() {
+	function isLucee(){
 		return structKeyExists( server, "lucee" );
 	}
 

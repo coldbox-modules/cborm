@@ -13,7 +13,7 @@ component {
 	 *
 	 * @datasource Optional datsource
 	 */
-	void function flush( string datasource ) {
+	void function flush( string datasource ){
 		if ( !isNull( arguments.datasource ) ) {
 			ormFlush( arguments.datasource );
 		} else {
@@ -26,7 +26,7 @@ component {
 	 *
 	 * @datasource Optional datsource
 	 */
-	any function getSession( string datasource ) {
+	any function getSession( string datasource ){
 		if ( !isNull( arguments.datasource ) ) {
 			// get actual session from coldfusion.orm.hibernate.SessionWrapper
 			return ormGetSession( arguments.datasource ).getActualSession();
@@ -41,7 +41,7 @@ component {
 	 *
 	 * @datasource Optional datsource
 	 */
-	any function getSessionFactory( string datasource ) {
+	any function getSessionFactory( string datasource ){
 		if ( !isNull( arguments.datasource ) ) {
 			return ormGetSessionFactory( arguments.datasource );
 		} else {
@@ -54,7 +54,7 @@ component {
 	 *
 	 * @datasource Optional datsource
 	 */
-	void function clearSession( string datasource ) {
+	void function clearSession( string datasource ){
 		if ( !isNull( arguments.datasource ) ) {
 			ormClearSession( arguments.datasource );
 		} else {
@@ -67,7 +67,7 @@ component {
 	 *
 	 * @datasource Optional datsource
 	 */
-	void function closeSession( string datasource ) {
+	void function closeSession( string datasource ){
 		if ( !isNull( arguments.datasource ) ) {
 			ormCloseSession( arguments.datasource );
 		} else {
@@ -81,9 +81,12 @@ component {
 	 * @cacheName The optional cache name
 	 * @datasource Optional datsource
 	 */
-	void function evictQueries( string cachename, string datasource ) {
+	void function evictQueries( string cachename, string datasource ){
 		if ( !isNull( arguments.cacheName ) AND !isNull( arguments.datasource ) ) {
-			ormEvictQueries( arguments.cachename, arguments.datasource );
+			ormEvictQueries(
+				arguments.cachename,
+				arguments.datasource
+			);
 		} else if ( !isNull( arguments.cacheName ) ) {
 			ormEvictQueries( arguments.cachename );
 		} else {
@@ -97,7 +100,10 @@ component {
 	 * @entity The entity reference. Can be passed as an object or as the entity name.
 	 * @defaultDatasource The default datasource to use if not, do self-discovery
 	 */
-	string function getEntityDatasource( required entity, string defaultDatasource ) {
+	string function getEntityDatasource(
+		required entity,
+		string defaultDatasource
+	){
 		// DEFAULT datasource
 		var datasource = ( isNull( arguments.defaultDatasource ) ? getDefaultDatasource() : arguments.defaultDatasource );
 
@@ -116,7 +122,7 @@ component {
 	/**
 	 * Get the default application datasource
 	 */
-	string function getDefaultDatasource() {
+	string function getDefaultDatasource(){
 		// get application metadata
 		var settings = getApplicationMetadata();
 
@@ -139,7 +145,10 @@ component {
 	 *
 	 * @return org.hibernate.metadata.ClassMetadata
 	 */
-	any function getEntityMetadata( required string entityName, required string datasource ) {
+	any function getEntityMetadata(
+		required string entityName,
+		required string datasource
+	){
 		return getSessionFactory( arguments.datasource ).getClassMetaData( arguments.entityName );
 	}
 

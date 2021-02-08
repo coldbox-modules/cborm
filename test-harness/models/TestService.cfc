@@ -1,8 +1,6 @@
-<cfcomponent name="testService" output="false" >
-
+<cfcomponent name="testService" output="false">
 	<cfscript>
-		instance = structnew();
-		instance.testGateway = 0;
+	instance             = structNew();
+	instance.testGateway = 0;
 	</cfscript>
-
 </cfcomponent>
