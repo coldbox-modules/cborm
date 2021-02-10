@@ -51,7 +51,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * @useQueryCaching Activate query caching, defaults to false
 	 * @eventHandling Activate event handling, defaults to true
 	 * @useTransactions Activate transaction blocks on calls, defaults to true
-	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to true
+	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to false
 	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
 	 */
 	VirtualEntityService function init(

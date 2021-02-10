@@ -186,7 +186,8 @@
 	function testList(){
 		test = ormservice.list( sortorder = "lastName asc" );
 
-		assertTrue( test.recordcount );
+		assertTrue( isArray( test) );
+		assertTrue( arrayLen( test ) );
 	}
 
 	function testFindWhere(){

@@ -69,7 +69,7 @@ component accessors="true" {
 	property
 		name      ="defaultAsQuery"
 		type      ="boolean"
-		default   ="true"
+		default   ="false"
 		persistent="false";
 
 	/**
@@ -109,7 +109,7 @@ component accessors="true" {
 		boolean useQueryCaching = false,
 		boolean eventHandling   = true,
 		boolean useTransactions = true,
-		boolean defaultAsQuery  = true,
+		boolean defaultAsQuery  = false,
 		string datasource
 	){
 		// setup local properties
