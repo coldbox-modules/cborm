@@ -64,7 +64,7 @@ component accessors="true" {
 		persistent="false";
 
 	/**
-	 * The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or arrays, default is query for listing
+	 * The bit that determines the default return value for list(), createCriteria() and executeQuery() as query or arrays, default is query for listing
 	 */
 	property
 		name      ="defaultAsQuery"
