@@ -7,15 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [v3.0.0] => 2021-FEB-04
+## [v3.0.0] => 2021-FEB-12
 
 ### Added
 
-* Upgrade to `cbValidation` v3.0. If you are using `cb18n` in your app make sure you read the compatibility guide for v2 https://coldbox-i18n.ortusbooks.com
+* [<a href='https://ortussolutions.atlassian.net/browse/CBORM-3'>CBORM-3</a>] - Updated cbValidation to v3 to suppport cbi18n v2
+* [<a href='https://ortussolutions.atlassian.net/browse/CBORM-4'>CBORM-4</a>] - asQuery update to default it to false
+* [<a href='https://ortussolutions.atlassian.net/browse/CBORM-5'>CBORM-5</a>] - Document v3 variant in the docs
+
+## Improved
+
+* [<a href='https://ortussolutions.atlassian.net/browse/CBORM-6'>CBORM-6</a>] - Source code cleanups by applying formatting rules
 
 ### Fixed
 
-* ActiveEntity fix for `isDirty()` not passing the actual entity.
+* [<a href='https://ortussolutions.atlassian.net/browse/CBORM-2'>CBORM-2</a>] - isDirty() not working with ActiveEntity due to missing entity passed
 
 ----
 
