@@ -32,7 +32,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @useQueryCaching Enable query caching for this entity or not, defaults to false
 	 * @eventHandling Enable event handling for new() and save() operations, defaults to true
 	 * @useTransactions Enable transactions for all major operations, defaults to true
-	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to true
+	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to false
 	 */
 	function init(
 		string queryCacheRegion,

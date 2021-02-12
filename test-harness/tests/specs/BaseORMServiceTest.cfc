@@ -702,29 +702,30 @@
 			sortorder  = "category asc",
 			criteria   = criteria
 		);
-		assertTrue( test.recordcount );
+		assertTrue( arrayLen( test ) );
 
 		// as array
-		ormservice.setDefaultAsQuery( false );
+		ormservice.setDefaultAsQuery( true );
 		test = ormservice.list(
 			entityName = "Category",
 			sortorder  = "category asc",
 			criteria   = criteria
 		);
-		assertTrue( arrayLen( test ) );
+		assertTrue( test.recordcount );
 	}
 
 	function testExecuteQuery(){
 		test = ormservice.executeQuery( query = "from Category" );
 		debug( test );
-		assertTrue( test.recordcount );
+		assertTrue( isArray( test ) );
+		assertTrue( arrayLen( test ) );
 
 		params = [ "general" ];
 		test   = ormservice.executeQuery(
 			query  = "from Category where category = ?",
 			params = params
 		);
-		assertTrue( test.recordcount );
+		assertTrue( arrayLen( test ) );
 	}
 
 	function testExecuteQueryWithUpdate(){

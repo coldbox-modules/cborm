@@ -64,12 +64,12 @@ component accessors="true" {
 		persistent="false";
 
 	/**
-	 * The bit that determines the default return value for list(), createCriteriaQuery() and executeQuery() as query or arrays, default is query for listing
+	 * The bit that determines the default return value for list(), createCriteria() and executeQuery() as query or arrays, default is query for listing
 	 */
 	property
 		name      ="defaultAsQuery"
 		type      ="boolean"
-		default   ="true"
+		default   ="false"
 		persistent="false";
 
 	/**
@@ -109,7 +109,7 @@ component accessors="true" {
 		boolean useQueryCaching = false,
 		boolean eventHandling   = true,
 		boolean useTransactions = true,
-		boolean defaultAsQuery  = true,
+		boolean defaultAsQuery  = false,
 		string datasource
 	){
 		// setup local properties
