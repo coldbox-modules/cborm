@@ -1,8 +1,8 @@
-component extends="tests.resources.BaseTest"{
+component extends="tests.resources.BaseTest" {
 
-	function run() {
-		describe( "ORM Resource Handler", function() {
-			aroundEach( function( spec, suite, data ) {
+	function run(){
+		describe( "ORM Resource Handler", function(){
+			aroundEach( function( spec, suite, data ){
 				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
 				setup();
 				transaction action="begin" {
@@ -17,9 +17,9 @@ component extends="tests.resources.BaseTest"{
 				}
 			} );
 
-			story( "I want to list all resources", function() {
-				given( "no options", function() {
-					then( "it can display all resources", function() {
+			story( "I want to list all resources", function(){
+				given( "no options", function(){
+					then( "it can display all resources", function(){
 						var event    = this.get( "/roles" );
 						var response = event.getPrivateValue( "response" );
 
@@ -32,9 +32,9 @@ component extends="tests.resources.BaseTest"{
 				} );
 			} );
 
-			story( "I want to view a resource", function() {
-				given( "a valid id", function() {
-					then( "then I should see that resource", function() {
+			story( "I want to view a resource", function(){
+				given( "a valid id", function(){
+					then( "then I should see that resource", function(){
 						var event    = this.get( "/roles/3" );
 						var response = event.getPrivateValue( "response" );
 
@@ -43,8 +43,8 @@ component extends="tests.resources.BaseTest"{
 						expect( response.getData().roleId ).toBe( 3 );
 					} );
 				} );
-				given( "an invalid id", function() {
-					then( "then I should see an error message", function() {
+				given( "an invalid id", function(){
+					then( "then I should see an error message", function(){
 						var event    = this.get( "/roles/234234234" );
 						var response = event.getPrivateValue( "response" );
 
@@ -55,9 +55,9 @@ component extends="tests.resources.BaseTest"{
 				} );
 			} );
 
-			story( "I want to create a resource", function() {
-				given( "valid incoming data", function() {
-					then( "it should create a new resource", function() {
+			story( "I want to create a resource", function(){
+				given( "valid incoming data", function(){
+					then( "it should create a new resource", function(){
 						var event    = this.post( "/roles", { role : "unit_test" } );
 						var response = event.getPrivateValue( "response" );
 
@@ -69,8 +69,8 @@ component extends="tests.resources.BaseTest"{
 					} );
 				} );
 
-				given( "invalid data", function() {
-					then( "it should display an error message", function() {
+				given( "invalid data", function(){
+					then( "it should display an error message", function(){
 						var event    = this.post( "/roles", {} );
 						var response = event.getPrivateValue( "response" );
 
@@ -82,9 +82,9 @@ component extends="tests.resources.BaseTest"{
 				} );
 			} );
 
-			story( "I want to edit a resource", function() {
-				given( "valid incoming data", function() {
-					then( "it should update a role", function() {
+			story( "I want to edit a resource", function(){
+				given( "valid incoming data", function(){
+					then( "it should update a role", function(){
 						var event    = this.PUT( "/roles/1", { role : "unit_test" } );
 						var response = event.getPrivateValue( "response" );
 
@@ -95,9 +95,12 @@ component extends="tests.resources.BaseTest"{
 						expect( response.getData().role ).toBe( "unit_test" );
 					} );
 				} );
-				given( "an invalid id", function() {
-					then( "then I should see an error message", function() {
-						var event    = this.PUT( "/roles/2323", { role : "unit_test" } );
+				given( "an invalid id", function(){
+					then( "then I should see an error message", function(){
+						var event = this.PUT(
+							"/roles/2323",
+							{ role : "unit_test" }
+						);
 						var response = event.getPrivateValue( "response" );
 
 						// expectations go here.
@@ -107,8 +110,8 @@ component extends="tests.resources.BaseTest"{
 						expect( response.getStatusCode() ).toBe( 404 );
 					} );
 				} );
-				given( "invalid data", function() {
-					then( "it should display an error message", function() {
+				given( "invalid data", function(){
+					then( "it should display an error message", function(){
 						var event    = this.PUT( "/roles/1", { role : "" } );
 						var response = event.getPrivateValue( "response" );
 
@@ -121,9 +124,9 @@ component extends="tests.resources.BaseTest"{
 				} );
 			} );
 
-			story( "I want to delete a resource", function() {
-				given( "a valid id", function() {
-					then( "then I should see the confirmation", function() {
+			story( "I want to delete a resource", function(){
+				given( "a valid id", function(){
+					then( "then I should see the confirmation", function(){
 						var event    = this.DELETE( "/roles/3" );
 						var response = event.getPrivateValue( "response" );
 
@@ -132,8 +135,8 @@ component extends="tests.resources.BaseTest"{
 						expect( response.getMessagesString() ).toInclude( "deleted!" );
 					} );
 				} );
-				given( "an invalid id", function() {
-					then( "then I should see an error message", function() {
+				given( "an invalid id", function(){
+					then( "then I should see an error message", function(){
 						var event    = this.DELETE( "/roles/2323" );
 						var response = event.getPrivateValue( "response" );
 

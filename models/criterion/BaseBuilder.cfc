@@ -74,9 +74,12 @@ component accessors="true" {
 		required any criteria,
 		required any restrictions,
 		required any ormService
-	) {
+	){
 		// java projections linkage
-		this.projections  = createObject( "java", "org.hibernate.criterion.Projections" );
+		this.projections = createObject(
+			"java",
+			"org.hibernate.criterion.Projections"
+		);
 		// restrictions linkage: can be Restrictions or Subqueries
 		this.restrictions = arguments.restrictions;
 
@@ -133,8 +136,11 @@ component accessors="true" {
 		required string property,
 		string sortDir     = "asc",
 		boolean ignoreCase = false
-	) {
-		var order   = createObject( "java", "org.hibernate.criterion.Order" );
+	){
+		var order = createObject(
+			"java",
+			"org.hibernate.criterion.Order"
+		);
 		var orderBy = "";
 
 		// direction
@@ -184,7 +190,7 @@ component accessors="true" {
 		required string alias,
 		numeric joinType = this.INNER_JOIN,
 		any withClause
-	) {
+	){
 		var hasJoinType   = !isNull( arguments.joinType );
 		var hasWithClause = !isNull( arguments.withClause );
 
@@ -232,7 +238,7 @@ component accessors="true" {
 		string alias,
 		numeric joinType,
 		any withClause
-	) {
+	){
 		var hasAlias        = structKeyExists( arguments, "alias" );
 		var hasJoinType     = structKeyExists( arguments, "joinType" );
 		var hasWithClause   = structKeyExists( arguments, "withClause" );
@@ -240,7 +246,10 @@ component accessors="true" {
 		// if no alias and only join type, special case
 		if ( !hasAlias ) {
 			if ( hasJoinType ) {
-				nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
+				nativeCriteria = nativeCriteria.createCriteria(
+					arguments.associationName,
+					arguments.joinType
+				);
 				// announce
 				if ( ORMService.getEventHandling() ) {
 					variables.eventManager.processState(
@@ -298,12 +307,12 @@ component accessors="true" {
 	 *
 	 * @criterion A single or array of criterions to add to the criteria
 	 */
-	BaseBuilder function add( required any criterion ) {
+	BaseBuilder function add( required any criterion ){
 		if ( !isArray( arguments.criterion ) ) {
 			arguments.criterion = [ arguments.criterion ];
 		}
 
-		arguments.criterion.each( function( item ) {
+		arguments.criterion.each( function( item ){
 			nativeCriteria.add( item );
 		} );
 
@@ -315,7 +324,7 @@ component accessors="true" {
 	 *
 	 * @resultTransformer a custom result transform or you can use the included ones: criteria.ALIAS_TO_ENTITY_MAP, criteria.DISTINCT_ROOT_ENTITY, criteria.PROJECTION, criteria.ROOT_ENTITY.
 	 */
-	BaseBuilder function resultTransformer( any resultTransformer ) {
+	BaseBuilder function resultTransformer( any resultTransformer ){
 		nativeCriteria.setResultTransformer( arguments.resultTransformer );
 		return this;
 	}
@@ -325,7 +334,7 @@ component accessors="true" {
 	/**
 	 * Applies a result transformer of DISTINCT_ROOT_ENTITY
 	 */
-	BaseBuilder function asDistinct() {
+	BaseBuilder function asDistinct(){
 		nativeCriteria.setResultTransformer( this.DISTINCT_ROOT_ENTITY );
 		return this;
 	}
@@ -333,7 +342,7 @@ component accessors="true" {
 	/**
 	 * Applies a result transformer of ALIAS_TO_ENTITY_MAP
 	 */
-	BaseBuilder function asStruct() {
+	BaseBuilder function asStruct(){
 		nativeCriteria.setResultTransformer( this.ALIAS_TO_ENTITY_MAP );
 		return this;
 	}
@@ -341,7 +350,7 @@ component accessors="true" {
 	/**
 	 * Get the results as a CBstream
 	 */
-	BaseBuilder function asStream() {
+	BaseBuilder function asStream(){
 		variables.asStream = true;
 		return this;
 	}
@@ -349,7 +358,7 @@ component accessors="true" {
 	/**
 	 * Setup a single or a projection list via native projections class: criteria.projections
 	 */
-	BaseBuilder function setProjection( any projection ) {
+	BaseBuilder function setProjection( any projection ){
 		// set projection
 		nativeCriteria.setProjection( arguments.projection );
 
@@ -404,7 +413,7 @@ component accessors="true" {
 		any sqlProjection,
 		any sqlGroupProjection,
 		any detachedSQLProjection
-	) {
+	){
 		// create our projection list
 		var projectionList = this.PROJECTIONS.projectionList();
 		var excludes       = "id,rowCount,distinct,sqlProjection,sqlGroupProjection,detachedSQLProjection";
@@ -443,9 +452,7 @@ component accessors="true" {
 		// detachedSQLProjection
 		if ( structKeyExists( arguments, "detachedSQLProjection" ) ) {
 			// allow single or arrary of detachedSQLProjection
-			var projectionCollection = !isArray( arguments.detachedSQLProjection ) ? [
-				arguments.detachedSQLProjection
-			] : arguments.detachedSQLProjection;
+			var projectionCollection = !isArray( arguments.detachedSQLProjection ) ? [ arguments.detachedSQLProjection ] : arguments.detachedSQLProjection;
 			// loop over array of detachedSQLProjections
 			for ( projection in projectionCollection ) {
 				projectionList.add( projection.createDetachedSQLProjection() );
@@ -511,7 +518,7 @@ component accessors="true" {
 	 *
 	 * @deprecated Please use idCast() instead
 	 */
-	any function convertIDValueToJavaType( required id ) {
+	any function convertIDValueToJavaType( required id ){
 		return idCast( argumentCollection = arguments );
 	}
 
@@ -521,7 +528,7 @@ component accessors="true" {
 	 * @entity The entity name or entity object
 	 * @id The id value to convert
 	 */
-	any function idCast( required id ) {
+	any function idCast( required id ){
 		arguments.entity = variables.entityName;
 		return variables.ormService.idCast( argumentCollection = arguments );
 	}
@@ -532,7 +539,10 @@ component accessors="true" {
 	 *
 	 * @deprecated Please use autoCast() instead
 	 */
-	any function convertValueToJavaType( required propertyName, required value ) {
+	any function convertValueToJavaType(
+		required propertyName,
+		required value
+	){
 		return autoCast( argumentCollection = arguments );
 	}
 
@@ -542,7 +552,10 @@ component accessors="true" {
 	 * @propertyName The property name
 	 * @value The property value
 	 */
-	any function autoCast( required propertyName, required value ) {
+	any function autoCast(
+		required propertyName,
+		required value
+	){
 		arguments.entity = variables.entityName;
 		return variables.ormService.autoCast( argumentCollection = arguments );
 	}
@@ -550,7 +563,7 @@ component accessors="true" {
 	/**
 	 * Return a null value
 	 */
-	function nullValue() {
+	function nullValue(){
 		return javacast( "null", "" );
 	}
 
@@ -560,14 +573,17 @@ component accessors="true" {
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
 	 * @formatSql Format the SQL to execute
 	 */
-	string function getSQL( required boolean returnExecutableSql = false, required boolean formatSql = true ) {
+	string function getSQL(
+		required boolean returnExecutableSql = false,
+		required boolean formatSql           = true
+	){
 		return variables.SQLHelper.getSQL( argumentCollection = arguments );
 	}
 
 	/**
 	 * Gets the positional SQL parameter values from the criteria query
 	 */
-	array function getPositionalSQLParameterValues() {
+	array function getPositionalSQLParameterValues(){
 		return variables.SQLHelper.getPositionalSQLParameterValues();
 	}
 
@@ -576,21 +592,21 @@ component accessors="true" {
 	 *
 	 * @simple Whether to return a simply array or full objects
 	 */
-	any function getPositionalSQLParameterTypes( required boolean simple = true ) {
+	any function getPositionalSQLParameterTypes( required boolean simple = true ){
 		return variables.SQLHelper.getPositionalSQLParameterTypes( argumentCollection = arguments );
 	}
 
 	/**
 	 * Returns a formatted array of parameter value and types
 	 */
-	array function getPositionalSQLParameters() {
+	array function getPositionalSQLParameters(){
 		return variables.SQLHelper.getPositionalSQLParameters();
 	}
 
 	/**
 	 * Retrieves the SQL Log
 	 */
-	array function getSQLLog() {
+	array function getSQLLog(){
 		return variables.SQLHelper.getLog();
 	}
 
@@ -600,7 +616,10 @@ component accessors="true" {
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
 	 * @formatSql Format the SQL to execute
 	 */
-	BaseBuilder function startSqlLog( boolean returnExecutableSql = false, boolean formatSql = false ) {
+	BaseBuilder function startSqlLog(
+		boolean returnExecutableSql = false,
+		boolean formatSql           = false
+	){
 		variables.SQLHelper.setReturnExecutableSql( arguments.returnExecutableSql );
 		variables.SQLHelper.setFormatSql( arguments.formatSql );
 		variables.sqlLoggerActive = true;
@@ -610,7 +629,7 @@ component accessors="true" {
 	/**
 	 * Stops CriteriaBuilder from continuing to internally log the state of SQL
 	 */
-	BaseBuilder function stopSqlLog() {
+	BaseBuilder function stopSqlLog(){
 		variables.sqlLoggerActive = false;
 		return this;
 	}
@@ -620,7 +639,7 @@ component accessors="true" {
 	 *
 	 * @label The label to use for the sql log record
 	 */
-	BaseBuilder function logSQL( required String label ) {
+	BaseBuilder function logSQL( required String label ){
 		variables.SQLHelper.log( argumentCollection = arguments );
 		return this;
 	}
@@ -629,7 +648,7 @@ component accessors="true" {
 	 * Returns whether or not CriteriaBuilder is currently configured to log SQL
 	 * return Boolean
 	 */
-	boolean function canLogSql() {
+	boolean function canLogSql(){
 		return variables.sqlLoggerActive;
 	}
 
@@ -648,7 +667,7 @@ component accessors="true" {
 	 *
 	 * @target The closure to peek into, it receives the current criteria as the argument
 	 */
-	BaseBuilder function peek( required target ) {
+	BaseBuilder function peek( required target ){
 		arguments.target( this );
 		return this;
 	}
@@ -678,7 +697,10 @@ component accessors="true" {
 	 * @test The boolean evaluation
 	 * @target The closure to execute if test is true, it receives the current criteria as the argument
 	 */
-	BaseBuilder function when( required boolean test, required target ) {
+	BaseBuilder function when(
+		required boolean test,
+		required target
+	){
 		if ( arguments.test ) {
 			arguments.target( this );
 		}
@@ -690,7 +712,7 @@ component accessors="true" {
 	/**
 	 * Checks whether or not a projection is currently applied to the CriteriaBuilder
 	 */
-	private boolean function hasProjection() {
+	private boolean function hasProjection(){
 		if ( !isNull( nativeCriteria.getProjection() ) ) {
 			return nativeCriteria.getProjection().getLength() ? true : false;
 		}
@@ -708,7 +730,7 @@ component accessors="true" {
 		any propertyName,
 		any projectionType,
 		any projectionList
-	) {
+	){
 		// inflate to array
 		if ( isSimpleValue( arguments.propertyName ) ) {
 			arguments.propertyName = listToArray( arguments.propertyName );
@@ -748,7 +770,7 @@ component accessors="true" {
 	 *
 	 * @rawProjection The raw projection configuration: { property:1 or list, sql, alias, group }
 	 */
-	private struct function prepareSQLProjection( struct rawProjection ) {
+	private struct function prepareSQLProjection( struct rawProjection ){
 		var orm      = variables.ormService.getORM();
 		// get metadata for current root entity
 		var metaData = orm
@@ -762,7 +784,10 @@ component accessors="true" {
 
 		// retrieve correct type for each specified property so list() doesn't bork
 		for ( var prop in listToArray( arguments.rawProjection.property ) ) {
-			arrayAppend( projection.types, metaData.getPropertyType( prop ) );
+			arrayAppend(
+				projection.types,
+				metaData.getPropertyType( prop )
+			);
 		}
 
 		var partialSQL = "";
@@ -789,8 +814,11 @@ component accessors="true" {
 	 * @sortOrder An HQL Sorting string: fname, lname desc
 	 * @ignoreCase Ignoring case or not
 	 */
-	private void function normalizeOrder( required string sortOrder, required boolean ignoreCase ) {
-		listToArray( arguments.sortOrder ).each( function( thisSort ) {
+	private void function normalizeOrder(
+		required string sortOrder,
+		required boolean ignoreCase
+	){
+		listToArray( arguments.sortOrder ).each( function( thisSort ){
 			var sortField = trim( listFirst( thisSort, " " ) );
 			var sortDir   = "ASC";
 			if ( listLen( thisSort, " " ) GTE 2 ) {
@@ -805,17 +833,33 @@ component accessors="true" {
 	 * creates either a new criteria query, or a new restriction, and returns the result
 	 * This is a helper used by concrete on missing methods
 	 */
-	private any function createRestriction( required string missingMethodName, required struct missingMethodArguments ) {
+	private any function createRestriction(
+		required string missingMethodName,
+		required struct missingMethodArguments
+	){
 		// check for with{associationName} dynamic finder:
 		if ( left( arguments.missingMethodName, 4 ) eq "with" ) {
 			var args = {
-				associationName : right( arguments.missingMethodName, len( arguments.missingMethodName ) - 4 )
+				associationName : right(
+					arguments.missingMethodName,
+					len( arguments.missingMethodName ) - 4
+				)
 			};
 			// join type
-			if ( structKeyExists( arguments.missingMethodArguments, "1" ) ) {
+			if (
+				structKeyExists(
+					arguments.missingMethodArguments,
+					"1"
+				)
+			) {
 				args.joinType = arguments.missingMethodArguments[ 1 ];
 			}
-			if ( structKeyExists( arguments.missingMethodArguments, "joinType" ) ) {
+			if (
+				structKeyExists(
+					arguments.missingMethodArguments,
+					"joinType"
+				)
+			) {
 				args.joinType = arguments.missingMethodArguments.joinType;
 			}
 			// create the dynamic criteria

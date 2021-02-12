@@ -15,7 +15,7 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 	 *
 	 * @override
 	 */
-	any function getSession( string datasource ) {
+	any function getSession( string datasource ){
 		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
 	}
 
@@ -26,7 +26,7 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 	 *
 	 * @return https://docs.jboss.org/hibernate/core/3.5/javadocs/org/hibernate/EntityMode.html
 	 */
-	any function getSessionEntityMode( required ormSession, required entity ) {
+	any function getSessionEntityMode( required ormSession, required entity ){
 		return arguments.ormSession.getEntityMode();
 	}
 

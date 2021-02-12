@@ -39,7 +39,7 @@ component {
 	/**
 	 * Configure Module
 	 */
-	function configure() {
+	function configure(){
 		// cborm Settings
 		settings = structCopy( variables.SETTING_DEFAULTS );
 
@@ -50,7 +50,12 @@ component {
 		}
 
 		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
-		controller.getWireBox().registerDSL( namespace = "entityService", path = dslPath );
+		controller
+			.getWireBox()
+			.registerDSL(
+				namespace = "entityService",
+				path      = dslPath
+			);
 
 		// Custom Declared Points
 		interceptorSettings = {
@@ -85,10 +90,16 @@ component {
 	/**
 	 * Fired when the module is registered and activated.
 	 */
-	function onLoad() {
+	function onLoad(){
 		// Prepare setting defaults
-		settings.resources.append( variables.SETTING_DEFAULTS.resources, false );
-		settings.injection.append( variables.SETTING_DEFAULTS.injection, false );
+		settings.resources.append(
+			variables.SETTING_DEFAULTS.resources,
+			false
+		);
+		settings.injection.append(
+			variables.SETTING_DEFAULTS.injection,
+			false
+		);
 		// Are we loading the event loader
 		if ( settings.resources.eventLoader ) {
 			wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();
@@ -98,7 +109,7 @@ component {
 	/**
 	 * Fired when the module is unregistered and unloaded
 	 */
-	function onUnload() {
+	function onUnload(){
 	}
 
 }

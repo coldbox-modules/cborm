@@ -32,7 +32,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @useQueryCaching Enable query caching for this entity or not, defaults to false
 	 * @eventHandling Enable event handling for new() and save() operations, defaults to true
 	 * @useTransactions Enable transactions for all major operations, defaults to true
-	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to true
+	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to false
 	 */
 	function init(
 		string queryCacheRegion,
@@ -40,7 +40,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		boolean eventHandling,
 		boolean useTransactions,
 		boolean defaultAsQuery
-	) {
+	){
 		// Calculate name via md
 		var md               = getMetadata( this );
 		arguments.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
@@ -83,7 +83,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		boolean forceInsert   = false,
 		boolean flush         = false,
 		boolean transactional = getUseTransactions()
-	) {
+	){
 		return super.save( argumentCollection = arguments );
 	}
 
@@ -100,7 +100,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		any entity            = this,
 		boolean flush         = false,
 		boolean transactional = getUseTransactions()
-	) {
+	){
 		return super.delete( argumentCollection = arguments );
 	}
 
@@ -109,8 +109,17 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 *
 	 * @entity The entity or array of entities to refresh
 	 */
-	any function refresh( any entity = this ) {
+	any function refresh( any entity = this ){
 		return super.refresh( arguments.entity );
+	}
+
+	/**
+	 * Verifies if the entity has dirty data or not.  If the entity is not loaded in session, this method will throw an exception.
+	 *
+	 * @entity The entity to check if dirty
+	 */
+	boolean function isDirty( any entity = this ) {
+		return super.isDirty( arguments.entity );
 	}
 
 	/**
@@ -119,7 +128,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 *
 	 * @return Same entity if one passed, array if an array of entities passed.
 	 */
-	any function merge( any entity = this ) {
+	any function merge( any entity = this ){
 		return super.merge( arguments.entity );
 	}
 
@@ -131,7 +140,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 *
 	 * @entity The argument can be one persistence entity or an array of entities to evict
 	 */
-	any function evict( any entity = this ) {
+	any function evict( any entity = this ){
 		return super.evictEntity( arguments.entities );
 	}
 
@@ -160,7 +169,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		any target                   = this
-	) {
+	){
 		return getBeanPopulator().populateFromStruct( argumentCollection = arguments );
 	}
 
@@ -191,7 +200,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		boolean composeRelationships = true,
 		required string prefix,
 		any target = this
-	) {
+	){
 		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
 
@@ -220,7 +229,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		any target                   = this
-	) {
+	){
 		return getBeanPopulator().populateFromJSON( argumentCollection = arguments );
 	}
 
@@ -251,7 +260,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		any target                   = this
-	) {
+	){
 		return getBeanPopulator().populateFromXML( argumentCollection = arguments );
 	}
 
@@ -282,7 +291,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		any target                   = this
-	) {
+	){
 		return getBeanPopulator().populateFromQuery( argumentCollection = arguments );
 	}
 
@@ -302,7 +311,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string locale        = "",
 		string excludeFields = "",
 		string includeFields = ""
-	) {
+	){
 		// Get validation manager
 		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" );
 		// validate constraints
@@ -335,7 +344,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 *
 	 * @return cbvalidation.models.result.IValidationResult
 	 */
-	any function getValidationResults() {
+	any function getValidationResults(){
 		if ( !isNull( variables.validationResults ) && isObject( variables.validationResults ) ) {
 			return variables.validationResults;
 		}
@@ -364,7 +373,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string locale        = "",
 		string excludeFields = "",
 		string includeFields = ""
-	) {
+	){
 		if ( !this.isValid( argumentCollection = arguments ) ) {
 			throw(
 				type         = "ValidationException",

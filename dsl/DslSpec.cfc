@@ -13,7 +13,7 @@ component accessors="true" {
 	/**
 	 * Constructor as per interface
 	 */
-	public any function init( required any injector ) {
+	public any function init( required any injector ){
 		variables.injector = arguments.injector;
 		variables.log      = arguments.injector.getLogBox().getLogger( this );
 
@@ -23,7 +23,7 @@ component accessors="true" {
 	/**
 	 * Process an incoming DSL definition and produce an object with it.
 	 */
-	public any function process( required definition, targetObject ) {
+	public any function process( required definition, targetObject ){
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
 		switch ( DSLNamespace ) {
@@ -36,7 +36,7 @@ component accessors="true" {
 	/**
 	 * Get an EntityService Dependency
 	 */
-	function getEntityServiceDSL( required definition, targetObject ) {
+	function getEntityServiceDSL( required definition, targetObject ){
 		var entityName = getToken( arguments.definition.dsl, 2, ":" );
 
 		// Do we have an entity name? If we do create virtual entity service

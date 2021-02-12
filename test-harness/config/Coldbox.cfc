@@ -1,51 +1,44 @@
-﻿component{
+﻿component {
 
 	// Configure ColdBox Application
 	function configure(){
-
 		// coldbox directives
 		coldbox = {
-			//Application Setup
-			appName 				= "Module Tester",
-
-			//Development Settings
-			reinitPassword			= "",
-			handlersIndexAutoReload = true,
-			modulesExternalLocation = [],
-
-			//Implicit Events
-			defaultEvent			= "",
-			requestStartHandler		= "",
-			requestEndHandler		= "",
-			applicationStartHandler = "",
-			applicationEndHandler	= "",
-			sessionStartHandler 	= "",
-			sessionEndHandler		= "",
-			missingTemplateHandler	= "",
-
-			//Error/Exception Handling
-			exceptionHandler		= "",
-			onInvalidEvent			= "",
-			customErrorTemplate 	= "/coldbox/system/includes/BugReport.cfm",
-
-			//Application Aspects
-			handlerCaching 			= false,
-			eventCaching			= false
+			// Application Setup
+			appName                 : "Module Tester",
+			// Development Settings
+			reinitPassword          : "",
+			handlersIndexAutoReload : true,
+			modulesExternalLocation : [],
+			// Implicit Events
+			defaultEvent            : "",
+			requestStartHandler     : "",
+			requestEndHandler       : "",
+			applicationStartHandler : "",
+			applicationEndHandler   : "",
+			sessionStartHandler     : "",
+			sessionEndHandler       : "",
+			missingTemplateHandler  : "",
+			// Error/Exception Handling
+			exceptionHandler        : "",
+			onInvalidEvent          : "",
+			customErrorTemplate     : "/coldbox/system/includes/BugReport.cfm",
+			// Application Aspects
+			handlerCaching          : false,
+			eventCaching            : false
 		};
 
 		// environment settings, create a detectEnvironment() method to detect it yourself.
 		// create a function with the name of the environment so it can be executed if that environment is detected
 		// the value of the environment is a list of regex patterns to match the cgi.http_host.
-		environments = {
-			development = "localhost,127\.0\.0\.1"
-		};
+		environments = { development : "localhost,127\.0\.0\.1" };
 
 		// Module Directives
 		modules = {
 			// An array of modules names to load, empty means all of them
-			include = [],
+			include : [],
 			// An array of modules names to NOT load, empty means none
-			exclude = []
+			exclude : []
 		};
 
 		interceptorSettings = {
@@ -73,36 +66,35 @@
 			]
 		};
 
-		//Register interceptors as an array, we need order
-		interceptors = [
-		];
+		// Register interceptors as an array, we need order
+		interceptors = [];
 
-		//LogBox DSL
+		// LogBox DSL
 		logBox = {
 			// Define Appenders
-			appenders = {
-				files={class="coldbox.system.logging.appenders.RollingFileAppender",
-					properties = {
-						filename = "tester", filePath="/#appMapping#/logs"
+			appenders : {
+				files : {
+					class      : "coldbox.system.logging.appenders.RollingFileAppender",
+					properties : {
+						filename : "tester",
+						filePath : "/#appMapping#/logs"
 					}
 				},
-				console = {
-					class="coldbox.system.logging.appenders.ConsoleAppender"
-				}
+				console : { class : "coldbox.system.logging.appenders.ConsoleAppender" }
 			},
 			// Root Logger
-			root = { levelmax="DEBUG", appenders="*" },
+			root  : { levelmax : "DEBUG", appenders : "*" },
 			// Implicit Level Categories
-			info = [ "coldbox.system" ],
-			debug = [ "cborm.*" ]
+			info  : [ "coldbox.system" ],
+			debug : [ "cborm.*" ]
 		};
 
 		moduleSettings = {
-			cborm = {
-				resources  : {
+			cborm : {
+				resources : {
 					eventLoader : true
-					//maxRows : 25,
-					//maxRowsLimit : 250
+					// maxRows : 25,
+					// maxRowsLimit : 250
 				},
 				injection : {
 					enabled : true,
@@ -110,22 +102,19 @@
 					exclude : ""
 				}
 			},
-			mementifier = {
-				ormAutoIncludes : true
-			}
+			mementifier : { ormAutoIncludes : true }
 		};
-
 	}
 
 	/**
 	 * Load the Module you are testing
 	 */
 	function afterAspectsLoad( event, interceptData, rc, prc ){
-
-		controller.getModuleService()
+		controller
+			.getModuleService()
 			.registerAndActivateModule(
-				moduleName 		= request.MODULE_PATH,
-				invocationPath 	= "moduleroot"
+				moduleName     = request.MODULE_PATH,
+				invocationPath = "moduleroot"
 			);
 	}
 

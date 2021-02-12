@@ -1,6 +1,15 @@
-﻿component persistent="true" entityname="ActiveUser" table="users" extends="cborm.models.ActiveEntity"{
+﻿component
+	persistent="true"
+	entityname="ActiveUser"
+	table     ="users"
+	extends   ="cborm.models.ActiveEntity"
+{
 
-	property name="id" column="user_id" fieldType="id" generator="uuid";
+	property
+		name     ="id"
+		column   ="user_id"
+		fieldType="id"
+		generator="uuid";
 	/**
 	 * @display First Name
 	 * @message Please provide firstname
@@ -18,14 +27,26 @@
 	property name="lastLogin" ormtype="date";
 
 	// M20 -> Role
-	property name="role" cfc="Role" fieldtype="many-to-one" fkcolumn="FKRoleID" lazy="true" notnull="false";
+	property
+		name     ="role"
+		cfc      ="Role"
+		fieldtype="many-to-one"
+		fkcolumn ="FKRoleID"
+		lazy     ="true"
+		notnull  ="false";
 
 	// DI Test
-	property name="wirebox" inject="wirebox" persistent="false";
+	property
+		name      ="wirebox"
+		inject    ="wirebox"
+		persistent="false";
 
 	// Constraints
 	this.constraints = {
-		firstName = {required=true}, lastName = {required=true}, username={required=true,min=5}, password={required=true,min=6}
+		firstName : { required : true },
+		lastName  : { required : true },
+		username  : { required : true, min : 5 },
+		password  : { required : true, min : 6 }
 	};
 
 }

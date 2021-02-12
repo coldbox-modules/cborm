@@ -1,7 +1,7 @@
 /**
-* My awesome cb6 resources handler
-*/
-component extends="cborm.models.resources.BaseHandler"{
+ * My awesome cb6 resources handler
+ */
+component extends="cborm.models.resources.BaseHandler" {
 
 	// Inject the correct service as the `ormService` for the resource Handler
 	property name="ormService" inject="entityService:Role";

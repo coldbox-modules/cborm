@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/coldbox-modules/cborm.svg?branch=development)](https://travis-ci.org/coldbox-modules/cborm)
+[![Build Status](https://travis-ci.com/coldbox-modules/cborm.svg?branch=development)](https://travis-ci.com/coldbox-modules/cborm)
 
 # Welcome To The ColdBox ORM Module
 
@@ -68,6 +68,14 @@ Apache License, Version 2.0.
 
 * https://coldbox-orm.ortusbooks.com/
 
+**Issues**
+
+* https://ortussolutions.atlassian.net/browse/CBORM
+
+**Support**
+
+* https://community.ortussolutions.com/c/box-modules/cborm/25
+
 ## SYSTEM REQUIREMENTS
 
 * Lucee 5+
@@ -120,10 +128,6 @@ moduleSettings = {
 
 We have also migrated the `UniqueValidator` from the **validation** module into our
 ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use in your constraints like so:
-
-```js
-{ fieldName : { validator: "UniqueValidator@cborm" } }
-```
 
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp

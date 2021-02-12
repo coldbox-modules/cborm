@@ -1,9 +1,9 @@
 /**
  * Skipping on ACF2018 due to a Hibernate but in 5.2.  Uncomment once they update Hibernate to 5.3+
  */
-component extends="tests.resources.BaseTest" skip="isCF2018"{
+component extends="tests.resources.BaseTest" skip="isCF2018" {
 
-	function setup() {
+	function setup(){
 		super.setup();
 		hTransaction = createMock( "cborm.aop.HibernateTransaction" ).init();
 
@@ -13,7 +13,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018"{
 		hTransaction.setLog( mockLogger );
 	}
 
-	function testInvokeMethodInTransaction() {
+	function testInvokeMethodInTransaction(){
 		// default Datasource mock
 		var md = {
 			name          : "save",
@@ -41,7 +41,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018"{
 		assertTrue( mockLogger.$once( "canDebug" ) );
 	}
 
-	function testInvokeMethodNotInTransaction() {
+	function testInvokeMethodNotInTransaction(){
 		// default Datasource mock
 		var md = {
 			name          : "save",
@@ -69,7 +69,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018"{
 		assertTrue( mockLogger.$once( "canDebug" ) );
 	}
 
-	function testInvokeMethodNotInTransactionDiffDatasource() {
+	function testInvokeMethodNotInTransactionDiffDatasource(){
 		// With Datasource mock
 		var md = {
 			name          : "save",

@@ -10,26 +10,26 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
-	function beforeAll() {
+	function beforeAll(){
 		super.beforeAll();
 		getWireBox().autowire( this );
 	}
 
 	// executes after all suites+specs in the run() method
-	function afterAll() {
+	function afterAll(){
 		super.afterAll();
 	}
 
-	function reset() {
+	function reset(){
 		// CB 6 graceful shutdown
-		if( !isNull( application.cbController ) ){
+		if ( !isNull( application.cbController ) ) {
 			application.cbController.getLoaderService().processShutdown();
 		}
 		structDelete( application, "wirebox" );
 		structDelete( application, "cbController" );
 	}
 
-	function withRollback( target ) {
+	function withRollback( target ){
 		transaction {
 			try {
 				arguments.target();
@@ -41,12 +41,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		}
 	}
 
-	function isCF() {
+	function isCF(){
 		return ( structKeyExists( server, "lucee" ) ? false : true );
 	}
 
-	function isCF2018() {
-		if( !structKeyExists( server, "lucee" ) && listFirst( server.coldfusion.productVersion ) eq 2018 ){
+	function isCF2018(){
+		if ( !structKeyExists( server, "lucee" ) && listFirst( server.coldfusion.productVersion ) eq 2018 ) {
 			return true;
 		}
 		return false;
