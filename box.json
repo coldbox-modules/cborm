@@ -38,7 +38,7 @@
     "scripts":{
         "release":"recipe build/release.boxr",
         "format":"cfformat run aop,dsl,interceptors,models,test-harness/tests/,*.cfc --overwrite",
-        "format:watch":"cfformat watch aop,dsl,interceptors,models,test-harness/tests/,*.cfc",
+        "format:watch":"cfformat watch aop,dsl,interceptors,models,test-harness/tests/,*.cfc ./.cfformat.json",
         "format:check":"cfformat check aop,dsl,interceptors,models,test-harness/tests/,*.cfc"
     }
 }
