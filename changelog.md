@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Env templates using new lucee bundles and mysql 8 support
-* New interception point: `afterCriteriaBuilderGet` called after criteria `get()` calls
+* New interception point: `afterCriteriaBuilderGet`, `beforeCriteriaBuilderGet` called after/before criteria `get()` calls
 
 ### Fixed
 

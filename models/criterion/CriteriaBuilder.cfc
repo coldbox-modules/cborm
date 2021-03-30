@@ -392,6 +392,16 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @throws NonUniqueResultException - if there is more than one matching result
 	 */
 	any function get(){
+		// process interception
+		if ( variables.ORMService.getEventHandling() ) {
+			variables.eventManager.processState(
+				"beforeCriteriaBuilderGet",
+				{
+					"criteriaBuilder" : this
+				}
+			);
+		}
+
 		var result = nativeCriteria.uniqueResult();
 
 		// process interception
