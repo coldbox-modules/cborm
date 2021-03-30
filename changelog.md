@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.1.0] => 2021-FEB-12
+
+### Added
+
+* Env templates using new lucee bundles and mysql 8 support
+* New interception point: `afterCriteriaBuilderGet`, `beforeCriteriaBuilderGet` called after/before criteria `get()` calls
+
+### Fixed
+
+* Fixed http to https for downloads
+* Fixed watcher pathing
+
+----
+
 ## [v3.0.0] => 2021-FEB-12
 
 ### Added

@@ -66,6 +66,8 @@ component {
 				"afterCriteriaBuilderList",
 				"beforeCriteriaBuilderCount",
 				"afterCriteriaBuilderCount",
+				"afterCriteriaBuilderGet",
+				"beforeCriteriaBuilderGet",
 				// ORM Bridge Events
 				"ORMPostNew",
 				"ORMPreLoad",

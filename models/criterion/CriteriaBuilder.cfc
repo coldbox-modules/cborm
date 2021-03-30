@@ -392,7 +392,32 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @throws NonUniqueResultException - if there is more than one matching result
 	 */
 	any function get(){
-		return nativeCriteria.uniqueResult();
+		// process interception
+		if ( variables.ORMService.getEventHandling() ) {
+			variables.eventManager.processState(
+				"beforeCriteriaBuilderGet",
+				{
+					"criteriaBuilder" : this
+				}
+			);
+		}
+
+		var result = nativeCriteria.uniqueResult();
+
+		// process interception
+		if ( !isNull( result ) && variables.ORMService.getEventHandling() ) {
+			variables.eventManager.processState(
+				"afterCriteriaBuilderGet",
+				{
+					"criteriaBuilder" : this,
+					"result"         : result
+				}
+			);
+		}
+
+		if ( !isNull( result ) ) {
+			return result;
+		}
 	}
 
 	/**
