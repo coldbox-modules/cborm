@@ -13,7 +13,9 @@
 		super.setup();
 
 		ormservice = createMock( "cborm.models.BaseORMService" );
-		mockEH     = createMock( "cborm.models.EventHandler" );
+		mockEH     = createMock( "cborm.models.EventHandler" )
+			.$( "announceInterception", true )
+			.$( "announce", true );
 
 		// Mocks
 		ormservice.init();
