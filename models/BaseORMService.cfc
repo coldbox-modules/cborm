@@ -375,8 +375,8 @@ component accessors="true" {
 		}
 
 		// process interception
-		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+		if ( getEventHandling() ) {
+			getORMEventHandler().announceInterception(
 				"beforeOrmExecuteQuery",
 				{
 					"query" : arguments.query,
@@ -396,8 +396,8 @@ component accessors="true" {
 		);
 
 		// process interception
-		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+		if ( getEventHandling() ) {
+			getORMEventHandler().announceInterception(
 				"afterOrmExecuteQuery",
 				{
 					"query" : arguments.query,
