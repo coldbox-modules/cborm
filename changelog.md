@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.2.1] => 2021-MAR-31
+
+### Fixed
+
+* Wrong object to get the event handler manager when doing execute query calls
+
+----
+
 ## [v3.2.0] => 2021-MAR-31
 
 ### Added
