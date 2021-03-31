@@ -155,6 +155,17 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		// Get listing
 		var results = nativeCriteria.list() ?: [];
 
+		// process interception
+		if ( variables.ORMService.getEventHandling() ) {
+			variables.eventManager.processState(
+				"afterCriteriaBuilderList",
+				{
+					"criteriaBuilder" : this,
+					"results"         : results
+				}
+			);
+		}
+
 		// Query?
 		if ( arguments.asQuery ) {
 			results = entityToQuery( results );
@@ -166,17 +177,6 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 				.getWireBox()
 				.getInstance( "StreamBuilder@cbStreams" )
 				.new( results );
-		}
-
-		// process interception
-		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
-				"afterCriteriaBuilderList",
-				{
-					"criteriaBuilder" : this,
-					"results"         : results
-				}
-			);
 		}
 
 		return results;

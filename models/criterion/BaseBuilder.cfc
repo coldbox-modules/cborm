@@ -51,6 +51,11 @@ component accessors="true" {
 		type   ="boolean"
 		default="false";
 
+	/**
+	 * The SQL Helper class, great for formatting and tracking SQL
+	 */
+	property name="sqlHelper" type="any";
+
 	// CFML Criteria Marker, used for distinction between Java and CFML classes
 	this.CFML = true;
 

@@ -374,6 +374,19 @@ component accessors="true" {
 			options.cacheable = true;
 		}
 
+		// process interception
+		if ( getEventHandling() ) {
+			getORMEventHandler().announceInterception(
+				"beforeOrmExecuteQuery",
+				{
+					"query" : arguments.query,
+					"params" : arguments.params,
+					"unique" : arguments.unique,
+					"options" : options
+				}
+			);
+		}
+
 		// Get listing: https://cfdocs.org/ormexecutequery
 		var results = ormExecuteQuery(
 			arguments.query,
@@ -382,8 +395,23 @@ component accessors="true" {
 			options
 		);
 
+		// process interception
+		if ( getEventHandling() ) {
+			getORMEventHandler().announceInterception(
+				"afterOrmExecuteQuery",
+				{
+					"query" : arguments.query,
+					"params" : arguments.params,
+					"unique" : arguments.unique,
+					"options" : options,
+					"results" : isNull( results ) ? javacast( "null", "" ) : results
+				}
+			);
+		}
+
 		// Null Checks
 		if ( isNull( results ) ) {
+
 			if ( arguments.asStream ) {
 				return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new();
 			} else if ( arguments.asQuery ) {
