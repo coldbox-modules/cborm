@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* New interception points: `beforeOrmExecuteQuery, afterOrmExecuteQuery` from the base orm service: `executeQuery()` method.
+* Exposed a `getSQLHelper()` from criterias to allow for usage of formmatting of sql
+* New interception points: `beforeOrmExecuteQuery, afterOrmExecuteQuery` from the base orm service: `executeQuery()` method
 
 ### Fixed
 
