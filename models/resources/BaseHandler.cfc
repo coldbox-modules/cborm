@@ -176,7 +176,7 @@ component extends="coldbox.system.RestHandler" {
 						excludes       = rc.excludes,
 						ignoreDefaults = rc.ignoreDefaults
 					);
-				} );
+				} )
 			);
 	}
 
