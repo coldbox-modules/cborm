@@ -41,19 +41,19 @@ component singleton {
 		// Register all Resource Events
 		getEntityMap().each( function( thisEntity ){
 			variables.interceptorService.appendInterceptionPoints( [
-				"#variables.settings.eventPrefix#pre#thisEntity#List",
-				"#variables.settings.eventPrefix#post#thisEntity#List",
-				"#variables.settings.eventPrefix#pre#thisEntity#Save",
-				"#variables.settings.eventPrefix#post#thisEntity#Save",
-				"#variables.settings.eventPrefix#pre#thisEntity#Show",
-				"#variables.settings.eventPrefix#post#thisEntity#Show",
-				"#variables.settings.eventPrefix#pre#thisEntity#Update",
-				"#variables.settings.eventPrefix#post#thisEntity#Update",
-				"#variables.settings.eventPrefix#pre#thisEntity#Delete",
-				"#variables.settings.eventPrefix#post#thisEntity#Delete"
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#List",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#List",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Save",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Save",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Show",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Show",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Update",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Update",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Delete",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Delete"
 			] );
 			variables.log.info(
-				"		===> Registered '#thisEntity#' resource events using event prefix of (#variables.settings.eventPrefix#)"
+				"		===> Registered '#thisEntity#' resource events using event prefix of (#variables.settings.resources.eventPrefix#)"
 			);
 		} );
 

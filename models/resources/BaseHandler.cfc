@@ -116,7 +116,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#pre#variables.entity#List",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#List",
 			{
 				criteria : ( isNull( arguments.criteria ) ? newCriteria() : arguments.criteria ),
 				results  : ( isNull( arguments.results ) ? { "count" : 0, "records" : [] } : arguments.results )
@@ -152,7 +152,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#post#variables.entity#List",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#List",
 			{
 				count   : prc.recordCount,
 				records : prc.records
@@ -234,7 +234,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#pre#variables.entity#Save",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Save",
 			{ entity : prc.oEntity }
 		);
 
@@ -247,7 +247,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#post#variables.entity#Save",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Save",
 			{ entity : prc.oEntity }
 		);
 
@@ -297,7 +297,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#pre#variables.entity#Show",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Show",
 			{}
 		);
 
@@ -306,7 +306,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#post#variables.entity#Show",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Show",
 			{ entity : prc.oEntity }
 		);
 
@@ -377,7 +377,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#pre#variables.entity#Update",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Update",
 			{ entity : prc.oEntity }
 		);
 
@@ -390,7 +390,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#post#variables.entity#Update",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Update",
 			{ entity : prc.oEntity }
 		);
 
@@ -428,7 +428,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#pre#variables.entity#Delete",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Delete",
 			{ entity : prc.oEntity }
 		);
 
@@ -441,7 +441,7 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"#variables.settings.eventPrefix#post#variables.entity#Delete",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Delete",
 			{ id : rc.id }
 		);
 
