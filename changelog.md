@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.3.0] => 2021-APR-27
+
+### Added
+
+* New `eventPrefix` setting so you can prefix the resource REST CRUD events with whatever you like.
+* Useful exceptions when `results` struct does not have the required keys
+* Ability to override the name of the method to use for persistence on the ORM services. Using the `variables.saveMethod` property or the `savemethod` argument.
+* Ability to override the name of the method to use for deleting entities on the ORM services. Using the `variables.deleteMethod` property or the `deleteMethod` argument.
+* cbSwagger docs
+
+### Changed
+
+* Added ACF2016 compatibilities on elvis operator which sucks on ACF2016
+* Avoid using member function son some arrays to allow for working with Java arrays
+  
+----
+
 ## [v3.2.1] => 2021-MAR-31
 
 ### Fixed

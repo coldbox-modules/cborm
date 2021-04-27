@@ -11,18 +11,17 @@ component {
 	this.author         = "Ortus Solutions";
 	this.webURL         = "https://www.ortussolutions.com";
 	this.description    = "ColdBox ORM enhancements for Hibernate";
-	// Model Namespace
 	this.modelNamespace = "cborm";
-	// CF Mapping
 	this.cfmapping      = "cborm";
-	// Dependencies
-	this.dependencies   = [ "cbvalidation", "cbPaginator" ];
+	this.dependencies   = [ "cbvalidation", "cbPaginator", "mementifier", "cbstreams" ];
 
 	variables.SETTING_DEFAULTS = {
 		// Resource Settings
 		resources : {
 			// Enable the ORM Resource Event Loader
 			eventLoader  : false,
+			// Prefix to use on all the registered pre/post{Entity}{Action} events
+			eventPrefix : "",
 			// Pagination max rows
 			maxRows      : 25,
 			// Pagination max row limit: 0 = no limit
