@@ -21,6 +21,7 @@ component singleton {
 
 	property name="log"                inject="logbox:logger:{this}";
 	property name="interceptorService" inject="coldbox:interceptorService";
+	property name="settings"           inject="coldbox:moduleSettings:cborm";
 
 	/**
 	 * Constructor
@@ -30,7 +31,7 @@ component singleton {
 	}
 
 	/**
-	 * Loads up all the events according to hibernate
+	 * Loads up all the events according to hibernate metadata
 	 */
 	function loadEvents(){
 		var sTime = getTickCount();
@@ -40,18 +41,20 @@ component singleton {
 		// Register all Resource Events
 		getEntityMap().each( function( thisEntity ){
 			variables.interceptorService.appendInterceptionPoints( [
-				"pre#thisEntity#List",
-				"post#thisEntity#List",
-				"pre#thisEntity#Save",
-				"post#thisEntity#Save",
-				"pre#thisEntity#Show",
-				"post#thisEntity#Show",
-				"pre#thisEntity#Update",
-				"post#thisEntity#Update",
-				"pre#thisEntity#Delete",
-				"post#thisEntity#Delete"
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#List",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#List",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Save",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Save",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Show",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Show",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Update",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Update",
+				"#variables.settings.resources.eventPrefix#pre#thisEntity#Delete",
+				"#variables.settings.resources.eventPrefix#post#thisEntity#Delete"
 			] );
-			variables.log.info( "		===> Registered '#thisEntity#' Resource Events" );
+			variables.log.info(
+				"		===> Registered '#thisEntity#' resource events using event prefix of (#variables.settings.resources.eventPrefix#)"
+			);
 		} );
 
 		variables.log.info( "** Registered all Base ORM Resource Events in #getTickCount() - sTime# ms" );

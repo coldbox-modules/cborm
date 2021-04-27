@@ -17,6 +17,7 @@ This module will enhance your experience when working with the ColdFusion ORM po
 * Entity validation
 * Includes the [Mementifier project](https://www.forgebox.io/view/mementifier) to produce memento states from any entity, great for producing JSON
 * Ability for finders and queries to be returned as Java streams using our [cbStreams](https://www.forgebox.io/view/cbstreams) project.
+* Automatic REST CRUD, stop wasting time building resources and just leverage our base resource: https://coldbox-orm.ortusbooks.com/orm-events/automatic-rest-crud
 
 ```js
 # A quick preview of some functionality
@@ -112,17 +113,29 @@ The module also registers a new WireBox DSL called `entityservice` which can pro
 
 ## Settings
 
-Here are the module settings you can place in your `ColdBox.cfc` under the `moduleSettings.cborm` structure:
+Here are the module settings you can place in your `config/Coldbox.cfc` under the `moduleSettings.cborm` structure:
 
 ```js
 moduleSettings = {
-
 	cborm = {
-		injection = {
-			enabled = true, include = "", exclude = ""
+		// Resource Settings
+		resources : {
+			// Enable the ORM Resource Event Loader
+			eventLoader  : false,
+			// Prefix to use on all the registered pre/post{Entity}{Action} events
+			eventPrefix : "",
+			// Pagination max rows
+			maxRows      : 25,
+			// Pagination max row limit: 0 = no limit
+			maxRowsLimit : 500
+		},
+		// WireBox Injection Bridge
+		injection : {
+			enabled : true,
+			include : "",
+			exclude : ""
 		}
 	}
-
 };
 ```
 

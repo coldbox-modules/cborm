@@ -1,5 +1,5 @@
 /**
- * This base handler will inherit from the Base API Handler but actually implement it
+ * This base handler will inherit from the ColdBox REST Handler but actually implement it
  * for CRUD operations using ORM, cbORM and ColdBox Resources.
  *
  * ## Pre-Requisites
@@ -41,17 +41,57 @@ component extends="coldbox.system.RestHandler" {
 	property name="settings"    inject="coldbox:moduleSettings:cborm";
 	property name="cbpaginator" inject="Pagination@cbpaginator";
 
-	// The default sorting order string: permission, name, data desc, etc.
-	variables.sortOrder = "";
-	// The name of the entity this resource handler controls. Singular name please.
-	variables.entity    = "";
+	/* *********************************************************************
+	 **	Opearational Properties
+	 ********************************************************************* */
+
+	// The default sorting order string: permission, name, data desc, etc. that comes from the `rc`
+	variables.sortOrder    = "";
+	// The name of the entity this resource handler controls. Singular name please. Used for event announcements
+	variables.entity       = "";
+	// The name of the method to use for save persistence on the ORM service
+	variables.saveMethod   = "save";
+	// The name of the method to use for deleting entites on the ORM service
+	variables.deleteMethod = "delete";
 
 	/**
 	 * Display all resource records with pagination
-	 * GET /api/v1/{resource}
+	 *
+	 * @param-includes {
+	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-excludes {
+	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-ignoreDefaults {
+	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * }
+	 * @param-sortOrder {
+	 * 	"description" : "The sorting string to use via the orm services",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-page {
+	 * 	"description" : "The page to retrieve using pagination"
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "integer", "default" : 1 }
+	 * }
 	 *
 	 * @criteria If you pass a criteria object, then we will use that instead of creating a new one
-	 * @results If you pass in a results struct, it must contain the following: { count:numeric, records: array of objects }
+	 * @results If you pass in a results struct, it must contain the following keys: { count:numeric, records: array of objects }
+	 *
+	 * @throws InvalidResultsException - If a results struct is passed and any of the required keys are not found
 	 */
 	function index(
 		event,
@@ -68,23 +108,22 @@ component extends="coldbox.system.RestHandler" {
 		// Query params
 		param rc.sortOrder = variables.sortOrder;
 		param rc.page      = 1;
-		param rc.isActive  = true;
 
-		// If we do not have a criteria or we have results, create one
+		// If we do NOT have a criteria or we have results, create a vanilla one to use
 		if ( isNull( arguments.criteria ) && isNull( arguments.results ) ) {
 			arguments.criteria = newCriteria();
 		}
 
 		// announce it
 		announceInterception(
-			"pre#variables.entity#List",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#List",
 			{
-				criteria : arguments.criteria ?: newCriteria(),
-				results  : arguments.results ?: { "count" : 0, "records" : [] }
+				criteria : ( isNull( arguments.criteria ) ? newCriteria() : arguments.criteria ),
+				results  : ( isNull( arguments.results ) ? { "count" : 0, "records" : [] } : arguments.results )
 			}
 		);
 
-		// Run the results if no results passed
+		// Run the results if no results struct passed
 		if ( isNull( arguments.results ) ) {
 			prc.recordCount = arguments.criteria.count();
 			prc.records     = arguments.criteria.list(
@@ -93,13 +132,27 @@ component extends="coldbox.system.RestHandler" {
 				sortOrder = rc.sortOrder
 			);
 		} else {
+			// Some useful throws
+			if ( !arguments.results.keyExists( "count" ) ) {
+				throw(
+					message = "You passed a results struct but no (count) key was found, which is required",
+					type    = "InvalidResultsException"
+				);
+			}
+			if ( !arguments.results.keyExists( "records" ) ) {
+				throw(
+					message = "You passed a results struct but no (records) key was found, which is required",
+					type    = "InvalidResultsException"
+				);
+			}
+
 			prc.recordCount = arguments.results.count;
 			prc.records     = arguments.results.records;
 		}
 
 		// announce it
 		announceInterception(
-			"post#variables.entity#List",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#List",
 			{
 				count   : prc.recordCount,
 				records : prc.records
@@ -116,8 +169,9 @@ component extends="coldbox.system.RestHandler" {
 				)
 			)
 			.setData(
-				prc.records.map( function( item ){
-					return item.getMemento(
+				// Use arrayMap just in case we get a java Array
+				arrayMap( prc.records, function( item ){
+					return arguments.item.getMemento(
 						includes       = rc.includes,
 						excludes       = rc.excludes,
 						ignoreDefaults = rc.ignoreDefaults
@@ -128,17 +182,40 @@ component extends="coldbox.system.RestHandler" {
 
 	/**
 	 * Create a resource
-	 * POST /api/v1/{entity}
+	 *
+	 * Composition of ORM relationships is on by default (populate.composeRelationships)
+	 * This method calls the `save()` method on the orm service, unless you override it
+	 *
+	 * @param-includes {
+	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-excludes {
+	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-ignoreDefaults {
+	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * }
 	 *
 	 * @populate Population arguments
 	 * @validate Validation arguments
+	 * @saveMethod Defaults to `save()`
 	 */
 	function create(
 		event,
 		rc,
 		prc,
-		struct populate = {},
-		struct validate = {}
+		struct populate   = {},
+		struct validate   = {},
+		string saveMethod = variables.saveMethod
 	){
 		param rc.includes                             = "";
 		param rc.excludes                             = "";
@@ -149,24 +226,28 @@ component extends="coldbox.system.RestHandler" {
 		arguments.populate.memento = rc;
 		arguments.populate.model   = variables.ormService.new();
 
-		// Validation Arguments
+		// Populate it
 		arguments.validate.target = populateModel( argumentCollection = arguments.populate );
 
-		// Validate
+		// Validate it
 		prc.oEntity = validateOrFail( argumentCollection = arguments.validate );
 
 		// announce it
 		announceInterception(
-			"pre#variables.entity#Save",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Save",
 			{ entity : prc.oEntity }
 		);
 
 		// Save it
-		variables.ormService.save( prc.oEntity );
+		invoke(
+			variables.ormService,
+			arguments.saveMethod,
+			[ prc.oEntity ]
+		);
 
 		// announce it
 		announceInterception(
-			"post#variables.entity#Save",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Save",
 			{ entity : prc.oEntity }
 		);
 
@@ -182,7 +263,31 @@ component extends="coldbox.system.RestHandler" {
 
 	/**
 	 * Show a resource using the id
-	 * GET /api/v1/{resource}/:id
+	 *
+	 * @param-includes {
+	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-excludes {
+	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-ignoreDefaults {
+	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * }
+	 * @param-id {
+	 * 	"description" : "The id to use to retrieve the entity."
+	 * 	"in" : "path",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : 0 }
+	 * }
 	 */
 	function show( event, rc, prc ){
 		param rc.includes       = "";
@@ -191,14 +296,17 @@ component extends="coldbox.system.RestHandler" {
 		param rc.id             = 0;
 
 		// announce it
-		announceInterception( "pre#variables.entity#Show", {} );
+		announceInterception(
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Show",
+			{}
+		);
 
 		// Get by id
 		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
 		announceInterception(
-			"post#variables.entity#Show",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Show",
 			{ entity : prc.oEntity }
 		);
 
@@ -214,7 +322,31 @@ component extends="coldbox.system.RestHandler" {
 
 	/**
 	 * Update a resource using an id
-	 * PUT /api/v1/{resource}/:id
+	 *
+	 * @param-includes {
+	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-excludes {
+	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * }
+	 * @param-ignoreDefaults {
+	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * 	"in" : "query",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * }
+	 * @param-id {
+	 * 	"description" : "The id to use to retrieve the entity."
+	 * 	"in" : "path",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : 0 }
+	 * }
 	 *
 	 * @populate Population arguments
 	 * @validate Validation arguments
@@ -223,8 +355,9 @@ component extends="coldbox.system.RestHandler" {
 		event,
 		rc,
 		prc,
-		struct populate = {},
-		struct validate = {}
+		struct populate   = {},
+		struct validate   = {},
+		string saveMethod = variables.saveMethod
 	){
 		param rc.includes                             = "";
 		param rc.excludes                             = "";
@@ -244,16 +377,20 @@ component extends="coldbox.system.RestHandler" {
 
 		// announce it
 		announceInterception(
-			"pre#variables.entity#Update",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Update",
 			{ entity : prc.oEntity }
 		);
 
 		// Save it
-		variables.ormService.save( prc.oEntity );
+		invoke(
+			variables.ormService,
+			arguments.saveMethod,
+			[ prc.oEntity ]
+		);
 
 		// announce it
 		announceInterception(
-			"post#variables.entity#Update",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Update",
 			{ entity : prc.oEntity }
 		);
 
@@ -269,24 +406,42 @@ component extends="coldbox.system.RestHandler" {
 
 	/**
 	 * Delete a resource
-	 * DELETE /api/v1/{resource}/:id
+	 *
+	 * @param-id {
+	 * 	"description" : "The id to use to retrieve the entity."
+	 * 	"in" : "path",
+	 * 	"required" : false,
+	 * 	"schema" : { "type" : "string", "default" : 0 }
+	 * }
+	 *
+	 * @deleteMethod The method used for deleting, we default to delete()
 	 */
-	function delete( event, rc, prc ){
+	function delete(
+		event,
+		rc,
+		prc,
+		string deleteMethod = variables.deleteMethod
+	){
 		param rc.id = 0;
 
 		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
 		announceInterception(
-			"pre#variables.entity#Delete",
+			"#variables.settings.resources.eventPrefix#pre#variables.entity#Delete",
 			{ entity : prc.oEntity }
 		);
 
-		variables.ormService.delete( prc.oEntity );
+		// Delete it
+		invoke(
+			variables.ormService,
+			arguments.deleteMethod,
+			[ prc.oEntity ]
+		);
 
 		// announce it
 		announceInterception(
-			"post#variables.entity#Delete",
+			"#variables.settings.resources.eventPrefix#post#variables.entity#Delete",
 			{ id : rc.id }
 		);
 
