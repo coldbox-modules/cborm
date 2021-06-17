@@ -63,21 +63,41 @@ component accessors="true" {
 	 */
 	private function setupHibernateProperties(){
 		// get formatter for sql string beautification: ACF vs Lucee
-		if (
-			findNoCase(
-				"coldfusion",
-				server.coldfusion.productName
-			)
-		) {
-			// Formatter Support
-			variables.formatter = createObject(
-				"java",
-				"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
-			);
-
-			// Dialect Specific Setup: Hibernate 4vs5 differences
-			if ( listFirst( server.coldfusion.productVersion ) gte 2018 ) {
-				variables.hibernateVersion = "5";
+		variables.hibernateVersion = listFirst( getHibernateVersion(), "." );
+		switch( variables.hibernateVersion ){
+			case "3":
+				// Lucee Hibernate 3+, waayyyyy old.
+				variables.hibernateVersion = "3";
+				variables.dialect        = variables.ormFactory.getDialect();
+				variables.dialectSupport = {
+					limit                             : variables.dialect.supportsLimit(),
+					limitOffset                       : variables.dialect.supportsLimitOffset(),
+					useMaxForLimit                    : variables.dialect.useMaxForLimit(),
+					forceLimitUsage                   : variables.dialect.forceLimitUsage(),
+					bindLimitParametersFirst          : variables.dialect.bindLimitParametersFirst(),
+					bindLimitParametersInReverseOrder : variables.dialect.bindLimitParametersInReverseOrder()
+				};
+			break;
+			case "4":
+				variables.formatter = createObject(
+					"java",
+					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
+				);
+				variables.dialect          = variables.ormFactory.getDialect();
+				variables.dialectSupport   = {
+					limit                             : variables.dialect.supportsLimit(),
+					limitOffset                       : variables.dialect.supportsLimitOffset(),
+					useMaxForLimit                    : variables.dialect.useMaxForLimit(),
+					forceLimitUsage                   : variables.dialect.forceLimitUsage(),
+					bindLimitParametersFirst          : variables.dialect.bindLimitParametersFirst(),
+					bindLimitParametersInReverseOrder : variables.dialect.bindLimitParametersInReverseOrder()
+				};
+			break;
+			case "5":
+				variables.formatter = createObject(
+					"java",
+					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
+				);
 				// Set SQL Dialect ACF2018:Hibernate5.2+
 				var jdbcServiceClass       = createObject(
 					"java",
@@ -95,35 +115,24 @@ component accessors="true" {
 						.getLimitHandler()
 						.bindLimitParametersInReverseOrder()
 				};
-			} else {
-				// Hibernate 4+
-				variables.dialect          = variables.ormFactory.getDialect();
-				variables.hibernateVersion = "4";
-				variables.dialectSupport   = {
-					limit                             : variables.dialect.supportsLimit(),
-					limitOffset                       : variables.dialect.supportsLimitOffset(),
-					useMaxForLimit                    : variables.dialect.useMaxForLimit(),
-					forceLimitUsage                   : variables.dialect.forceLimitUsage(),
-					bindLimitParametersFirst          : variables.dialect.bindLimitParametersFirst(),
-					bindLimitParametersInReverseOrder : variables.dialect.bindLimitParametersInReverseOrder()
-				};
-			}
+			break;
+			default:
+				throw( "The Hibernate version #variables.hibernateVersion# is not supported." );
+			break;
+		}
+	}
+
+	/**
+	 * Work around the insanity of Lucee's custom Hibernate jar,
+	 * which has a bad MANIFEST.MF with no specified `Implementation-Version` config.
+	 */
+	private string function getHibernateVersion(){
+		var version = createObject( "java", "org.hibernate.Version" );
+
+		if ( version.getVersionString() != "[WORKING]" ){
+			return version.getVersionString();
 		} else {
-			// Lucee Hibernate 3+, waayyyyy old.
-			variables.hibernateVersion = "3";
-			variables.formatter        = createObject(
-				"java",
-				"org.hibernate.jdbc.util.BasicFormatterImpl"
-			);
-			variables.dialect        = variables.ormFactory.getDialect();
-			variables.dialectSupport = {
-				limit                             : variables.dialect.supportsLimit(),
-				limitOffset                       : variables.dialect.supportsLimitOffset(),
-				useMaxForLimit                    : variables.dialect.useMaxForLimit(),
-				forceLimitUsage                   : variables.dialect.forceLimitUsage(),
-				bindLimitParametersFirst          : variables.dialect.bindLimitParametersFirst(),
-				bindLimitParametersInReverseOrder : variables.dialect.bindLimitParametersInReverseOrder()
-			};
+			return version.getClass().getClassLoader().getBundle().getVersion().toString();
 		}
 	}
 
