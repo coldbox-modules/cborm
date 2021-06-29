@@ -65,10 +65,7 @@ component singleton {
 	 */
 	private function getEntityMap(){
 		if (
-			find(
-				"2018",
-				server.coldfusion.productVersion
-			)
+			listFirst( server.coldfusion.productVersion ) >= 2018
 		) {
 			return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 		} else {
