@@ -66,6 +66,10 @@ component accessors="true" {
 		variables.hibernateVersion = listFirst( getHibernateVersion(), "." );
 		switch( variables.hibernateVersion ){
 			case "3":
+				variables.formatter = createObject(
+					"java",
+					"org.hibernate.jdbc.util.BasicFormatterImpl"
+				);
 				// Lucee Hibernate 3+, waayyyyy old.
 				variables.hibernateVersion = "3";
 				variables.dialect        = variables.ormFactory.getDialect();
