@@ -86,8 +86,13 @@ component {
 				"ORMPostInsert",
 				"ORMPreSave",
 				"ORMPostSave",
+				"ORMFlush",
+				"ORMAutoFlush",
 				"ORMPostFlush",
-				"ORMPreFlush"
+				"ORMPreFlush",
+				"ORMDirtyCheck",
+				"ORMEvict",
+				"ORMClear"
 			]
 		};
 

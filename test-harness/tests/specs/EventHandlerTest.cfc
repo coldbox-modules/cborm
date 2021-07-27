@@ -15,4 +15,8 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( isObject( user.getWireBox() ) );
 	}
 
+	function testEventCalled(){
+		// TODO: How to test events are called???
+	}
+
 }
