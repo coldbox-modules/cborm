@@ -152,4 +152,17 @@ component {
 		return getSessionFactory( arguments.datasource ).getClassMetaData( arguments.entityName );
 	}
 
+	/**
+	 * Work around the insanity of Lucee's custom Hibernate jar,
+	 * which has a bad MANIFEST.MF with no specified `Implementation-Version` config.
+	 */
+	public string function getHibernateVersion(){
+		var version = createObject( "java", "org.hibernate.Version" );
+
+		if ( version.getVersionString() != "[WORKING]" ){
+			return version.getVersionString();
+		} else {
+			return version.getClass().getClassLoader().getBundle().getVersion().toString();
+		}
+	}
 }

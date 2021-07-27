@@ -46,6 +46,7 @@ component accessors="true" {
 		variables.criteriaImpl = variables.cb.getNativeCriteria();
 		variables.ormSession   = variables.criteriaImpl.getSession();
 		variables.ormFactory   = variables.ormSession.getFactory();
+		variables.ormUtil = new cborm.models.util.ORMUtilSupport();
 
 		// Load Hibernate Properties Accordingly to version
 		setupHibernateProperties();
@@ -63,7 +64,7 @@ component accessors="true" {
 	 */
 	private function setupHibernateProperties(){
 		// get formatter for sql string beautification: ACF vs Lucee
-		variables.hibernateVersion = listFirst( getHibernateVersion(), "." );
+		variables.hibernateVersion = listFirst( variables.ormUtil.getHibernateVersion(), "." );
 		switch( variables.hibernateVersion ){
 			case "3":
 				variables.formatter = createObject(
@@ -123,20 +124,6 @@ component accessors="true" {
 			default:
 				throw( "The Hibernate version #variables.hibernateVersion# is not supported." );
 			break;
-		}
-	}
-
-	/**
-	 * Work around the insanity of Lucee's custom Hibernate jar,
-	 * which has a bad MANIFEST.MF with no specified `Implementation-Version` config.
-	 */
-	private string function getHibernateVersion(){
-		var version = createObject( "java", "org.hibernate.Version" );
-
-		if ( version.getVersionString() != "[WORKING]" ){
-			return version.getVersionString();
-		} else {
-			return version.getClass().getClassLoader().getBundle().getVersion().toString();
 		}
 	}
 
