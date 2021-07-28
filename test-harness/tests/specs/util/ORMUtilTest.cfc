@@ -47,4 +47,22 @@ component extends="tests.resources.BaseTest" skip="isCF" {
 		);
 	}
 
+	function testGetHibernateVersion(){
+		writeDump( ormutil.getHibernateVersion() );
+		/**
+		 * ! LUCEE-ONLY
+		 */
+		var hibernateExtension = extensionList().filter( ( extension ) => extension.name == "Hibernate ORM Engine" );
+		if ( listContains( hibernateExtension.version, "5.4.29" ) > 0 ) {
+			assertEquals(
+				"5.4.29.1",
+				ormutil.getHibernateVersion()
+			);
+		} else {
+			assertEquals(
+				"3.5.5-Final",
+				ormutil.getHibernateVersion()
+			);
+		}
+	}
 }
