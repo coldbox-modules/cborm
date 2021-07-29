@@ -27,7 +27,14 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 	 * @return https://docs.jboss.org/hibernate/core/3.5/javadocs/org/hibernate/EntityMode.html
 	 */
 	any function getSessionEntityMode( required ormSession, required entity ){
-		return arguments.ormSession.getEntityMode();
+		if ( listFirst( getHibernateVersion(), "." ) >= 5 ){
+			return arguments.ormSession.getEntityPersister(
+				arguments.ormSession.getEntityName( arguments.entity ),
+				arguments.entity
+			);
+		} else {
+			return arguments.ormSession.getEntityMode();
+		}
 	}
 
 }
