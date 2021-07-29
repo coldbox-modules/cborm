@@ -31,6 +31,8 @@
 		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 		test2      = [ "1", "2" ];
+
+		variables.ormUtil = createMock( "cborm.models.util.ORMUtilSupport" );
 	}
 
 	function testCountByDynamically(){
@@ -729,12 +731,20 @@
 		);
 		assertTrue( arrayLen( test ) );
 
-		params = [ "general" ];
-		test   = ormservice.executeQuery(
-			query  = "from Category where category = ?1",
-			params = params
-		);
-		assertTrue( arrayLen( test ) );
+		/**
+		 * enable this test for Hibernate v5+ only
+		 * 
+		 * TODO: This conditional can be removed when/if LDEV-3641 is fixed on the v3.5 extension.
+		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
+		 */
+		if ( val( left( variables.ormUtil.getHibernateVersion(), 3 ) ) > 5.2 ){
+			params = [ "general" ];
+			test   = ormservice.executeQuery(
+				query  = "from Category where category = ?1",
+				params = params
+			);
+			assertTrue( arrayLen( test ) );
+		}
 
 		var sqlTestString = "
 			from Category
@@ -744,7 +754,6 @@
 			OR category = 'sunny' 
 			OR category = ?
 			OR category = ?
-			OR category = ?7
 			OR category = ?
 			OR category = ?
 			OR category = ?
@@ -807,12 +816,20 @@
 		);
 		assertEquals( 1, arrayLen( test ) );
 
-		// hibernate 5.3+ JPA syntax
-		test = ormservice.findAll(
-			"from Category where category = ?1",
-			[ "Training" ]
-		);
-		assertEquals( 1, arrayLen( test ) );
+		/**
+		 * enable this test for Hibernate v5+ only
+		 * 
+		 * TODO: This conditional can be removed when/if LDEV-3641 is fixed on the v3.5 extension.
+		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
+		 */
+		if ( val( left( variables.ormUtil.getHibernateVersion(), 3 ) ) > 5.2 ){
+			// hibernate 5.3+ JPA syntax
+			test = ormservice.findAll(
+				"from Category where category = ?1",
+				[ "Training" ]
+			);
+			assertEquals( 1, arrayLen( test ) );
+		}
 
 		test = ormservice.findAll(
 			"from Category where category = :category",
