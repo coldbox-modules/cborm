@@ -9,5 +9,8 @@ test-harness/logs/**
 test-harness/modules/**
 test-harness/WEB-INF/**
 
+# dependcies
+modules
+
 # log files
 logs/**
