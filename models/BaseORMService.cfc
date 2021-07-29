@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -1058,14 +1058,7 @@ component accessors="true" {
 			return [];
 		}
 
-		if ( server.keyExists( "lucee" ) ) {
-			var currentState = hibernateMD.getPropertyValues(
-				arguments.entity,
-				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
-			);
-		} else {
-			var currentState = hibernateMD.getPropertyValues( arguments.entity );
-		}
+		var currentState = getPropertyValues( thisSession, arguments.entity );
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1098,14 +1091,7 @@ component accessors="true" {
 			return false;
 		}
 
-		if ( server.keyExists( "lucee" ) ) {
-			var currentState = hibernateMD.getPropertyValues(
-				arguments.entity,
-				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
-			);
-		} else {
-			var currentState = hibernateMD.getPropertyValues( arguments.entity );
-		}
+		var currentState = getPropertyValues( thisSession, arguments.entity );
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1942,6 +1928,26 @@ process(
 	/*****************************************************************************************/
 	/********************************* PRIVATE METHODS **************************************/
 	/*****************************************************************************************/
+
+	/**
+	 * Get property values for the given entity.
+	 *
+	 * @ormSession the current ORM session. Will (probably) throw an exception if session is not open.
+	 * @entity The entity to retrieve property values on.
+	 * 
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
+	 */
+	private function getPropertyValues( required ormSession, required entity ){
+		var hibernateMD = getEntityMetadata( arguments.entity );
+		if ( val( left( variables.ORM.getHibernateVersion(), 3 ) ) < 4.0 ){
+			return hibernateMD.getPropertyValues(
+				arguments.entity,
+				variables.ORM.getSessionEntityMode( arguments.ormSession, arguments.entity )
+			);
+		} else {
+			return hibernateMD.getPropertyValues( arguments.entity );
+		}
+	}
 
 	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis
