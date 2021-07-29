@@ -728,6 +728,34 @@
 			params = params
 		);
 		assertTrue( arrayLen( test ) );
+
+		params = [ "general" ];
+		test   = ormservice.executeQuery(
+			query  = "from Category where category = ?1",
+			params = params
+		);
+		assertTrue( arrayLen( test ) );
+
+		var sqlTestString = "
+			from Category
+			WHERE 
+			category = '?'
+			OR category = '? ' 
+			OR category = 'sunny' 
+			OR category = ?
+			OR category = ?
+			OR category = ?7
+			OR category = ?
+			OR category = ?
+			OR category = ?
+			OR category = ?
+			OR category = ?";
+		params = [ "general","general","general","general","general","general","general" ];
+		test   = ormservice.executeQuery(
+			query  = sqlTestString,
+			params = params
+		);
+		assertTrue( arrayLen( test ) );
 	}
 
 	function testExecuteQueryWithUpdate(){
@@ -772,8 +800,16 @@
 	}
 
 	function testFindAll(){
+		// hibernate 5.2- JDBC syntax
 		test = ormservice.findAll(
 			"from Category where category = ?",
+			[ "Training" ]
+		);
+		assertEquals( 1, arrayLen( test ) );
+
+		// hibernate 5.3+ JPA syntax
+		test = ormservice.findAll(
+			"from Category where category = ?1",
 			[ "Training" ]
 		);
 		assertEquals( 1, arrayLen( test ) );

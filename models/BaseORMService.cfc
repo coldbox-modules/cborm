@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -389,7 +389,7 @@ component accessors="true" {
 
 		// Get listing: https://cfdocs.org/ormexecutequery
 		var results = ormExecuteQuery(
-			arguments.query,
+			getHibernateSafeHQL( arguments.query ),
 			arguments.params,
 			arguments.unique,
 			options
@@ -553,7 +553,7 @@ component accessors="true" {
 		}
 
 		// Execute native hibernate query
-		var query = orm.getSession( orm.getEntityDatasource( arguments.entityName ) ).createQuery( hql );
+		var query = orm.getSession( orm.getEntityDatasource( arguments.entityName ) ).createQuery( getHibernateSafeHQL( hql ) );
 
 		// parameter binding
 		if ( !isNull( arguments.id ) ) {
@@ -1353,7 +1353,7 @@ component accessors="true" {
 			function( query, params, flush, datasource ){
 				// Bulk Execute
 				var count = ormExecuteQuery(
-					"delete #arguments.query#",
+					getHibernateSafeHQL( "delete #arguments.query#" ),
 					arguments.params,
 					false,
 					{ "datasource" : arguments.datasource }
@@ -1566,8 +1566,8 @@ component accessors="true" {
 	boolean function exists( required entityName, required any id ){
 		// Do it DLM style
 		var count = ormExecuteQuery(
-			"select count( id ) from #arguments.entityName# where id = ?",
-			[ arguments.id ],
+			"select count( id ) from #arguments.entityName# where id = :id",
+			{ id: arguments.id },
 			true,
 			{ datasource : variables.ORM.getEntityDatasource( arguments.entityName ) }
 		);
@@ -1610,7 +1610,7 @@ component accessors="true" {
 		// execute query as unique for the count
 		try {
 			return ormExecuteQuery(
-				buffer.toString(),
+				getHibernateSafeHQL( buffer.toString() ),
 				arguments.params,
 				true,
 				options
@@ -1666,7 +1666,7 @@ component accessors="true" {
 		// execute query as unique for the count
 		try {
 			return ormExecuteQuery(
-				sqlBuffer.toString(),
+				getHibernateSafeHQL( sqlBuffer.toString() ),
 				params,
 				true,
 				options
@@ -1947,6 +1947,32 @@ process(
 		} else {
 			return hibernateMD.getPropertyValues( arguments.entity );
 		}
+	}
+
+	/**
+	 * For Hibernate 5.4+, convert legacy-style positional parameters to JPA-syntax.
+	 * Uses Java regex library since neither Lucee nor ACF offer modern regex support.
+	 *
+	 * @hql Hibernate Query Language string to make safe for Hibernate v5.4+.
+	 * @see https://hibernate.atlassian.net/browse/HHH-12101
+	 */
+	private string function getHibernateSafeHQL( required string hql ){
+		if ( val( left( variables.ORM.getHibernateVersion(), 3 ) ) < 5.3 ){
+			return arguments.hql;
+		}
+
+		var matchJDBCPositionalParameters = "(?<![?])\?(?!\?)(?![^?=]*['\""])(?!\d)";
+		var javaPattern = createObject( "java", "java.util.regex.Pattern" );
+		var matcher = javaPattern.compile( matchJDBCPositionalParameters).matcher( arguments.hql );
+		if ( !matcher.find() ){
+			return arguments.hql;
+		}
+		var matches = matcher.replaceAll( "<REPLACE><<PARAMATER>>" );
+		return listToArray( matches, "<<PARAMATER>>", false, true )
+					.map( function( part, index ){
+						return replace( part, "<REPLACE>", "?#index#" );
+					} )
+					.toList( "" );
 	}
 
 	/**
