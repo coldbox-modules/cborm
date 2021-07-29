@@ -141,7 +141,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @entity The argument can be one persistence entity or an array of entities to evict
 	 */
 	any function evict( any entity = this ){
-		return super.evictEntity( arguments.entities );
+		return super.evict( arguments.entity );
 	}
 
 	/**
