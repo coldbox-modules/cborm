@@ -152,4 +152,17 @@ component {
 		return getSessionFactory( arguments.datasource ).getClassMetaData( arguments.entityName );
 	}
 
+    /**
+     * Cross-engine transaction detection.
+     * Useful for preventing nested transactions.
+     * 
+     * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
+     */
+    public boolean function isInTransaction(){
+        if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+            return ORMGetSession().isTransactionInProgress();
+        } else {
+            return ORMGetSession().getActualSession().isTransactionInProgress();
+        }
+    }
 }
