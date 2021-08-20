@@ -570,8 +570,8 @@ component accessors="true" {
 
 		// Streams Support
 		if ( arguments.asStream ) {
-			// If Hibernate 5, return native stream
-			if ( listFirst( server.coldfusion.productVersion ) == 2018 ) {
+			// If Hibernate 5, return native stream: left( variables.ORM.getHibernateVersion(), 1 ) > 5
+			if ( listFirst( server.coldfusion.productVersion ) >= 2018 ) {
 				return variables.wirebox
 					.getInstance( "StreamBuilder@cbStreams" )
 					.new()
@@ -1799,8 +1799,8 @@ component accessors="true" {
 	 */
 	boolean function sessionContains( required any entity ){
 		var ormSession = orm.getSession( orm.getEntityDatasource( arguments.entity ) );
-		// ACF 2018 regression
-		if ( server.coldfusion.productVersion.listFirst() == 2018 ) {
+		// Hibernate 5 Approach: left( variables.ORM.getHibernateVersion(), 1 ) > 5
+		if ( server.coldfusion.productVersion.listFirst() >= 2018 ) {
 			return ormSession.contains(
 				getEntityGivenName( arguments.entity ),
 				arguments.entity
