@@ -144,6 +144,41 @@ moduleSettings = {
 We have also migrated the `UniqueValidator` from the **validation** module into our
 ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use in your constraints like so:
 
+```js
+this.constraints = {
+    "name"  : {
+              "required":true,
+              "validator":"UniqueValidator@cborm"
+            }
+};
+```
+
+## Contributing
+
+All contributions welcome! Feel free to fix a typo 📝, add a feature 🚀, or add a testbox spec for a newly discovered issue 🐛.
+
+If you want to get hacking on CBORM, here's how to start:
+
+1. Clone down this repo
+2. Start a MySQL service you can connect to for running the CBORM test suite. Here's an example of a Docker mysql service:
+
+```bash
+docker run \
+    -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
+    -e MYSQL_USER=other \
+    -e MYSQL_PASSWORD=ortussolutions \
+    -e MYSQL_DATABASE=coolblog \
+    -v "$PWD/test-harness/tests/resources":/docker-entrypoint-initdb.d \
+    -p 3306:3306 \
+    --detach \
+    --name cborm_mysql \
+    mysql
+```
+
+3. Copy `test-harness/.env.template` to `test-harness/.env` and enter the database credentials used in step 2 above ☝
+4. Start a test server - `box cd tests` and `box start server-lucee@5.json`
+5. Hack away! 💻
+
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
