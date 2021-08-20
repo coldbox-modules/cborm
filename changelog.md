@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Migration to github actions from travis
 * Adobe 2021 Support and testing automation
 * Hibernate 5.4+ support for Lucee
 * New ORM events based on Hibernate 5.4 Events: `ORMFlush, ORMAutoFlush, ORMPreFlush, ORMDirtyCheck, ORMEvict, and ORMClear`
