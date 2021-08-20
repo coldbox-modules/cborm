@@ -12,8 +12,8 @@
         "cbpaginator":"^2.0.0"
     },
     "devDependencies":{
-        "testbox":"^4.0.0",
-        "route-visualizer":"^1.4.0+21"
+        "testbox":"*",
+        "route-visualizer":"*"
     },
     "installPaths":{
         "testbox":"testbox/",
@@ -26,5 +26,10 @@
     },
     "testbox":{
         "runner":"http://localhost:60299/tests/runner.cfm"
+    },
+    "scripts":{
+        "cfpm":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
+        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
+        "install:2021":"run-script cfpm:install zip,debugger,orm,mysql,postgresql,sqlserver,feed"
     }
 }

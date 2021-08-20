@@ -1,6 +1,7 @@
 .artifacts/**
 .tmp/**
 
+test-harness/.env
 test-harness/.engine/**
 test-harness/coldbox/**
 test-harness/docbox/**
