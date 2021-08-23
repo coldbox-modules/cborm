@@ -1061,7 +1061,11 @@ component accessors="true" {
 			return [];
 		}
 
-		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
+		var currentState = getPropertyValues(
+			thisSession,
+			hibernateMD,
+			arguments.entity
+		);
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1094,7 +1098,11 @@ component accessors="true" {
 			return false;
 		}
 
-		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
+		var currentState = getPropertyValues(
+			thisSession,
+			hibernateMD,
+			arguments.entity
+		);
 
 		var modified = hibernateMD.findModified(
 			dbState,
