@@ -132,10 +132,10 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Called when the session is dirty-checked
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
-	public void function onDirtyCheck( DirtyCheckEvent ){
+	public void function onDirtyCheck( dirtyCheckEvent ){
 		announceInterception(
 			"ORMDirtyCheck",
-			{ event : arguments.DirtyCheckEvent }
+			{ event : arguments.dirtyCheckEvent }
 		);
 	}
 
@@ -143,10 +143,10 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Called when a session entity is evicted
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
-	public void function onEvict( EvictEvent ){
+	public void function onEvict( evictEvent ){
 		announceInterception(
 			"ORMEvict",
-			{ event : arguments.EvictEvent }
+			{ event : arguments.evictEvent }
 		);
 	}
 
@@ -154,10 +154,10 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Called when the session is cleared
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
-	public void function onClear( ClearEvent ){
+	public void function onClear( clearEvent ){
 		announceInterception(
 			"ORMClear",
-			{ event : arguments.ClearEvent }
+			{ event : arguments.clearEvent }
 		);
 	}
 
@@ -165,10 +165,10 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Called when the session is flushed
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
-	public void function onFlush( FlushEvent ){
+	public void function onFlush( flushEvent ){
 		announceInterception(
 			"ORMFlush",
-			{ event : arguments.FlushEvent }
+			{ event : arguments.flushEvent }
 		);
 	}
 
@@ -176,10 +176,10 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Called on the automatic flushing of the session
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
-	public void function onAutoFlush( AutoFlushEvent ){
+	public void function onAutoFlush( autoFlushEvent ){
 		announceInterception(
 			"ORMAutoFlush",
-			{ event : arguments.AutoFlushEvent }
+			{ event : arguments.autoFlushEvent }
 		);
 	}
 
