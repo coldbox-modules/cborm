@@ -186,7 +186,7 @@
 	function testList(){
 		test = ormservice.list( sortorder = "lastName asc" );
 
-		assertTrue( isArray( test) );
+		assertTrue( isArray( test ) );
 		assertTrue( arrayLen( test ) );
 	}
 

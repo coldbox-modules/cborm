@@ -53,7 +53,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 		}
 
 		// Else, transaction safe call
-		if( variables.orm.getSession( datasource ).isTransactionInProgress() ){
+		if ( variables.orm.getSession( datasource ).isTransactionInProgress() ) {
 			var tx = variables.orm.getSession( datasource ).getTransaction();
 		} else {
 			var tx = variables.orm.getSession( datasource ).beginTransaction();

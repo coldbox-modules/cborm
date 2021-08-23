@@ -283,7 +283,7 @@
 		test = activeUser.list( sortorder = "lastName asc" );
 
 		assertTrue( isArray( test ) );
-		assertTrue( arrayLen(test ) );
+		assertTrue( arrayLen( test ) );
 	}
 
 	function testFindWhere(){
@@ -317,8 +317,7 @@
 		assertEquals( "ActiveUser", c.getEntityName() );
 	}
 
-	function testIsDirty() {
-
+	function testIsDirty(){
 		user = activeUser.new(
 			properties = {
 				firstName : "Some",
@@ -331,7 +330,7 @@
 		transaction {
 			try {
 				assertFalse( user.isDirty() );
-				user.save( flush=true, transactional = false );
+				user.save( flush = true, transactional = false );
 				assertFalse( user.isDirty() );
 				user.setFirstname( "Another" );
 				user.setLastname( "Person" );
@@ -342,10 +341,9 @@
 				transactionRollback();
 			}
 		}
-
 	}
 
-	private function deleteCategories() {
+	private function deleteCategories(){
 		var q = new Query( datasource = "coolblog" );
 		q.execute( sql = "delete from categories where category = 'unitTest'" );
 	}
