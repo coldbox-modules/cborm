@@ -1061,7 +1061,7 @@ component accessors="true" {
 			return [];
 		}
 
-		var currentState = getPropertyValues( thisSession, arguments.entity );
+		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1094,7 +1094,7 @@ component accessors="true" {
 			return false;
 		}
 
-		var currentState = getPropertyValues( thisSession, arguments.entity );
+		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1936,12 +1936,16 @@ process(
 	 * Get property values for the given entity.
 	 *
 	 * @ormSession the current ORM session. Will (probably) throw an exception if session is not open.
+	 * @hibernateMetadata a `ClassMetadata` Hibernate object populated with entity meta. See `getEntityMetadata`
 	 * @entity The entity to retrieve property values on.
 	 *
 	 * @see https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
 	 */
-	private function getPropertyValues( required ormSession, required entity ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
+	private function getPropertyValues(
+		required ormSession,
+		required hibernateMetadata,
+		required entity
+	){
 		if (
 			val(
 				left(
@@ -1950,7 +1954,7 @@ process(
 				)
 			) < 4.0
 		) {
-			return hibernateMD.getPropertyValues(
+			return arguments.hibernateMetadata.getPropertyValues(
 				arguments.entity,
 				variables.ORM.getSessionEntityMode(
 					arguments.ormSession,
@@ -1958,7 +1962,7 @@ process(
 				)
 			);
 		} else {
-			return hibernateMD.getPropertyValues( arguments.entity );
+			return arguments.hibernateMetadata.getPropertyValues( arguments.entity );
 		}
 	}
 
