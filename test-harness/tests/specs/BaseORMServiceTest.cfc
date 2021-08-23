@@ -719,49 +719,25 @@
 	}
 
 	function testExecuteQuery(){
-		test = ormservice.executeQuery( query = "from Category" );
+		var test = ormservice.executeQuery( query = "from Category" );
 		debug( test );
 		assertTrue( isArray( test ) );
 		assertTrue( arrayLen( test ) );
 
-		params = [ "general" ];
-		test   = ormservice.executeQuery(
-			query  = "from Category where category = ?",
-			params = params
-		);
-		assertTrue( arrayLen( test ) );
-
+		var sql = "from Category where category = ?";
+	
 		/**
-		 * enable this test for Hibernate v5+ only
-		 * 
-		 * TODO: This conditional can be removed when/if LDEV-3641 is fixed on the v3.5 extension.
+		 * Test the Hibernate 5.3+ syntax.
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
-		if ( val( left( variables.ormUtil.getHibernateVersion(), 3 ) ) > 5.2 ){
-			params = [ "general" ];
-			test   = ormservice.executeQuery(
-				query  = "from Category where category = ?1",
-				params = params
-			);
-			assertTrue( arrayLen( test ) );
+		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ){
+			// hibernate 5.3+ JPA syntax
+			sql = "from Category where category = ?1";
 		}
 
-		var sqlTestString = "
-			from Category
-			WHERE 
-			category = '?'
-			OR category = '? ' 
-			OR category = 'sunny' 
-			OR category = ?
-			OR category = ?
-			OR category = ?
-			OR category = ?
-			OR category = ?
-			OR category = ?
-			OR category = ?";
-		params = [ "general","general","general","general","general","general","general" ];
+		var params = [ "general" ];
 		test   = ormservice.executeQuery(
-			query  = sqlTestString,
+			query  = sql,
 			params = params
 		);
 		assertTrue( arrayLen( test ) );
@@ -809,27 +785,26 @@
 	}
 
 	function testFindAll(){
-		// hibernate 5.2- JDBC syntax
+		/**
+		 * Test the Hibernate 5.2- syntax.
+		 * "legacy-style" JDBC positional parameters are unsupported in 5.3+
+		 */
+		var sql = "from Category where category = ?";
+
+		/**
+		 * Test the Hibernate 5.3+ syntax.
+		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
+		 */
+		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ){
+			// hibernate 5.3+ JPA syntax
+			sql = "from Category where category = ?1";
+		}
+
 		test = ormservice.findAll(
-			"from Category where category = ?",
+			sql,
 			[ "Training" ]
 		);
 		assertEquals( 1, arrayLen( test ) );
-
-		/**
-		 * enable this test for Hibernate v5+ only
-		 * 
-		 * TODO: This conditional can be removed when/if LDEV-3641 is fixed on the v3.5 extension.
-		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
-		 */
-		if ( val( left( variables.ormUtil.getHibernateVersion(), 3 ) ) > 5.2 ){
-			// hibernate 5.3+ JPA syntax
-			test = ormservice.findAll(
-				"from Category where category = ?1",
-				[ "Training" ]
-			);
-			assertEquals( 1, arrayLen( test ) );
-		}
 
 		test = ormservice.findAll(
 			"from Category where category = :category",
