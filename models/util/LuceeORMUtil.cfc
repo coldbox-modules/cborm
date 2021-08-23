@@ -28,10 +28,12 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 	 */
 	any function getSessionEntityMode( required ormSession, required entity ){
 		if ( listFirst( getHibernateVersion(), "." ) >= 5 ) {
-			return arguments.ormSession.getEntityPersister(
-				arguments.ormSession.getEntityName( arguments.entity ),
-				arguments.entity
-			).getEntityMode();
+			return arguments.ormSession
+				.getEntityPersister(
+					arguments.ormSession.getEntityName( arguments.entity ),
+					arguments.entity
+				)
+				.getEntityMode();
 		} else {
 			return arguments.ormSession.getEntityMode();
 		}
