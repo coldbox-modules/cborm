@@ -13,7 +13,12 @@ component {
 	this.description    = "ColdBox ORM enhancements for Hibernate";
 	this.modelNamespace = "cborm";
 	this.cfmapping      = "cborm";
-	this.dependencies   = [ "cbvalidation", "cbPaginator", "mementifier", "cbstreams" ];
+	this.dependencies   = [
+		"cbvalidation",
+		"cbPaginator",
+		"mementifier",
+		"cbstreams"
+	];
 
 	variables.SETTING_DEFAULTS = {
 		// Resource Settings
@@ -21,7 +26,7 @@ component {
 			// Enable the ORM Resource Event Loader
 			eventLoader  : false,
 			// Prefix to use on all the registered pre/post{Entity}{Action} events
-			eventPrefix : "",
+			eventPrefix  : "",
 			// Pagination max rows
 			maxRows      : 25,
 			// Pagination max row limit: 0 = no limit

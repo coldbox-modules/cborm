@@ -13,9 +13,7 @@
 		super.setup();
 
 		ormservice = createMock( "cborm.models.BaseORMService" );
-		mockEH     = createMock( "cborm.models.EventHandler" )
-			.$( "announceInterception", true )
-			.$( "announce", true );
+		mockEH     = createMock( "cborm.models.EventHandler" ).$( "announceInterception", true ).$( "announce", true );
 
 		// Mocks
 		ormservice.init();
@@ -725,21 +723,18 @@
 		assertTrue( arrayLen( test ) );
 
 		var sql = "from Category where category = ?";
-	
+
 		/**
 		 * Test the Hibernate 5.3+ syntax.
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
-		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ){
+		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
 			// hibernate 5.3+ JPA syntax
 			sql = "from Category where category = ?1";
 		}
 
 		var params = [ "general" ];
-		test   = ormservice.executeQuery(
-			query  = sql,
-			params = params
-		);
+		test       = ormservice.executeQuery( query = sql, params = params );
 		assertTrue( arrayLen( test ) );
 	}
 
@@ -795,15 +790,12 @@
 		 * Test the Hibernate 5.3+ syntax.
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
-		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ){
+		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
 			// hibernate 5.3+ JPA syntax
 			sql = "from Category where category = ?1";
 		}
 
-		test = ormservice.findAll(
-			sql,
-			[ "Training" ]
-		);
+		test = ormservice.findAll( sql, [ "Training" ] );
 		assertEquals( 1, arrayLen( test ) );
 
 		test = ormservice.findAll(

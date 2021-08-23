@@ -376,15 +376,17 @@ component accessors="true" {
 
 		// process interception
 		if ( getEventHandling() ) {
-			getORMEventHandler().getEventManager().processState(
-				"beforeOrmExecuteQuery",
-				{
-					"query" : arguments.query,
-					"params" : arguments.params,
-					"unique" : arguments.unique,
-					"options" : options
-				}
-			);
+			getORMEventHandler()
+				.getEventManager()
+				.processState(
+					"beforeOrmExecuteQuery",
+					{
+						"query"   : arguments.query,
+						"params"  : arguments.params,
+						"unique"  : arguments.unique,
+						"options" : options
+					}
+				);
 		}
 
 		// Get listing: https://cfdocs.org/ormexecutequery
@@ -397,21 +399,22 @@ component accessors="true" {
 
 		// process interception
 		if ( getEventHandling() ) {
-			getORMEventHandler().getEventManager().processState(
-				"afterOrmExecuteQuery",
-				{
-					"query" : arguments.query,
-					"params" : arguments.params,
-					"unique" : arguments.unique,
-					"options" : options,
-					"results" : isNull( results ) ? javacast( "null", "" ) : results
-				}
-			);
+			getORMEventHandler()
+				.getEventManager()
+				.processState(
+					"afterOrmExecuteQuery",
+					{
+						"query"   : arguments.query,
+						"params"  : arguments.params,
+						"unique"  : arguments.unique,
+						"options" : options,
+						"results" : isNull( results ) ? javacast( "null", "" ) : results
+					}
+				);
 		}
 
 		// Null Checks
 		if ( isNull( results ) ) {
-
 			if ( arguments.asStream ) {
 				return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new();
 			} else if ( arguments.asQuery ) {
@@ -1934,15 +1937,25 @@ process(
 	 *
 	 * @ormSession the current ORM session. Will (probably) throw an exception if session is not open.
 	 * @entity The entity to retrieve property values on.
-	 * 
+	 *
 	 * @see https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
 	 */
 	private function getPropertyValues( required ormSession, required entity ){
 		var hibernateMD = getEntityMetadata( arguments.entity );
-		if ( val( left( variables.ORM.getHibernateVersion(), 3 ) ) < 4.0 ){
+		if (
+			val(
+				left(
+					variables.ORM.getHibernateVersion(),
+					3
+				)
+			) < 4.0
+		) {
 			return hibernateMD.getPropertyValues(
 				arguments.entity,
-				variables.ORM.getSessionEntityMode( arguments.ormSession, arguments.entity )
+				variables.ORM.getSessionEntityMode(
+					arguments.ormSession,
+					arguments.entity
+				)
 			);
 		} else {
 			return hibernateMD.getPropertyValues( arguments.entity );
