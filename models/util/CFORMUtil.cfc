@@ -19,7 +19,7 @@ component implements="cborm.models.util.IORMUtil" extends="cborm.models.util.ORM
 		return arguments.ormSession.getEntityPersister(
 			arguments.ormSession.getEntityName( arguments.entity ),
 			arguments.entity
-		);
+		).getEntityMode();
 	}
 
 }
