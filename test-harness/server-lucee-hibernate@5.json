@@ -14,7 +14,7 @@
     },
     "jvm":{
         "heapSize":"1024",
-        "args":"'-Dlucee.extensions=FAD1E8CB-4F45-4184-86359145767C29DE;label=Hibernate ORM;version=5.4.29.6-BETA'"
+        "args":"'-Dlucee.extensions=FAD1E8CB-4F45-4184-86359145767C29DE;label=Hibernate ORM;name=hibernate.extension;version=5.4.29.6-BETA'"
     },
     "openBrowser":"false"
 }
