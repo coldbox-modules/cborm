@@ -68,6 +68,11 @@ jobs:
           fi
           curl http://127.0.0.1:60299
 
+      - name: Restart ${{ matrix.cfengine }} Server
+        working-directory: ./test-harness
+        run: |
+          box server restart serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
+
       - name: Run Tests
         working-directory: ./test-harness
         run: |
