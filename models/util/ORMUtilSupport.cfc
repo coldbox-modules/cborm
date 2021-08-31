@@ -152,17 +152,42 @@ component {
 		return getSessionFactory( arguments.datasource ).getClassMetaData( arguments.entityName );
 	}
 
-    /**
-     * Cross-engine transaction detection.
-     * Useful for preventing nested transactions.
-     * 
-     * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
-     */
-    public boolean function isInTransaction(){
-        if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-            return ORMGetSession().isTransactionInProgress();
-        } else {
-            return ORMGetSession().getActualSession().isTransactionInProgress();
-        }
-    }
+	/**
+	 * Work around the insanity of Lucee's custom Hibernate jar,
+	 * which has a bad MANIFEST.MF with no specified `Implementation-Version` config.
+	 */
+	public string function getHibernateVersion(){
+		var version = createObject( "java", "org.hibernate.Version" );
+
+		if ( version.getVersionString() != "[WORKING]" ) {
+			return version.getVersionString();
+		} else {
+			return version
+				.getClass()
+				.getClassLoader()
+				.getBundle()
+				.getVersion()
+				.toString();
+		}
+	}
+
+	/**
+	 * Cross-engine transaction detection.
+	 * Useful for preventing nested transactions.
+	 *
+	 * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
+	 */
+	public boolean function isInTransaction(){
+		if (
+			listFindNoCase(
+				"Lucee",
+				server.coldfusion.productname
+			)
+		) {
+			return ormGetSession().isTransactionInProgress();
+		} else {
+			return ormGetSession().getActualSession().isTransactionInProgress();
+		}
+	}
+
 }

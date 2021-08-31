@@ -13,9 +13,7 @@
 		super.setup();
 
 		ormservice = createMock( "cborm.models.BaseORMService" );
-		mockEH     = createMock( "cborm.models.EventHandler" )
-			.$( "announceInterception", true )
-			.$( "announce", true );
+		mockEH     = createMock( "cborm.models.EventHandler" ).$( "announceInterception", true ).$( "announce", true );
 
 		// Mocks
 		ormservice.init();
@@ -31,6 +29,8 @@
 		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 		test2      = [ "1", "2" ];
+
+		variables.ormUtil = createMock( "cborm.models.util.ORMUtilSupport" );
 	}
 
 	function testCountByDynamically(){
@@ -717,16 +717,24 @@
 	}
 
 	function testExecuteQuery(){
-		test = ormservice.executeQuery( query = "from Category" );
+		var test = ormservice.executeQuery( query = "from Category" );
 		debug( test );
 		assertTrue( isArray( test ) );
 		assertTrue( arrayLen( test ) );
 
-		params = [ "general" ];
-		test   = ormservice.executeQuery(
-			query  = "from Category where category = ?",
-			params = params
-		);
+		var sql = "from Category where category = ?";
+
+		/**
+		 * Test the Hibernate 5.3+ syntax.
+		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
+		 */
+		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
+			// hibernate 5.3+ JPA syntax
+			sql = "from Category where category = ?1";
+		}
+
+		var params = [ "general" ];
+		test       = ormservice.executeQuery( query = sql, params = params );
 		assertTrue( arrayLen( test ) );
 	}
 
@@ -772,10 +780,22 @@
 	}
 
 	function testFindAll(){
-		test = ormservice.findAll(
-			"from Category where category = ?",
-			[ "Training" ]
-		);
+		/**
+		 * Test the Hibernate 5.2- syntax.
+		 * "legacy-style" JDBC positional parameters are unsupported in 5.3+
+		 */
+		var sql = "from Category where category = ?";
+
+		/**
+		 * Test the Hibernate 5.3+ syntax.
+		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
+		 */
+		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
+			// hibernate 5.3+ JPA syntax
+			sql = "from Category where category = ?1";
+		}
+
+		test = ormservice.findAll( sql, [ "Training" ] );
 		assertEquals( 1, arrayLen( test ) );
 
 		test = ormservice.findAll(

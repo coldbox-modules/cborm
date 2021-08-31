@@ -118,7 +118,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 *
 	 * @entity The entity to check if dirty
 	 */
-	boolean function isDirty( any entity = this ) {
+	boolean function isDirty( any entity = this ){
 		return super.isDirty( arguments.entity );
 	}
 

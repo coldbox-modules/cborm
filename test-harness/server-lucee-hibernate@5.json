@@ -1,0 +1,20 @@
+{
+    "name":"cborm-lucee-hibernate@5",
+    "app":{
+        "serverHomeDirectory":".engine/lucee5",
+        "cfengine":"lucee@5.3.9-SNAPSHOT+3"
+    },
+    "web":{
+        "http":{
+            "port":"60299"
+        },
+        "rewrites":{
+            "enable":"true"
+        }
+    },
+    "jvm":{
+        "heapSize":"1024",
+        "args":"-Dlucee.extensions='https://ext.lucee.org/hibernate-orm-5.4.29.6-BETA.lex'"
+    },
+    "openBrowser":"false"
+}

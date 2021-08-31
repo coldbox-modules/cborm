@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        cfengine: [ "lucee@5", "lucee-hibernate@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -87,6 +87,9 @@ jobs:
         working-directory: ./test-harness
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
+          if [[ "${{ matrix.cfengine }}" == "lucee-hibernate@5" ]] ; then
+            box cat "`box server info name=cborm-${{ matrix.cfengine }} property=serverHomeDirectory`/WEB-INF/lucee-server/context/logs/deploy.log"
+          fi
 
   format:
     name: Format

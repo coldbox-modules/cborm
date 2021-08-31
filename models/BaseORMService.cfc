@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -376,15 +376,17 @@ component accessors="true" {
 
 		// process interception
 		if ( getEventHandling() ) {
-			getORMEventHandler().getEventManager().processState(
-				"beforeOrmExecuteQuery",
-				{
-					"query" : arguments.query,
-					"params" : arguments.params,
-					"unique" : arguments.unique,
-					"options" : options
-				}
-			);
+			getORMEventHandler()
+				.getEventManager()
+				.processState(
+					"beforeOrmExecuteQuery",
+					{
+						"query"   : arguments.query,
+						"params"  : arguments.params,
+						"unique"  : arguments.unique,
+						"options" : options
+					}
+				);
 		}
 
 		// Get listing: https://cfdocs.org/ormexecutequery
@@ -397,21 +399,22 @@ component accessors="true" {
 
 		// process interception
 		if ( getEventHandling() ) {
-			getORMEventHandler().getEventManager().processState(
-				"afterOrmExecuteQuery",
-				{
-					"query" : arguments.query,
-					"params" : arguments.params,
-					"unique" : arguments.unique,
-					"options" : options,
-					"results" : isNull( results ) ? javacast( "null", "" ) : results
-				}
-			);
+			getORMEventHandler()
+				.getEventManager()
+				.processState(
+					"afterOrmExecuteQuery",
+					{
+						"query"   : arguments.query,
+						"params"  : arguments.params,
+						"unique"  : arguments.unique,
+						"options" : options,
+						"results" : isNull( results ) ? javacast( "null", "" ) : results
+					}
+				);
 		}
 
 		// Null Checks
 		if ( isNull( results ) ) {
-
 			if ( arguments.asStream ) {
 				return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new();
 			} else if ( arguments.asQuery ) {
@@ -1058,14 +1061,11 @@ component accessors="true" {
 			return [];
 		}
 
-		if ( server.keyExists( "lucee" ) ) {
-			var currentState = hibernateMD.getPropertyValues(
-				arguments.entity,
-				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
-			);
-		} else {
-			var currentState = hibernateMD.getPropertyValues( arguments.entity );
-		}
+		var currentState = getPropertyValues(
+			thisSession,
+			hibernateMD,
+			arguments.entity
+		);
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1098,14 +1098,11 @@ component accessors="true" {
 			return false;
 		}
 
-		if ( server.keyExists( "lucee" ) ) {
-			var currentState = hibernateMD.getPropertyValues(
-				arguments.entity,
-				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
-			);
-		} else {
-			var currentState = hibernateMD.getPropertyValues( arguments.entity );
-		}
+		var currentState = getPropertyValues(
+			thisSession,
+			hibernateMD,
+			arguments.entity
+		);
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1942,6 +1939,40 @@ process(
 	/*****************************************************************************************/
 	/********************************* PRIVATE METHODS **************************************/
 	/*****************************************************************************************/
+
+	/**
+	 * Get property values for the given entity.
+	 *
+	 * @ormSession the current ORM session. Will (probably) throw an exception if session is not open.
+	 * @hibernateMetadata a `ClassMetadata` Hibernate object populated with entity meta. See `getEntityMetadata`
+	 * @entity The entity to retrieve property values on.
+	 *
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
+	 */
+	private function getPropertyValues(
+		required ormSession,
+		required hibernateMetadata,
+		required entity
+	){
+		if (
+			val(
+				left(
+					variables.ORM.getHibernateVersion(),
+					3
+				)
+			) < 4.0
+		) {
+			return arguments.hibernateMetadata.getPropertyValues(
+				arguments.entity,
+				variables.ORM.getSessionEntityMode(
+					arguments.ormSession,
+					arguments.entity
+				)
+			);
+		} else {
+			return arguments.hibernateMetadata.getPropertyValues( arguments.entity );
+		}
+	}
 
 	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis

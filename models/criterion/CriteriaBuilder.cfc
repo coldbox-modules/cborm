@@ -396,9 +396,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"beforeCriteriaBuilderGet",
-				{
-					"criteriaBuilder" : this
-				}
+				{ "criteriaBuilder" : this }
 			);
 		}
 
@@ -410,7 +408,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 				"afterCriteriaBuilderGet",
 				{
 					"criteriaBuilder" : this,
-					"result"         : result
+					"result"          : result
 				}
 			);
 		}
