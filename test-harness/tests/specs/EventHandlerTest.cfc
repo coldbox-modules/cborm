@@ -13,4 +13,5 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		var entity = entityLoad( "User" );
 		assertTrue( arrayLen( mockEventHandler.$callLog().ORMPostLoad ) );
 	}
+
 }
