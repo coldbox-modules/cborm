@@ -67,7 +67,9 @@
 		};
 
 		// Register interceptors as an array, we need order
-		interceptors = [];
+		interceptors = [
+			{ class : "root.interceptors.ORMEventListener", name : "ORMEventListener" }
+		];
 
 		// LogBox DSL
 		logBox = {

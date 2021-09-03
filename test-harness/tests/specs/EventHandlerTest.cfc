@@ -1,22 +1,16 @@
-component extends="tests.resources.BaseTest" {
-
-	function beforeTests(){
-		super.beforeTests();
-		// Load our test injector for ORM entity binding
-	}
+component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root.interceptors.ORMListener" {
 
 	function setup(){
-		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
+		super.setup();
 	}
 
-	function testInjection(){
-		var user = entityLoad( "ActiveUser", testUserID, true );
-		// debug( user );
-		assertTrue( isObject( user.getWireBox() ) );
+	function testORMPreload(){
+		var entity = entityLoad( "User" );
+		assertTrue( arrayLen( mockEventHandler.$callLog().ORMPreLoad ) );
 	}
 
-	function testEventCalled(){
-		// TODO: How to test events are called???
+	function testORMPreload(){
+		var entity = entityLoad( "User" );
+		assertTrue( arrayLen( mockEventHandler.$callLog().ORMPostLoad ) );
 	}
-
 }
