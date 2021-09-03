@@ -19,7 +19,7 @@
 
 	function testEvictionByEntityObject(){
 		ormClearSession();
-		var test = getMockBox().prepareMock( entityNew( "ActiveUser" ) );
+		var test = entityLoad( "ActiveUser", testUserID, true );
 		test.evict();
 		expect( test.sessionContains( test ) ).toBeFalse();
 	}
