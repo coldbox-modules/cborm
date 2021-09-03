@@ -1752,7 +1752,10 @@ component accessors="true" {
 			 * https://hibernate.atlassian.net/browse/HHH-9013?oldIssueView=true
 			 * https://tracker.adobe.com/#/view/CF-4212321
 			 */
-			ormEvictEntity( getEntityGivenName( item ), getKeyValue( item ) );
+			ormEvictEntity(
+				getEntityGivenName( item ),
+				getKeyValue( item )
+			);
 		} );
 
 		return this;
