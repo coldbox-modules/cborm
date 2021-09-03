@@ -1747,7 +1747,12 @@ component accessors="true" {
 		}
 
 		arguments.entities.each( function( item ){
-			variables.ORM.getSession( variables.orm.getEntityDatasource( item ) ).evict( item );
+			/**
+			 * Beware of eviction issues in Adobe 2016 and Adobe 2018
+			 * https://hibernate.atlassian.net/browse/HHH-9013?oldIssueView=true
+			 * https://tracker.adobe.com/#/view/CF-4212321
+			 */
+			ormEvictEntity( getEntityGivenName( item ), getKeyValue( item ) );
 		} );
 
 		return this;
