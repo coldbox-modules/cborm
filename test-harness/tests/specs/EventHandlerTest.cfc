@@ -1,6 +1,6 @@
 component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root.interceptors.ORMEventListener" {
 
-	this.loadColdbox = true;
+	this.loadColdbox   = true;
 	this.unLoadColdBox = false;
 
 	function setup(){
@@ -10,8 +10,8 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 	}
 
 	function testORMPostLoad(){
-		var called = false;
-		var listener = function( interceptData ) {
+		var called   = false;
+		var listener = function( interceptData ){
 			called = true;
 			$assert.key( interceptData, "entity" );
 			$assert.typeOf( "component", interceptData.entity );
@@ -29,8 +29,8 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 	}
 
 	function testORMPreDelete(){
-		var called = false;
-		var listener = function( interceptData ) {
+		var called   = false;
+		var listener = function( interceptData ){
 			called = true;
 			$assert.key( interceptData, "entity" );
 			$assert.typeOf( "component", interceptData.entity );
@@ -51,8 +51,8 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 	}
 
 	function testORMPostDelete(){
-		var called = false;
-		var listener = function( interceptData ) {
+		var called   = false;
+		var listener = function( interceptData ){
 			called = true;
 			$assert.key( interceptData, "entity" );
 			$assert.typeOf( "component", interceptData.entity );
@@ -60,14 +60,17 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		variables.interceptorService.listen( listener, "ORMPostDelete" );
 
 
-		transaction{
-			var user = entityNew( "User", {
-				id : createUUID(),
-				firstName : "Michael",
-				lastName : "Born",
-				username : "mbourne",
-				password : "007"
-			} );
+		transaction {
+			var user = entityNew(
+				"User",
+				{
+					id        : createUUID(),
+					firstName : "Michael",
+					lastName  : "Born",
+					username  : "mbourne",
+					password  : "007"
+				}
+			);
 			entitySave( user );
 			transactionCommit();
 			ormFlush();
@@ -79,8 +82,8 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 	}
 
 	function testORMPreUpdate(){
-		var called = false;
-		var listener = function( interceptData ) {
+		var called   = false;
+		var listener = function( interceptData ){
 			called = true;
 			$assert.key( interceptData, "entity" );
 			$assert.typeOf( "component", interceptData.entity );
@@ -90,43 +93,50 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		};
 		variables.interceptorService.listen( listener, "ORMPreUpdate" );
 
-		var user = entityNew( "User", {
-			id : createUUID(),
-			firstName : "Michael",
-			lastName : "Born",
-			username : "mbourne",
-			password : "007"
-		} );
+		var user = entityNew(
+			"User",
+			{
+				id        : createUUID(),
+				firstName : "Michael",
+				lastName  : "Born",
+				username  : "mbourne",
+				password  : "007"
+			}
+		);
 		entitySave( user );
 		ormFlush();
 		var entity = entityLoadByPK( "User", user.getId() );
-		entity.setPassword( "m0r3S3cr3tP@ssW0RD");
+		entity.setPassword( "m0r3S3cr3tP@ssW0RD" );
 		entitySave( entity );
 		assertTrue( called );
 		variables.interceptorService.unregister( "closure-ORMPreUpdate-#hash( listener.toString() )#" );
 	}
 
 	function testORMPostUpdate(){
-		var called = false;
-		var listener = function( interceptData ) {
+		var called   = false;
+		var listener = function( interceptData ){
 			called = true;
 			$assert.key( interceptData, "entity" );
 			$assert.typeOf( "component", interceptData.entity );
 		};
 		variables.interceptorService.listen( listener, "ORMPostUpdate" );
 
-		var user = entityNew( "User", {
-			id : createUUID(),
-			firstName : "Michael",
-			lastName : "Born",
-			username : "mbourne",
-			password : "007"
-		} );
+		var user = entityNew(
+			"User",
+			{
+				id        : createUUID(),
+				firstName : "Michael",
+				lastName  : "Born",
+				username  : "mbourne",
+				password  : "007"
+			}
+		);
 		entitySave( user );
 		ormFlush();
-		user.setPassword( "m0r3S3cr3tP@ssW0RD");
+		user.setPassword( "m0r3S3cr3tP@ssW0RD" );
 		entitySave( user );
 		assertTrue( called );
 		variables.interceptorService.unregister( "closure-ORMPostUpdate-#hash( listener.toString() )#" );
 	}
+
 }
