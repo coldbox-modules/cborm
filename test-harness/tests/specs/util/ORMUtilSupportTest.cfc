@@ -5,24 +5,24 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testIsInTransaction(){
-        assertEquals( ormutil.isInTransaction(), false );
+		assertEquals( ormutil.isInTransaction(), false );
 
-        transaction{
-            assertEquals( ormutil.isInTransaction(), true );
-        }
+		transaction {
+			assertEquals( ormutil.isInTransaction(), true );
+		}
 
-        assertEquals( ormutil.isInTransaction(), false );
+		assertEquals( ormutil.isInTransaction(), false );
 
-        transaction{
-            ormGetSession();
-            var test = entityLoad( "User", { firstName : "Luis" }, true );
-            assertEquals( ormutil.isInTransaction(), true );
-            ormFlush();
-            assertEquals( ormutil.isInTransaction(), true );
-        }
+		transaction {
+			ormGetSession();
+			test = entityLoad( "User", { firstName : "Luis" }, true );
+			assertEquals( ormutil.isInTransaction(), true );
+			ormFlush();
+			assertEquals( ormutil.isInTransaction(), true );
+		}
 
-        ormFlush();
-        assertEquals( ormutil.isInTransaction(), false );
+		ormFlush();
+		assertEquals( ormutil.isInTransaction(), false );
 	}
 
 }
