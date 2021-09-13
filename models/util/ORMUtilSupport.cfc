@@ -186,8 +186,11 @@ component {
 		) {
 			return ormGetSession().isTransactionInProgress();
 		} else {
-			var transactionObj = createObject( "java", "coldfusion.tagext.sql.TransactionTag" );
-            return !isNull( transactionObj.getCurrent() );
+			var transactionObj = createObject(
+				"java",
+				"coldfusion.tagext.sql.TransactionTag"
+			);
+			return !isNull( transactionObj.getCurrent() );
 		}
 	}
 
