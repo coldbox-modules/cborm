@@ -17,6 +17,13 @@
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
+	function testEvictionByEntityObject(){
+		ormClearSession();
+		var test = entityLoad( "ActiveUser", testUserID, true );
+		test.evict();
+		expect( test.sessionContains( test ) ).toBeFalse();
+	}
+
 	function testCountByDynamically(){
 		// Test simple Equals
 		t = activeUser.countByLastName( "majano" );
