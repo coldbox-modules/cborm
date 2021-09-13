@@ -129,6 +129,61 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	}
 
 	/**
+	 * Called when the session is dirty-checked
+	 * Lucee with Hibernate 5.4+ ONLY
+	 */
+	public void function onDirtyCheck( dirtyCheckEvent ){
+		announceInterception(
+			"ORMDirtyCheck",
+			{ event : arguments.dirtyCheckEvent }
+		);
+	}
+
+	/**
+	 * Called when a session entity is evicted
+	 * Lucee with Hibernate 5.4+ ONLY
+	 */
+	public void function onEvict( evictEvent ){
+		announceInterception(
+			"ORMEvict",
+			{ event : arguments.evictEvent }
+		);
+	}
+
+	/**
+	 * Called when the session is cleared
+	 * Lucee with Hibernate 5.4+ ONLY
+	 */
+	public void function onClear( clearEvent ){
+		announceInterception(
+			"ORMClear",
+			{ event : arguments.clearEvent }
+		);
+	}
+
+	/**
+	 * Called when the session is flushed
+	 * Lucee with Hibernate 5.4+ ONLY
+	 */
+	public void function onFlush( flushEvent ){
+		announceInterception(
+			"ORMFlush",
+			{ event : arguments.flushEvent }
+		);
+	}
+
+	/**
+	 * Called on the automatic flushing of the session
+	 * Lucee with Hibernate 5.4+ ONLY
+	 */
+	public void function onAutoFlush( autoFlushEvent ){
+		announceInterception(
+			"ORMAutoFlush",
+			{ event : arguments.autoFlushEvent }
+		);
+	}
+
+	/**
 	 * Called before the session is flushed.
 	 */
 	public void function preFlush( any entities ){
