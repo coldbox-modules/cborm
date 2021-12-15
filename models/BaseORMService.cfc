@@ -1107,7 +1107,7 @@ component accessors="true" {
 	 */
 	any function getKeyValue( required entity ){
 		try {
-			return variables.ORM
+			return getORM()
 				.getSession( getOrm().getEntityDatasource( arguments.entity ) )
 				.getIdentifier( arguments.entity );
 		} catch ( any e ) {
@@ -1188,7 +1188,7 @@ component accessors="true" {
 
 		// Hibernate Discovery
 		try {
-			var entityName = variables.orm
+			var entityName = getOrm()
 				.getSession( getOrm().getEntityDatasource( arguments.entity ) )
 				.getEntityName( arguments.entity );
 		} catch ( org.hibernate.TransientObjectException e ) {
