@@ -127,7 +127,12 @@ component accessors="true" {
 
 		// Datasource
 		if ( isNull( arguments.datasource ) ) {
-			variables.datasource = getOrm().getDefaultDatasource();
+			var appMD = getApplicationMetadata();
+			if ( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ) {
+				variables.datasource = appMD.ormsettings.datasource;
+			} else {
+				variables.datasource = appMD.datasource;
+			}
 		} else {
 			variables.datasource = arguments.datasource;
 		}
