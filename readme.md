@@ -155,7 +155,7 @@ this.constraints = {
 
 ## Contributing
 
-All contributions welcome! Feel free to fix a typo 📝, add a feature 🚀, or add a testbox spec for a newly discovered issue 🐛.
+All contributions welcome! Feel free to fix a typo, add a feature :rocket:, or add a testbox spec for a newly discovered issue :bug:
 
 If you want to get hacking on CBORM, here's how to start:
 
@@ -177,7 +177,7 @@ docker run \
 
 3. Copy `test-harness/.env.template` to `test-harness/.env` and enter the database credentials used in step 2 above ☝
 4. Start a test server - `box cd tests` and `box start server-lucee@5.json`
-5. Hack away! 💻
+5. Hack away! :laptop:
 
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
@@ -192,7 +192,7 @@ Because of His grace, this project exists. If you don't like this, then don't re
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
 And not only so, but we glory in tribulations also: knowing that tribulation worketh patience;
 And patience, experience; and experience, hope:
-And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
+And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the
 Holy Ghost which is given unto us. ." Romans 5:5
 
 ### THE DAILY BREAD
