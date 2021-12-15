@@ -1594,8 +1594,8 @@ component accessors="true" {
 	boolean function exists( required entityName, required any id ){
 		// Do it DLM style
 		var count = ormExecuteQuery(
-			"select count( id ) from #arguments.entityName# where id = ?",
-			[ arguments.id ],
+			"select count( id ) from #arguments.entityName# where id = :id",
+			{ id : arguments.id },
 			true,
 			{ datasource : getOrm().getEntityDatasource( arguments.entityName ) }
 		);
