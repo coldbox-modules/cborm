@@ -21,6 +21,12 @@ component extends="tests.resources.BaseTest" {
 		assertEquals( testUserID, r.getID() );
 	}
 
+	function testGetWithProperties(){
+		r = criteria.idEQ( testUserID ).get( properties = "id,firstName,lastName" );
+		debug( r );
+		expect( r ).toBeStruct().toHaveKey( "id,firstName,lastName" );
+	}
+
 	function testWhen(){
 		var r = criteria
 			.when( true, function( c ){

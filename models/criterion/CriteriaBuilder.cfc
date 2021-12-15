@@ -343,10 +343,15 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Convenience method to return a single instance that matches the built up criterias query, or throws an exception if the query returns no results
 	 *
-	 * @throws EntityNotFound, NonUniqueResultException
+	 * @properties An optional list of properties to retrieve instead of the entire object
+	 *
+	 * @throws EntityNotFound           - When no entity was found for the specific criteria
+	 * @throws NonUniqueResultException - When more than one result is found with the specific criteria
+	 *
+	 * @return The requested entity or if using properties, the properties requested as a struct
 	 */
-	any function getOrFail(){
-		var result = this.get();
+	any function getOrFail( properties = "" ){
+		var result = this.get( arguments.properties );
 		if ( isNull( result ) ) {
 			throw( message = "No entity found for the specific criteria", type = "EntityNotFound" );
 		}
@@ -356,14 +361,24 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Convenience method to return a single instance that matches the built up criterias query, or null if the query returns no results.
 	 *
+	 * @properties An optional list of properties to retrieve instead of the entire object
+	 *
 	 * @throws NonUniqueResultException - if there is more than one matching result
+	 *
+	 * @return The requested entity or if using properties, the properties requested as a struct
 	 */
-	any function get(){
+	any function get( properties = "" ){
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState( "beforeCriteriaBuilderGet", { "criteriaBuilder" : this } );
 		}
 
+		// Do we have any properties to add?
+		if ( len( arguments.properties ) ) {
+			withProjections( property = arguments.properties ).asStruct();
+		}
+
+		// Go fetch!
 		var result = nativeCriteria.uniqueResult();
 
 		// process interception
