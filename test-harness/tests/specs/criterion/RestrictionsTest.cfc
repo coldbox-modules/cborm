@@ -1,8 +1,10 @@
 component extends="tests.resources.BaseTest" {
 
 	function setup(){
-		restrictions = createMock( "cborm.models.criterion.Restrictions" ).init( new cborm.models.BaseORMService() );
-		criteria     = ormGetSession().createCriteria( "User" );
+		restrictions = createMock( "cborm.models.criterion.Restrictions" ).init(
+			new cborm.models.BaseORMService()
+		);
+		criteria = ormGetSession().createCriteria( "User" );
 	}
 
 	function testSimpleSQLRestriction(){
@@ -11,10 +13,7 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testSqlRestrictionWithInference(){
-		r = restrictions.sql(
-			"userName = ? and firstName like ?",
-			[ "joe", "%joe%" ]
-		);
+		r = restrictions.sql( "userName = ? and firstName like ?", [ "joe", "%joe%" ] );
 		criteria.add( r );
 		expect( criteria.list() ).toBeArray();
 
@@ -51,12 +50,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testgetNativeClass(){
 		r = restrictions.getNativeClass();
-		assertTrue(
-			isInstanceOf(
-				r,
-				"org.hibernate.criterion.Restrictions"
-			)
-		);
+		assertTrue( isInstanceOf( r, "org.hibernate.criterion.Restrictions" ) );
 	}
 
 	function testBetween(){
@@ -65,20 +59,10 @@ component extends="tests.resources.BaseTest" {
 
 	function dynamicNegations(){
 		r = restrictions.notBetween( "balance", 500, 1000 );
-		expect(
-			isInstanceOf(
-				r,
-				"org.hibernate.criterion.NotExpression"
-			)
-		).toBeTrue();
+		expect( isInstanceOf( r, "org.hibernate.criterion.NotExpression" ) ).toBeTrue();
 
 		r = restrictions.notEq( "balance", 500 );
-		expect(
-			isInstanceOf(
-				r,
-				"org.hibernate.criterion.NotExpression"
-			)
-		).toBeTrue();
+		expect( isInstanceOf( r, "org.hibernate.criterion.NotExpression" ) ).toBeTrue();
 	}
 
 	function testEQ(){
@@ -200,17 +184,11 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testAnd(){
-		r = restrictions.and(
-			restrictions.between( "balance", 100, 200 ),
-			restrictions.lt( "salary", 20000 )
-		);
+		r = restrictions.and( restrictions.between( "balance", 100, 200 ), restrictions.lt( "salary", 20000 ) );
 	}
 
 	function testOr(){
-		r = restrictions.or(
-			restrictions.between( "balance", 100, 200 ),
-			restrictions.lt( "salary", 20000 )
-		);
+		r = restrictions.or( restrictions.between( "balance", 100, 200 ), restrictions.lt( "salary", 20000 ) );
 	}
 
 	function testNot(){

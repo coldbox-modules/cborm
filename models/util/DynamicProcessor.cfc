@@ -32,13 +32,8 @@ component accessors="true" singleton {
 
 	// STATIC DYNAMIC FINDER VARIABLES
 	variables.ALL_CONDITIONALS       = "LessThanEquals,LessThan,GreaterThanEquals,GreaterThan,Like,NotEqual,isNull,isNotNull,NotBetween,Between,NotInList,inList";
-	variables.ALL_CONDITIONALS_REGEX = replace(
-		variables.ALL_CONDITIONALS,
-		",",
-		"|",
-		"all"
-	);
-	variables.CONDITIONALS_SQL_MAP = {
+	variables.ALL_CONDITIONALS_REGEX = replace( variables.ALL_CONDITIONALS, ",", "|", "all" );
+	variables.CONDITIONALS_SQL_MAP   = {
 		"LessThanEquals"    : "<=",
 		"LessThan"          : "<",
 		"GreaterThanEquals" : ">=",
@@ -53,12 +48,7 @@ component accessors="true" singleton {
 		"InList"            : "in"
 	};
 	variables.OPTIONS_KEYS       = "ignoreCase,maxResults,offset,cacheable,cacheName,timeout,datasource,sortBy";
-	variables.OPTIONS_KEYS_REGEX = replace(
-		variables.OPTIONS_KEYS,
-		",",
-		"|",
-		"all"
-	);
+	variables.OPTIONS_KEYS_REGEX = replace( variables.OPTIONS_KEYS, ",", "|", "all" );
 
 	/**
 	 * Constructor
@@ -81,9 +71,9 @@ component accessors="true" singleton {
 	 * The first argument must be the 'entityName' or a named agument called 'entityname'
 	 * Any argument which is a structure will be used as options for the query: { ignorecase, maxresults, offset, cacheable, cachename, timeout }
 	 *
-	 * @method The method used
-	 * @args The args used
-	 * @unique Are we finding one or more items
+	 * @method     The method used
+	 * @args       The args used
+	 * @unique     Are we finding one or more items
 	 * @isCounting Are finding or counting
 	 * @ormService The target orm service making the call
 	 *
@@ -140,12 +130,7 @@ component accessors="true" singleton {
 		);
 
 		// Check if we have already the signature for this request
-		if (
-			structKeyExists(
-				variables.HQLDynamicCache,
-				dynamicCacheKey
-			)
-		) {
+		if ( structKeyExists( variables.HQLDynamicCache, dynamicCacheKey ) ) {
 			var hql = variables.HQLDynamicCache[ dynamicCacheKey ];
 		} else {
 			arguments.params                             = params;
@@ -197,12 +182,7 @@ component accessors="true" singleton {
 				return results;
 			}
 		} catch ( Any e ) {
-			if (
-				findNoCase(
-					"org.hibernate.NonUniqueResultException",
-					e.detail
-				)
-			) {
+			if ( findNoCase( "org.hibernate.NonUniqueResultException", e.detail ) ) {
 				throw(
 					message = e.message & e.detail,
 					detail  = "If you do not want unique results then use 'FindAllBy' instead of 'FindBy'",
@@ -231,10 +211,7 @@ component accessors="true" singleton {
 		any ormService
 	){
 		// Get all real property names
-		var realPropertyNames = getRealPropertyNames(
-			arguments.entityName,
-			arguments.ormService
-		);
+		var realPropertyNames = getRealPropertyNames( arguments.entityName, arguments.ormService );
 
 		// Match our method grammars in the method string
 		var methodGrammars = reMatchNoCase(
@@ -280,10 +257,7 @@ component accessors="true" singleton {
 			);
 
 			// Verify if property exists in valid properties
-			var realPropertyIndex = arrayFindNoCase(
-				realPropertyNames,
-				expression.property
-			);
+			var realPropertyIndex = arrayFindNoCase( realPropertyNames, expression.property );
 			if ( realPropertyIndex EQ 0 ) {
 				throw(
 					message = "The property you requested '#expression.property#' is not a valid property in the '#arguments.entityName#' entity",
@@ -294,19 +268,12 @@ component accessors="true" singleton {
 			// now save the actual property name to the passed in property to avoid case issues with Hibernate
 			expression.property = realPropertyNames[ realPropertyIndex ];
 			// Remove property now from method expression
-			thisGrammar         = reReplaceNoCase(
-				thisGrammar,
-				"#expression.property#",
-				""
-			);
+			thisGrammar         = reReplaceNoCase( thisGrammar, "#expression.property#", "" );
 
 			// Get Conditional Operator now if it exists, else it defaults to EQ
 			if ( len( thisGrammar ) ) {
 				// Match the conditional statement
-				var conditional = reMatchNoCase(
-					"(#variables.ALL_CONDITIONALS_REGEX#)$",
-					thisGrammar
-				);
+				var conditional = reMatchNoCase( "(#variables.ALL_CONDITIONALS_REGEX#)$", thisGrammar );
 				// Did we match?
 				if ( arrayLen( conditional ) ) {
 					expression.conditional = conditional[ 1 ];
@@ -344,10 +311,10 @@ component accessors="true" singleton {
 	 * </pre>
 	 *
 	 * @HQLExpressions The array of expression to compile to HQL
-	 * @isCounting Are we counting or finding?
-	 * @entityName The entity name
-	 * @options The query options
-	 * @ormService The related orm service
+	 * @isCounting     Are we counting or finding?
+	 * @entityName     The entity name
+	 * @options        The query options
+	 * @ormService     The related orm service
 	 */
 	private function compileHQL(
 		required array HQLExpressions,
@@ -422,7 +389,9 @@ component accessors="true" singleton {
 
 					// Verify if the param is an array collection
 					if ( isSimpleValue( arguments.params[ "param#paramIndex - 1#" ] ) ) {
-						arguments.params[ "param#paramIndex - 1#" ] = listToArray( params[ "param#paramIndex - 1#" ] );
+						arguments.params[ "param#paramIndex - 1#" ] = listToArray(
+							params[ "param#paramIndex - 1#" ]
+						);
 					}
 
 					break;
@@ -453,10 +422,10 @@ component accessors="true" singleton {
 	/**
 	 * Coverts a value to the correct javaType for the property passed in.
 	 *
-	 * @entityName The entity name
+	 * @entityName   The entity name
 	 * @propertyName The property name
-	 * @value The property value
-	 * @ormService The reference ORM service
+	 * @value        The property value
+	 * @ormService   The reference ORM service
 	 */
 	private any function autoCast(
 		required entityName,
@@ -464,10 +433,9 @@ component accessors="true" singleton {
 		required value,
 		required ormService
 	){
-		return getEntityMetadata(
-			arguments.entityName,
-			arguments.ormService
-		).getPropertyType( arguments.propertyName ).fromStringValue( arguments.value );
+		return getEntityMetadata( arguments.entityName, arguments.ormService )
+			.getPropertyType( arguments.propertyName )
+			.fromStringValue( arguments.value );
 	}
 
 	/**
@@ -476,10 +444,7 @@ component accessors="true" singleton {
 	 * @entityName The target entity name
 	 * @ormService The reference ORM service
 	 */
-	private any function getEntityMetadata(
-		required entityName,
-		required ormService
-	){
+	private any function getEntityMetadata( required entityName, required ormService ){
 		if ( !variables.entityMetadataCache.keyExists( arguments.entityName ) ) {
 			lock
 				name          ="orm.dynamic.metadatacache.#arguments.entityName#"
@@ -503,10 +468,7 @@ component accessors="true" singleton {
 	 * @entityName The entity name to get
 	 * @ormService The referred orm service
 	 */
-	private array function getRealPropertyNames(
-		required entityName,
-		required ormService
-	){
+	private array function getRealPropertyNames( required entityName, required ormService ){
 		if ( !variables.propertyNamesCache.keyExists( arguments.entityName ) ) {
 			lock
 				name          ="orm.dynamic.propertycache.#arguments.entityName#"

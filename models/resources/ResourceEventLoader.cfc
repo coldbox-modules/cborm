@@ -65,12 +65,7 @@ component singleton {
 	 * Get the entity map according to engine
 	 */
 	private function getEntityMap(){
-		if (
-			listFirst(
-				variables.ormUtil.getHibernateVersion(),
-				"."
-			) >= 5
-		) {
+		if ( listFirst( variables.ormUtil.getHibernateVersion(), "." ) >= 5 ) {
 			return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 		} else {
 			return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );

@@ -78,15 +78,12 @@ component {
 	/**
 	 * Evict queries
 	 *
-	 * @cacheName The optional cache name
+	 * @cacheName  The optional cache name
 	 * @datasource Optional datsource
 	 */
 	void function evictQueries( string cachename, string datasource ){
 		if ( !isNull( arguments.cacheName ) AND !isNull( arguments.datasource ) ) {
-			ormEvictQueries(
-				arguments.cachename,
-				arguments.datasource
-			);
+			ormEvictQueries( arguments.cachename, arguments.datasource );
 		} else if ( !isNull( arguments.cacheName ) ) {
 			ormEvictQueries( arguments.cachename );
 		} else {
@@ -97,15 +94,14 @@ component {
 	/**
 	 * Returns the datasource for a given entity
 	 *
-	 * @entity The entity reference. Can be passed as an object or as the entity name.
+	 * @entity            The entity reference. Can be passed as an object or as the entity name.
 	 * @defaultDatasource The default datasource to use if not, do self-discovery
 	 */
-	string function getEntityDatasource(
-		required entity,
-		string defaultDatasource
-	){
+	string function getEntityDatasource( required entity, string defaultDatasource ){
 		// DEFAULT datasource
-		var datasource = ( isNull( arguments.defaultDatasource ) ? getDefaultDatasource() : arguments.defaultDatasource );
+		var datasource = (
+			isNull( arguments.defaultDatasource ) ? getDefaultDatasource() : arguments.defaultDatasource
+		);
 
 		if ( !isObject( arguments.entity ) ) {
 			arguments.entity = entityNew( arguments.entity );
@@ -145,10 +141,7 @@ component {
 	 *
 	 * @return org.hibernate.metadata.ClassMetadata
 	 */
-	any function getEntityMetadata(
-		required string entityName,
-		required string datasource
-	){
+	any function getEntityMetadata( required string entityName, required string datasource ){
 		return getSessionFactory( arguments.datasource ).getClassMetaData( arguments.entityName );
 	}
 
@@ -178,18 +171,10 @@ component {
 	 * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
 	 */
 	public boolean function isInTransaction(){
-		if (
-			listFindNoCase(
-				"Lucee",
-				server.coldfusion.productname
-			)
-		) {
+		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
 			return ormGetSession().isTransactionInProgress();
 		} else {
-			var transactionObj = createObject(
-				"java",
-				"coldfusion.tagext.sql.TransactionTag"
-			);
+			var transactionObj = createObject( "java", "coldfusion.tagext.sql.TransactionTag" );
 			return !isNull( transactionObj.getCurrent() );
 		}
 	}

@@ -31,10 +31,7 @@
 	}
 	function testFindByDynamically(){
 		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThanEquals"
-		);
+		assert( arrayLen( t ), "Conditionals LessThanEquals" );
 		// Test simple Equals
 		t = activeUser.findByLastName( "majano" );
 		assert( isObject( t ), "FindBylastName" );
@@ -43,20 +40,11 @@
 		assert( isNull( t ), "Invalid last name" );
 		// Using Conditionals
 		t = activeUser.findAllByLastNameLessThan( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThan"
-		);
+		assert( arrayLen( t ), "Conditionals LessThan" );
 		t = activeUser.findAllByLastNameGreaterThan( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThan"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThan" );
 		t = activeUser.findAllByLastNameGreaterThanEquals( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThanEqauls"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThanEqauls" );
 		t = activeUser.findByLastNameLike( "ma%" );
 		assert( isObject( t ), "Conditionals Like" );
 		t = activeUser.findAllByLastNameNotEqual( "Majano" );
@@ -66,26 +54,17 @@
 		t = activeUser.findAllByLastNameIsNotNull();
 		assert( arrayLen( t ), "Conditionals isNull" );
 		t = activeUser.findAllByLastLoginBetween( "01/01/2009", "01/01/2012" );
-		assert(
-			arrayLen( t ),
-			"Conditionals between"
-		);
+		assert( arrayLen( t ), "Conditionals between" );
 		t = activeUser.findByLastLoginBetween( "01/01/2008", "11/01/2008" );
 		assert( isNull( t ), "Conditionals between" );
 		t = activeUser.findAllByLastLoginNotBetween( "01/01/2009", "01/01/2012" );
-		assert(
-			arrayLen( t ),
-			"Conditionals not between"
-		);
+		assert( arrayLen( t ), "Conditionals not between" );
 		t = activeUser.findAllByLastNameInList( "Majano,Fernando" );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = activeUser.findAllByLastNameInList( listToArray( "Majano,Fernando" ) );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = activeUser.findAllByLastNameNotInList( listToArray( "Majano,Fernando" ) );
-		assert(
-			arrayLen( t ),
-			"Conditionals NotinList"
-		);
+		assert( arrayLen( t ), "Conditionals NotinList" );
 	}
 
 	function testFindByDynamicallyBadProperty(){
@@ -128,12 +107,7 @@
 		user = activeUser.new();
 		assertFalse( isNull( user ) );
 
-		user = activeUser.new(
-			properties = {
-				firstName : "Luis",
-				lastName  : "UnitTest"
-			}
-		);
+		user = activeUser.new( properties = { firstName : "Luis", lastName : "UnitTest" } );
 		assertEquals( "Luis", user.getFirstName() );
 	}
 

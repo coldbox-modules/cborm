@@ -69,10 +69,10 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @entityName The entity name for the criteria query, this is the root of the `from` clause in SQL
-	 * @criteria The hibernate native criteria object: org.hibernate.Criteria, which can be detached or attached
+	 * @entityName   The entity name for the criteria query, this is the root of the `from` clause in SQL
+	 * @criteria     The hibernate native criteria object: org.hibernate.Criteria, which can be detached or attached
 	 * @restrictions A restrictions back reference
-	 * @ormService A reference back to the calling orm service
+	 * @ormService   A reference back to the calling orm service
 	 */
 	BaseBuilder function init(
 		required string entityName,
@@ -81,10 +81,7 @@ component accessors="true" {
 		required any ormService
 	){
 		// java projections linkage
-		this.projections = createObject(
-			"java",
-			"org.hibernate.criterion.Projections"
-		);
+		this.projections  = createObject( "java", "org.hibernate.criterion.Projections" );
 		// restrictions linkage: can be Restrictions or Subqueries
 		this.restrictions = arguments.restrictions;
 
@@ -133,8 +130,8 @@ component accessors="true" {
 	 * order( property="fullName", ignoreCase=true )
 	 * </pre>
 	 *
-	 * @property The name of the property to order on
-	 * @sortOrder The order type: asc or desc, defaults to asc
+	 * @property   The name of the property to order on
+	 * @sortOrder  The order type: asc or desc, defaults to asc
 	 * @ignoreCase Wether to ignore case or not, defaults to false
 	 */
 	any function order(
@@ -142,10 +139,7 @@ component accessors="true" {
 		string sortDir     = "asc",
 		boolean ignoreCase = false
 	){
-		var order = createObject(
-			"java",
-			"org.hibernate.criterion.Order"
-		);
+		var order   = createObject( "java", "org.hibernate.criterion.Order" );
 		var orderBy = "";
 
 		// direction
@@ -170,10 +164,7 @@ component accessors="true" {
 		if ( ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "Order",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "Order", "criteriaBuilder" : this }
 			);
 		}
 
@@ -186,9 +177,9 @@ component accessors="true" {
 	 * You can also use the following alias method : <code>joinTo()</code>
 	 *
 	 * @associationName The name of the association property: A dot-separated property path
-	 * @alias The alias to assign to the joined association (for later reference).
-	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
-	 * @withClause The criterion to be added to the join condition (ON clause)
+	 * @alias           The alias to assign to the joined association (for later reference).
+	 * @joinType        The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 * @withClause      The criterion to be added to the join condition (ON clause)
 	 */
 	any function createAlias(
 		required string associationName,
@@ -220,10 +211,7 @@ component accessors="true" {
 		if ( ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "Alias",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "Alias", "criteriaBuilder" : this }
 			);
 		}
 
@@ -234,9 +222,9 @@ component accessors="true" {
 	 * Create a new Criteria, "rooted" at the associated entity and using an Inner Join
 	 *
 	 * @associationName The name of the association property to root the restrictions with
-	 * @alias The alias to use for this association property on restrictions
-	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
-	 * @withClause The criteria to use with the join
+	 * @alias           The alias to use for this association property on restrictions
+	 * @joinType        The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 * @withClause      The criteria to use with the join
 	 */
 	any function createCriteria(
 		required string associationName,
@@ -251,10 +239,7 @@ component accessors="true" {
 		// if no alias and only join type, special case
 		if ( !hasAlias ) {
 			if ( hasJoinType ) {
-				nativeCriteria = nativeCriteria.createCriteria(
-					arguments.associationName,
-					arguments.joinType
-				);
+				nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
 				// announce
 				if ( ORMService.getEventHandling() ) {
 					variables.eventManager.processState(
@@ -298,10 +283,7 @@ component accessors="true" {
 		if ( ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "New Criteria",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "New Criteria", "criteriaBuilder" : this }
 			);
 		}
 		return this;
@@ -371,10 +353,7 @@ component accessors="true" {
 		if ( ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "Projection",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "Projection", "criteriaBuilder" : this }
 			);
 		}
 
@@ -388,19 +367,19 @@ component accessors="true" {
 	 * The alias on the projected value can be referred to in restrictions or orderings.
 	 * Please also note that the resulting array locations are done in alphabetical order of the arguments.
 	 *
-	 * @avg The name of the property to avg or a list or array of property names
-	 * @count The name of the property to count or a list or array of property names
-	 * @countDistinct The name of the property to count distinct or a list or array of property names
-	 * @distinct The name of the property to do a distinct on, this can be a single property name a list or an array of property names
-	 * @groupProperty The name of the property to group by or a list or array of property names
-	 * @id The projected identifier value
-	 * @max The name of the property to max or a list or array of property names
-	 * @min The name of the property to min or a list or array of property names
-	 * @property The name of the property to do a projected value on or a list or array of property names
-	 * @rowCount Do a row count on the criteria
-	 * @sum The name of the property to sum or a list or array of property names
-	 * @sqlProjection Do a projection based on arbitrary SQL string
-	 * @sqlGroupProjection Do a projection based on arbitrary SQL string, with grouping
+	 * @avg                   The name of the property to avg or a list or array of property names
+	 * @count                 The name of the property to count or a list or array of property names
+	 * @countDistinct         The name of the property to count distinct or a list or array of property names
+	 * @distinct              The name of the property to do a distinct on, this can be a single property name a list or an array of property names
+	 * @groupProperty         The name of the property to group by or a list or array of property names
+	 * @id                    The projected identifier value
+	 * @max                   The name of the property to max or a list or array of property names
+	 * @min                   The name of the property to min or a list or array of property names
+	 * @property              The name of the property to do a projected value on or a list or array of property names
+	 * @rowCount              Do a row count on the criteria
+	 * @sum                   The name of the property to sum or a list or array of property names
+	 * @sqlProjection         Do a projection based on arbitrary SQL string
+	 * @sqlGroupProjection    Do a projection based on arbitrary SQL string, with grouping
 	 * @detachedSQLProjection Do a projection based on a DetachedCriteria builder config
 	 */
 	any function withProjections(
@@ -446,18 +425,16 @@ component accessors="true" {
 
 		// distinct
 		if ( structKeyExists( arguments, "distinct" ) ) {
-			addProjection(
-				arguments.distinct,
-				"property",
-				projectionList
-			);
+			addProjection( arguments.distinct, "property", projectionList );
 			projectionList = this.PROJECTIONS.distinct( projectionList );
 		}
 
 		// detachedSQLProjection
 		if ( structKeyExists( arguments, "detachedSQLProjection" ) ) {
 			// allow single or arrary of detachedSQLProjection
-			var projectionCollection = !isArray( arguments.detachedSQLProjection ) ? [ arguments.detachedSQLProjection ] : arguments.detachedSQLProjection;
+			var projectionCollection = !isArray( arguments.detachedSQLProjection ) ? [
+				arguments.detachedSQLProjection
+			] : arguments.detachedSQLProjection;
 			// loop over array of detachedSQLProjections
 			for ( projection in projectionCollection ) {
 				projectionList.add( projection.createDetachedSQLProjection() );
@@ -507,10 +484,7 @@ component accessors="true" {
 		if ( ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "Projection",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "Projection", "criteriaBuilder" : this }
 			);
 		}
 
@@ -531,7 +505,7 @@ component accessors="true" {
 	 * Convert an Id value to it's Java cast type, this is an alias for `ConvertIdValueToJavaType()`
 	 *
 	 * @entity The entity name or entity object
-	 * @id The id value to convert
+	 * @id     The id value to convert
 	 */
 	any function idCast( required id ){
 		arguments.entity = variables.entityName;
@@ -544,10 +518,7 @@ component accessors="true" {
 	 *
 	 * @deprecated Please use autoCast() instead
 	 */
-	any function convertValueToJavaType(
-		required propertyName,
-		required value
-	){
+	any function convertValueToJavaType( required propertyName, required value ){
 		return autoCast( argumentCollection = arguments );
 	}
 
@@ -555,12 +526,9 @@ component accessors="true" {
 	 * Coverts a value to the correct javaType for the property passed in.
 	 *
 	 * @propertyName The property name
-	 * @value The property value
+	 * @value        The property value
 	 */
-	any function autoCast(
-		required propertyName,
-		required value
-	){
+	any function autoCast( required propertyName, required value ){
 		arguments.entity = variables.entityName;
 		return variables.ormService.autoCast( argumentCollection = arguments );
 	}
@@ -578,10 +546,7 @@ component accessors="true" {
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
 	 * @formatSql Format the SQL to execute
 	 */
-	string function getSQL(
-		required boolean returnExecutableSql = false,
-		required boolean formatSql           = true
-	){
+	string function getSQL( required boolean returnExecutableSql = false, required boolean formatSql = true ){
 		return variables.SQLHelper.getSQL( argumentCollection = arguments );
 	}
 
@@ -621,10 +586,7 @@ component accessors="true" {
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
 	 * @formatSql Format the SQL to execute
 	 */
-	BaseBuilder function startSqlLog(
-		boolean returnExecutableSql = false,
-		boolean formatSql           = false
-	){
+	BaseBuilder function startSqlLog( boolean returnExecutableSql = false, boolean formatSql = false ){
 		variables.SQLHelper.setReturnExecutableSql( arguments.returnExecutableSql );
 		variables.SQLHelper.setFormatSql( arguments.formatSql );
 		variables.sqlLoggerActive = true;
@@ -699,13 +661,10 @@ component accessors="true" {
 	 * .list()
 	 * </pre>
 	 *
-	 * @test The boolean evaluation
+	 * @test   The boolean evaluation
 	 * @target The closure to execute if test is true, it receives the current criteria as the argument
 	 */
-	BaseBuilder function when(
-		required boolean test,
-		required target
-	){
+	BaseBuilder function when( required boolean test, required target ){
 		if ( arguments.test ) {
 			arguments.target( this );
 		}
@@ -727,7 +686,7 @@ component accessors="true" {
 	/**
 	 * Internal helper to add projections into the projection list
 	 *
-	 * @propertyName The property name or an array of property names
+	 * @propertyName   The property name or an array of property names
 	 * @projectionType The projection type to execute on the projection list, comes from here org.hibernate.criterion.Projections
 	 * @projectionList The projection list: org.hibernate.criterion.ProjectionList
 	 */
@@ -759,10 +718,7 @@ component accessors="true" {
 			if ( ORMService.getEventHandling() ) {
 				variables.eventManager.processState(
 					"onCriteriaBuilderAddition",
-					{
-						"type"            : "Projection",
-						"criteriaBuilder" : this
-					}
+					{ "type" : "Projection", "criteriaBuilder" : this }
 				);
 			}
 		}
@@ -789,10 +745,7 @@ component accessors="true" {
 
 		// retrieve correct type for each specified property so list() doesn't bork
 		for ( var prop in listToArray( arguments.rawProjection.property ) ) {
-			arrayAppend(
-				projection.types,
-				metaData.getPropertyType( prop )
-			);
+			arrayAppend( projection.types, metaData.getPropertyType( prop ) );
 		}
 
 		var partialSQL = "";
@@ -816,13 +769,10 @@ component accessors="true" {
 	/**
 	 * Normalize Sort orders
 	 *
-	 * @sortOrder An HQL Sorting string: fname, lname desc
+	 * @sortOrder  An HQL Sorting string: fname, lname desc
 	 * @ignoreCase Ignoring case or not
 	 */
-	private void function normalizeOrder(
-		required string sortOrder,
-		required boolean ignoreCase
-	){
+	private void function normalizeOrder( required string sortOrder, required boolean ignoreCase ){
 		listToArray( arguments.sortOrder ).each( function( thisSort ){
 			var sortField = trim( listFirst( thisSort, " " ) );
 			var sortDir   = "ASC";
@@ -845,26 +795,13 @@ component accessors="true" {
 		// check for with{associationName} dynamic finder:
 		if ( left( arguments.missingMethodName, 4 ) eq "with" ) {
 			var args = {
-				associationName : right(
-					arguments.missingMethodName,
-					len( arguments.missingMethodName ) - 4
-				)
+				associationName : right( arguments.missingMethodName, len( arguments.missingMethodName ) - 4 )
 			};
 			// join type
-			if (
-				structKeyExists(
-					arguments.missingMethodArguments,
-					"1"
-				)
-			) {
+			if ( structKeyExists( arguments.missingMethodArguments, "1" ) ) {
 				args.joinType = arguments.missingMethodArguments[ 1 ];
 			}
-			if (
-				structKeyExists(
-					arguments.missingMethodArguments,
-					"joinType"
-				)
-			) {
+			if ( structKeyExists( arguments.missingMethodArguments, "joinType" ) ) {
 				args.joinType = arguments.missingMethodArguments.joinType;
 			}
 			// create the dynamic criteria

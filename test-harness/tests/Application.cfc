@@ -21,11 +21,7 @@ component {
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 
 	// The application root
-	rootPath = reReplaceNoCase(
-		this.mappings[ "/tests" ],
-		"tests(\\|/)",
-		""
-	);
+	rootPath                         = reReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" );
 	this.mappings[ "/root" ]         = rootPath;
 	this.mappings[ "/cbvalidation" ] = rootPath & "/modules/cbvalidation";
 	this.mappings[ "/cbi18n" ]       = rootPath & "/modules/cbvalidation/modules/cbi18n";

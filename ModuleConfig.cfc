@@ -33,11 +33,7 @@ component {
 			maxRowsLimit : 500
 		},
 		// WireBox Injection Bridge
-		injection : {
-			enabled : true,
-			include : "",
-			exclude : ""
-		}
+		injection : { enabled : true, include : "", exclude : "" }
 	};
 
 	/**
@@ -54,12 +50,7 @@ component {
 		}
 
 		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
-		controller
-			.getWireBox()
-			.registerDSL(
-				namespace = "entityService",
-				path      = dslPath
-			);
+		controller.getWireBox().registerDSL( namespace = "entityService", path = dslPath );
 
 		// Custom Declared Points
 		interceptorSettings = {
@@ -100,14 +91,8 @@ component {
 	 */
 	function onLoad(){
 		// Prepare setting defaults
-		settings.resources.append(
-			variables.SETTING_DEFAULTS.resources,
-			false
-		);
-		settings.injection.append(
-			variables.SETTING_DEFAULTS.injection,
-			false
-		);
+		settings.resources.append( variables.SETTING_DEFAULTS.resources, false );
+		settings.injection.append( variables.SETTING_DEFAULTS.injection, false );
 		// Are we loading the event loader
 		if ( settings.resources.eventLoader ) {
 			wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();

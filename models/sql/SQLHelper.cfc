@@ -64,16 +64,10 @@ component accessors="true" {
 	 */
 	private function setupHibernateProperties(){
 		// get formatter for sql string beautification: ACF vs Lucee
-		variables.hibernateVersion = listFirst(
-			variables.ormUtil.getHibernateVersion(),
-			"."
-		);
+		variables.hibernateVersion = listFirst( variables.ormUtil.getHibernateVersion(), "." );
 		switch ( variables.hibernateVersion ) {
 			case "3":
-				variables.formatter = createObject(
-					"java",
-					"org.hibernate.jdbc.util.BasicFormatterImpl"
-				);
+				variables.formatter        = createObject( "java", "org.hibernate.jdbc.util.BasicFormatterImpl" );
 				// Lucee Hibernate 3+, waayyyyy old.
 				variables.hibernateVersion = "3";
 				variables.dialect          = variables.ormFactory.getDialect();
@@ -107,10 +101,7 @@ component accessors="true" {
 					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
 				);
 				// Set SQL Dialect ACF2018:Hibernate5.2+
-				var jdbcServiceClass = createObject(
-					"java",
-					"org.hibernate.engine.jdbc.spi.JdbcServices"
-				).getClass();
+				var jdbcServiceClass     = createObject( "java", "org.hibernate.engine.jdbc.spi.JdbcServices" ).getClass();
 				var jdbcService          = variables.ormFactory.getServiceRegistry().getService( jdbcServiceClass );
 				variables.dialect        = jdbcService.getDialect();
 				variables.dialectSupport = {
@@ -212,10 +203,7 @@ component accessors="true" {
 		}
 		var simplifiedTypes = [];
 		for ( var x = 1; x <= arrayLen( types ); x++ ) {
-			arrayAppend(
-				simplifiedTypes,
-				types[ x ].getName()
-			);
+			arrayAppend( simplifiedTypes, types[ x ].getName() );
 		}
 		return simplifiedTypes;
 	}
@@ -229,13 +217,7 @@ component accessors="true" {
 		var types  = getPositionalSQLParameterTypes( true );
 		// loop over them
 		for ( var x = 1; x <= arrayLen( types ); x++ ) {
-			arrayAppend(
-				params,
-				{
-					"type"  : types[ x ],
-					"value" : values[ x ]
-				}
-			);
+			arrayAppend( params, { "type" : types[ x ], "value" : values[ x ] } );
 		}
 		return params;
 	}
@@ -351,10 +333,7 @@ component accessors="true" {
 			// if our query at this point in time is using "limit/offset"
 			if ( useLimit ) {
 				// we'll reuse this
-				var integerType = createObject(
-					"java",
-					"org.hibernate.type.IntegerType"
-				);
+				var integerType = createObject( "java", "org.hibernate.type.IntegerType" );
 				// Ex: Engines like SQL Server put limits first
 				if ( variables.dialectSupport.bindLimitParametersFirst ) {
 					positionalValues = bindLimitParameters( positionalValues, false, selection );
@@ -385,12 +364,7 @@ component accessors="true" {
 					arguments.sql = reReplaceNoCase( arguments.sql, "\?", pvTyped, "one" );
 				} else if ( type.getName() == "text" ) {
 					// remove parameter placeholders
-					arguments.sql = reReplaceNoCase(
-						arguments.sql,
-						"\?",
-						"'#value#'",
-						"one"
-					);
+					arguments.sql = reReplaceNoCase( arguments.sql, "\?", "'#value#'", "one" );
 				}
 				// association values can't be cast to SQL string by normal convention; just do a simple replace
 				else {
@@ -398,12 +372,7 @@ component accessors="true" {
 				}
 			}
 			// for some reason, JoinWalker doesn't sync up root paramters with the generated alias...so fix those
-			arguments.sql = reReplaceNoCase(
-				arguments.sql,
-				"this\.",
-				"this_.",
-				"all"
-			);
+			arguments.sql = reReplaceNoCase( arguments.sql, "this\.", "this_.", "all" );
 		}
 		return arguments.sql;
 	}
@@ -411,8 +380,8 @@ component accessors="true" {
 	/**
 	 * Inserts parameter values into the running list based on the dialect of the database engine
 	 * @positionalValues The positional values for this query
-	 * @append Whether values are appended or prepended to the array
-	 * @selection The current row selection
+	 * @append           Whether values are appended or prepended to the array
+	 * @selection        The current row selection
 	 */
 	private Array function bindLimitParameters(
 		required Array positionalValues,
@@ -433,27 +402,18 @@ component accessors="true" {
 			// if offset/limit are reversed
 			// EX: Other engines "reverse" this and use: LIMIT {limit}, {offset}
 			if ( reverse ) {
-				arrayAppend(
-					newPositionalValues,
-					arguments.selection.getMaxRows()
-				);
+				arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
 				arrayAppend( newPositionalValues, firstRow );
 			}
 			// EX: In MySQL, offset limit are: LIMIT {offset}, {limit}
 			else {
 				arrayAppend( newPositionalValues, firstRow );
-				arrayAppend(
-					newPositionalValues,
-					arguments.selection.getMaxRows()
-				);
+				arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
 			}
 		}
 		// no start row...just add regular limit
 		else {
-			arrayAppend(
-				newPositionalValues,
-				arguments.selection.getMaxRows()
-			);
+			arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
 		}
 		// APPEND: Engines like MySQL, etc. put limit/offset at the end of the statement
 		if ( arguments.append ) {
@@ -514,10 +474,7 @@ component accessors="true" {
 		}
 
 		// not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
-		return createObject(
-			"java",
-			"org.hibernate.loader.criteria.CriteriaJoinWalker"
-		).init(
+		return createObject( "java", "org.hibernate.loader.criteria.CriteriaJoinWalker" ).init(
 			persister, // persister (loadable)
 			getCriteriaQueryTranslator(), // translator
 			variables.ormFactory, // factory
@@ -533,10 +490,7 @@ component accessors="true" {
 	 */
 	private any function getCriteriaQueryTranslator(){
 		// create new criteria query translator; we'll use this to build up the query string
-		return createObject(
-			"java",
-			"org.hibernate.loader.criteria.CriteriaQueryTranslator"
-		).init(
+		return createObject( "java", "org.hibernate.loader.criteria.CriteriaQueryTranslator" ).init(
 			variables.ormFactory, // factory
 			variables.criteriaImpl, // criteria
 			variables.entityName, // rootEntityName

@@ -29,25 +29,13 @@
 		assert( isNull( t ), "Invalid last name" );
 		// Using Conditionals
 		t = ormservice.findAllByLastNameLessThanEquals( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThanEquals"
-		);
+		assert( arrayLen( t ), "Conditionals LessThanEquals" );
 		t = ormservice.findAllByLastNameLessThan( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThan"
-		);
+		assert( arrayLen( t ), "Conditionals LessThan" );
 		t = ormservice.findAllByLastNameGreaterThan( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThan"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThan" );
 		t = ormservice.findAllByLastNameGreaterThanEquals( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThanEqauls"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThanEqauls" );
 		t = ormservice.findByLastNameLike( "ma%" );
 		assert( isObject( t ), "Conditionals Like" );
 		t = ormservice.findAllByLastNameNotEqual( "Majano" );
@@ -57,10 +45,7 @@
 		t = ormservice.findAllByLastNameIsNotNull();
 		assert( arrayLen( t ), "Conditionals isNull" );
 		t = ormservice.findAllByLastLoginBetween( "01/01/2009", "01/01/2012" );
-		assert(
-			arrayLen( t ),
-			"Conditionals between"
-		);
+		assert( arrayLen( t ), "Conditionals between" );
 		t = ormservice.findByLastLoginBetween( "01/01/2008", "11/01/2008" );
 		assert( isNull( t ), "Conditionals between" );
 		t = ormservice.findAllByLastNameInList( "Majano,Fernando" );
@@ -68,10 +53,7 @@
 		t = ormservice.findAllByLastNameInList( listToArray( "Majano,Fernando" ) );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = ormservice.findAllByLastNameNotInList( listToArray( "Majano,Fernando" ) );
-		assert(
-			arrayLen( t ),
-			"Conditionals NotinList"
-		);
+		assert( arrayLen( t ), "Conditionals NotinList" );
 	}
 
 	function testFindByDynamicallyBadProperty(){
@@ -89,12 +71,7 @@
 		user = ormservice.new();
 		assertFalse( isNull( user ) );
 
-		user = ormService.new(
-			properties = {
-				firstName : "Luis",
-				lastName  : "UnitTest"
-			}
-		);
+		user = ormService.new( properties = { firstName : "Luis", lastName : "UnitTest" } );
 		assertEquals( "Luis", user.getFirstName() );
 	}
 
@@ -134,11 +111,7 @@
 				ormCloseSession();
 			}
 			ormservice.deleteByID( user.getID() );
-			test = entityLoad(
-				"User",
-				{ firstName : "unittest" },
-				true
-			);
+			test = entityLoad( "User", { firstName : "unittest" }, true );
 			assertTrue( isNull( test ) );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
@@ -230,10 +203,7 @@
 	}
 
 	function testConvertValueToJavaType(){
-		test = ormservice.convertValueToJavaType(
-			propertyName = "id",
-			value        = testUserID
-		);
+		test = ormservice.convertValueToJavaType( propertyName = "id", value = testUserID );
 		assertEquals( testUserID, test );
 	}
 

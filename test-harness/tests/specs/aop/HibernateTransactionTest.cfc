@@ -15,11 +15,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018Plus" {
 
 	function testInvokeMethodInTransaction(){
 		// default Datasource mock
-		var md = {
-			name          : "save",
-			access        : "public",
-			transactional : ""
-		};
+		var md         = { name : "save", access : "public", transactional : "" };
 		// mock invocation
 		mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )
@@ -43,11 +39,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018Plus" {
 
 	function testInvokeMethodNotInTransaction(){
 		// default Datasource mock
-		var md = {
-			name          : "save",
-			access        : "public",
-			transactional : ""
-		};
+		var md         = { name : "save", access : "public", transactional : "" };
 		// mock invocation
 		mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )

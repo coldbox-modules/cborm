@@ -88,10 +88,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 				tx.rollback();
 			} catch ( any e ) {
 				// silent rollback as something really went wrong
-				variables.log.error(
-					"Error rolling back transaction: #e.detail# #e.message#",
-					e
-				);
+				variables.log.error( "Error rolling back transaction: #e.detail# #e.message#", e );
 			}
 			// throw it
 			rethrow;

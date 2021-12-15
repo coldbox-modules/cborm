@@ -4,17 +4,11 @@ component extends="tests.resources.BaseTest" {
 		ormService       = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
 		mockEventHandler = getMockBox()
 			.createMock( "cborm.models.EventHandler" )
-			.$(
-				"getEventManager",
-				getMockBox().createStub().$( "processState" )
-			);
+			.$( "getEventManager", getMockBox().createStub().$( "processState" ) );
 		ormService.setORMEventHandler( mockEventHandler );
 
 		criteria = getMockBox().createMock( "cborm.models.criterion.CriteriaBuilder" );
-		criteria.init(
-			entityName = "User",
-			ormservice = ormservice
-		);
+		criteria.init( entityName = "User", ormservice = ormservice );
 		SQLHelper = getMockBox().createMock( "cborm.models.sql.SQLHelper" );
 		SQLHelper.init( criteria );
 
@@ -37,33 +31,13 @@ component extends="tests.resources.BaseTest" {
 		// test it returns a string
 		assertTrue( isSimpleValue( SQLHelper.getSQL() ) );
 		// test it returns non-executable sql
-		assertTrue(
-			findNoCase(
-				"?",
-				SQLHelper.getSQL( returnExecutableSql = false )
-			)
-		);
+		assertTrue( findNoCase( "?", SQLHelper.getSQL( returnExecutableSql = false ) ) );
 		// test it returns executable sql
-		assertFalse(
-			findNoCase(
-				"?",
-				SQLHelper.getSQL( returnExecutableSql = true )
-			)
-		);
+		assertFalse( findNoCase( "?", SQLHelper.getSQL( returnExecutableSql = true ) ) );
 		// test it returns non-formatted sql
-		assertFalse(
-			findNoCase(
-				"<pre>",
-				SQLHelper.getSQL( formatSql = false )
-			)
-		);
+		assertFalse( findNoCase( "<pre>", SQLHelper.getSQL( formatSql = false ) ) );
 		// test it returns formatted sql
-		assertTrue(
-			findNoCase(
-				"<pre>",
-				SQLHelper.getSQL( formatSql = true )
-			)
-		);
+		assertTrue( findNoCase( "<pre>", SQLHelper.getSQL( formatSql = true ) ) );
 	}
 
 	function testApplyFormatting(){
@@ -76,10 +50,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testGetPositionalSQLParameterValues(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormservice = ormservice
-			)
+			.init( entityName = "Role", ormservice = ormservice )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var values = r.getPositionalSQLParameterValues();
@@ -91,10 +62,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testGetPositionalSQLParameterTypes(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormservice = ormservice
-			)
+			.init( entityName = "Role", ormservice = ormservice )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var simpletypes   = r.getPositionalSQLParameterTypes( true );
@@ -109,10 +77,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testGetPositionalSQLParameters(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormservice = ormservice
-			)
+			.init( entityName = "Role", ormservice = ormservice )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var params = r.getPositionalSQLParameters();
@@ -233,10 +198,7 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testGetCriteriaQueryTranslator(){
-		makePublic(
-			SQLHelper,
-			"getCriteriaQueryTranslator"
-		);
+		makePublic( SQLHelper, "getCriteriaQueryTranslator" );
 		assertTrue(
 			getMetadata( SQLHelper.getCriteriaQueryTranslator() ).getName() == "org.hibernate.loader.criteria.CriteriaQueryTranslator"
 		);

@@ -8,10 +8,7 @@ component extends="tests.resources.BaseTest" {
 		super.setup();
 
 		criteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
-		criteria.init(
-			entityName = "User",
-			ormService = new cborm.models.BaseORMService()
-		);
+		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 
 		// Test ID's
 		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
@@ -84,15 +81,11 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testCount(){
-		criteria.init(
-			entityName = "User",
-			ormService = new cborm.models.BaseORMService()
-		);
+		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r     = criteria.count();
-		count = new Query(
-			datasource = "coolblog",
-			sql        = "select count(*) allCount from users"
-		).execute().getResult();
+		count = new Query( datasource = "coolblog", sql = "select count(*) allCount from users" )
+			.execute()
+			.getResult();
 		assertEquals( count.allCount, r );
 
 		r = criteria.count( "id" );
@@ -112,19 +105,13 @@ component extends="tests.resources.BaseTest" {
 		r = criteria.list( timeout = 2 );
 		assertEquals( 1, arrayLen( r ) );
 
-		criteria.init(
-			entityName = "User",
-			ormService = new cborm.models.BaseORMService()
-		);
+		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r = criteria.list( sortOrder = "lastName asc, firstName desc" );
 		assertTrue( arrayLen( r ) );
 	}
 
 	function testListAsStreams(){
-		criteria.init(
-			entityName = "User",
-			ormService = new cborm.models.BaseORMService()
-		);
+		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r = criteria
 			.asStream()
 			.list( sortOrder = "lastName asc, firstName desc" )
@@ -135,15 +122,9 @@ component extends="tests.resources.BaseTest" {
 
 		expect( r ).toBeArray().toHaveLength( 1 );
 
-		criteria.init(
-			entityName = "User",
-			ormService = new cborm.models.BaseORMService()
-		);
+		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r = criteria
-			.list(
-				sortOrder = "lastName asc, firstName desc",
-				asStream  = true
-			)
+			.list( sortOrder = "lastName asc, firstName desc", asStream = true )
 			.filter( function( item ){
 				return item.getFirstName().findNoCase( "ken" );
 			} )
@@ -154,12 +135,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testCreateSubcriteria(){
 		s = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
-		assertTrue(
-			isInstanceOf(
-				s,
-				"cborm.models.criterion.DetachedCriteriaBuilder"
-			)
-		);
+		assertTrue( isInstanceOf( s, "cborm.models.criterion.DetachedCriteriaBuilder" ) );
 	}
 
 	function testConvertIDValueToJavaType(){
@@ -171,10 +147,7 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testConvertValueToJavaType(){
-		test = criteria.convertValueToJavaType(
-			propertyName = "id",
-			value        = testUserID
-		);
+		test = criteria.convertValueToJavaType( propertyName = "id", value = testUserID );
 		assertEquals( testUserID, test );
 	}
 

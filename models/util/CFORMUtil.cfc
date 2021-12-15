@@ -17,10 +17,7 @@ component implements="cborm.models.util.IORMUtil" extends="cborm.models.util.ORM
 	 */
 	any function getSessionEntityMode( required ormSession, required entity ){
 		return arguments.ormSession
-			.getEntityPersister(
-				arguments.ormSession.getEntityName( arguments.entity ),
-				arguments.entity
-			)
+			.getEntityPersister( arguments.ormSession.getEntityName( arguments.entity ), arguments.entity )
 			.getEntityMode();
 	}
 

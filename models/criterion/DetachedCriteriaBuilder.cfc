@@ -22,10 +22,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		required any ORMService
 	){
 		// create new DetachedCriteria
-		var criteria = createObject(
-			"java",
-			"org.hibernate.criterion.DetachedCriteria"
-		).forEntityName(
+		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName(
 			arguments.entityName,
 			arguments.alias
 		);
@@ -42,10 +39,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	}
 
 	// pass off arguments to higher-level restriction builder, and handle the results
-	any function onMissingMethod(
-		required string missingMethodName,
-		required struct missingMethodArguments
-	){
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
 		// get the restriction/new criteria
 		var r = createRestriction( argumentCollection = arguments );
 
@@ -101,11 +95,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		sql = "( #sql# ) as " & alias;
 
 		// now that we have the sql string, we can create the sqlProjection
-		var projection = this.PROJECTIONS.sqlProjection(
-			sql,
-			[ alias ],
-			SQLHelper.getProjectedTypes()
-		);
+		var projection = this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
 		// finally, add the alias to the projection list so we can sort on the column if needed
 		return this.PROJECTIONS.alias( projection, alias );
 	}
@@ -113,8 +103,8 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Join an association, assigning an alias to the joined association.
 	 * @associationName The name of the association property
-	 * @alias The alias to use for this association property on restrictions
-	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 * @alias           The alias to use for this association property on restrictions
+	 * @joinType        The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
 	 */
 	public any function createAlias(
 		required string associationName,
@@ -130,8 +120,8 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Create a new Criteria, "rooted" at the associated entity and using an Inner Join
 	 * @associationName The name of the association property to root the restrictions with
-	 * @alias The alias to use for this association property on restrictions
-	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 * @alias           The alias to use for this association property on restrictions
+	 * @joinType        The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
 	 */
 	public any function createCriteria(
 		required string associationName,
@@ -164,10 +154,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			if ( ORMService.getEventHandling() ) {
 				variables.eventManager.processState(
 					"onCriteriaBuilderAddition",
-					{
-						"type"            : "Max",
-						"criteriaBuilder" : this
-					}
+					{ "type" : "Max", "criteriaBuilder" : this }
 				);
 			}
 		}
