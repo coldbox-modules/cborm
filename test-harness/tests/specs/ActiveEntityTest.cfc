@@ -182,14 +182,12 @@
 			ormClearSession();
 			ormCloseSession();
 
-			var q       = new Query( sql = "select * from users where firstName = 'unitTest'" );
-			var results = q.execute().getResult();
+			var results = queryExecute( "select * from users where firstName = 'unitTest'" );
 			expect( results.recordcount ).toBe( 0 );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			var q = new Query( datasource = "coolblog" );
-			q.execute( sql = "delete from users where firstName = 'unitTest'" );
+			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
 	}
 
@@ -212,14 +210,12 @@
 			ormCloseSession();
 
 			// Try to load
-			var q       = new Query( sql = "select * from users where firstName = 'unitTest'" );
-			var results = q.execute().getResult();
+			var results       = queryExecute( "select * from users where firstName = 'unitTest'" );
 			expect( results.recordcount ).toBe( 0 );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			var q = new Query( datasource = "coolblog" );
-			q.execute( sql = "delete from users where firstName = 'unitTest'" );
+			queryExecute("delete from users where firstName = 'unitTest'" );
 		}
 	}
 
@@ -233,7 +229,6 @@
 			entitySave( user );
 		}
 		ormFlush();
-		q = new Query( datasource = "coolblog" );
 
 		try {
 			if ( structKeyExists( server, "lucee" ) ) {
@@ -243,12 +238,12 @@
 			ormFlush();
 			user.clear();
 
-			result = q.execute( sql = "select * from users where userName = 'unitTest'" );
-			assertEquals( 0, result.getResult().recordcount );
+			result = queryExecute( "select * from users where userName = 'unitTest'" );
+			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
 			fail( e.detail & e.message & e.stackTrace );
 		} finally {
-			q.execute( sql = "delete from users where userName = 'unitTest'" );
+			queryExecute( "delete from users where userName = 'unitTest'" );
 		}
 	}
 
@@ -325,8 +320,7 @@
 	}
 
 	private function deleteCategories(){
-		var q = new Query( datasource = "coolblog" );
-		q.execute( sql = "delete from categories where category = 'unitTest'" );
+		queryExecute( "delete from categories where category = 'unitTest'" );
 	}
 
 }

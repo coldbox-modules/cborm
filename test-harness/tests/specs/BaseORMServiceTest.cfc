@@ -372,7 +372,6 @@
 			entitySave( cat );
 		}
 		ormFlush();
-		q = new Query( datasource = "coolblog" );
 
 		try {
 			if ( structKeyExists( server, "lucee" ) ) {
@@ -385,8 +384,8 @@
 			);
 			debug( "Removed #results# records" );
 			ormFlush();
-			var result = q.execute( sql = "select * from categories where category = 'unitTest'" );
-			assertEquals( 0, result.getResult().recordcount );
+			var result = queryExecute( "select * from categories where category = 'unitTest'" );
+			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
@@ -402,7 +401,6 @@
 			entitySave( cat );
 		}
 		ormFlush();
-		q = new Query( datasource = "coolblog" );
 
 		try {
 			var count = ormService.deleteWhere(
@@ -412,8 +410,8 @@
 			);
 			debug( "Delete where: #count#" );
 
-			var result = q.execute( sql = "select * from categories where category = 'unitTest'" );
-			assertEquals( 0, result.getResult().recordcount );
+			var result = queryExecute( "select * from categories where category = 'unitTest'" );
+			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
@@ -471,8 +469,7 @@
 			assertTrue( len( cat.getCatID() ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().postSave ) );
-			var q      = new Query( datasource = "coolblog" );
-			var result = q.execute( sql = "select * from categories where category = 'unitTest'" ).getResult();
+			var result = queryExecute( "select * from categories where category = 'unitTest'" );
 			assertTrue( result.recordcount eq 0 );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
@@ -557,8 +554,7 @@
 		originalDescription = cat.getDescription();
 
 		try {
-			var q = new Query( datasource = "coolblog" );
-			q.execute( sql = "update categories set description = 'unittest' where category_id = '#id#'" );
+			queryExecute( "update categories set description = 'unittest' where category_id = '#id#'" );
 
 			ormservice.refresh( cat );
 
@@ -566,9 +562,8 @@
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			var q = new Query( datasource = "coolblog" );
-			q.execute(
-				sql = "update categories set description = '#originalDescription#' where category_id = '#id#'"
+			queryExecute(
+				"update categories set description = '#originalDescription#' where category_id = '#id#'"
 			);
 		}
 	}
@@ -841,8 +836,7 @@
 	}
 
 	private function deleteCategories(){
-		var q = new Query( datasource = "coolblog" );
-		q.execute( sql = "delete from categories where category = 'unitTest'" );
+		queryExecute( "delete from categories where category = 'unitTest'" );
 	}
 
 }

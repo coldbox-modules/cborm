@@ -89,9 +89,7 @@ component extends="tests.resources.BaseTest" {
 	function testCount(){
 		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
 		r     = criteria.count();
-		count = new Query( datasource = "coolblog", sql = "select count(*) allCount from users" )
-			.execute()
-			.getResult();
+		count = queryExecute( "select count(*) allCount from users" );
 		assertEquals( count.allCount, r );
 
 		r = criteria.count( "id" );

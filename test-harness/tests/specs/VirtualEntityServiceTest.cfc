@@ -116,8 +116,7 @@
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			q = new Query( datasource = "coolblog" );
-			q.execute( sql = "delete from users where firstName = 'unitTest'" );
+			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
 	}
 
@@ -131,7 +130,6 @@
 			entitySave( user );
 		}
 		ormFlush();
-		q = new Query( datasource = "coolblog" );
 
 		try {
 			if ( structKeyExists( server, "lucee" ) ) {
@@ -139,12 +137,12 @@
 			}
 			ormService.deleteWhere( userName = "unitTest" );
 
-			result = q.execute( sql = "select * from users where userName = 'unitTest'" );
-			assertEquals( 0, result.getResult().recordcount );
+			result = queryExecute( "select * from users where userName = 'unitTest'" );
+			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
 			fail( e.detail & e.message & e.stackTrace );
 		} finally {
-			q.execute( sql = "delete from users where userName = 'unitTest'" );
+			queryExecute( "delete from users where userName = 'unitTest'" );
 		}
 	}
 
