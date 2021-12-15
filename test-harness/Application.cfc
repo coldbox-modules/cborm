@@ -87,6 +87,9 @@ component {
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
+		if ( !structKeyExists( application, "cbBootstrap" ) ){
+			onApplicationStart();
+		}
 		if ( url.keyExists( "fwreinit" ) ) {
 			if ( server.keyExists( "lucee" ) ) {
 				pagePoolClear();
