@@ -34,7 +34,7 @@
 component extends="cborm.models.BaseORMService" accessors="true" {
 
 	/**
-	 * The entityName property for this "version" of the Virtual Service
+	 * The entity name that this virtual service is bound to. All operations will be based off this entity name
 	 */
 	property
 		name      ="entityName"
@@ -63,24 +63,16 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 		boolean defaultAsQuery,
 		string datasource
 	){
-		// create cache region
+		// Default a cache region if not passed
 		if ( isNull( arguments.queryCacheRegion ) ) {
 			arguments.queryCacheRegion = "#arguments.entityName#.defaultVSCache";
 		}
 
-		// init base service
-		super.init( argumentCollection = arguments );
-
 		// Set the local entity to be used in this virtual entity service
 		variables.entityName = arguments.entityName;
 
-		// Set the datasource of the local entity to be used in this virtual entity service
-		// Only if not passed
-		if ( isNull( arguments.datasource ) ) {
-			setDatasource( variables.orm.getEntityDatasource( arguments.entityName ) );
-		} else {
-			setDatasource( arguments.datasource );
-		}
+		// Init our parent
+		super.init( argumentCollection = arguments );
 
 		return this;
 	}

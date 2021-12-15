@@ -41,25 +41,18 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		boolean useTransactions,
 		boolean defaultAsQuery
 	){
-		// Calculate name via md
+		// Calculate name via metadata
 		var md               = getMetadata( this );
 		arguments.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
 
-		// query cache region just in case
+		// Store query cache region
 		if ( isNull( arguments.queryCacheRegion ) ) {
 			arguments.queryCacheRegion = "#arguments.entityName#.activeEntityCache";
 		}
 
-		// datasource discovery, done here for perf considerations.
+		// Verify datasource just in case.
 		if ( md.keyExists( "datasource" ) ) {
 			arguments.datasource = md.datasource;
-		} else {
-			var appMD = getApplicationMetadata();
-			if ( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ) {
-				arguments.datasource = appMD.ormsettings.datasource;
-			} else {
-				arguments.datasource = appMD.datasource;
-			}
 		}
 
 		// init the super class with our own arguments

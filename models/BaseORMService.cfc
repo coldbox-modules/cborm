@@ -39,18 +39,22 @@ component accessors="true" {
 
 	/**
 	 * The system ORM event handler to transmit ORM events to
+	 *
 	 * @lazy true
 	 */
 	property name="ORMEventHandler" persistent="false";
 
 	/**
 	 * The object populator
+	 *
 	 * @lazy true
 	 */
 	property name="beanPopulator" persistent="false";
 
 	/**
 	 * The system ORM utility object depending on the CFML Engine you are on
+	 *
+	 * @lazy true
 	 */
 	property name="ORM" persistent="false";
 
@@ -121,12 +125,9 @@ component accessors="true" {
 		variables.wirebox          = application.wirebox;
 		variables.logger           = variables.wirebox.getLogBox().getLogger( this );
 
-		// Create the ORM Utility component
-		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
-
 		// Datasource
 		if ( isNull( arguments.datasource ) ) {
-			variables.datasource = variables.ORM.getDefaultDatasource();
+			variables.datasource = getOrm().getDefaultDatasource();
 		} else {
 			variables.datasource = arguments.datasource;
 		}
@@ -139,16 +140,28 @@ component accessors="true" {
 	/*****************************************************************************************/
 
 	/**
+	 * Lazy loading of the ORM utility according to the CFML engine you are on
+	 * - LuceeORMUtil : For Lucee Engines
+	 * - CFORMUtil : For Adobe Engines
+	 *
+	 * @return cborm.models.util.IORMUtil
+	 */
+	function getOrm(){
+		if( isNull( variables.orm ) ){
+			variables.orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
+		}
+		return variables.orm;
+	}
+
+	/**
 	 * Lazy loading event handler for performance
 	 *
 	 * @return cborm.models.EventHandler
 	 */
 	function getORMEventHandler(){
-		if ( !isNull( variables.ORMEventHandler ) ) {
-			return variables.ORMEventHandler;
+		if ( isNull( variables.ORMEventHandler ) ) {
+			variables.ORMEventHandler = new cborm.models.EventHandler();
 		}
-
-		variables.ORMEventHandler = new cborm.models.EventHandler();
 		return variables.ORMEventHandler;
 	}
 
@@ -158,11 +171,10 @@ component accessors="true" {
 	 * @return cborm.models.util.DynamicProcessor
 	 */
 	function getDynamicProcessor(){
-		if ( !isNull( variables.dynamicProcessor ) ) {
-			return variables.dynamicProcessor;
+		if ( isNull( variables.dynamicProcessor ) ) {
+			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
 		}
 
-		variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
 		return variables.dynamicProcessor;
 	}
 
@@ -556,7 +568,7 @@ component accessors="true" {
 		}
 
 		// Execute native hibernate query
-		var query = orm.getSession( orm.getEntityDatasource( arguments.entityName ) ).createQuery( hql );
+		var query = getOrm().getSession( getOrm().getEntityDatasource( arguments.entityName ) ).createQuery( hql );
 
 		// parameter binding
 		if ( !isNull( arguments.id ) ) {
@@ -573,7 +585,7 @@ component accessors="true" {
 
 		// Streams Support
 		if ( arguments.asStream ) {
-			// If Hibernate 5, return native stream: left( variables.ORM.getHibernateVersion(), 1 ) > 5
+			// If Hibernate 5, return native stream: left( getOrm().getHibernateVersion(), 1 ) > 5
 			if ( listFirst( server.coldfusion.productVersion ) >= 2018 ) {
 				return variables.wirebox
 					.getInstance( "StreamBuilder@cbStreams" )
@@ -1037,7 +1049,7 @@ component accessors="true" {
 		}
 
 		aObjects.each( function( item ){
-			variables.ORM.getSession( variables.ORM.getEntityDatasource( item ) ).refresh( item );
+			getOrm().getSession( getOrm().getEntityDatasource( item ) ).refresh( item );
 		} );
 
 		// Null it due to closure memory bugs on some engines
@@ -1052,7 +1064,7 @@ component accessors="true" {
 	 * @entity The entity to check
 	 */
 	array function getDirtyPropertyNames( required entity ){
-		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
+		var thisSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
 		var hibernateMD = getEntityMetadata( arguments.entity );
 		var dbState     = hibernateMD.getDatabaseSnapshot( getKeyValue( entity ), thisSession );
 
@@ -1086,7 +1098,7 @@ component accessors="true" {
 	 * @entity The entity to check if lazy
 	 */
 	boolean function isDirty( required entity ){
-		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
+		var thisSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
 		var hibernateMD = getEntityMetadata( arguments.entity );
 		var dbState     = hibernateMD.getDatabaseSnapshot(
 			getKeyValue( arguments.entity ),
@@ -1123,7 +1135,7 @@ component accessors="true" {
 	any function getKeyValue( required entity ){
 		try {
 			return variables.ORM
-				.getSession( variables.ORM.getEntityDatasource( arguments.entity ) )
+				.getSession( getOrm().getEntityDatasource( arguments.entity ) )
 				.getIdentifier( arguments.entity );
 		} catch ( any e ) {
 			return;
@@ -1184,9 +1196,9 @@ component accessors="true" {
 	 * @return The Hibernate Java ClassMetadata Object
 	 */
 	function getEntityMetadata( required entity ){
-		return variables.ORM.getEntityMetadata(
+		return getOrm().getEntityMetadata(
 			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
-			datasource = variables.ORM.getEntityDatasource( arguments.entity, getDatasource() )
+			datasource = getOrm().getEntityDatasource( arguments.entity, getDatasource() )
 		);
 	}
 
@@ -1204,7 +1216,7 @@ component accessors="true" {
 		// Hibernate Discovery
 		try {
 			var entityName = variables.orm
-				.getSession( variables.orm.getEntityDatasource( arguments.entity ) )
+				.getSession( getOrm().getEntityDatasource( arguments.entity ) )
 				.getEntityName( arguments.entity );
 		} catch ( org.hibernate.TransientObjectException e ) {
 			// ignore it, it is not in session, go for long-discovery
@@ -1251,7 +1263,7 @@ component accessors="true" {
 
 				// Flush?
 				if ( arguments.flush ) {
-					variables.ORM.flush();
+					getOrm().flush();
 				}
 
 				return this;
@@ -1276,7 +1288,7 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush ){
-				var options = { "datasource" : variables.ORM.getEntityDatasource( arguments.entityName ) };
+				var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
 
 				var count = ormExecuteQuery(
 					"delete from #arguments.entityName#",
@@ -1286,7 +1298,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.ORM.flush( options.datasource );
+					getOrm().flush( options.datasource );
 				}
 
 				return count;
@@ -1327,12 +1339,12 @@ component accessors="true" {
 						)
 					},
 					false,
-					{ "datasource" : variables.ORM.getEntityDatasource( arguments.entityName ) }
+					{ "datasource" : getOrm().getEntityDatasource( arguments.entityName ) }
 				);
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.ORM.flush( datasource );
+					getOrm().flush( datasource );
 				}
 
 				return count;
@@ -1372,7 +1384,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.ORM.flush( datasource );
+					getOrm().flush( datasource );
 				}
 
 				return count;
@@ -1505,7 +1517,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.orm.flush( getDatasource() );
+					getOrm().flush( getDatasource() );
 				}
 
 				return this;
@@ -1549,7 +1561,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.orm.flush( variables.orm.getEntityDatasource( arguments.entity ) );
+					getOrm().flush( getOrm().getEntityDatasource( arguments.entity ) );
 				}
 
 				// Event Handling? If enabled, call the postSave() interception
@@ -1580,7 +1592,7 @@ component accessors="true" {
 			"select count( id ) from #arguments.entityName# where id = ?",
 			[ arguments.id ],
 			true,
-			{ datasource : variables.ORM.getEntityDatasource( arguments.entityName ) }
+			{ datasource : getOrm().getEntityDatasource( arguments.entityName ) }
 		);
 
 		return ( count gt 0 );
@@ -1601,7 +1613,7 @@ component accessors="true" {
 		any params   = structNew()
 	){
 		var buffer  = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-		var options = { "datasource" : variables.orm.getEntityDatasource( arguments.entityName ) };
+		var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
 
 
 		// Caching?
@@ -1646,7 +1658,7 @@ component accessors="true" {
 		var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
 			"select count(id) from #arguments.entityName#"
 		);
-		var options = { datasource : variables.orm.getEntityDatasource( arguments.entityName ) };
+		var options = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
 
 		// Do we have arguments?
 		if ( structCount( arguments ) > 1 ) {
@@ -1747,7 +1759,7 @@ component accessors="true" {
 		}
 
 		arguments.entities.each( function( item ){
-			variables.ORM.getSession( variables.orm.getEntityDatasource( item ) ).evict( item );
+			getOrm().getSession( getOrm().getEntityDatasource( item ) ).evict( item );
 		} );
 
 		return this;
@@ -1763,7 +1775,7 @@ component accessors="true" {
 		string cacheName,
 		string datasource = getDatasource()
 	){
-		variables.orm.evictQueries( argumentCollection = arguments );
+		getOrm().evictQueries( argumentCollection = arguments );
 		return this;
 	}
 
@@ -1778,7 +1790,7 @@ component accessors="true" {
 	 * @datasource The datasource to use
 	 */
 	BaseORMService function clear( string datasource = getDatasource() ){
-		variables.ORM.clearSession( arguments.datasource );
+		getOrm().clearSession( arguments.datasource );
 		return this;
 	}
 
@@ -1786,7 +1798,7 @@ component accessors="true" {
 	 * Checks if the hibernate session contains dirty objects that are awaiting persistence
 	 */
 	boolean function isSessionDirty( string datasource = getDatasource() ){
-		return variables.orm.getSession( arguments.datasource ).isDirty();
+		return getOrm().getSession( arguments.datasource ).isDirty();
 	}
 
 	/**
@@ -1795,8 +1807,8 @@ component accessors="true" {
 	 * @entity The entity object
 	 */
 	boolean function sessionContains( required any entity ){
-		var ormSession = orm.getSession( orm.getEntityDatasource( arguments.entity ) );
-		// Hibernate 5 Approach: left( variables.ORM.getHibernateVersion(), 1 ) > 5
+		var ormSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
+		// Hibernate 5 Approach: left( getOrm().getHibernateVersion(), 1 ) > 5
 		if ( server.coldfusion.productVersion.listFirst() >= 2018 ) {
 			return ormSession.contains(
 				getEntityGivenName( arguments.entity ),
@@ -1812,7 +1824,7 @@ component accessors="true" {
 	 * @datasource The datasource to use
 	 */
 	struct function getSessionStatistics( string datasource = getDatasource() ){
-		var stats = variables.ORM.getSession( arguments.datasource ).getStatistics();
+		var stats = getOrm().getSession( arguments.datasource ).getStatistics();
 
 		return {
 			"collectionCount" : stats.getCollectionCount(),
@@ -1957,14 +1969,14 @@ process(
 		if (
 			val(
 				left(
-					variables.ORM.getHibernateVersion(),
+					getOrm().getHibernateVersion(),
 					3
 				)
 			) < 4.0
 		) {
 			return arguments.hibernateMetadata.getPropertyValues(
 				arguments.entity,
-				variables.ORM.getSessionEntityMode(
+				getOrm().getSessionEntityMode(
 					arguments.ormSession,
 					arguments.entity
 				)
