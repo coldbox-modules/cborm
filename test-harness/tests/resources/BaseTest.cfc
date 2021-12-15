@@ -13,6 +13,9 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	function beforeAll(){
 		super.beforeAll();
 		getWireBox().autowire( this );
+
+		var ormUtil = createMock( "cborm.models.util.ORMUtilSupport" );
+		debug( "Hibernate version is: #ormUtil.getHibernateVersion()#" );
 	}
 
 	// executes after all suites+specs in the run() method
