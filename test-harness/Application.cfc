@@ -75,6 +75,9 @@ component {
 
 	// application start
 	public boolean function onApplicationStart(){
+
+		new cborm.models.util.ORMUtilSupport().setupHibernateLogging( "DEBUG" );
+
 		application.cbBootstrap = new coldbox.system.Bootstrap(
 			COLDBOX_CONFIG_FILE,
 			COLDBOX_APP_ROOT_PATH,
