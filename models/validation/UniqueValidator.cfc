@@ -22,12 +22,12 @@ component accessors="true" singleton {
 	/**
 	 * Will check if an incoming value validates
 	 *
-	 * @validationResult The result object of the validation
+	 * @validationResult         The result object of the validation
 	 * @validationResult_generic cbvalidation.models.result.IValidationResult
-	 * @target The target object to validate on
-	 * @field The field on the target object to validate on
-	 * @targetValue The target value to validate
-	 * @validationData The validation data the validator was created with
+	 * @target                   The target object to validate on
+	 * @field                    The field on the target object to validate on
+	 * @targetValue              The target value to validate
+	 * @validationData           The validation data the validator was created with
 	 */
 	boolean function validate(
 		required any validationResult,
@@ -38,7 +38,9 @@ component accessors="true" singleton {
 	){
 		// return true if no data to check, type needs a data element to be checked.
 		if (
-			isNull( arguments.targetValue ) || ( isSimpleValue( arguments.targetValue ) && !len( arguments.targetValue ) )
+			isNull( arguments.targetValue ) || (
+				isSimpleValue( arguments.targetValue ) && !len( arguments.targetValue )
+			)
 		) {
 			return true;
 		}
@@ -46,10 +48,7 @@ component accessors="true" singleton {
 		// process entity setups.
 		var entityName    = ORMService.getEntityGivenName( arguments.target );
 		var identityField = ORMService.getKey( entityName );
-		var identityValue = invoke(
-			arguments.target,
-			"get#identityField#"
-		);
+		var identityValue = invoke( arguments.target, "get#identityField#" );
 
 		// create criteria for uniqueness
 		var c = ORMService.newCriteria( entityName ).isEq( field, arguments.targetValue );

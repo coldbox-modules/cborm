@@ -55,11 +55,11 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Constructor
 	 *
-	 * @entityName The entity name for the criteria query
-	 * @useQueryCaching Use query caching, defaults to false
+	 * @entityName       The entity name for the criteria query
+	 * @useQueryCaching  Use query caching, defaults to false
 	 * @queryCacheRegion The name of the region, defaults to <code>criterias.{entityName}</code>
-	 * @ormService A reference back to the calling orm service
-	 * @datasource The datasource to bind the builder on
+	 * @ormService       A reference back to the calling orm service
+	 * @datasource       The datasource to bind the builder on
 	 */
 	CriteriaBuilder function init(
 		required string entityName,
@@ -103,13 +103,13 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Execute the criteria queries you have defined and return the results, you can pass optional parameters or define them via our methods
 	 *
-	 * @offset The pagination offset, defaults to 0
-	 * @max The max number of records to get, defaults to all
-	 * @timeout The query timeout
-	 * @sortOrder The sorting order
+	 * @offset     The pagination offset, defaults to 0
+	 * @max        The max number of records to get, defaults to all
+	 * @timeout    The query timeout
+	 * @sortOrder  The sorting order
 	 * @ignoreCase For the sorting and SQL
-	 * @asQuery Return a query or array of data (objects/struct), defaults to arrays
-	 * @asStream Return a cbStream of array data, defaults to the `asStream` property
+	 * @asQuery    Return a query or array of data (objects/struct), defaults to arrays
+	 * @asStream   Return a cbStream of array data, defaults to the `asStream` property
 	 */
 	any function list(
 		numeric offset     = 0,
@@ -138,18 +138,12 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// Sort Order
 		if ( len( trim( arguments.sortOrder ) ) ) {
-			normalizeOrder(
-				arguments.sortOrder,
-				arguments.ignoreCase
-			);
+			normalizeOrder( arguments.sortOrder, arguments.ignoreCase );
 		}
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
-				"beforeCriteriaBuilderList",
-				{ "criteriaBuilder" : this }
-			);
+			variables.eventManager.processState( "beforeCriteriaBuilderList", { "criteriaBuilder" : this } );
 		}
 
 		// Get listing
@@ -159,10 +153,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"afterCriteriaBuilderList",
-				{
-					"criteriaBuilder" : this,
-					"results"         : results
-				}
+				{ "criteriaBuilder" : this, "results" : results }
 			);
 		}
 
@@ -188,10 +179,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @missingMethodName
 	 * @missingMethodArguments
 	 */
-	any function onMissingMethod(
-		required string missingMethodName,
-		required struct missingMethodArguments
-	){
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
 		// get the restriction/new criteria
 		var thisRestriction = createRestriction( argumentCollection = arguments );
 
@@ -208,10 +196,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "Restriction",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "Restriction", "criteriaBuilder" : this }
 			);
 		}
 
@@ -222,14 +207,11 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * create an instance of a detached criteriabuilder that can be added, like criteria, to the main criteria builder
 	 *
 	 * @entityName The entity to root the subcriteria on
-	 * @alias The alias to use or defaults to the entity name
+	 * @alias      The alias to use or defaults to the entity name
 	 *
 	 * @return DetachedCriteriaBuilder
 	 */
-	any function createSubcriteria(
-		required string entityName,
-		string alias = ""
-	){
+	any function createSubcriteria( required string entityName, string alias = "" ){
 		// create detached builder
 		arguments.ORMService = variables.ORMService;
 		var subcriteria      = new DetachedCriteriaBuilder( argumentCollection = arguments );
@@ -238,10 +220,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "Subquery",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "Subquery", "criteriaBuilder" : this }
 			);
 		}
 
@@ -252,13 +231,10 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Enable caching of this query result, provided query caching is enabled for the underlying session factory.
 	 *
-	 * @cache Cache or not
+	 * @cache       Cache or not
 	 * @cacheRegion The cache region
 	 */
-	any function cache(
-		required boolean cache = true,
-		string cacheRegion
-	){
+	any function cache( required boolean cache = true, string cacheRegion ){
 		nativeCriteria.setCacheable( javacast( "boolean", arguments.cache ) );
 		if ( !isNull( arguments.cacheRegion ) ) {
 			nativeCriteria.setCacheRegion( arguments.cacheRegion );
@@ -308,10 +284,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			if ( variables.ORMService.getEventHandling() ) {
 				variables.eventManager.processState(
 					"onCriteriaBuilderAddition",
-					{
-						"type"            : "Offset",
-						"criteriaBuilder" : this
-					}
+					{ "type" : "Offset", "criteriaBuilder" : this }
 				);
 			}
 		}
@@ -330,10 +303,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			if ( variables.ORMService.getEventHandling() ) {
 				variables.eventManager.processState(
 					"onCriteriaBuilderAddition",
-					{
-						"type"            : "Max",
-						"criteriaBuilder" : this
-					}
+					{ "type" : "Max", "criteriaBuilder" : this }
 				);
 			}
 		}
@@ -373,15 +343,17 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Convenience method to return a single instance that matches the built up criterias query, or throws an exception if the query returns no results
 	 *
-	 * @throws EntityNotFound, NonUniqueResultException
+	 * @properties An optional list of properties to retrieve instead of the entire object
+	 *
+	 * @throws EntityNotFound           - When no entity was found for the specific criteria
+	 * @throws NonUniqueResultException - When more than one result is found with the specific criteria
+	 *
+	 * @return The requested entity or if using properties, the properties requested as a struct
 	 */
-	any function getOrFail(){
-		var result = this.get();
+	any function getOrFail( properties = "" ){
+		var result = this.get( arguments.properties );
 		if ( isNull( result ) ) {
-			throw(
-				message = "No entity found for the specific criteria",
-				type    = "EntityNotFound"
-			);
+			throw( message = "No entity found for the specific criteria", type = "EntityNotFound" );
 		}
 		return result;
 	}
@@ -389,29 +361,31 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * Convenience method to return a single instance that matches the built up criterias query, or null if the query returns no results.
 	 *
+	 * @properties An optional list of properties to retrieve instead of the entire object
+	 *
 	 * @throws NonUniqueResultException - if there is more than one matching result
+	 *
+	 * @return The requested entity or if using properties, the properties requested as a struct
 	 */
-	any function get(){
+	any function get( properties = "" ){
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
-				"beforeCriteriaBuilderGet",
-				{
-					"criteriaBuilder" : this
-				}
-			);
+			variables.eventManager.processState( "beforeCriteriaBuilderGet", { "criteriaBuilder" : this } );
 		}
 
+		// Do we have any properties to add?
+		if ( len( arguments.properties ) ) {
+			withProjections( property = arguments.properties ).asStruct();
+		}
+
+		// Go fetch!
 		var result = nativeCriteria.uniqueResult();
 
 		// process interception
 		if ( !isNull( result ) && variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"afterCriteriaBuilderGet",
-				{
-					"criteriaBuilder" : this,
-					"result"         : result
-				}
+				{ "criteriaBuilder" : this, "result" : result }
 			);
 		}
 
@@ -428,10 +402,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	numeric function count( propertyName = "" ){
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
-				"beforeCriteriaBuilderCount",
-				{ "criteriaBuilder" : this }
-			);
+			variables.eventManager.processState( "beforeCriteriaBuilderCount", { "criteriaBuilder" : this } );
 		}
 
 		// else project on the local criterias
@@ -445,10 +416,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"onCriteriaBuilderAddition",
-				{
-					"type"            : "Count",
-					"criteriaBuilder" : this
-				}
+				{ "type" : "Count", "criteriaBuilder" : this }
 			);
 		}
 
@@ -461,10 +429,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( variables.ORMService.getEventHandling() ) {
 			variables.eventManager.processState(
 				"afterCriteriaBuilderCount",
-				{
-					"criteriaBuilder" : this,
-					"results"         : results
-				}
+				{ "criteriaBuilder" : this, "results" : results }
 			);
 		}
 

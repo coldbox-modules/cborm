@@ -34,7 +34,7 @@
 component extends="cborm.models.BaseORMService" accessors="true" {
 
 	/**
-	 * The entityName property for this "version" of the Virtual Service
+	 * The entity name that this virtual service is bound to. All operations will be based off this entity name
 	 */
 	property
 		name      ="entityName"
@@ -46,13 +46,13 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @entityname The name of the entity to root this service with
+	 * @entityname       The name of the entity to root this service with
 	 * @queryCacheRegion The name of the query cache region if using caching, defaults to `#arguments.entityName#.defaultVSCache`
-	 * @useQueryCaching Activate query caching, defaults to false
-	 * @eventHandling Activate event handling, defaults to true
-	 * @useTransactions Activate transaction blocks on calls, defaults to true
-	 * @defaultAsQuery Return query or array of objects on list(), executeQuery() defaults to false
-	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
+	 * @useQueryCaching  Activate query caching, defaults to false
+	 * @eventHandling    Activate event handling, defaults to true
+	 * @useTransactions  Activate transaction blocks on calls, defaults to true
+	 * @defaultAsQuery   Return query or array of objects on list(), executeQuery() defaults to false
+	 * @datasource       THe datsource name to be used for the rooted entity, if not we use the default datasource
 	 */
 	VirtualEntityService function init(
 		required string entityname,
@@ -63,24 +63,16 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 		boolean defaultAsQuery,
 		string datasource
 	){
-		// create cache region
+		// Default a cache region if not passed
 		if ( isNull( arguments.queryCacheRegion ) ) {
 			arguments.queryCacheRegion = "#arguments.entityName#.defaultVSCache";
 		}
 
-		// init base service
-		super.init( argumentCollection = arguments );
-
 		// Set the local entity to be used in this virtual entity service
 		variables.entityName = arguments.entityName;
 
-		// Set the datasource of the local entity to be used in this virtual entity service
-		// Only if not passed
-		if ( isNull( arguments.datasource ) ) {
-			setDatasource( variables.orm.getEntityDatasource( arguments.entityName ) );
-		} else {
-			setDatasource( arguments.datasource );
-		}
+		// Init our parent
+		super.init( argumentCollection = arguments );
 
 		return this;
 	}
@@ -91,14 +83,14 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * Allows the execution of HQL queries using several nice arguments and returns either an array of entities or a query as specified by the asQuery argument.
 	 * The params filtering can be using named or positional.
 	 *
-	 * @query The HQL Query to execute
-	 * @params A struct or array of query params
-	 * @offset Used for pagination
-	 * @max The max number of records to retrieve
-	 * @timeout A DB timeout for this query
+	 * @query      The HQL Query to execute
+	 * @params     A struct or array of query params
+	 * @offset     Used for pagination
+	 * @max        The max number of records to retrieve
+	 * @timeout    A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
-	 * @asQuery The return format as either a query or array of objects
-	 * @unique Return array or a unique record, defaults to array
+	 * @asQuery    The return format as either a query or array of objects
+	 * @unique     Return array or a unique record, defaults to array
 	 */
 	any function executeQuery(
 		required string query,
@@ -121,13 +113,13 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * Caching for the list is based on the useQueryCaching class property and the cachename property is based on
 	 * the queryCacheRegion class property.
 	 *
-	 * @criteria A struct of filtering criteria to apply to the where clause
-	 * @sortOrder The sorting order of the result
-	 * @offset Used for pagination
-	 * @max The max number of records to retrieve
-	 * @timeout A DB timeout for this query
+	 * @criteria   A struct of filtering criteria to apply to the where clause
+	 * @sortOrder  The sorting order of the result
+	 * @offset     Used for pagination
+	 * @max        The max number of records to retrieve
+	 * @timeout    A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
-	 * @asQuery The return format as either a query or array of objects
+	 * @asQuery    The return format as either a query or array of objects
 	 */
 	any function list(
 		struct criteria    = structNew(),
@@ -148,22 +140,16 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * @criteria The filtering criteria to search for.
 	 */
 	any function findWhere( required struct criteria ){
-		return super.findWhere(
-			this.getEntityName(),
-			arguments.criteria
-		);
+		return super.findWhere( this.getEntityName(), arguments.criteria );
 	}
 
 	/**
 	 * Find all entities according to criteria structure
 	 *
-	 * @criteria The filtering criteria to search for.
+	 * @criteria  The filtering criteria to search for.
 	 * @sortOrder The sorting order
 	 */
-	array function findAllWhere(
-		required struct criteria,
-		string sortOrder = ""
-	){
+	array function findAllWhere( required struct criteria, string sortOrder = "" ){
 		return super.findAllWhere(
 			this.getEntityName(),
 			arguments.criteria,
@@ -174,14 +160,14 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	/**
 	 * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
 	 *
-	 * @entityName The entity to create
-	 * @properties The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
+	 * @entityName           The entity to create
+	 * @properties           The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @include A list of keys to include in the population from the incoming properties memento
-	 * @exclude A list of keys to exclude in the population from the incoming properties memento
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @include              A list of keys to include in the population from the incoming properties memento
+	 * @exclude              A list of keys to exclude in the population from the incoming properties memento
 	 */
 	any function new(
 		struct properties            = structNew(),
@@ -214,10 +200,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 *
 	 * @return Requested entity, new entity or `null`
 	 */
-	any function get(
-		required any id,
-		boolean returnNew = true
-	){
+	any function get( required any id, boolean returnNew = true ){
 		arguments.entityName = this.getEntityName();
 		return super.get( argumentCollection = arguments );
 	}
@@ -238,9 +221,9 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * The property list must include the `as` alias if not you will get positional keys.
 	 * Example: properties="catID as id, category as category, role as role"
 	 *
-	 * @id The id or a list/array of Ids to retrieve
-	 * @sortOrder The sorting of the returning array, defaults to natural sorting
-	 * @readOnly Return full or read only entities, defaults to false
+	 * @id         The id or a list/array of Ids to retrieve
+	 * @sortOrder  The sorting of the returning array, defaults to natural sorting
+	 * @readOnly   Return full or read only entities, defaults to false
 	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
 	 */
 	array function getAll(
@@ -257,18 +240,12 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
 	 *
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
-	numeric function deleteAll(
-		boolean flush         = false,
-		boolean transactional = getUseTransactions()
-	){
+	numeric function deleteAll( boolean flush = false, boolean transactional = getUseTransactions() ){
 		arguments.entityName = this.getEntityName();
-		return super.deleteAll(
-			arguments.entityName,
-			arguments.flush
-		);
+		return super.deleteAll( arguments.entityName, arguments.flush );
 	}
 
 	/**
@@ -276,8 +253,8 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * The method returns the count of deleted entities.
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
 	 *
-	 * @id The single id or an array of Ids to delete
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @id            The single id or an array of Ids to delete
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
 	numeric function deleteByID(
@@ -294,9 +271,9 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 *
 	 * So you can do <code>deleteByQuery( "from categories where id = :id" )</code>
 	 *
-	 * @query The query to use for deletion
-	 * @params The params to bind the query with
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @query         The query to use for deletion
+	 * @params        The params to bind the query with
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
 	numeric function deleteByQuery(
@@ -319,9 +296,9 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * deleteWhere(entityName="User",age="4",isActive=true);
 	 * </pre>
 	 *
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
-	 * @datasource The datasource to use or the default one
+	 * @datasource    The datasource to use or the default one
 	 */
 	numeric function deleteWhere(
 		boolean flush         = false,
@@ -337,13 +314,10 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * that can filter the count. Ex: <code>count( 'User','age > 40 AND name="joe"' )</code>. You can even use params with this method:
 	 * Ex: <code>count('User','age > ? AND name = ?',[40,"joe"])</code>
 	 *
-	 * @where The HQL where statement
+	 * @where  The HQL where statement
 	 * @params Any params to bind in the where argument
 	 */
-	numeric function count(
-		string where = "",
-		any params   = structNew()
-	){
+	numeric function count( string where = "", any params = structNew() ){
 		arguments.entityName = this.getEntityName();
 		return super.count( argumentCollection = arguments );
 	}
@@ -363,7 +337,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * Evict an entity name with or without an ID from the secondary cache ONLY, not the hibernate session
 	 *
 	 * @relationName The name of the relation in the entity to evict
-	 * @id The id to use for eviction according to entity name or relation name
+	 * @id           The id to use for eviction according to entity name or relation name
 	 */
 	any function evictCollection( string relationName, any id ){
 		arguments.entityName = this.getEntityName();
@@ -399,9 +373,9 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	/**
 	 * Get a brand new criteria builder object
 	 *
-	 * @useQueryCaching Activate query caching for the list operations
+	 * @useQueryCaching  Activate query caching for the list operations
 	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
-	 * @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	 * @defaultAsQuery   To return results as queries or array of objects or reports, default is array as results might not match entities precisely
 	 *
 	 * @return cborm.models.criterion.CriteriaBuilder
 	 */
@@ -445,10 +419,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 *
 	 * @id The id value to convert
 	 */
-	any function convertValueToJavaType(
-		required propertyName,
-		required value
-	){
+	any function convertValueToJavaType( required propertyName, required value ){
 		arguments.entity = this.getEntityName();
 		return super.autoCast( argumentCollection = arguments );
 	}
@@ -457,12 +428,9 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * Coverts a value to the correct javaType for the property passed in.
 	 *
 	 * @propertyName The property name
-	 * @value The property value
+	 * @value        The property value
 	 */
-	any function autoCast(
-		required propertyName,
-		required value
-	){
+	any function autoCast( required propertyName, required value ){
 		arguments.entity = this.getEntityName();
 		return super.autoCast( argumentCollection = arguments );
 	}
@@ -470,10 +438,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	/**
 	 * A nice onMissingMethod template to create awesome dynamic methods based on a virtual service
 	 */
-	any function onMissingMethod(
-		string missingMethodName,
-		struct missingMethodArguments
-	){
+	any function onMissingMethod( string missingMethodName, struct missingMethodArguments ){
 		// Add the entity name
 		arguments.missingMethodArguments.entityName = this.getEntityName();
 		return super.onMissingMethod( argumentCollection = arguments );

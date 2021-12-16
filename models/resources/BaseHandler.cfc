@@ -89,17 +89,11 @@ component extends="coldbox.system.RestHandler" {
 	 * }
 	 *
 	 * @criteria If you pass a criteria object, then we will use that instead of creating a new one
-	 * @results If you pass in a results struct, it must contain the following keys: { count:numeric, records: array of objects }
+	 * @results  If you pass in a results struct, it must contain the following keys: { count:numeric, records: array of objects }
 	 *
 	 * @throws InvalidResultsException - If a results struct is passed and any of the required keys are not found
 	 */
-	function index(
-		event,
-		rc,
-		prc,
-		criteria,
-		struct results
-	){
+	function index( event, rc, prc, criteria, struct results ){
 		// Memento params
 		param rc.includes       = "";
 		param rc.excludes       = "";
@@ -153,10 +147,7 @@ component extends="coldbox.system.RestHandler" {
 		// announce it
 		announceInterception(
 			"#variables.settings.resources.eventPrefix#post#variables.entity#List",
-			{
-				count   : prc.recordCount,
-				records : prc.records
-			}
+			{ count : prc.recordCount, records : prc.records }
 		);
 
 		// Marshall out with Pagination information
@@ -205,8 +196,8 @@ component extends="coldbox.system.RestHandler" {
 	 * 	"schema" : { "type" : "boolean", "default" : false }
 	 * }
 	 *
-	 * @populate Population arguments
-	 * @validate Validation arguments
+	 * @populate   Population arguments
+	 * @validate   Validation arguments
 	 * @saveMethod Defaults to `save()`
 	 */
 	function create(
@@ -296,10 +287,7 @@ component extends="coldbox.system.RestHandler" {
 		param rc.id             = 0;
 
 		// announce it
-		announceInterception(
-			"#variables.settings.resources.eventPrefix#pre#variables.entity#Show",
-			{}
-		);
+		announceInterception( "#variables.settings.resources.eventPrefix#pre#variables.entity#Show", {} );
 
 		// Get by id
 		prc.oEntity = variables.ormService.getOrFail( rc.id );
@@ -468,10 +456,7 @@ component extends="coldbox.system.RestHandler" {
 	 * or passed in through RC
 	 */
 	private function getMaxRows( event = getRequestContext() ){
-		var maxRows = event.getValue(
-			"maxRows",
-			variables.settings.resources.maxRows
-		);
+		var maxRows = event.getValue( "maxRows", variables.settings.resources.maxRows );
 		// if limit = 0, then don't block
 		if ( variables.settings.resources.maxRowsLimit == 0 ) {
 			return maxRows;
@@ -487,21 +472,18 @@ component extends="coldbox.system.RestHandler" {
 	 * Coverts a value to the correct javaType for the property passed in.
 	 *
 	 * @propertyName The property name
-	 * @value The property value
+	 * @value        The property value
 	 */
-	private function autoCast(
-		required propertyName,
-		required value
-	){
+	private function autoCast( required propertyName, required value ){
 		return variables.ormService.autoCast( argumentCollection = arguments );
 	}
 
 	/**
 	 * Get a brand new criteria builder object
 	 *
-	 * @useQueryCaching Activate query caching for the list operations
+	 * @useQueryCaching  Activate query caching for the list operations
 	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
-	 * @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	 * @defaultAsQuery   To return results as queries or array of objects or reports, default is array as results might not match entities precisely
 	 *
 	 * @return cborm.models.criterion.CriteriaBuilder
 	 */

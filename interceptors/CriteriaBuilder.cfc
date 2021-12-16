@@ -15,10 +15,7 @@ component extends="coldbox.system.Interceptor" {
 	/**
 	 * Listen to criteria builder additions
 	 */
-	function onCriteriaBuilderAddition(
-		required event,
-		required interceptData
-	){
+	function onCriteriaBuilderAddition( required event, required interceptData ){
 		if ( structKeyExists( interceptData, "CriteriaBuilder" ) ) {
 			if ( interceptData.CriteriaBuilder.canLogSql() ) {
 				interceptData.CriteriaBuilder.logSql( label = interceptData.type );

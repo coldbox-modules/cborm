@@ -144,6 +144,41 @@ moduleSettings = {
 We have also migrated the `UniqueValidator` from the **validation** module into our
 ORM module.  It is mapped into wirebox as `UniqueValidator@cborm` so you can use in your constraints like so:
 
+```js
+this.constraints = {
+    "name"  : {
+              "required":true,
+              "validator":"UniqueValidator@cborm"
+            }
+};
+```
+
+## Contributing
+
+All contributions welcome! Feel free to fix a typo, add a feature :rocket:, or add a testbox spec for a newly discovered issue :bug:
+
+If you want to get hacking on CBORM, here's how to start:
+
+1. Clone down this repo
+2. Start a MySQL service you can connect to for running the CBORM test suite. Here's an example of a Docker mysql service:
+
+```bash
+docker run \
+    -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
+    -e MYSQL_USER=other \
+    -e MYSQL_PASSWORD=ortussolutions \
+    -e MYSQL_DATABASE=coolblog \
+    -v "$PWD/test-harness/tests/resources":/docker-entrypoint-initdb.d \
+    -p 3306:3306 \
+    --detach \
+    --name cborm_mysql \
+    mysql
+```
+
+3. Copy `test-harness/.env.template` to `test-harness/.env` and enter the database credentials used in step 2 above ☝
+4. Start a test server - `box cd tests` and `box start server-lucee@5.json`
+5. Hack away! :laptop:
+
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
@@ -157,7 +192,7 @@ Because of His grace, this project exists. If you don't like this, then don't re
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
 And not only so, but we glory in tribulations also: knowing that tribulation worketh patience;
 And patience, experience; and experience, hope:
-And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
+And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the
 Holy Ghost which is given unto us. ." Romans 5:5
 
 ### THE DAILY BREAD

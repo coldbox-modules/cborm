@@ -13,7 +13,12 @@ component {
 	this.description    = "ColdBox ORM enhancements for Hibernate";
 	this.modelNamespace = "cborm";
 	this.cfmapping      = "cborm";
-	this.dependencies   = [ "cbvalidation", "cbPaginator", "mementifier", "cbstreams" ];
+	this.dependencies   = [
+		"cbvalidation",
+		"cbPaginator",
+		"mementifier",
+		"cbstreams"
+	];
 
 	variables.SETTING_DEFAULTS = {
 		// Resource Settings
@@ -21,18 +26,14 @@ component {
 			// Enable the ORM Resource Event Loader
 			eventLoader  : false,
 			// Prefix to use on all the registered pre/post{Entity}{Action} events
-			eventPrefix : "",
+			eventPrefix  : "",
 			// Pagination max rows
 			maxRows      : 25,
 			// Pagination max row limit: 0 = no limit
 			maxRowsLimit : 500
 		},
 		// WireBox Injection Bridge
-		injection : {
-			enabled : true,
-			include : "",
-			exclude : ""
-		}
+		injection : { enabled : true, include : "", exclude : "" }
 	};
 
 	/**
@@ -49,12 +50,7 @@ component {
 		}
 
 		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
-		controller
-			.getWireBox()
-			.registerDSL(
-				namespace = "entityService",
-				path      = dslPath
-			);
+		controller.getWireBox().registerDSL( namespace = "entityService", path = dslPath );
 
 		// Custom Declared Points
 		interceptorSettings = {
@@ -95,14 +91,8 @@ component {
 	 */
 	function onLoad(){
 		// Prepare setting defaults
-		settings.resources.append(
-			variables.SETTING_DEFAULTS.resources,
-			false
-		);
-		settings.injection.append(
-			variables.SETTING_DEFAULTS.injection,
-			false
-		);
+		settings.resources.append( variables.SETTING_DEFAULTS.resources, false );
+		settings.injection.append( variables.SETTING_DEFAULTS.injection, false );
 		// Are we loading the event loader
 		if ( settings.resources.eventLoader ) {
 			wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();

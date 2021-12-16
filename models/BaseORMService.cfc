@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
@@ -39,18 +39,22 @@ component accessors="true" {
 
 	/**
 	 * The system ORM event handler to transmit ORM events to
+	 *
 	 * @lazy true
 	 */
 	property name="ORMEventHandler" persistent="false";
 
 	/**
 	 * The object populator
+	 *
 	 * @lazy true
 	 */
 	property name="beanPopulator" persistent="false";
 
 	/**
 	 * The system ORM utility object depending on the CFML Engine you are on
+	 *
+	 * @lazy true
 	 */
 	property name="ORM" persistent="false";
 
@@ -98,11 +102,11 @@ component accessors="true" {
 	 * Constructor
 	 *
 	 * @queryCacheRegion The default query cache region to use, by default it uses ORMService.defaultCache
-	 * @useQueryCaching Activate caching or not
-	 * @eventHandling Activate event handling or not
-	 * @useTransactions Use cftransactions around all crud operations or not
-	 * @defaultAsQuery Return queries or array of objects by default
-	 * @datasource The default datasource to use for this service
+	 * @useQueryCaching  Activate caching or not
+	 * @eventHandling    Activate event handling or not
+	 * @useTransactions  Use cftransactions around all crud operations or not
+	 * @defaultAsQuery   Return queries or array of objects by default
+	 * @datasource       The default datasource to use for this service
 	 */
 	BaseORMService function init(
 		string queryCacheRegion = "ORMService.defaultCache",
@@ -121,12 +125,14 @@ component accessors="true" {
 		variables.wirebox          = application.wirebox;
 		variables.logger           = variables.wirebox.getLogBox().getLogger( this );
 
-		// Create the ORM Utility component
-		variables.ORM = new cborm.models.util.ORMUtilFactory().getORMUtil();
-
 		// Datasource
 		if ( isNull( arguments.datasource ) ) {
-			variables.datasource = variables.ORM.getDefaultDatasource();
+			var appMD = getApplicationMetadata();
+			if ( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ) {
+				variables.datasource = appMD.ormsettings.datasource;
+			} else {
+				variables.datasource = appMD.datasource;
+			}
 		} else {
 			variables.datasource = arguments.datasource;
 		}
@@ -139,16 +145,28 @@ component accessors="true" {
 	/*****************************************************************************************/
 
 	/**
+	 * Lazy loading of the ORM utility according to the CFML engine you are on
+	 * - LuceeORMUtil : For Lucee Engines
+	 * - CFORMUtil : For Adobe Engines
+	 *
+	 * @return cborm.models.util.IORMUtil
+	 */
+	function getOrm(){
+		if ( isNull( variables.orm ) ) {
+			variables.orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
+		}
+		return variables.orm;
+	}
+
+	/**
 	 * Lazy loading event handler for performance
 	 *
 	 * @return cborm.models.EventHandler
 	 */
 	function getORMEventHandler(){
-		if ( !isNull( variables.ORMEventHandler ) ) {
-			return variables.ORMEventHandler;
+		if ( isNull( variables.ORMEventHandler ) ) {
+			variables.ORMEventHandler = new cborm.models.EventHandler();
 		}
-
-		variables.ORMEventHandler = new cborm.models.EventHandler();
 		return variables.ORMEventHandler;
 	}
 
@@ -158,11 +176,10 @@ component accessors="true" {
 	 * @return cborm.models.util.DynamicProcessor
 	 */
 	function getDynamicProcessor(){
-		if ( !isNull( variables.dynamicProcessor ) ) {
-			return variables.dynamicProcessor;
+		if ( isNull( variables.dynamicProcessor ) ) {
+			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
 		}
 
-		variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
 		return variables.dynamicProcessor;
 	}
 
@@ -170,7 +187,7 @@ component accessors="true" {
 	 * Convert an Id value to it's Java cast type, this is an alias for `ConvertIdValueToJavaType()`
 	 *
 	 * @entity The entity name or entity object
-	 * @id The id value to convert
+	 * @id     The id value to convert
 	 */
 	any function idCast( required entity, required id ){
 		var hibernateMD = getEntityMetadata( arguments.entity );
@@ -196,9 +213,9 @@ component accessors="true" {
 	/**
 	 * Coverts a value to the correct javaType for the property passed in.
 	 *
-	 * @entity The entity name or entity object
+	 * @entity       The entity name or entity object
 	 * @propertyName The property name
-	 * @value The property value
+	 * @value        The property value
 	 */
 	any function autoCast(
 		required entity,
@@ -217,7 +234,7 @@ component accessors="true" {
 	 * @deprecated In favor of `idCast()`
 	 *
 	 * @entityName The entity name
-	 * @id The id value to convert
+	 * @id         The id value to convert
 	 */
 	any function convertIdValueToJavaType( required entityName, required id ){
 		arguments.entity = arguments.entityname;
@@ -229,9 +246,9 @@ component accessors="true" {
 	 *
 	 * @deprecated In favor of `autoCast()`
 	 *
-	 * @entityName The entity name or entity object
+	 * @entityName   The entity name or entity object
 	 * @propertyName The property name
-	 * @value The property value
+	 * @value        The property value
 	 */
 	any function convertValueToJavaType(
 		required entityName,
@@ -254,14 +271,14 @@ component accessors="true" {
 	 * the queryCacheRegion class property.
 	 *
 	 * @entityName The entity to list on
-	 * @criteria A struct of filtering criteria to apply to the where clause
-	 * @sortOrder The sorting order of the result
-	 * @offset Used for pagination
-	 * @max The max number of records to retrieve
-	 * @timeout A DB timeout for this query
+	 * @criteria   A struct of filtering criteria to apply to the where clause
+	 * @sortOrder  The sorting order of the result
+	 * @offset     Used for pagination
+	 * @max        The max number of records to retrieve
+	 * @timeout    A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
-	 * @asQuery The return format as either a query or array of objects
-	 * @asStream The return format will be a cbStream
+	 * @asQuery    The return format as either a query or array of objects
+	 * @asStream   The return format will be a cbStream
 	 */
 	any function list(
 		required string entityName,
@@ -326,16 +343,16 @@ component accessors="true" {
 	 * Allows the execution of HQL queries using several nice arguments and returns either an array of entities or a query as specified by the asQuery argument.
 	 * The params filtering can be using named or positional.
 	 *
-	 * @query The HQL Query to execute
-	 * @params A struct or array of query params
-	 * @offset Used for pagination
-	 * @max The max number of records to retrieve
-	 * @timeout A DB timeout for this query
+	 * @query      The HQL Query to execute
+	 * @params     A struct or array of query params
+	 * @offset     Used for pagination
+	 * @max        The max number of records to retrieve
+	 * @timeout    A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
-	 * @asQuery The return format as either a query or array of objects
-	 * @unique Return array or a unique record, defaults to array
+	 * @asQuery    The return format as either a query or array of objects
+	 * @unique     Return array or a unique record, defaults to array
 	 * @datasource The datasource to use
-	 * @asStream The return format will be a cbStream
+	 * @asStream   The return format will be a cbStream
 	 */
 	any function executeQuery(
 		required string query,
@@ -376,15 +393,17 @@ component accessors="true" {
 
 		// process interception
 		if ( getEventHandling() ) {
-			getORMEventHandler().getEventManager().processState(
-				"beforeOrmExecuteQuery",
-				{
-					"query" : arguments.query,
-					"params" : arguments.params,
-					"unique" : arguments.unique,
-					"options" : options
-				}
-			);
+			getORMEventHandler()
+				.getEventManager()
+				.processState(
+					"beforeOrmExecuteQuery",
+					{
+						"query"   : arguments.query,
+						"params"  : arguments.params,
+						"unique"  : arguments.unique,
+						"options" : options
+					}
+				);
 		}
 
 		// Get listing: https://cfdocs.org/ormexecutequery
@@ -397,21 +416,22 @@ component accessors="true" {
 
 		// process interception
 		if ( getEventHandling() ) {
-			getORMEventHandler().getEventManager().processState(
-				"afterOrmExecuteQuery",
-				{
-					"query" : arguments.query,
-					"params" : arguments.params,
-					"unique" : arguments.unique,
-					"options" : options,
-					"results" : isNull( results ) ? javacast( "null", "" ) : results
-				}
-			);
+			getORMEventHandler()
+				.getEventManager()
+				.processState(
+					"afterOrmExecuteQuery",
+					{
+						"query"   : arguments.query,
+						"params"  : arguments.params,
+						"unique"  : arguments.unique,
+						"options" : options,
+						"results" : isNull( results ) ? javacast( "null", "" ) : results
+					}
+				);
 		}
 
 		// Null Checks
 		if ( isNull( results ) ) {
-
 			if ( arguments.asStream ) {
 				return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new();
 			} else if ( arguments.asQuery ) {
@@ -426,12 +446,7 @@ component accessors="true" {
 		}
 
 		// Determine if we are in a UPDATE, INSERT or DELETE, if we do, just return the results, it is a numeric
-		if (
-			reFindNoCase(
-				"(delete|insert|update)\s",
-				arguments.query
-			)
-		) {
+		if ( reFindNoCase( "(delete|insert|update)\s", arguments.query ) ) {
 			return results;
 		}
 
@@ -450,10 +465,7 @@ component accessors="true" {
 	 *
 	 * @throws EntityNotFound
 	 */
-	any function getOrFail(
-		required string entityName,
-		required any id
-	){
+	any function getOrFail( required string entityName, required any id ){
 		var result = this.get(
 			entityName = arguments.entityName,
 			id         = arguments.id,
@@ -473,7 +485,7 @@ component accessors="true" {
 	 * Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
 	 *
 	 * @entityName The name of the entity to retrieve
-	 * @id An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
+	 * @id         An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
 	 * @returnNew By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
 	 *
 	 * @return Requested entity, new entity or `null`
@@ -513,11 +525,11 @@ component accessors="true" {
 	 * Example: properties="catID as id, category as category, role as role"
 	 *
 	 * @entityName The entity to get
-	 * @id The id or a list/array of Ids to retrieve
-	 * @sortOrder The sorting of the returning array, defaults to natural sorting
-	 * @readOnly Return full or read only entities, defaults to false
+	 * @id         The id or a list/array of Ids to retrieve
+	 * @sortOrder  The sorting of the returning array, defaults to natural sorting
+	 * @readOnly   Return full or read only entities, defaults to false
 	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
-	 * @asStream Return a stream if true
+	 * @asStream   Return a stream if true
 	 */
 	any function getAll(
 		required string entityName,
@@ -540,10 +552,7 @@ component accessors="true" {
 		// ID
 		if ( !isNull( arguments.id ) ) {
 			// type safe conversions
-			arguments.id = convertIDValueToJavaType(
-				entityName = arguments.entityName,
-				id         = arguments.id
-			);
+			arguments.id = convertIDValueToJavaType( entityName = arguments.entityName, id = arguments.id );
 			hql &= " WHERE id in (:idlist)";
 		}
 
@@ -553,7 +562,7 @@ component accessors="true" {
 		}
 
 		// Execute native hibernate query
-		var query = orm.getSession( orm.getEntityDatasource( arguments.entityName ) ).createQuery( hql );
+		var query = getOrm().getSession( getOrm().getEntityDatasource( arguments.entityName ) ).createQuery( hql );
 
 		// parameter binding
 		if ( !isNull( arguments.id ) ) {
@@ -570,8 +579,8 @@ component accessors="true" {
 
 		// Streams Support
 		if ( arguments.asStream ) {
-			// If Hibernate 5, return native stream
-			if ( listFirst( server.coldfusion.productVersion ) == 2018 ) {
+			// If Hibernate 5, return native stream: left( getOrm().getHibernateVersion(), 1 ) > 5
+			if ( listFirst( server.coldfusion.productVersion ) >= 2018 ) {
 				return variables.wirebox
 					.getInstance( "StreamBuilder@cbStreams" )
 					.new()
@@ -598,10 +607,7 @@ component accessors="true" {
 	){
 		var result = findIt( argumentCollection = arguments );
 		if ( isNull( result ) ) {
-			throw(
-				message = "No entity found",
-				type    = "EntityNotFound"
-			);
+			throw( message = "No entity found", type = "EntityNotFound" );
 		}
 		return result;
 	}
@@ -610,9 +616,9 @@ component accessors="true" {
 	 * Finds and returns the first result for the given query or null if no entity was found.
 	 * You can either use the query and params combination
 	 *
-	 * @query The HQL Query to execute
-	 * @params A struct or array of query params
-	 * @timeout A DB timeout for this query
+	 * @query      The HQL Query to execute
+	 * @params     A struct or array of query params
+	 * @timeout    A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
 	 * @datasource The datasource to use
 	 */
@@ -639,7 +645,7 @@ component accessors="true" {
 	 * https://cfdocs.org/entityloadbyexample
 	 *
 	 * @example The example entity
-	 * @unique Unique or array of entities (default)
+	 * @unique  Unique or array of entities (default)
 	 */
 	any function findByExample( any example, boolean unique = false ){
 		return entityLoadByExample( arguments.example, arguments.unique );
@@ -648,14 +654,14 @@ component accessors="true" {
 	/**
 	 * Find all entities for the specified HQL query and accompanied params.
 	 *
-	 * @query The HQL Query to execute
-	 * @params A struct or array of query params
-	 * @offset Used for pagination
-	 * @max The max number of records to retrieve
-	 * @timeout A DB timeout for this query
+	 * @query      The HQL Query to execute
+	 * @params     A struct or array of query params
+	 * @offset     Used for pagination
+	 * @max        The max number of records to retrieve
+	 * @timeout    A DB timeout for this query
 	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
 	 * @datasource The datasource to use
-	 * @asStream Return a stream if true
+	 * @asStream   Return a stream if true
 	 *
 	 * @return array of entities or a cbstream
 	 */
@@ -678,23 +684,16 @@ component accessors="true" {
 	 * Find one entity (or null if not found) according to a criteria structure
 	 *
 	 * @entityName The entity to search for
-	 * @criteria The filtering criteria to search for.
+	 * @criteria   The filtering criteria to search for.
 	 */
-	any function findWhere(
-		required string entityName,
-		struct criteria = {}
-	){
+	any function findWhere( required string entityName, struct criteria = {} ){
 		// Caching?
 		if ( getUseQueryCaching() ) {
 			// if we are caching, we will use find all and return an array since entityLoad does not support both unique and caching
 			var aEntity = findAllWhere( argumentCollection = arguments );
 			return ( arrayLen( aEntity ) ? aEntity[ 1 ] : javacast( "null", "" ) );
 		} else {
-			return entityLoad(
-				arguments.entityName,
-				arguments.criteria,
-				true
-			);
+			return entityLoad( arguments.entityName, arguments.criteria, true );
 		}
 	}
 
@@ -702,8 +701,8 @@ component accessors="true" {
 	 * Find all entities according to criteria structure
 	 *
 	 * @entityName The entity to search for
-	 * @criteria The filtering criteria to search for.
-	 * @sortOrder The sorting order
+	 * @criteria   The filtering criteria to search for.
+	 * @sortOrder  The sorting order
 	 *
 	 */
 	array function findAllWhere(
@@ -754,14 +753,14 @@ component accessors="true" {
 	/**
 	 * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
 	 *
-	 * @entityName The entity to create
-	 * @properties The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
+	 * @entityName           The entity to create
+	 * @properties           The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @include A list of keys to include in the population from the incoming properties memento
-	 * @exclude A list of keys to exclude in the population from the incoming properties memento
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @include              A list of keys to include in the population from the incoming properties memento
+	 * @exclude              A list of keys to exclude in the population from the incoming properties memento
 	 */
 	any function new(
 		required string entityName,
@@ -805,13 +804,13 @@ component accessors="true" {
 	/**
 	 * Create a virtual abstract service for a specfic entity
 	 *
-	 * @entityname The name of the entity to root this service with
+	 * @entityname       The name of the entity to root this service with
 	 * @queryCacheRegion The name of the query cache region if using caching, defaults to `#arguments.entityName#.defaultVSCache`
-	 * @useQueryCaching Activate query caching, defaults to false
-	 * @eventHandling Activate event handling, defaults to true
-	 * @useTransactions Activate transaction blocks on calls, defaults to true
-	 * @defaultAsQuery Return query or array of objects on list(), executeQuery(), criteriaQuery(), defaults to true
-	 * @datasource THe datsource name to be used for the rooted entity, if not we use the default datasource
+	 * @useQueryCaching  Activate query caching, defaults to false
+	 * @eventHandling    Activate event handling, defaults to true
+	 * @useTransactions  Activate transaction blocks on calls, defaults to true
+	 * @defaultAsQuery   Return query or array of objects on list(), executeQuery(), criteriaQuery(), defaults to true
+	 * @datasource       THe datsource name to be used for the rooted entity, if not we use the default datasource
 	 *
 	 * @return cborm.models.VirtualEntityService
 	 */
@@ -834,15 +833,15 @@ component accessors="true" {
 	/**
 	 * Populate/bind an entity's properties and relationships from an incoming structure or map of flat data.
 	 *
-	 * @target The entity to populate
-	 * @memento	The map/struct to populate the entity with
-	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	 * @include A list of keys to include in the population ONLY
-	 * @exclude A list of keys to exclude from the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The entity to populate
+	 * @memento              The map/struct to populate the entity with
+	 * @scope                Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter        Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include              A list of keys to include in the population ONLY
+	 * @exclude              A list of keys to exclude from the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 */
 	any function populate(
@@ -863,17 +862,17 @@ component accessors="true" {
 	/**
 	 * Simple map to property population for entities with structure key prefixes
 	 *
-	 * @target The entity to populate
-	 * @memento	The map/struct to populate the entity with
-	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	 * @include A list of keys to include in the population ONLY
-	 * @exclude A list of keys to exclude from the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The entity to populate
+	 * @memento              The map/struct to populate the entity with
+	 * @scope                Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter        Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include              A list of keys to include in the population ONLY
+	 * @exclude              A list of keys to exclude from the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-	 * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
 	 */
 	any function populateWithPrefix(
 		required any target,
@@ -894,15 +893,15 @@ component accessors="true" {
 	/**
 	 * Populate from JSON, for argument definitions look at the populate method
 	 *
-	 * @target The entity to populate
-	 * @jsonString The Json string to use for population
-	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	 * @include A list of keys to include in the population ONLY
-	 * @exclude A list of keys to exclude from the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The entity to populate
+	 * @jsonString           The Json string to use for population
+	 * @scope                Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter        Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include              A list of keys to include in the population ONLY
+	 * @exclude              A list of keys to exclude from the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 */
 	any function populateFromJson(
@@ -923,18 +922,18 @@ component accessors="true" {
 	/**
 	 * Populate from XML, for argument definitions look at the populate method
 	 *
-	 * @target The entity to populate
-	 * @xml	The XML string or packet or XML object to populate from
-	 * @root The XML root element to start from
-	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	 * @include A list of keys to include in the population ONLY
-	 * @exclude A list of keys to exclude from the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The entity to populate
+	 * @xml                  The XML string or packet or XML object to populate from
+	 * @root                 The XML root element to start from
+	 * @scope                Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter        Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include              A list of keys to include in the population ONLY
+	 * @exclude              A list of keys to exclude from the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-	 * @prefix The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
 	 */
 	any function populateFromXml(
 		required any target,
@@ -955,16 +954,16 @@ component accessors="true" {
 	/**
 	 * Populate from Query, for argument definitions look at the populate method
 	 *
-	 * @target The entity to populate
-	 * @qry The query to use for population
-	 * @rowNumber The row number to use for population
-	 * @scope Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
-	 * @trustedSetter Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
-	 * @include A list of keys to include in the population ONLY
-	 * @exclude A list of keys to exclude from the population
-	 * @ignoreEmpty Ignore empty values on populations, great for ORM population
-	 * @nullEmptyInclude A list of keys to NULL when empty
-	 * @nullEmptyExclude A list of keys to NOT NULL when empty
+	 * @target               The entity to populate
+	 * @qry                  The query to use for population
+	 * @rowNumber            The row number to use for population
+	 * @scope                Use scope injection instead of setter injection, no need of setters, just tell us what scope to inject to
+	 * @trustedSetter        Do not check if the setter exists, just call it, great for usage with onMissingMethod() and virtual properties
+	 * @include              A list of keys to include in the population ONLY
+	 * @exclude              A list of keys to exclude from the population
+	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
+	 * @nullEmptyInclude     A list of keys to NULL when empty
+	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 */
 	any function populateFromQuery(
@@ -1034,7 +1033,7 @@ component accessors="true" {
 		}
 
 		aObjects.each( function( item ){
-			variables.ORM.getSession( variables.ORM.getEntityDatasource( item ) ).refresh( item );
+			getOrm().getSession( getOrm().getEntityDatasource( item ) ).refresh( item );
 		} );
 
 		// Null it due to closure memory bugs on some engines
@@ -1049,7 +1048,7 @@ component accessors="true" {
 	 * @entity The entity to check
 	 */
 	array function getDirtyPropertyNames( required entity ){
-		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
+		var thisSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
 		var hibernateMD = getEntityMetadata( arguments.entity );
 		var dbState     = hibernateMD.getDatabaseSnapshot( getKeyValue( entity ), thisSession );
 
@@ -1058,14 +1057,7 @@ component accessors="true" {
 			return [];
 		}
 
-		if ( server.keyExists( "lucee" ) ) {
-			var currentState = hibernateMD.getPropertyValues(
-				arguments.entity,
-				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
-			);
-		} else {
-			var currentState = hibernateMD.getPropertyValues( arguments.entity );
-		}
+		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1086,26 +1078,16 @@ component accessors="true" {
 	 * @entity The entity to check if lazy
 	 */
 	boolean function isDirty( required entity ){
-		var thisSession = variables.ORM.getSession( variables.ORM.getEntityDatasource( arguments.entity ) );
+		var thisSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
 		var hibernateMD = getEntityMetadata( arguments.entity );
-		var dbState     = hibernateMD.getDatabaseSnapshot(
-			getKeyValue( arguments.entity ),
-			thisSession
-		);
+		var dbState     = hibernateMD.getDatabaseSnapshot( getKeyValue( arguments.entity ), thisSession );
 
 		// If this is null, then the entity is not in session
 		if ( isNull( dbState ) ) {
 			return false;
 		}
 
-		if ( server.keyExists( "lucee" ) ) {
-			var currentState = hibernateMD.getPropertyValues(
-				arguments.entity,
-				variables.ORM.getSessionEntityMode( thisSession, arguments.entity )
-			);
-		} else {
-			var currentState = hibernateMD.getPropertyValues( arguments.entity );
-		}
+		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
 
 		var modified = hibernateMD.findModified(
 			dbState,
@@ -1125,8 +1107,8 @@ component accessors="true" {
 	 */
 	any function getKeyValue( required entity ){
 		try {
-			return variables.ORM
-				.getSession( variables.ORM.getEntityDatasource( arguments.entity ) )
+			return getORM()
+				.getSession( getOrm().getEntityDatasource( arguments.entity ) )
 				.getIdentifier( arguments.entity );
 		} catch ( any e ) {
 			return;
@@ -1187,9 +1169,9 @@ component accessors="true" {
 	 * @return The Hibernate Java ClassMetadata Object
 	 */
 	function getEntityMetadata( required entity ){
-		return variables.ORM.getEntityMetadata(
+		return getOrm().getEntityMetadata(
 			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
-			datasource = variables.ORM.getEntityDatasource( arguments.entity, getDatasource() )
+			datasource = getOrm().getEntityDatasource( arguments.entity, getDatasource() )
 		);
 	}
 
@@ -1206,8 +1188,8 @@ component accessors="true" {
 
 		// Hibernate Discovery
 		try {
-			var entityName = variables.orm
-				.getSession( variables.orm.getEntityDatasource( arguments.entity ) )
+			var entityName = getOrm()
+				.getSession( getOrm().getEntityDatasource( arguments.entity ) )
 				.getEntityName( arguments.entity );
 		} catch ( org.hibernate.TransientObjectException e ) {
 			// ignore it, it is not in session, go for long-discovery
@@ -1227,8 +1209,8 @@ component accessors="true" {
 	 * or an array of entities. You can optionally flush the session also after committing
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
 	 *
-	 * @entity The entity or array of entities to delete
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @entity        The entity or array of entities to delete
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
 	BaseORMService function delete(
@@ -1254,7 +1236,7 @@ component accessors="true" {
 
 				// Flush?
 				if ( arguments.flush ) {
-					variables.ORM.flush();
+					getOrm().flush();
 				}
 
 				return this;
@@ -1268,8 +1250,8 @@ component accessors="true" {
 	 * Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
 	 *
-	 * @entityName The entity name to delete all from
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @entityName    The entity name to delete all from
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
 	numeric function deleteAll(
@@ -1279,7 +1261,7 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush ){
-				var options = { "datasource" : variables.ORM.getEntityDatasource( arguments.entityName ) };
+				var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
 
 				var count = ormExecuteQuery(
 					"delete from #arguments.entityName#",
@@ -1289,7 +1271,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.ORM.flush( options.datasource );
+					getOrm().flush( options.datasource );
 				}
 
 				return count;
@@ -1307,9 +1289,9 @@ component accessors="true" {
 	 * The method returns the count of deleted entities.
 	 * Transactions are used if useTransactions bit is set or the transactional argument is passed
 	 *
-	 * @entityName The entity name target
-	 * @id The single id or an array of Ids to delete
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @entityName    The entity name target
+	 * @id            The single id or an array of Ids to delete
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
 	numeric function deleteByID(
@@ -1323,19 +1305,14 @@ component accessors="true" {
 				// Bulk Execute
 				var count = ormExecuteQuery(
 					"delete FROM #arguments.entityName# where id in (:idlist)",
-					{
-						"idlist" : idCast(
-							entity = arguments.entityName,
-							id     = arguments.id
-						)
-					},
+					{ "idlist" : idCast( entity = arguments.entityName, id = arguments.id ) },
 					false,
-					{ "datasource" : variables.ORM.getEntityDatasource( arguments.entityName ) }
+					{ "datasource" : getOrm().getEntityDatasource( arguments.entityName ) }
 				);
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.ORM.flush( datasource );
+					getOrm().flush( datasource );
 				}
 
 				return count;
@@ -1350,11 +1327,11 @@ component accessors="true" {
 	 *
 	 * So you can do <code>deleteByQuery( "from categories where id = :id" )</code>
 	 *
-	 * @query The query to use for deletion
-	 * @params The params to bind the query with
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @query         The query to use for deletion
+	 * @params        The params to bind the query with
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
-	 * @datasource Add the datasource to use or defaults
+	 * @datasource    Add the datasource to use or defaults
 	 */
 	numeric function deleteByQuery(
 		required string query,
@@ -1375,7 +1352,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.ORM.flush( datasource );
+					getOrm().flush( datasource );
 				}
 
 				return count;
@@ -1395,10 +1372,10 @@ component accessors="true" {
 	 * deleteWhere(entityName="User",age="4",isActive=true);
 	 * </pre>
 	 *
-	 * @entityName The entity name to target
-	 * @flush Do a flush after deleting, false by default since we use transactions
+	 * @entityName    The entity name to target
+	 * @flush         Do a flush after deleting, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
-	 * @datasource The datasource to use or the default one
+	 * @datasource    The datasource to use or the default one
 	 */
 	numeric function deleteWhere(
 		required string entityName,
@@ -1427,12 +1404,7 @@ component accessors="true" {
 				var params = arguments
 					// filter out reserved names
 					.filter( function( key, value ){
-						return (
-							!listFindNoCase(
-								"entityName,flush,datasource",
-								arguments.key
-							)
-						);
+						return ( !listFindNoCase( "entityName,flush,datasource", arguments.key ) );
 					} )
 					.reduce( function( accumulator, key, value ){
 						accumulator[ key ] = value;
@@ -1475,9 +1447,9 @@ component accessors="true" {
 	/**
 	 * Saves an array of passed entities in specified order in a single transaction block
 	 *
-	 * @entities An array of entities to save
-	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
-	 * @flush Do a flush after saving the entries, false by default since we use transactions
+	 * @entities      An array of entities to save
+	 * @forceInsert   Defaults to false, but if true, will insert as new record regardless
+	 * @flush         Do a flush after saving the entries, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 */
 	BaseORMService function saveAll(
@@ -1508,7 +1480,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.orm.flush( getDatasource() );
+					getOrm().flush( getDatasource() );
 				}
 
 				return this;
@@ -1521,9 +1493,9 @@ component accessors="true" {
 	/**
 	 * Save an entity using hibernate transactions or not. You can optionally flush the session also
 	 *
-	 * @entity The entity to save
-	 * @forceInsert Defaults to false, but if true, will insert as new record regardless
-	 * @flush Do a flush after saving the entity, false by default since we use transactions
+	 * @entity        The entity to save
+	 * @forceInsert   Defaults to false, but if true, will insert as new record regardless
+	 * @flush         Do a flush after saving the entity, false by default since we use transactions
 	 * @transactional Wrap it in a `cftransaction`, defaults to true
 	 *
 	 * @return saved entity or array of entities
@@ -1545,14 +1517,11 @@ component accessors="true" {
 				}
 
 				// save
-				entitySave(
-					arguments.entity,
-					arguments.forceInsert
-				);
+				entitySave( arguments.entity, arguments.forceInsert );
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					variables.orm.flush( variables.orm.getEntityDatasource( arguments.entity ) );
+					getOrm().flush( getOrm().getEntityDatasource( arguments.entity ) );
 				}
 
 				// Event Handling? If enabled, call the postSave() interception
@@ -1575,15 +1544,15 @@ component accessors="true" {
 	 * Checks if the given entityName and id exists in the database, this method does not load the entity into session
 	 *
 	 * @entityName The name of the entity
-	 * @id The id to lookup
+	 * @id         The id to lookup
 	 */
 	boolean function exists( required entityName, required any id ){
 		// Do it DLM style
 		var count = ormExecuteQuery(
-			"select count( id ) from #arguments.entityName# where id = ?",
-			[ arguments.id ],
+			"select count( id ) from #arguments.entityName# where id = :id",
+			{ id : arguments.id },
 			true,
-			{ datasource : variables.ORM.getEntityDatasource( arguments.entityName ) }
+			{ datasource : getOrm().getEntityDatasource( arguments.entityName ) }
 		);
 
 		return ( count gt 0 );
@@ -1595,8 +1564,8 @@ component accessors="true" {
 	 * Ex: <code>count('User','age > ? AND name = ?',[40,"joe"])</code>
 	 *
 	 * @entityName The name of the entity
-	 * @where The HQL where statement
-	 * @params Any params to bind in the where argument
+	 * @where      The HQL where statement
+	 * @params     Any params to bind in the where argument
 	 */
 	numeric function count(
 		required string entityName,
@@ -1604,7 +1573,7 @@ component accessors="true" {
 		any params   = structNew()
 	){
 		var buffer  = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-		var options = { "datasource" : variables.orm.getEntityDatasource( arguments.entityName ) };
+		var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
 
 
 		// Caching?
@@ -1649,7 +1618,7 @@ component accessors="true" {
 		var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
 			"select count(id) from #arguments.entityName#"
 		);
-		var options = { datasource : variables.orm.getEntityDatasource( arguments.entityName ) };
+		var options = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
 
 		// Do we have arguments?
 		if ( structCount( arguments ) > 1 ) {
@@ -1679,12 +1648,7 @@ component accessors="true" {
 
 		// execute query as unique for the count
 		try {
-			return ormExecuteQuery(
-				sqlBuffer.toString(),
-				params,
-				true,
-				options
-			);
+			return ormExecuteQuery( sqlBuffer.toString(), params, true, options );
 		} catch ( "java.lang.NullPointerException" e ) {
 			throw(
 				message = "A null pointer exception occurred when running the query",
@@ -1704,9 +1668,9 @@ component accessors="true" {
 	 * Evict all the collection or association data for a given entity name and collection name from the secondary cache ONLY, not the hibernate session
 	 * Evict an entity name with or without an ID from the secondary cache ONLY, not the hibernate session
 	 *
-	 * @entityName The entity name to evict or use in the eviction process
+	 * @entityName   The entity name to evict or use in the eviction process
 	 * @relationName The name of the relation in the entity to evict
-	 * @id The id to use for eviction according to entity name or relation name
+	 * @id           The id to use for eviction according to entity name or relation name
 	 */
 	any function evictCollection(
 		required string entityName,
@@ -1721,10 +1685,7 @@ component accessors="true" {
 					arguments.relationName,
 					arguments.id
 				);
-			else ormEvictCollection(
-					arguments.entityName,
-					arguments.relationName
-				);
+			else ormEvictCollection( arguments.entityName, arguments.relationName );
 
 			return this;
 		}
@@ -1750,7 +1711,7 @@ component accessors="true" {
 		}
 
 		arguments.entities.each( function( item ){
-			variables.ORM.getSession( variables.orm.getEntityDatasource( item ) ).evict( item );
+			getOrm().getSession( getOrm().getEntityDatasource( item ) ).evict( item );
 		} );
 
 		return this;
@@ -1759,14 +1720,11 @@ component accessors="true" {
 	/**
 	 * Evict all queries in the default cache or the cache region passed
 	 *
-	 * @cacheName The cache region to evict from or if empty from the default cache region
+	 * @cacheName  The cache region to evict from or if empty from the default cache region
 	 * @datasource The specific datasource to use or the default datasource
 	 */
-	BaseORMService function evictQueries(
-		string cacheName,
-		string datasource = getDatasource()
-	){
-		variables.orm.evictQueries( argumentCollection = arguments );
+	BaseORMService function evictQueries( string cacheName, string datasource = getDatasource() ){
+		getOrm().evictQueries( argumentCollection = arguments );
 		return this;
 	}
 
@@ -1781,7 +1739,7 @@ component accessors="true" {
 	 * @datasource The datasource to use
 	 */
 	BaseORMService function clear( string datasource = getDatasource() ){
-		variables.ORM.clearSession( arguments.datasource );
+		getOrm().clearSession( arguments.datasource );
 		return this;
 	}
 
@@ -1789,7 +1747,7 @@ component accessors="true" {
 	 * Checks if the hibernate session contains dirty objects that are awaiting persistence
 	 */
 	boolean function isSessionDirty( string datasource = getDatasource() ){
-		return variables.orm.getSession( arguments.datasource ).isDirty();
+		return getOrm().getSession( arguments.datasource ).isDirty();
 	}
 
 	/**
@@ -1798,13 +1756,10 @@ component accessors="true" {
 	 * @entity The entity object
 	 */
 	boolean function sessionContains( required any entity ){
-		var ormSession = orm.getSession( orm.getEntityDatasource( arguments.entity ) );
-		// ACF 2018 regression
-		if ( server.coldfusion.productVersion.listFirst() == 2018 ) {
-			return ormSession.contains(
-				getEntityGivenName( arguments.entity ),
-				arguments.entity
-			);
+		var ormSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
+		// Hibernate 5 Approach: left( getOrm().getHibernateVersion(), 1 ) > 5
+		if ( server.coldfusion.productVersion.listFirst() >= 2018 ) {
+			return ormSession.contains( getEntityGivenName( arguments.entity ), arguments.entity );
 		}
 		return ormSession.contains( arguments.entity );
 	}
@@ -1815,7 +1770,7 @@ component accessors="true" {
 	 * @datasource The datasource to use
 	 */
 	struct function getSessionStatistics( string datasource = getDatasource() ){
-		var stats = variables.ORM.getSession( arguments.datasource ).getStatistics();
+		var stats = getOrm().getSession( arguments.datasource ).getStatistics();
 
 		return {
 			"collectionCount" : stats.getCollectionCount(),
@@ -1848,10 +1803,7 @@ component accessors="true" {
 	 * Else it throws a method does not exist exception
 	 * @throws MissingMethodException
 	 */
-	any function onMissingMethod(
-		string missingMethodName,
-		struct missingMethodArguments
-	){
+	any function onMissingMethod( string missingMethodName, struct missingMethodArguments ){
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
 
@@ -1915,11 +1867,11 @@ process(
 	/**
 	 * Get a brand new criteria builder object
 	 *
-	 * @entityName The name of the entity to bind this criteria query to
-	 * @useQueryCaching Activate query caching for the list operations
+	 * @entityName       The name of the entity to bind this criteria query to
+	 * @useQueryCaching  Activate query caching for the list operations
 	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
-	 * @defaultAsQuery To return results as queries or array of objects or reports, default is array as results might not match entities precisely
-	 * @dataSource The datasource to bind the criteria query on, defaults to the one in this ORM service
+	 * @defaultAsQuery   To return results as queries or array of objects or reports, default is array as results might not match entities precisely
+	 * @dataSource       The datasource to bind the criteria query on, defaults to the one in this ORM service
 	 *
 	 * @return cborm.models.criterion.CriteriaBuilder
 	 */
@@ -1944,9 +1896,33 @@ process(
 	/*****************************************************************************************/
 
 	/**
+	 * Get property values for the given entity.
+	 *
+	 * @ormSession        the current ORM session. Will (probably) throw an exception if session is not open.
+	 * @hibernateMetadata a `ClassMetadata` Hibernate object populated with entity meta. See `getEntityMetadata`
+	 * @entity            The entity to retrieve property values on.
+	 *
+	 * @see https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
+	 */
+	private function getPropertyValues(
+		required ormSession,
+		required hibernateMetadata,
+		required entity
+	){
+		if ( val( left( getOrm().getHibernateVersion(), 3 ) ) < 4.0 ) {
+			return arguments.hibernateMetadata.getPropertyValues(
+				arguments.entity,
+				getOrm().getSessionEntityMode( arguments.ormSession, arguments.entity )
+			);
+		} else {
+			return arguments.hibernateMetadata.getPropertyValues( arguments.entity );
+		}
+	}
+
+	/**
 	 * My hibernate safe transaction closure wrapper, Transactions are per request basis
 	 *
-	 * @target The closure or UDF to execute
+	 * @target        The closure or UDF to execute
 	 * @argCollection The arguments
 	 * @transactional Whether to apply the transactions or not.
 	 */
@@ -1956,10 +1932,7 @@ process(
 		boolean transactional = getUseTransactions()
 	){
 		// Clean up the arg collection
-		structDelete(
-			arguments.argCollection,
-			"transactional"
-		);
+		structDelete( arguments.argCollection, "transactional" );
 
 		// If in transaction, just execute the incoming target
 		if ( request.keyExists( "cbox_aop_transaction" ) OR !arguments.transactional ) {

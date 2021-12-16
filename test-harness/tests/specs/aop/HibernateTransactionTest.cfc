@@ -1,7 +1,7 @@
 /**
  * Skipping on ACF2018 due to a Hibernate but in 5.2.  Uncomment once they update Hibernate to 5.3+
  */
-component extends="tests.resources.BaseTest" skip="isCF2018" {
+component extends="tests.resources.BaseTest" skip="isCF2018Plus" {
 
 	function setup(){
 		super.setup();
@@ -15,11 +15,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018" {
 
 	function testInvokeMethodInTransaction(){
 		// default Datasource mock
-		var md = {
-			name          : "save",
-			access        : "public",
-			transactional : ""
-		};
+		var md         = { name : "save", access : "public", transactional : "" };
 		// mock invocation
 		mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )
@@ -43,11 +39,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018" {
 
 	function testInvokeMethodNotInTransaction(){
 		// default Datasource mock
-		var md = {
-			name          : "save",
-			access        : "public",
-			transactional : ""
-		};
+		var md         = { name : "save", access : "public", transactional : "" };
 		// mock invocation
 		mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )
