@@ -751,12 +751,19 @@ component accessors="true" {
 		var partialSQL = "";
 		projection.sql = "";
 		// if multiple subqueries have been specified, smartly separate them out into a sql string that will work
-		for ( var x = 1; x <= listLen( arguments.rawProjection.sql ); x++ ) {
-			partialSQL     = listGetAt( arguments.rawProjection.sql, x );
-			partialSQL     = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
-			partialSQL     = partialSQL & " as #listGetAt( arguments.rawProjection.alias, x )#";
+		if ( listLen( arguments.rawProjection.sql ) > 1 && listLen( arguments.rawProjection.alias ) > 1 ) {
+			for ( var x = 1; x <= listLen( arguments.rawProjection.sql ); x++ ) {
+				partialSQL     = listGetAt( arguments.rawProjection.sql, x );
+				partialSQL     = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
+				partialSQL     = partialSQL & " as #listGetAt( arguments.rawProjection.alias, x )#";
+				projection.sql = listAppend( projection.sql, partialSQL );
+			}
+		} else {
+			partialSQL     = arguments.rawProjection.sql;
+			partialSQL     = partialSQL & " as #arguments.rawProjection.alias#";
 			projection.sql = listAppend( projection.sql, partialSQL );
 		}
+		
 		// get all aliases
 		projection.alias = listToArray( arguments.rawProjection.alias );
 		// if there is a grouping spcified, add it to structure
