@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [v3.5.0] => 2021-AUG
+## [v3.5.1] => 2022-JAN-10
+
+### Fixed
+
+* Removed usage of interface on DSL. Causes more issues than anything with multiple engines.
+
+----
+
+## [v3.5.0] => 2021-DEC-16
 
 ### Fixed
 
