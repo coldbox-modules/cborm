@@ -45,6 +45,7 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		entitySave( user );
 		ormFlush();
 		entityDelete( user );
+		ormFlush();
 
 		assertTrue( called );
 		variables.interceptorService.unregister( "closure-ORMPreDelete-#hash( listener.toString() )#" );
@@ -64,7 +65,6 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 			var user = entityNew(
 				"User",
 				{
-					id        : createUUID(),
 					firstName : "Michael",
 					lastName  : "Born",
 					username  : "mbourne",
@@ -96,7 +96,6 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		var user = entityNew(
 			"User",
 			{
-				id        : createUUID(),
 				firstName : "Michael",
 				lastName  : "Born",
 				username  : "mbourne",
@@ -104,10 +103,11 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 			}
 		);
 		entitySave( user );
-		ormFlush();
+		ormFlush(); // flushing throws 'Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)'
 		var entity = entityLoadByPK( "User", user.getId() );
 		entity.setPassword( "m0r3S3cr3tP@ssW0RD" );
 		entitySave( entity );
+		ormFlush();
 		assertTrue( called );
 		variables.interceptorService.unregister( "closure-ORMPreUpdate-#hash( listener.toString() )#" );
 	}
@@ -124,7 +124,6 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		var user = entityNew(
 			"User",
 			{
-				id        : createUUID(),
 				firstName : "Michael",
 				lastName  : "Born",
 				username  : "mbourne",
@@ -135,6 +134,7 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		ormFlush();
 		user.setPassword( "m0r3S3cr3tP@ssW0RD" );
 		entitySave( user );
+		ormFlush();
 		assertTrue( called );
 		variables.interceptorService.unregister( "closure-ORMPostUpdate-#hash( listener.toString() )#" );
 	}
