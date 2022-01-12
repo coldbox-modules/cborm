@@ -763,7 +763,7 @@ component accessors="true" {
 			partialSQL     = partialSQL & " as #arguments.rawProjection.alias#";
 			projection.sql = listAppend( projection.sql, partialSQL );
 		}
-		
+
 		// get all aliases
 		projection.alias = listToArray( arguments.rawProjection.alias );
 		// if there is a grouping spcified, add it to structure
