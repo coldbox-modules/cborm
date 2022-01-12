@@ -18,14 +18,14 @@
  * <pre>
  * component extends="BaseOrmResource"{
  *
- * 		// Inject the correct virtual entity service to use
- * 		property name="ormService" inject="RoleService"
- * 		property name="ormService" inject="entityService:Permission"
+ * // Inject the correct virtual entity service to use
+ * property name="ormService" inject="RoleService"
+ * property name="ormService" inject="entityService:Permission"
  *
- * 		// The default sorting order string: permission, name, data desc, etc.
- * 		variables.sortOrder = "";
- * 		// The name of the entity this resource handler controls. Singular name please.
- * 		variables.entity 	= "Permission";
+ * // The default sorting order string: permission, name, data desc, etc.
+ * variables.sortOrder = "";
+ * // The name of the entity this resource handler controls. Singular name please.
+ * variables.entity 	= "Permission";
  * }
  * </pre>
  *
@@ -57,37 +57,37 @@ component extends="coldbox.system.RestHandler" {
 	/**
 	 * Display all resource records with pagination
 	 *
-	 * @param-includes {
-	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-excludes {
-	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-ignoreDefaults {
-	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * "description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "boolean", "default" : false }
 	 * }
-	 * @param-sortOrder {
-	 * 	"description" : "The sorting string to use via the orm services",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "The sorting string to use via the orm services",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-page {
-	 * 	"description" : "The page to retrieve using pagination"
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "integer", "default" : 1 }
+	 * "description" : "The page to retrieve using pagination"
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "integer", "default" : 1 }
 	 * }
 	 *
+	 * @param    -includes {
+	 * @param    -excludes {
+	 * @param    -ignoreDefaults {
+	 * @param    -sortOrder {
+	 * @param    -page {
 	 * @criteria If you pass a criteria object, then we will use that instead of creating a new one
 	 * @results  If you pass in a results struct, it must contain the following keys: { count:numeric, records: array of objects }
 	 *
@@ -177,25 +177,25 @@ component extends="coldbox.system.RestHandler" {
 	 * Composition of ORM relationships is on by default (populate.composeRelationships)
 	 * This method calls the `save()` method on the orm service, unless you override it
 	 *
-	 * @param-includes {
-	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-excludes {
-	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-ignoreDefaults {
-	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * "description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "boolean", "default" : false }
 	 * }
 	 *
+	 * @param      -includes {
+	 * @param      -excludes {
+	 * @param      -ignoreDefaults {
 	 * @populate   Population arguments
 	 * @validate   Validation arguments
 	 * @saveMethod Defaults to `save()`
@@ -255,30 +255,31 @@ component extends="coldbox.system.RestHandler" {
 	/**
 	 * Show a resource using the id
 	 *
-	 * @param-includes {
-	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-excludes {
-	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-ignoreDefaults {
-	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * "description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "boolean", "default" : false }
 	 * }
-	 * @param-id {
-	 * 	"description" : "The id to use to retrieve the entity."
-	 * 	"in" : "path",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : 0 }
+	 * "description" : "The id to use to retrieve the entity."
+	 * "in" : "path",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : 0 }
 	 * }
+	 *
+	 * @param -includes {
+	 * @param -excludes {
+	 * @param -ignoreDefaults {
+	 * @param -id {
 	 */
 	function show( event, rc, prc ){
 		param rc.includes       = "";
@@ -311,31 +312,31 @@ component extends="coldbox.system.RestHandler" {
 	/**
 	 * Update a resource using an id
 	 *
-	 * @param-includes {
-	 * 	"description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to include in the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-excludes {
-	 * 	"description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : "" }
+	 * "description" : "A comma delimitted list of properties to exclude from the final representation leveraging the mementifier module. Nested properties are supported.",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : "" }
 	 * }
-	 * @param-ignoreDefaults {
-	 * 	"description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
-	 * 	"in" : "query",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "boolean", "default" : false }
+	 * "description" : "A boolean indicator if we use default includes/excludes in the memento of the entity or JUST the passed in includes/excludes params.  Default is false",
+	 * "in" : "query",
+	 * "required" : false,
+	 * "schema" : { "type" : "boolean", "default" : false }
 	 * }
-	 * @param-id {
-	 * 	"description" : "The id to use to retrieve the entity."
-	 * 	"in" : "path",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : 0 }
+	 * "description" : "The id to use to retrieve the entity."
+	 * "in" : "path",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : 0 }
 	 * }
 	 *
+	 * @param    -includes {
+	 * @param    -excludes {
+	 * @param    -ignoreDefaults {
+	 * @param    -id {
 	 * @populate Population arguments
 	 * @validate Validation arguments
 	 */
@@ -395,13 +396,13 @@ component extends="coldbox.system.RestHandler" {
 	/**
 	 * Delete a resource
 	 *
-	 * @param-id {
-	 * 	"description" : "The id to use to retrieve the entity."
-	 * 	"in" : "path",
-	 * 	"required" : false,
-	 * 	"schema" : { "type" : "string", "default" : 0 }
+	 * "description" : "The id to use to retrieve the entity."
+	 * "in" : "path",
+	 * "required" : false,
+	 * "schema" : { "type" : "string", "default" : 0 }
 	 * }
 	 *
+	 * @param        -id {
 	 * @deleteMethod The method used for deleting, we default to delete()
 	 */
 	function delete(

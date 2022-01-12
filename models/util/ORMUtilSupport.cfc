@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano & Mike McKellip
  *
  * An agnostic CFML Engine utility class
+ *
+ * @author Luis Majano & Mike McKellip
  */
 component {
 
@@ -20,8 +21,8 @@ component {
 		 * @see https://access.redhat.com/solutions/29774
 		 * @see https://michaelborn.me/entry/resolving-concurrent-exceptions-in-hibernate-logger
 		 */
-		var Logger = createObject( "java", "org.apache.log4j.Logger" );
-		var log4jLevel = createObject( "java", "org.apache.log4j.Level" );
+		var Logger       = createObject( "java", "org.apache.log4j.Logger" );
+		var log4jLevel   = createObject( "java", "org.apache.log4j.Level" );
 		var hibernateLog = Logger.getLogger( "org.hibernate" );
 		hibernateLog.setLevel( log4jLevel[ arguments.level ] );
 
@@ -29,11 +30,14 @@ component {
 		 * Redirect all Hibernate logs to system.out
 		 */
 		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-			var printWriter = getPageContext().getConfig().getOutWriter();
-			var layout = createObject( "java", "lucee.commons.io.log.log4j.layout.ClassicLayout");
-			var consoleAppender = createObject( "java", "lucee.commons.io.log.log4j.appender.ConsoleAppender" ).init( printWriter, layout );
+			var printWriter     = getPageContext().getConfig().getOutWriter();
+			var layout          = createObject( "java", "lucee.commons.io.log.log4j.layout.ClassicLayout" );
+			var consoleAppender = createObject( "java", "lucee.commons.io.log.log4j.appender.ConsoleAppender" ).init(
+				printWriter,
+				layout
+			);
 			hibernateLog.addAppender( consoleAppender );
-			writeDump( var="** Lucee Hibernate Logging Redirected", output='console' );
+			writeDump( var = "** Lucee Hibernate Logging Redirected", output = "console" );
 		}
 	}
 
@@ -163,8 +167,8 @@ component {
 
 	/**
 	 * Get an entity's metadata from hibernate
-	 * @see https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/SessionFactory.html
 	 *
+	 * @see        https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/SessionFactory.html
 	 * @entityName The entity name
 	 * @datasource The datasource string to use for the lookup
 	 *

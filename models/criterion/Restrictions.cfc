@@ -105,7 +105,7 @@ component singleton {
 	/**
 	 * Where one property must equal another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function eqProperty( required string property, required string otherProperty ){
@@ -115,7 +115,7 @@ component singleton {
 	/**
 	 * Where a property is greater than a particular value, you can also use gt()
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function isGt( required string property, required any propertyValue ){
@@ -125,7 +125,7 @@ component singleton {
 	/**
 	 * Where a one property must be greater than another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function gtProperty( required string property, required string otherProperty ){
@@ -135,7 +135,7 @@ component singleton {
 	/**
 	 * Where a property is greater than or equal to a particular value, you can also use ge()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isGe( required string property, required any propertyValue ){
@@ -145,7 +145,7 @@ component singleton {
 	/**
 	 * Where a one property must be greater than or equal to another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function geProperty( required string property, required string otherProperty ){
@@ -155,7 +155,7 @@ component singleton {
 	/**
 	 * Where an objects id equals the specified value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function idEQ( required any propertyValue ){
@@ -172,7 +172,7 @@ component singleton {
 	/**
 	 * Where a property is contained within the specified list of values, the property value can be a collection (struct) or array or list, you can also use in()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isIn( required string property, required any propertyValue ){
@@ -211,7 +211,7 @@ component singleton {
 	/**
 	 * Where a property is not null
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isNotNull( required string property ){
@@ -221,7 +221,7 @@ component singleton {
 	/**
 	 * Where a property is less than a particular value, you can also use lt()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function islt( required string property, required any propertyValue ){
@@ -231,7 +231,7 @@ component singleton {
 	/**
 	 * Where a one property must be less than another
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function ltProperty( required string property, required string otherProperty ){
@@ -241,7 +241,7 @@ component singleton {
 	/**
 	 * Where a property is less than or equal a particular value, you can also use le()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isle( required string property, required any propertyValue ){
@@ -251,7 +251,7 @@ component singleton {
 	/**
 	 * Where a one property must be less than or equal to another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function leProperty( required string property, required string otherProperty ){
@@ -261,7 +261,7 @@ component singleton {
 	/**
 	 * Equivalent to SQL like expression
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function like( required string property, required string propertyValue ){
@@ -271,7 +271,7 @@ component singleton {
 	/**
 	 * Where a property does not equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function ne( required string property, required any propertyValue ){
@@ -281,7 +281,7 @@ component singleton {
 	/**
 	 * Where one property does not equal another
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function neProperty( required string property, required any otherProperty ){
@@ -291,7 +291,7 @@ component singleton {
 	/**
 	 * Where a collection property's size equals a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeEq( required string property, required any propertyValue ){
@@ -301,7 +301,7 @@ component singleton {
 	/**
 	 * Where a collection property's size is greater than a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeGT( required string property, required any propertyValue ){
@@ -311,7 +311,7 @@ component singleton {
 	/**
 	 * Where a collection property's size is greater than or equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeGE( required string property, required any propertyValue ){
@@ -321,7 +321,7 @@ component singleton {
 	/**
 	 * Where a collection property's size is less than a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeLT( required string property, required any propertyValue ){
@@ -331,7 +331,7 @@ component singleton {
 	/**
 	 * Where a collection property's size is less than or equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeLE( required string property, required any propertyValue ){
@@ -341,7 +341,7 @@ component singleton {
 	/**
 	 * Where a collection property's size is not equal to a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeNE( required string property, required any propertyValue ){
@@ -431,9 +431,8 @@ component singleton {
 	 * Use arbitrary SQL to modify the resultset
 	 *
 	 * @deprecated Use the `sql()` function instead
-	 *
-	 * @sql    The sql to execute, it can contain parameters via positional `?` placeholders
-	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
+	 * @sql        The sql to execute, it can contain parameters via positional `?` placeholders
+	 * @params     This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
 	any function sqlRestriction( required string sql, array params = [] ){
 		return this.sql( argumentCollection = arguments );
@@ -503,7 +502,7 @@ component singleton {
 	/**
 	 * If a method does not exist, we will try to match it to a Hibernate native function, if not an exception is thrown
 	 *
-	 * @missingMethodName
+	 * @missingMethodName     
 	 * @missingMethodArguments
 	 *
 	 * @throws RuntimeException

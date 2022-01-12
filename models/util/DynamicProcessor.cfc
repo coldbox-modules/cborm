@@ -77,7 +77,7 @@ component accessors="true" singleton {
 	 * @isCounting Are finding or counting
 	 * @ormService The target orm service making the call
 	 *
-	 * @throws NonUniqueResultException, HQLQueryException
+	 * @throws NonUniqueResultException , HQLQueryException
 	 */
 	any function process(
 		string method,

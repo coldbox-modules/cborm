@@ -232,7 +232,6 @@ component accessors="true" {
 	 * The method returns a coverted array of ID's
 	 *
 	 * @deprecated In favor of `idCast()`
-	 *
 	 * @entityName The entity name
 	 * @id         The id value to convert
 	 */
@@ -244,8 +243,7 @@ component accessors="true" {
 	/**
 	 * Coverts a value to the correct javaType for the property passed in
 	 *
-	 * @deprecated In favor of `autoCast()`
-	 *
+	 * @deprecated   In favor of `autoCast()`
 	 * @entityName   The entity name or entity object
 	 * @propertyName The property name
 	 * @value        The property value
@@ -486,7 +484,7 @@ component accessors="true" {
 	 *
 	 * @entityName The name of the entity to retrieve
 	 * @id         An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
-	 * @returnNew By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
+	 * @returnNew  By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
 	 *
 	 * @return Requested entity, new entity or `null`
 	 */
@@ -703,7 +701,6 @@ component accessors="true" {
 	 * @entityName The entity to search for
 	 * @criteria   The filtering criteria to search for.
 	 * @sortOrder  The sorting order
-	 *
 	 */
 	array function findAllWhere(
 		required string entityName,
@@ -1001,6 +998,7 @@ component accessors="true" {
 
 	/**
 	 * Merge an entity or array of entities back into a session
+	 *
 	 * @entity A single or an array of entities to re-merge
 	 *
 	 * @return Same entity if one passed, array if an array of entities passed.
@@ -1162,8 +1160,7 @@ component accessors="true" {
 	/**
 	 * Get an entity's hibernate metadata
 	 *
-	 * @see https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/metadata/ClassMetadata.html
-	 *
+	 * @see    https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/metadata/ClassMetadata.html
 	 * @entity The entity name or entity object
 	 *
 	 * @return The Hibernate Java ClassMetadata Object
@@ -1801,6 +1798,7 @@ component accessors="true" {
 	 * - autoCast:boolean (true)
 	 *
 	 * Else it throws a method does not exist exception
+	 *
 	 * @throws MissingMethodException
 	 */
 	any function onMissingMethod( string missingMethodName, struct missingMethodArguments ){
@@ -1901,8 +1899,7 @@ process(
 	 * @ormSession        the current ORM session. Will (probably) throw an exception if session is not open.
 	 * @hibernateMetadata a `ClassMetadata` Hibernate object populated with entity meta. See `getEntityMetadata`
 	 * @entity            The entity to retrieve property values on.
-	 *
-	 * @see https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
+	 * @see               https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
 	 */
 	private function getPropertyValues(
 		required ormSession,
