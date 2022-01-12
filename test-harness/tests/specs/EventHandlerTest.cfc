@@ -139,4 +139,77 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		variables.interceptorService.unregister( "closure-ORMPostUpdate-#hash( listener.toString() )#" );
 	}
 
+	function testORMEvict(){
+		var called   = false;
+		var listener = function( interceptData ){
+			called = true;
+			$assert.key( interceptData, "entity" );
+			$assert.typeOf( "component", interceptData.entity );
+		};
+		variables.interceptorService.listen( listener, "ORMEvict" );
+
+		var user = entityNew(
+			"User",
+			{
+				firstName : "Michael",
+				lastName  : "Born",
+				username  : "mbourne",
+				password  : "007"
+			}
+		);
+		entitySave( user );
+		ormEvictEntity( "User", user.getId() );
+		assertTrue( called );
+		variables.interceptorService.unregister( "closure-ORMEvict-#hash( listener.toString() )#" );
+	}
+
+	function testORMClear(){
+		var called   = false;
+		var listener = function( interceptData ){
+			called = true;
+			$assert.key( interceptData, "entity" );
+			$assert.typeOf( "component", interceptData.entity );
+		};
+		variables.interceptorService.listen( listener, "ORMClear" );
+
+		var user = entityNew( "User" );
+		ormClearSession();
+		assertTrue( called );
+		variables.interceptorService.unregister( "closure-ORMClear-#hash( listener.toString() )#" );
+	}
+
+	function testORMFlush(){
+		var called   = false;
+		var listener = function( interceptData ){
+			called = true;
+			$assert.key( interceptData, "entity" );
+			$assert.typeOf( "component", interceptData.entity );
+		};
+		variables.interceptorService.listen( listener, "ORMFlush" );
+
+		var user = entityNew(
+			"User",
+			{
+				firstName : "Michael",
+				lastName  : "Born",
+				username  : "mbourne",
+				password  : "007"
+			}
+		);
+		entitySave( user );
+		ormFlush();
+		assertTrue( called );
+		variables.interceptorService.unregister( "closure-ORMFlush-#hash( listener.toString() )#" );
+	}
+
+	function onDirtyCheck(){
+		// TODO: Implement me
+		assertTrue( false );
+	}
+
+	function testORMAutoFlush(){
+		// TODO: Implement me
+		assertTrue( false );
+	}
+
 }
