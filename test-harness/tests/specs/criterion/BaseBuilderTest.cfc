@@ -176,8 +176,8 @@ component extends="tests.resources.BaseTest" {
 						property : "id"
 					},
 					{
-						sql      : "DATEDIFF('2021-12-31 23:59:59','2021-12-30')",
-						group    : "DATEDIFF('2021-12-31 23:59:59','2021-12-30')",
+						sql      : "dateDiff('2021-12-31 23:59:59','2021-12-30')",
+						group    : "dateDiff('2021-12-31 23:59:59','2021-12-30')",
 						alias    : "someDateDiff",
 						property : "id"
 					}
