@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.7.0] => 2022-JAN-13
+
+### Added
+
+* [CBORM-29](https://ortussolutions.atlassian.net/browse/CBORM-29) Allow SQL projections to be functions containing commas
+
+----
+
+## [v3.6.0] => 2022-JAN-10
+
+### Added
+
+* Removed usage of interface on DSL. Causes more issues than anything with multiple engines.
+
+### Changed
+
+* Renamed default object DSL
+
+----
+
 ## [v3.5.1] => 2022-JAN-10
 
 ### Fixed

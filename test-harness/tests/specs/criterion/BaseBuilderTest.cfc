@@ -136,11 +136,19 @@ component extends="tests.resources.BaseTest" {
 				rowCount = true,
 				max      = "lastLogin"
 			)
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
 			.list();
 
 		assertTrue( isArray( r ) );
 
-		r = criteria.withProjections( property = "firstName,lastName" ).list();
+		r = criteria
+			.withProjections( property = "firstName,lastName" )
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
+			.list();
 
 		assertTrue( isArray( r ) );
 
@@ -150,6 +158,9 @@ component extends="tests.resources.BaseTest" {
 					criteria.createSubcriteria( "Role", "Role1" ).withProjections( count = "Role1.role:Role" )
 				]
 			)
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
 			.list();
 		assertTrue( isArray( r ) );
 
@@ -183,8 +194,13 @@ component extends="tests.resources.BaseTest" {
 					}
 				]
 			)
+			.asStruct()
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
 			.list()
 
+		debug( r );
 		assertTrue( isArray( r ) );
 	}
 
