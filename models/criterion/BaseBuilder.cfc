@@ -544,7 +544,7 @@ component accessors="true" {
 	 * Returns the SQL string that will be prepared for the criteria object at the time of request
 	 *
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
-	 * @formatSql Format the SQL to execute
+	 * @formatSql           Format the SQL to execute
 	 */
 	string function getSQL( required boolean returnExecutableSql = false, required boolean formatSql = true ){
 		return variables.SQLHelper.getSQL( argumentCollection = arguments );
@@ -584,7 +584,7 @@ component accessors="true" {
 	 * Triggers CriteriaBuilder to start internally logging the state of SQL at each iterative build
 	 *
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
-	 * @formatSql Format the SQL to execute
+	 * @formatSql           Format the SQL to execute
 	 */
 	BaseBuilder function startSqlLog( boolean returnExecutableSql = false, boolean formatSql = false ){
 		variables.SQLHelper.setReturnExecutableSql( arguments.returnExecutableSql );
@@ -625,11 +625,11 @@ component accessors="true" {
 	 *
 	 * <pre>
 	 * newCriteria()
-	 * 	.eq( "this", value )
-	 *  .peek( (criteria) => {
-	 * 		systemOutput( "CurrentSQL: #criteria.getSQLLog()#" )
-	 *  })
-	 *  .list()
+	 * .eq( "this", value )
+	 * .peek( (criteria) => {
+	 * systemOutput( "CurrentSQL: #criteria.getSQLLog()#" )
+	 * })
+	 * .list()
 	 * </pre>
 	 *
 	 * @target The closure to peek into, it receives the current criteria as the argument
@@ -645,19 +645,19 @@ component accessors="true" {
 	 *
 	 * <pre>
 	 * newCriteria()
-	 * 	.when( isBoolean( arguments.isPublished ), function( c ){
-	 * 		// Published bit
-	 *		c.isEq( "isPublished", isPublished );
-	 *		// Published eq true evaluate other params
-	 *		if( isPublished ){
-	 *			c.isLt( "publishedDate", now() )
-	 *			.$or( c.restrictions.isNull( "expireDate" ), c.restrictions.isGT( "expireDate", now() ) )
-	 *			.isEq( "passwordProtection","" );
-	 *		}
-	 *  } )
-	 * 	.when( !isNull( arguments.showInSearch ), function( criteria ){
-	 * 		c.isEq( "showInSearch", showInSearch );
-	 *  } )
+	 * .when( isBoolean( arguments.isPublished ), function( c ){
+	 * // Published bit
+	 * c.isEq( "isPublished", isPublished );
+	 * // Published eq true evaluate other params
+	 * if( isPublished ){
+	 * c.isLt( "publishedDate", now() )
+	 * .$or( c.restrictions.isNull( "expireDate" ), c.restrictions.isGT( "expireDate", now() ) )
+	 * .isEq( "passwordProtection","" );
+	 * }
+	 * } )
+	 * .when( !isNull( arguments.showInSearch ), function( criteria ){
+	 * c.isEq( "showInSearch", showInSearch );
+	 * } )
 	 * .list()
 	 * </pre>
 	 *
@@ -751,12 +751,19 @@ component accessors="true" {
 		var partialSQL = "";
 		projection.sql = "";
 		// if multiple subqueries have been specified, smartly separate them out into a sql string that will work
-		for ( var x = 1; x <= listLen( arguments.rawProjection.sql ); x++ ) {
-			partialSQL     = listGetAt( arguments.rawProjection.sql, x );
-			partialSQL     = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
-			partialSQL     = partialSQL & " as #listGetAt( arguments.rawProjection.alias, x )#";
+		if ( listLen( arguments.rawProjection.sql ) > 1 && listLen( arguments.rawProjection.alias ) > 1 ) {
+			for ( var x = 1; x <= listLen( arguments.rawProjection.sql ); x++ ) {
+				partialSQL     = listGetAt( arguments.rawProjection.sql, x );
+				partialSQL     = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
+				partialSQL     = partialSQL & " as #listGetAt( arguments.rawProjection.alias, x )#";
+				projection.sql = listAppend( projection.sql, partialSQL );
+			}
+		} else {
+			partialSQL     = arguments.rawProjection.sql;
+			partialSQL     = partialSQL & " as #arguments.rawProjection.alias#";
 			projection.sql = listAppend( projection.sql, partialSQL );
 		}
+
 		// get all aliases
 		projection.alias = listToArray( arguments.rawProjection.alias );
 		// if there is a grouping spcified, add it to structure

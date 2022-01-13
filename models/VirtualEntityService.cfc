@@ -3,7 +3,6 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ********************************************************************************
- * @author Curt Gratz & Luis Majano
  *
  * This is a Virtual Entity Service that extends the Coldbox BaseORMService to
  * provide easy access to creating virtual services that extend the BaseORMService
@@ -21,15 +20,17 @@
  * import cborm.models.*;
  * component extends="VirtualEntityService"
  * UserService function init(){
- *     	// setup properties
- *     	setEntityName('User');
- *     	setQueryCacheRegion( "#arguments.entityName#.defaultVSCache" );
- *     	setUseQueryCaching( false );
- * 		setEventHandling( false );
- * 		setDefaultAsQuery( true );
- *     	return this;
+ * // setup properties
+ * setEntityName('User');
+ * setQueryCacheRegion( "#arguments.entityName#.defaultVSCache" );
+ * setUseQueryCaching( false );
+ * setEventHandling( false );
+ * setDefaultAsQuery( true );
+ * return this;
  * }
  * </pre>
+ *
+ * @author Curt Gratz & Luis Majano
  */
 component extends="cborm.models.BaseORMService" accessors="true" {
 
@@ -195,7 +196,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	/**
 	 * Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
 	 *
-	 * @id An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
+	 * @id        An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
 	 * @returnNew By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
 	 *
 	 * @return Requested entity, new entity or `null`
@@ -393,8 +394,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * The method returns a coverted array of ID's
 	 *
 	 * @deprecated In favor of `idCast()`
-	 *
-	 * @id The id value to convert
+	 * @id         The id value to convert
 	 */
 	any function convertIdValueToJavaType( required id ){
 		arguments.entity = this.getEntityName();
@@ -416,8 +416,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * The method returns a coverted array of ID's
 	 *
 	 * @deprecated In favor of `idCast()`
-	 *
-	 * @id The id value to convert
+	 * @id         The id value to convert
 	 */
 	any function convertValueToJavaType( required propertyName, required value ){
 		arguments.entity = this.getEntityName();

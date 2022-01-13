@@ -621,6 +621,7 @@
 
 		/**
 		 * Test the Hibernate 5.3+ syntax.
+		 *
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
 		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
@@ -669,6 +670,7 @@
 
 		/**
 		 * Test the Hibernate 5.3+ syntax.
+		 *
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
 		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {

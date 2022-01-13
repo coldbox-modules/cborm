@@ -117,6 +117,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 
 	/**
 	 * Merge an entity or array of entities back into a session
+	 *
 	 * @entity A single or an array of entities to re-merge
 	 *
 	 * @return Same entity if one passed, array if an array of entities passed.
@@ -357,8 +358,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @excludeFields An optional list of fields to exclude from the validation.
 	 * @IncludeFields An optional list of fields to include in the validation.
 	 *
+	 * @return The entity back
+	 *
 	 * @throws ValidationException
-	 * @returns The entity back
 	 */
 	ActiveEntity function validateOrFail(
 		string fields        = "*",

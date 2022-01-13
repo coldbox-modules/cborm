@@ -176,7 +176,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * pass off arguments to higher-level restriction builder, and handle the results
 	 *
-	 * @missingMethodName
+	 * @missingMethodName     
 	 * @missingMethodArguments
 	 */
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
@@ -345,10 +345,10 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @properties An optional list of properties to retrieve instead of the entire object
 	 *
+	 * @return The requested entity or if using properties, the properties requested as a struct
+	 *
 	 * @throws EntityNotFound           - When no entity was found for the specific criteria
 	 * @throws NonUniqueResultException - When more than one result is found with the specific criteria
-	 *
-	 * @return The requested entity or if using properties, the properties requested as a struct
 	 */
 	any function getOrFail( properties = "" ){
 		var result = this.get( arguments.properties );
@@ -363,9 +363,9 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 *
 	 * @properties An optional list of properties to retrieve instead of the entire object
 	 *
-	 * @throws NonUniqueResultException - if there is more than one matching result
-	 *
 	 * @return The requested entity or if using properties, the properties requested as a struct
+	 *
+	 * @throws NonUniqueResultException - if there is more than one matching result
 	 */
 	any function get( properties = "" ){
 		// process interception

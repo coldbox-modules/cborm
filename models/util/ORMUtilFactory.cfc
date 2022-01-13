@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano & Mike McKellip
  *
  * A simple factory to return the right ORM utility according to CFML engine
+ *
+ * @author Luis Majano & Mike McKellip
  */
 import cborm.models.util.*;
 

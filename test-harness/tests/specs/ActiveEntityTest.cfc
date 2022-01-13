@@ -210,12 +210,12 @@
 			ormCloseSession();
 
 			// Try to load
-			var results       = queryExecute( "select * from users where firstName = 'unitTest'" );
+			var results = queryExecute( "select * from users where firstName = 'unitTest'" );
 			expect( results.recordcount ).toBe( 0 );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			queryExecute("delete from users where firstName = 'unitTest'" );
+			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
 	}
 
