@@ -198,7 +198,7 @@ component extends="tests.resources.BaseTest" {
 			.peek( function( c ){
 				debug( c.getSql( true, true ) );
 			} )
-			.list()
+			.list();
 
 		debug( r );
 		assertTrue( isArray( r ) );
