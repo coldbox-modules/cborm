@@ -152,6 +152,40 @@ component extends="tests.resources.BaseTest" {
 			)
 			.list();
 		assertTrue( isArray( r ) );
+
+		var categoryCriteria = new cborm.models.criterion.CriteriaBuilder(
+			entityName = "Category",
+			ORMService = ormService
+		);
+
+		r = categoryCriteria
+			.withProjections(
+				groupProperty = "catid",
+				sqlProjection = [
+					{
+						sql      : "count( category_id )",
+						alias    : "count",
+						property : "catid"
+					}
+				],
+				sqlGroupProjection = [
+					{
+						sql      : "year( modifydate )",
+						group    : "year( modifydate )",
+						alias    : "modifiedDate",
+						property : "id"
+					},
+					{
+						sql      : "dateDiff('2021-12-31 23:59:59','2021-12-30')",
+						group    : "dateDiff('2021-12-31 23:59:59','2021-12-30')",
+						alias    : "someDateDiff",
+						property : "id"
+					}
+				]
+			)
+			.list()
+
+		assertTrue( isArray( r ) );
 	}
 
 	function testOrder(){
