@@ -211,7 +211,7 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 	function testORMAutoFlush(){
 		// enable auto flush mode
 		var FlushMode = createObject( "java", "org.hibernate.FlushMode" );
-		ORMGetSession().setFlushMode( FlushMode.AUTO );
+		ormGetSession().setFlushMode( FlushMode.AUTO );
 
 		var called   = false;
 		var listener = function( interceptData ){
