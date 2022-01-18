@@ -167,6 +167,7 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 		var called   = false;
 		var listener = function( interceptData ){
 			called = true;
+			throw( "called!" );
 			$assert.key( interceptData, "entity" );
 			$assert.typeOf( "component", interceptData.entity );
 		};
@@ -208,8 +209,31 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="root
 	}
 
 	function testORMAutoFlush(){
-		// TODO: Implement me
-		assertTrue( false );
+		// enable auto flush mode
+		var FlushMode = createObject( "java", "org.hibernate.FlushMode" );
+		ORMGetSession().setFlushMode( FlushMode.AUTO );
+
+		var called   = false;
+		var listener = function( interceptData ){
+			called = true;
+			$assert.key( interceptData, "entity" );
+			$assert.typeOf( "component", interceptData.entity );
+		};
+		variables.interceptorService.listen( listener, "ORMAutoFlush" );
+
+		var user = entityNew(
+			"User",
+			{
+				firstName : "Michael",
+				lastName  : "Bourne",
+				username  : "mbourne",
+				password  : "007"
+			}
+		);
+		entitySave( user );
+		var newUser = entityLoad( "User", { "firstName" : "Michael" } );
+		assertTrue( called );
+		variables.interceptorService.unregister( "closure-ORMAutoFlush-#hash( listener.toString() )#" );
 	}
 
 }
