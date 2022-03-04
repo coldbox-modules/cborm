@@ -106,10 +106,10 @@ component accessors="true" singleton {
 			structDelete( arguments.args, "entityName" );
 		}
 
-		if( !isNull( arguments.ormService ) ){
+		if ( !isNull( arguments.ormService ) ) {
 			arguments.options[ "datasource" ] = arguments.ormService
-												.getOrm()
-												.getEntityDatasource( arguments.entityName );
+				.getOrm()
+				.getEntityDatasource( arguments.entityName );
 		}
 
 		// Process arguments to binding parameters, we use named as they bind better in HQL, go figure
