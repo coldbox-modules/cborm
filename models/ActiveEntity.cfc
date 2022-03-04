@@ -25,7 +25,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 */
 	property name="validationResult" persistent="false";
 
-	this.activeEntity=true;
+	this.activeEntity = true;
 
 	/**
 	 * Active Entity Constructor, if you override it, make sure you call super.init()
