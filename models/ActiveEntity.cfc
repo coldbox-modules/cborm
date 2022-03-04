@@ -20,7 +20,7 @@
  */
 component extends="cborm.models.VirtualEntityService" accessors="true" {
 
-	this.activeEntity=true;
+	this.activeEntity = true;
 
 	/**
 	 * If populated, it will be from the last cbValidation made on the entity
