@@ -107,9 +107,9 @@ component accessors="true" singleton {
 		}
 
 		if( !isNull( arguments.ormService ) ){
-			arguments.options[ "datasource" ] = arguments.ormService
-												.getOrm()
-												.getEntityDatasource( arguments.entityName );
+			arguments.options[ "datasource" ] = new cborm.models.util.ORMUtilFactory()
+																.getORMUtil()
+																.getEntityDatasource( arguments.entityName );
 		}
 
 		// Process arguments to binding parameters, we use named as they bind better in HQL, go figure
