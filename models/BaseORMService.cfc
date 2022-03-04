@@ -129,7 +129,9 @@ component accessors="true" {
 		if ( isNull( arguments.datasource ) ) {
 			if ( variables.keyExists( "entityName" ) ) {
 				// We need to create a new ORMUtilSupport here to prevent a stack overflow error
-				variables.datasource = new cborm.models.util.ORMUtilSupport().getEntityDatasource( variables.entityName );
+				variables.datasource = new cborm.models.util.ORMUtilSupport().getEntityDatasource(
+					variables.entityName
+				);
 			} else {
 				var appMD = getApplicationMetadata();
 				if ( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ) {
