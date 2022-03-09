@@ -40,10 +40,12 @@ component singleton {
 
 	/**
 	 * Constructor
+	 *
+	 * @javaProxy.inject JavaProxyBuilder@cborm
 	 */
-	Restrictions function init(){
-		variables.restrictions       = createObject( "java", "org.hibernate.criterion.Restrictions" );
-		variables.javaHibernateTypes = {};
+	Restrictions function init( required javaProxy ){
+		variables.restrictions = arguments.javaProxy.build( "org.hibernate.criterion.Restrictions" );
+		variables.javaProxy    = arguments.javaProxy;
 		return this;
 	}
 
@@ -356,17 +358,9 @@ component singleton {
 	 * @type The class type to build: StringType, BooleanType, YesNoType, LongType
 	 */
 	function buildHibernateType( required type ){
-		// Lazy load the java proxy type
-		if ( !structKeyExists( variables.javaHibernateTypes, arguments.type ) ) {
-			variables.javaHibernateTypes[ arguments.type ] = createObject(
-				"java",
-				"org.hibernate.type.#arguments.type#"
-			);
-		}
+		var javaType = variables.javaProxy.build( "org.hibernate.type.#arguments.type#" );
 		// Return the Adobe or Lucee Approach of the instance type
-		return server.keyExists( "lucee" ) ? variables.javaHibernateTypes[ arguments.type ] : variables.javaHibernateTypes[
-			arguments.type
-		].INSTANCE;
+		return server.keyExists( "lucee" ) ? javaType : javaType.INSTANCE;
 	}
 
 	/**
@@ -510,8 +504,7 @@ component singleton {
 	/**
 	 * If a method does not exist, we will try to match it to a Hibernate native function, if not an exception is thrown
 	 *
-	 * @missingMethodName     
-	 * @missingMethodArguments
+	 * @missingMethodName
 	 *
 	 * @throws RuntimeException
 	 */
