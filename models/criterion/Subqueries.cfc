@@ -7,7 +7,7 @@
 component
 	extends  ="cborm.models.criterion.Restrictions"
 	accessors="true"
-	scope    ="none"
+	scope    ="noscope"
 {
 
 	/**
