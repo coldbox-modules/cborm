@@ -2,7 +2,9 @@
 
 # Welcome To The ColdBox ORM Module
 
-[![Build Status](https://travis-ci.com/coldbox-modules/cborm.svg?branch=development)](https://travis-ci.com/coldbox-modules/cborm)
+[![cborm CI](https://github.com/coldbox-modules/cborm/actions/workflows/ci.yml/badge.svg)](https://github.com/coldbox-modules/cborm/actions/workflows/ci.yml)
+
+<img src="https://forgebox.io/api/v1/entry/cborm/badges/version" />
 
 This module will enhance your experience when working with the ColdFusion ORM powered by Hibernate.  It will not only enhance it with dynamic goodness but give you a fluent and human approach to working with Hibernate.
 
