@@ -42,7 +42,8 @@ component singleton {
 	 * Constructor
 	 */
 	Restrictions function init(){
-		variables.restrictions = createObject( "java", "org.hibernate.criterion.Restrictions" );
+		variables.restrictions       = createObject( "java", "org.hibernate.criterion.Restrictions" );
+		variables.javaHibernateTypes = {};
 		return this;
 	}
 
@@ -355,10 +356,17 @@ component singleton {
 	 * @type The class type to build: StringType, BooleanType, YesNoType, LongType
 	 */
 	function buildHibernateType( required type ){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return createObject( "java", "org.hibernate.type.#arguments.type#" );
+		// Lazy load the java proxy type
+		if ( !structKeyExists( variables.javaHibernateTypes, arguments.type ) ) {
+			variables.javaHibernateTypes[ arguments.type ] = createObject(
+				"java",
+				"org.hibernate.type.#arguments.type#"
+			);
 		}
-		return createObject( "java", "org.hibernate.type.#arguments.type#" ).INSTANCE;
+		// Return the Adobe or Lucee Approach of the instance type
+		return server.keyExists( "lucee" ) ? variables.javaHibernateTypes[ arguments.type ] : variables.javaHibernateTypes[
+			arguments.type
+		].INSTANCE;
 	}
 
 	/**

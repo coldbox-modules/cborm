@@ -97,8 +97,6 @@ component accessors="true" {
 		variables.sqlLoggerActive = false;
 		// If the return type will be a stream or not
 		variables.asStream        = false;
-		// add SQL Helper
-		variables.SQLHelper       = new cborm.models.sql.SQLHelper( this );
 		// Setup Logging
 		variables.logger          = arguments.ormService
 			.getWireBox()
@@ -120,7 +118,18 @@ component accessors="true" {
 		return this;
 	}
 
-	/************************************** PUBLIC *********************************************/
+	/**
+	 * Lazy load the sql helper and return it
+	 *
+	 * @return cborm.models.sql.SQLHelper
+	 */
+	function getSQLHelper(){
+		if ( isNull( variables.sqlHelper ) ) {
+			variables.sqlHelper = new cborm.models.sql.SQLHelper( this );
+		}
+		return variables.sqlHelper;
+	}
+
 
 	/**
 	 * Add an ordering to the result set, you can add as many as you like:
@@ -547,14 +556,14 @@ component accessors="true" {
 	 * @formatSql           Format the SQL to execute
 	 */
 	string function getSQL( required boolean returnExecutableSql = false, required boolean formatSql = true ){
-		return variables.SQLHelper.getSQL( argumentCollection = arguments );
+		return getSqlHelper().getSQL( argumentCollection = arguments );
 	}
 
 	/**
 	 * Gets the positional SQL parameter values from the criteria query
 	 */
 	array function getPositionalSQLParameterValues(){
-		return variables.SQLHelper.getPositionalSQLParameterValues();
+		return getSqlHelper().getPositionalSQLParameterValues();
 	}
 
 	/**
@@ -563,21 +572,21 @@ component accessors="true" {
 	 * @simple Whether to return a simply array or full objects
 	 */
 	any function getPositionalSQLParameterTypes( required boolean simple = true ){
-		return variables.SQLHelper.getPositionalSQLParameterTypes( argumentCollection = arguments );
+		return getSqlHelper().getPositionalSQLParameterTypes( argumentCollection = arguments );
 	}
 
 	/**
 	 * Returns a formatted array of parameter value and types
 	 */
 	array function getPositionalSQLParameters(){
-		return variables.SQLHelper.getPositionalSQLParameters();
+		return getSqlHelper().getPositionalSQLParameters();
 	}
 
 	/**
 	 * Retrieves the SQL Log
 	 */
 	array function getSQLLog(){
-		return variables.SQLHelper.getLog();
+		return getSqlHelper().getLog();
 	}
 
 	/**
@@ -587,8 +596,8 @@ component accessors="true" {
 	 * @formatSql           Format the SQL to execute
 	 */
 	BaseBuilder function startSqlLog( boolean returnExecutableSql = false, boolean formatSql = false ){
-		variables.SQLHelper.setReturnExecutableSql( arguments.returnExecutableSql );
-		variables.SQLHelper.setFormatSql( arguments.formatSql );
+		getSqlHelper().setReturnExecutableSql( arguments.returnExecutableSql );
+		getSqlHelper().setFormatSql( arguments.formatSql );
 		variables.sqlLoggerActive = true;
 		return this;
 	}
@@ -607,7 +616,7 @@ component accessors="true" {
 	 * @label The label to use for the sql log record
 	 */
 	BaseBuilder function logSQL( required String label ){
-		variables.SQLHelper.log( argumentCollection = arguments );
+		getSqlHelper().log( argumentCollection = arguments );
 		return this;
 	}
 

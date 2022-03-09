@@ -81,21 +81,25 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 	public any function createDetachedSQLProjection(){
 		// get the sql with replaced parameters
-		var sql         = SQLHelper.getSql( returnExecutableSql = true );
-		var alias       = SQLHelper.getProjectionAlias();
-		var uniqueAlias = SQLHelper.generateSQLAlias();
+		var sql         = getSqlHelper().getSql( returnExecutableSql = true );
+		var alias       = getSqlHelper().getProjectionAlias();
+		var uniqueAlias = getSqlHelper().generateSQLAlias();
 		// by default, alias is this_...convert it to the alias provided
 		sql             = replaceNoCase(
 			sql,
 			"this_",
-			SQLHelper.getRootSQLAlias(),
+			getSqlHelper().getRootSQLAlias(),
 			"all"
 		);
 		// wrap it up and uniquely alias it
 		sql = "( #sql# ) as " & alias;
 
 		// now that we have the sql string, we can create the sqlProjection
-		var projection = this.PROJECTIONS.sqlProjection( sql, [ alias ], SQLHelper.getProjectedTypes() );
+		var projection = this.PROJECTIONS.sqlProjection(
+			sql,
+			[ alias ],
+			getSqlHelper().getProjectedTypes()
+		);
 		// finally, add the alias to the projection list so we can sort on the column if needed
 		return this.PROJECTIONS.alias( projection, alias );
 	}
@@ -151,7 +155,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 */
 	any function maxResults( required numeric maxResults ){
 		getNativeCriteria().setMaxResults( javacast( "int", arguments.maxResults ) );
-		if ( SQLHelper.canLogLimitOffset() ) {
+		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( ORMService.getEventHandling() ) {
 				variables.eventManager.processState(

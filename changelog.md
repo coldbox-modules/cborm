@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Java proxy caching to avoid Lucee OSGi issues
+* Lazy loading of SQL Helper in criteria queries
 * New module template guidelines and CI
 
 

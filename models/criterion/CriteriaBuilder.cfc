@@ -279,7 +279,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 */
 	any function firstResult( required numeric firstResult ){
 		nativeCriteria.setFirstResult( javacast( "int", arguments.firstResult ) );
-		if ( variables.SQLHelper.canLogLimitOffset() ) {
+		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( variables.ORMService.getEventHandling() ) {
 				variables.eventManager.processState(
@@ -298,7 +298,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 */
 	any function maxResults( required numeric maxResults ){
 		nativeCriteria.setMaxResults( javacast( "int", arguments.maxResults ) );
-		if ( variables.SQLHelper.canLogLimitOffset() ) {
+		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( variables.ORMService.getEventHandling() ) {
 				variables.eventManager.processState(

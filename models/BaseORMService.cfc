@@ -1877,7 +1877,7 @@ process(
 	){
 		// mix in yourself as a dependency
 		arguments.ormService = this;
-		// create new criteria builder
+		// create new criteria builder, it's a transient
 		return variables.wirebox.getInstance(
 			name          = "cborm.models.criterion.CriteriaBuilder",
 			initArguments = arguments
