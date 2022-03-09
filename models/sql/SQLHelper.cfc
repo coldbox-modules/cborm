@@ -18,7 +18,7 @@ component accessors="true" {
 	property
 		name   ="formatSql"
 		type   ="boolean"
-		default="false";
+		default="true";
 
 	/**
 	 * Bit to return the executable SQL or not
@@ -38,9 +38,8 @@ component accessors="true" {
 	SQLHelper function init(
 		required any criteriaBuilder,
 		boolean returnExecutableSql = false,
-		boolean formatSql           = false
+		boolean formatSql           = true
 	){
-		// Setup properties
 		variables.cb           = arguments.criteriaBuilder;
 		variables.entityName   = variables.cb.getEntityName();
 		variables.criteriaImpl = variables.cb.getNativeCriteria();
