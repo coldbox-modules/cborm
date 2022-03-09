@@ -1964,7 +1964,7 @@ process(
 	 * @return java.lang.StringBuilder
 	 */
 	private function getStringBuilder( seed = "" ){
-		if ( isNull( varaibles.stringBuilder ) ) {
+		if ( isNull( variables.stringBuilder ) ) {
 			variables.stringBuilder = createObject( "java", "java.lang.StringBuilder" );
 		}
 		return variables.stringBuilder.init( arguments.seed );
