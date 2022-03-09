@@ -75,6 +75,11 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 		// Init our parent
 		super.init( argumentCollection = arguments );
 
+		// Datasource determination
+		if ( isNull( arguments.datasource ) && !structKeyExists( this, "activeEntity" ) ) {
+			variables.datasource = getOrm().getEntityDatasource( arguments.entityName, variables.datasource );
+		}
+
 		return this;
 	}
 

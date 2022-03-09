@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.8.0] => 2022-MAR-09
+
+### Fixed
+
+* CBORM-32 - Non-Primary DSN Entities not found. Multi-datasource discovery of entities using virtual services and active entity. This was a regresion since version 1.5. This brings back multi-datasource support for active entity, and virtual entity services. https://github.com/coldbox-modules/cborm/pull/52
+
+### Added
+
+* New module template guidelines and CI
+
+
+----
+
 ## [v3.7.0] => 2022-JAN-13
 
 ### Added

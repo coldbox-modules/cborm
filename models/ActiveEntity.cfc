@@ -21,6 +21,11 @@
 component extends="cborm.models.VirtualEntityService" accessors="true" {
 
 	/**
+	 * Marker used for quick determination if we are in an Active Entity or not
+	 */
+	this.activeEntity = true;
+
+	/**
 	 * If populated, it will be from the last cbValidation made on the entity
 	 */
 	property name="validationResult" persistent="false";
