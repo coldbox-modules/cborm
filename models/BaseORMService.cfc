@@ -1382,9 +1382,7 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush, datasource ){
-				var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
-					"delete from #arguments.entityName#"
-				);
+				var sqlBuffer = getStringBuilder( "delete from #arguments.entityName#" );
 
 				// Do we have arguments?
 				if ( structCount( arguments ) > 3 ) {
@@ -1569,7 +1567,7 @@ component accessors="true" {
 		string where = "",
 		any params   = structNew()
 	){
-		var buffer  = createObject( "java", "java.lang.StringBuilder" ).init( "" );
+		var buffer  = getStringBuilder();
 		var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
 
 
@@ -1612,10 +1610,8 @@ component accessors="true" {
 	 * @entityName The entity name to count on
 	 */
 	numeric function countWhere( required string entityName ){
-		var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
-			"select count(id) from #arguments.entityName#"
-		);
-		var options = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
+		var sqlBuffer = getStringBuilder( "select count(id) from #arguments.entityName#" );
+		var options   = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
 
 		// Do we have arguments?
 		if ( structCount( arguments ) > 1 ) {
@@ -1958,6 +1954,20 @@ process(
 		if ( !isNull( results ) ) {
 			return results;
 		}
+	}
+
+	/**
+	 * Build out a Java string builder
+	 *
+	 * @seed The string to seed the builder with
+	 *
+	 * @return java.lang.StringBuilder
+	 */
+	private function getStringBuilder( seed = "" ){
+		if ( isNull( varaibles.stringBuilder ) ) {
+			variables.stringBuilder = createObject( "java", "java.lang.StringBuilder" );
+		}
+		return variables.stringBuilder.init( arguments.seed );
 	}
 
 }
