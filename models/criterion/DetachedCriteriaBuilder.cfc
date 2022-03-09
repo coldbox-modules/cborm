@@ -19,20 +19,24 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	DetachedCriteriaBuilder function init(
 		required string entityName,
 		required string alias,
-		required any ORMService
+		required any ormService
 	){
 		// create new DetachedCriteria
-		var criteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName(
-			arguments.entityName,
-			arguments.alias
-		);
+		var criteria = arguments.ormService
+			.getWireBox()
+			.getInstance( "JavaProxyBuilder@cborm" )
+			.build( "org.hibernate.criterion.DetachedCriteria" )
+			.forEntityName( arguments.entityName, arguments.alias );
 
 		// setup base builder with detached criteria and subqueries
 		super.init(
 			entityName   = arguments.entityName,
 			criteria     = criteria,
-			restrictions = new Subqueries( criteria ),
-			ORMService   = arguments.ORMService
+			restrictions = arguments.ormService
+				.getWireBox()
+				.getInstance( "SubQueries@cborm" )
+				.setDetachedCriteria( criteria ),
+			ormService = arguments.ormService
 		);
 
 		return this;
