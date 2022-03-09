@@ -1,18 +1,31 @@
 /**
- * ********************************************************************************
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
- * ********************************************************************************
- * A proxy to hibernate org.hibernate.criterion.Subqueries object to allow
- * for criteria based subquerying
+ * ---
+ * A proxy to hibernate org.hibernate.criterion.Subqueries object to allow for criteria based subquerying
  */
-component singleton extends="cborm.models.criterion.Restrictions" {
+component
+	extends  ="cborm.models.criterion.Restrictions"
+	accessors="true"
+	scope    ="none"
+{
 
-	// Constructor
-	Subqueries function init( required criteria ){
-		variables.detachedCriteria = arguments.criteria;
-		variables.subqueries       = createObject( "java", "org.hibernate.criterion.Subqueries" );
-		variables.restrictions     = createObject( "java", "org.hibernate.criterion.Restrictions" );
+	/**
+	 * The detached criteria we are binding the subquery to
+	 */
+	property name="detachedCriteria";
+
+	/**
+	 * Constructor
+	 *
+	 * @javaProxy.inject JavaProxyBuilder@cborm
+	 */
+	Subqueries function init( required javaProxy ){
+		super.init( argumentCollection = arguments );
+
+		variables.subqueries   = arguments.javaProxy.build( "org.hibernate.criterion.Subqueries" );
+		variables.restrictions = arguments.javaProxy.build( "org.hibernate.criterion.Restrictions" );
+
 		return this;
 	}
 
