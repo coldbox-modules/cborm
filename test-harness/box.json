@@ -24,7 +24,5 @@
         "cbpaginator":"modules/cbpaginator/",
         "route-visualizer":"modules/route-visualizer/"
     },
-    "scripts":{
-
-    }
+    "scripts":{}
 }

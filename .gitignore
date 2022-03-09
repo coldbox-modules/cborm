@@ -1,10 +1,12 @@
-.vscode
-
+# Artifacts and temp folders
 .artifacts/**
 .tmp/**
 
+# Engine + Secrets
 .env
 .engine/**
+
+# Dependencies
 test-harness/coldbox/**
 test-harness/docbox/**
 test-harness/testbox/**
