@@ -10,6 +10,10 @@
         },
         "rewrites":{
             "enable":"true"
+        },
+		"webroot":"test-harness",
+        "aliases":{
+            "/moduleroot/cborm":"./"
         }
     },
     "jvm":{

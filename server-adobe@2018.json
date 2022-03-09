@@ -1,8 +1,8 @@
 {
-    "name":"cborm-lucee@5",
+    "name":"cborm-adobe@2018",
     "app":{
-        "serverHomeDirectory":".engine/lucee5",
-        "cfengine":"lucee@5"
+        "serverHomeDirectory":".engine/adobe2018",
+        "cfengine":"adobe@2018"
     },
     "web":{
         "http":{
@@ -10,6 +10,10 @@
         },
         "rewrites":{
             "enable":"true"
+        },
+		"webroot":"test-harness",
+        "aliases":{
+            "/moduleroot/cborm":"./"
         }
     },
     "jvm":{
