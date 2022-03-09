@@ -5,8 +5,9 @@ component extends="tests.resources.BaseTest" {
 			"User",
 			"u"
 		);
-		subqueries = createMock( "cborm.models.criterion.Subqueries" );
-		subqueries.init( new cborm.models.util.JavaProxyBuilder() ).setDetachedCriteria( subCriteria );
+		subqueries = createMock( "cborm.models.criterion.Subqueries" )
+			.init( new cborm.models.util.JavaProxyBuilder() )
+			.setDetachedCriteria( subCriteria );
 	}
 	function testGetNativeClass(){
 		r = subqueries.getNativeClass();
