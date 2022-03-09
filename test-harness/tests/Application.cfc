@@ -49,6 +49,7 @@
 	public boolean function onRequestStart( String targetPage ){
 		if ( url.keyExists( "fwreinit" ) ) {
 			ormReload();
+			cleanupApp();
 			if ( structKeyExists( server, "lucee" ) ) {
 				pagePoolClear();
 			}
@@ -58,6 +59,10 @@
 	}
 
 	public function onRequestEnd(){
+		cleanupApp();
+	}
+
+	private function cleanupApp(){
 		// CB 6 graceful shutdown
 		if ( !isNull( application.cbController ) ) {
 			application.cbController.getLoaderService().processShutdown();
