@@ -1974,7 +1974,7 @@ process(
 	 * @return java.lang.StringBuilder
 	 */
 	private function getStringBuilder( seed = "" ){
-		return buildJavaProxy( "java.lang.StringBuilder" ).init( arguments.seed );
+		return createObject( "java", "java.lang.StringBuilder" ).init( arguments.seed );
 	}
 
 }
