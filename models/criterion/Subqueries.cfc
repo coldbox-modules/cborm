@@ -31,7 +31,7 @@ component
 		super.init( argumentCollection = arguments );
 
 		if ( !isNull( arguments.detachedCriteria ) ) {
-			variables.detachedCriteria = arguments.detachedCriteria
+			variables.detachedCriteria = arguments.detachedCriteria;
 		}
 
 		return this;
