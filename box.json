@@ -54,7 +54,9 @@
         "format:check":"cfformat check aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc",
         "cfpm":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
         "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
-        "install:2021":"run-script cfpm:install zip,debugger,orm,mysql,postgresql,sqlserver,feed"
+        "install:2021":"run-script cfpm:install zip,debugger,orm,mysql,postgresql,sqlserver,feed",
+		"install:dependencies" : "install && cd test-harness && install",
+		"startdbs": "!docker-compose -f docker-compose.yml up"
     },
     "installPaths":{
         "cbvalidation":"modules/cbvalidation/",

@@ -24,6 +24,7 @@ component {
 			"(package|package-lock).json",
 			"webpack.config.js",
 			"server-.*\.json",
+			"docker-compose.yml",
 			"^\..*"
 		];
 

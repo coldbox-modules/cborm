@@ -2,9 +2,10 @@
 .artifacts/**
 .tmp/**
 
-# Engine + Secrets
+# Engine + Secrets + databases
 .env
 .engine/**
+.db/**
 
 # Dependencies
 test-harness/coldbox/**

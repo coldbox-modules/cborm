@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Root `docker-compose.yml` to startup MySQL, or PostgreSQL in docker, for further hacking and testing.
 * Java proxy caching to avoid Lucee OSGi issues and increase Java object building performance
 * New method in the BaseOrmService: `buildJavaProxy()` which leverages our `JavaProxyBuilder`
 * Lazy loading of SQL Helper in criteria queries
