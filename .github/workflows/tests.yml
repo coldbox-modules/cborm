@@ -69,7 +69,7 @@ jobs:
       - name: Run Tests
         run: |
           mkdir -p test-harness/tests/results
-          box testbox run --verbose outputFile=test-harness/results/test-results outputFormats=json,antjunit
+          box testbox run --verbose outputFile=test-harness/tests/results outputFormats=json,antjunit
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
