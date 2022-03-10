@@ -61,6 +61,7 @@ component {
 	this.ormEnabled = "true";
 
 	this.ormSettings = {
+		dialect 			  : "org.hibernate.dialect.MySQL5InnoDBDialect",
 		cfclocation           : [ "models" ],
 		logSQL                : true,
 		dbcreate              : "update",

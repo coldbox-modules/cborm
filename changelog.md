@@ -12,15 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * CBORM-32 - Non-Primary DSN Entities not found. Multi-datasource discovery of entities using virtual services and active entity. This was a regresion since version 1.5. This brings back multi-datasource support for active entity, and virtual entity services. https://github.com/coldbox-modules/cborm/pull/52
-* Detached Subqueries was marked as a singleton when indeed it was a transient. This could have created scoping issues on subquery based detached criteria building.
+* Detached `Subqueries` was marked as a singleton when indeed it was indeed a transient. This could have created scoping issues on subquery based detached criteria building.
+* Varscoping issues in `BaseBuilder` detached projections
+* `DetachedCriteriaBuilder` was not passing the `datasource` to native criteria objects
 
 ### Added
 
-* Format sql always when logging and returning logs from criteria builders
 * Java proxy caching to avoid Lucee OSGi issues and increase Java object building performance
+* New method in the BaseOrmService: `buildJavaProxy()` which leverages our `JavaProxyBuilder`
 * Lazy loading of SQL Helper in criteria queries
 * New module template guidelines and CI
-
+* Leverage WireBox aliases for contstruction of internal objects
+* Tons of internal docs and links to hibernate docs
 
 ----
 

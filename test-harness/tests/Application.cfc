@@ -34,6 +34,7 @@
 	this.datasource  = "coolblog";
 	this.ormEnabled  = "true";
 	this.ormSettings = {
+		dialect               : "org.hibernate.dialect.MySQL5InnoDBDialect",
 		cfclocation           : [ "/root/models" ],
 		logSQL                : true,
 		dbcreate              : "update",

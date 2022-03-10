@@ -14,9 +14,9 @@ component extends="tests.resources.BaseTest" {
 			createStub().$( "processState" )
 		);
 		ormService.setORMEventHandler( mockEventHandler );
-		ormservice.seteventHandling( false );
+		ormservice.setEventHandling( false );
 
-		criteria    = new cborm.models.criterion.CriteriaBuilder( entityName = "User", ORMService = ormService );
+		criteria    = ormService.newCriteria( "User" );
 		subCriteria = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
 		subCriteria.init(
 			entityName = "User",
@@ -129,6 +129,20 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( r gt 0 );
 	}
 
+	function testDetacheSQLProjection(){
+		r = criteria
+			.withProjections(
+				detachedSQLProjection = [
+					criteria.createSubcriteria( "Role", "Role1" ).withProjections( count = "Role1.role:Role" )
+				]
+			)
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
+			.list();
+		debug( r );
+	}
+
 	function testWithProjections(){
 		r = criteria
 			.withProjections(
@@ -151,19 +165,9 @@ component extends="tests.resources.BaseTest" {
 			.list();
 
 		assertTrue( isArray( r ) );
+	}
 
-		r = criteria
-			.withProjections(
-				detachedSQLProjection = [
-					criteria.createSubcriteria( "Role", "Role1" ).withProjections( count = "Role1.role:Role" )
-				]
-			)
-			.peek( function( c ){
-				debug( c.getSql( true, true ) );
-			} )
-			.list();
-		assertTrue( isArray( r ) );
-
+	function testSQlProjections(){
 		var categoryCriteria = new cborm.models.criterion.CriteriaBuilder(
 			entityName = "Category",
 			ORMService = ormService
@@ -199,7 +203,6 @@ component extends="tests.resources.BaseTest" {
 				debug( c.getSql( true, true ) );
 			} )
 			.list();
-
 		debug( r );
 		assertTrue( isArray( r ) );
 	}

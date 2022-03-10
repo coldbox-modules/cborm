@@ -147,7 +147,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		}
 
 		// Get listing
-		var results = nativeCriteria.list() ?: [];
+		var results = variables.nativeCriteria.list() ?: [];
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
@@ -190,7 +190,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		}
 
 		// Else, it's a native Java restriction, add it in
-		nativeCriteria.add( thisRestriction );
+		variables.nativeCriteria.add( thisRestriction );
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
@@ -204,7 +204,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	}
 
 	/**
-	 * create an instance of a detached criteriabuilder that can be added, like criteria, to the main criteria builder
+	 * Create an instance of a detached criteriabuilder that can be added, like criteria, to the main criteria builder
 	 *
 	 * @entityName The entity to root the subcriteria on
 	 * @alias      The alias to use or defaults to the entity name
@@ -213,8 +213,10 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 */
 	any function createSubcriteria( required string entityName, string alias = "" ){
 		// create detached builder
-		arguments.ORMService = variables.ORMService;
-		var subcriteria      = new DetachedCriteriaBuilder( argumentCollection = arguments );
+		arguments.ormService = variables.ormService;
+		var subcriteria      = variables.ormService
+			.getWireBox()
+			.getInstance( "DetachedCriteriaBuilder@cborm", arguments );
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
@@ -235,9 +237,9 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @cacheRegion The cache region
 	 */
 	any function cache( required boolean cache = true, string cacheRegion ){
-		nativeCriteria.setCacheable( javacast( "boolean", arguments.cache ) );
+		variables.nativeCriteria.setCacheable( javacast( "boolean", arguments.cache ) );
 		if ( !isNull( arguments.cacheRegion ) ) {
-			nativeCriteria.setCacheRegion( arguments.cacheRegion );
+			variables.nativeCriteria.setCacheRegion( arguments.cacheRegion );
 		}
 		return this;
 	}
@@ -248,7 +250,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @cacheRegion
 	 */
 	any function cacheRegion( required string cacheRegion ){
-		nativeCriteria.setCacheRegion( arguments.cacheRegion );
+		variables.nativeCriteria.setCacheRegion( arguments.cacheRegion );
 		return this;
 	}
 
@@ -258,7 +260,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @comment a human-readable string
 	 */
 	any function comment( required string comment ){
-		nativeCriteria.setComment( arguments.comment );
+		variables.nativeCriteria.setComment( arguments.comment );
 		return this;
 	}
 
@@ -268,7 +270,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @fetchSize An integer number
 	 */
 	any function fetchSize( required numeric fetchSize ){
-		nativeCriteria.setFetchSize( javacast( "int", arguments.fetchSize ) );
+		variables.nativeCriteria.setFetchSize( javacast( "int", arguments.fetchSize ) );
 		return this;
 	}
 
@@ -278,7 +280,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @firstResult Which offset to set
 	 */
 	any function firstResult( required numeric firstResult ){
-		nativeCriteria.setFirstResult( javacast( "int", arguments.firstResult ) );
+		variables.nativeCriteria.setFirstResult( javacast( "int", arguments.firstResult ) );
 		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( variables.ORMService.getEventHandling() ) {
@@ -297,7 +299,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @maxResults The max results to retrieve
 	 */
 	any function maxResults( required numeric maxResults ){
-		nativeCriteria.setMaxResults( javacast( "int", arguments.maxResults ) );
+		variables.nativeCriteria.setMaxResults( javacast( "int", arguments.maxResults ) );
 		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( variables.ORMService.getEventHandling() ) {
@@ -316,7 +318,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @readOnly Read only or full entities, defaults to true
 	 */
 	any function readOnly( boolean readOnly = true ){
-		nativeCriteria.setReadOnly( javacast( "boolean", arguments.readOnly ) );
+		variables.nativeCriteria.setReadOnly( javacast( "boolean", arguments.readOnly ) );
 		return this;
 	}
 
@@ -326,7 +328,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @timeout The timeout value to apply in milliseconds
 	 */
 	any function timeout( required numeric timeout ){
-		nativeCriteria.setTimeout( javacast( "int", arguments.timeout ) );
+		variables.nativeCriteria.setTimeout( javacast( "int", arguments.timeout ) );
 		return this;
 	}
 
@@ -336,7 +338,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 * @string The vendoer specific query hint
 	 */
 	any function queryHint( string hint ){
-		nativeCriteria.addQueryHint( arguments.hint );
+		variables.nativeCriteria.addQueryHint( arguments.hint );
 		return this;
 	}
 
@@ -379,7 +381,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		}
 
 		// Go fetch!
-		var result = nativeCriteria.uniqueResult();
+		var result = variables.nativeCriteria.uniqueResult();
 
 		// process interception
 		if ( !isNull( result ) && variables.ORMService.getEventHandling() ) {
@@ -407,9 +409,9 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// else project on the local criterias
 		if ( len( arguments.propertyName ) ) {
-			nativeCriteria.setProjection( this.projections.countDistinct( arguments.propertyName ) );
+			variables.nativeCriteria.setProjection( this.projections.countDistinct( arguments.propertyName ) );
 		} else {
-			nativeCriteria.setProjection( this.projections.distinct( this.projections.rowCount() ) );
+			variables.nativeCriteria.setProjection( this.projections.distinct( this.projections.rowCount() ) );
 		}
 
 		// process interception
@@ -420,10 +422,10 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			);
 		}
 
-		var results = nativeCriteria.uniqueResult();
+		var results = variables.nativeCriteria.uniqueResult();
 		// clear count like a ninja, so we can reuse this criteria object.
-		nativeCriteria.setProjection( javacast( "null", "" ) );
-		nativeCriteria.setResultTransformer( this.ROOT_ENTITY );
+		variables.nativeCriteria.setProjection( javacast( "null", "" ) );
+		variables.nativeCriteria.setResultTransformer( this.ROOT_ENTITY );
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {

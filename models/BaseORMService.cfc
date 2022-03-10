@@ -1726,6 +1726,18 @@ component accessors="true" {
 	/*****************************************************************************************/
 
 	/**
+	 * Build a java proxy object using our Java Proxy Builder
+	 *
+	 * @type The type of Java Proxy class to build using our Java Proxy Builder
+	 */
+	function buildJavaProxy( required type ){
+		if ( isNull( variables.javaProxyBuilder ) ) {
+			variables.javaProxyBuilder = getWireBox().getInstance( "JavaProxyBuilder@cborm" );
+		}
+		return variables.javaProxyBuilder.build( arguments.type );
+	}
+
+	/**
 	 * Clear the session removes all the entities that are loaded or created in the session.
 	 * This clears the first level cache and removes the objects that are not yet saved to the database.
 	 *
@@ -1851,10 +1863,11 @@ process(
 	 * @return cborm.models.criterion.Restrictions
 	 */
 	function getRestrictions(){
+		// Lazy Loading injection
 		if ( !isNull( variables.restrictions ) ) {
 			return variables.restrictions;
 		}
-		variables.restrictions = variables.wirebox.getInstance( "cborm.models.criterion.Restrictions" );
+		variables.restrictions = variables.wirebox.getInstance( "Restrictions@cborm" );
 		return variables.restrictions;
 	}
 
@@ -1878,10 +1891,7 @@ process(
 		// mix in yourself as a dependency
 		arguments.ormService = this;
 		// create new criteria builder, it's a transient
-		return variables.wirebox.getInstance(
-			name          = "cborm.models.criterion.CriteriaBuilder",
-			initArguments = arguments
-		);
+		return variables.wirebox.getInstance( "CriteriaBuilder@cborm", arguments );
 	}
 
 
@@ -1964,10 +1974,7 @@ process(
 	 * @return java.lang.StringBuilder
 	 */
 	private function getStringBuilder( seed = "" ){
-		if ( isNull( variables.stringBuilder ) ) {
-			variables.stringBuilder = createObject( "java", "java.lang.StringBuilder" );
-		}
-		return variables.stringBuilder.init( arguments.seed );
+		return buildJavaProxy( "java.lang.StringBuilder" ).init( arguments.seed );
 	}
 
 }

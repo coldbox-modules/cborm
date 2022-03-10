@@ -3,8 +3,15 @@
  * www.ortussolutions.com
  * ---
  * A proxy to hibernate org.hibernate.criterion.Restrictions object to allow for criteria based querying
+ *
+ * @see https://docs.jboss.org/hibernate/stable/orm/javadocs/org/hibernate/criterion/Restrictions.html
  */
-component singleton {
+component singleton access="true" {
+
+	/**
+	 * The java proxy builder
+	 */
+	property name="javaProxy";
 
 	// Lookup map of Hibernate to CF Types. Used for auto casting.
 	this.TYPES = {
@@ -44,8 +51,8 @@ component singleton {
 	 * @javaProxy.inject JavaProxyBuilder@cborm
 	 */
 	Restrictions function init( required javaProxy ){
-		variables.restrictions = arguments.javaProxy.build( "org.hibernate.criterion.Restrictions" );
 		variables.javaProxy    = arguments.javaProxy;
+		variables.restrictions = arguments.javaProxy.build( "org.hibernate.criterion.Restrictions" );
 		return this;
 	}
 

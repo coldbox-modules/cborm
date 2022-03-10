@@ -39,11 +39,6 @@ component accessors="true" {
 	property name="ormService" type="any";
 
 	/**
-	 * LogBox Logger
-	 */
-	property name="logger";
-
-	/**
 	 * If marked as a stream, we will use cbStreams to return to you an array of streams
 	 */
 	property
@@ -81,10 +76,9 @@ component accessors="true" {
 		required any ormService
 	){
 		// java projections linkage
-		this.projections  = createObject( "java", "org.hibernate.criterion.Projections" );
+		this.projections          = arguments.ormService.buildJavaProxy( "org.hibernate.criterion.Projections" );
 		// restrictions linkage: can be Restrictions or Subqueries
-		this.restrictions = arguments.restrictions;
-
+		this.restrictions         = arguments.restrictions;
 		// hibernate criteria query setup - will be either CriteriaBuilder or DetachedCriteriaBuilder
 		variables.nativeCriteria  = arguments.criteria;
 		// set entity name
@@ -97,11 +91,6 @@ component accessors="true" {
 		variables.sqlLoggerActive = false;
 		// If the return type will be a stream or not
 		variables.asStream        = false;
-		// Setup Logging
-		variables.logger          = arguments.ormService
-			.getWireBox()
-			.getLogBox()
-			.getLogger( this );
 
 		// Transformer types
 		this.ALIAS_TO_ENTITY_MAP  = nativeCriteria.ALIAS_TO_ENTITY_MAP;
@@ -119,13 +108,15 @@ component accessors="true" {
 	}
 
 	/**
-	 * Lazy load the sql helper and return it
+	 * Lazy load injection of the sql helper
 	 *
 	 * @return cborm.models.sql.SQLHelper
 	 */
 	function getSQLHelper(){
 		if ( isNull( variables.sqlHelper ) ) {
-			variables.sqlHelper = new cborm.models.sql.SQLHelper( this );
+			variables.sqlHelper = variables.ormService
+				.getWireBox()
+				.getInstance( "SQLHelper@cborm", { criteriaBuilder : this } );
 		}
 		return variables.sqlHelper;
 	}
@@ -148,7 +139,7 @@ component accessors="true" {
 		string sortDir     = "asc",
 		boolean ignoreCase = false
 	){
-		var order   = createObject( "java", "org.hibernate.criterion.Order" );
+		var order   = variables.ormService.buildJavaProxy( "org.hibernate.criterion.Order" );
 		var orderBy = "";
 
 		// direction
@@ -445,7 +436,7 @@ component accessors="true" {
 				arguments.detachedSQLProjection
 			] : arguments.detachedSQLProjection;
 			// loop over array of detachedSQLProjections
-			for ( projection in projectionCollection ) {
+			for ( var projection in projectionCollection ) {
 				projectionList.add( projection.createDetachedSQLProjection() );
 			}
 		}
