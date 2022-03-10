@@ -69,9 +69,8 @@ jobs:
       - name: Run Tests
         run: |
           mkdir -p test-harness/tests/results
-          box testbox run --verbose outputFile=test-harness/tests/results outputFormats=json,antjunit
-          ls -l test-harness/tests/results
-          cat test-harness/tests/results/results-junit.xml
+          box testbox run --verbose outputFile=test-harness/tests/test-results outputFormats=json,antjunit
+          ls -lr test-harness/tests
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -86,7 +85,7 @@ jobs:
         with:
           name: test-results-${{ matrix.cfengine }}
           path: |
-            test-harness/tests/results/*.*
+            test-harness/tests/results/**/*
 
       - name: Failure Debugging Log
         if: ${{ failure() }}
@@ -99,8 +98,8 @@ jobs:
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }}
           path: |
-            test-harness/.engine/**/logs/*
-            test-harness/.engine/**/WEB-INF/cfusion/logs/*
+            .engine/**/logs/*
+            .engine/**/WEB-INF/cfusion/logs/*
 
       - name: Slack Notifications
         # Only on failures and NOT in pull requests
