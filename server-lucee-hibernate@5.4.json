@@ -18,7 +18,7 @@
     },
     "jvm":{
         "heapSize":"1024",
-        "args":"-Dlucee.extensions='https://ext.lucee.org/hibernate-orm-5.4.29.6-BETA.lex'"
+        "args":"-Dlucee.extensions='https://ext.lucee.org/hibernate-orm-5.4.29.13-BETA.lex'"
     },
     "openBrowser":"false",
 	"cfconfig": {
