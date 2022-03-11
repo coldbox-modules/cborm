@@ -7,7 +7,7 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-component {
+component singleton {
 
 	/**
 	 * Sets up Hibernate logging levels and redirects logs to system out.

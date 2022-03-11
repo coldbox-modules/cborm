@@ -43,11 +43,8 @@ component {
 		// cborm Settings
 		settings = structCopy( variables.SETTING_DEFAULTS );
 
-		// ColdBox 5 or 4 DSL Builder
-		var dslPath = "#moduleMapping#.dsl.OrmDsl";
-
 		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
-		controller.getWireBox().registerDSL( namespace = "entityService", path = dslPath );
+		controller.getWireBox().registerDSL( namespace = "entityService", path = "#moduleMapping#.dsl.OrmDsl" );
 
 		// Custom Declared Points
 		interceptorSettings = {

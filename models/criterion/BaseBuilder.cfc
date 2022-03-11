@@ -39,11 +39,6 @@ component accessors="true" {
 	property name="ormService" type="any";
 
 	/**
-	 * LogBox Logger
-	 */
-	property name="logger";
-
-	/**
 	 * If marked as a stream, we will use cbStreams to return to you an array of streams
 	 */
 	property
@@ -81,10 +76,9 @@ component accessors="true" {
 		required any ormService
 	){
 		// java projections linkage
-		this.projections  = createObject( "java", "org.hibernate.criterion.Projections" );
+		this.projections          = arguments.ormService.buildJavaProxy( "org.hibernate.criterion.Projections" );
 		// restrictions linkage: can be Restrictions or Subqueries
-		this.restrictions = arguments.restrictions;
-
+		this.restrictions         = arguments.restrictions;
 		// hibernate criteria query setup - will be either CriteriaBuilder or DetachedCriteriaBuilder
 		variables.nativeCriteria  = arguments.criteria;
 		// set entity name
@@ -97,13 +91,6 @@ component accessors="true" {
 		variables.sqlLoggerActive = false;
 		// If the return type will be a stream or not
 		variables.asStream        = false;
-		// add SQL Helper
-		variables.SQLHelper       = new cborm.models.sql.SQLHelper( this );
-		// Setup Logging
-		variables.logger          = arguments.ormService
-			.getWireBox()
-			.getLogBox()
-			.getLogger( this );
 
 		// Transformer types
 		this.ALIAS_TO_ENTITY_MAP  = nativeCriteria.ALIAS_TO_ENTITY_MAP;
@@ -120,7 +107,20 @@ component accessors="true" {
 		return this;
 	}
 
-	/************************************** PUBLIC *********************************************/
+	/**
+	 * Lazy load injection of the sql helper
+	 *
+	 * @return cborm.models.sql.SQLHelper
+	 */
+	function getSQLHelper(){
+		if ( isNull( variables.sqlHelper ) ) {
+			variables.sqlHelper = variables.ormService
+				.getWireBox()
+				.getInstance( "SQLHelper@cborm", { criteriaBuilder : this } );
+		}
+		return variables.sqlHelper;
+	}
+
 
 	/**
 	 * Add an ordering to the result set, you can add as many as you like:
@@ -139,7 +139,7 @@ component accessors="true" {
 		string sortDir     = "asc",
 		boolean ignoreCase = false
 	){
-		var order   = createObject( "java", "org.hibernate.criterion.Order" );
+		var order   = variables.ormService.buildJavaProxy( "org.hibernate.criterion.Order" );
 		var orderBy = "";
 
 		// direction
@@ -436,7 +436,7 @@ component accessors="true" {
 				arguments.detachedSQLProjection
 			] : arguments.detachedSQLProjection;
 			// loop over array of detachedSQLProjections
-			for ( projection in projectionCollection ) {
+			for ( var projection in projectionCollection ) {
 				projectionList.add( projection.createDetachedSQLProjection() );
 			}
 		}
@@ -547,14 +547,14 @@ component accessors="true" {
 	 * @formatSql           Format the SQL to execute
 	 */
 	string function getSQL( required boolean returnExecutableSql = false, required boolean formatSql = true ){
-		return variables.SQLHelper.getSQL( argumentCollection = arguments );
+		return getSqlHelper().getSQL( argumentCollection = arguments );
 	}
 
 	/**
 	 * Gets the positional SQL parameter values from the criteria query
 	 */
 	array function getPositionalSQLParameterValues(){
-		return variables.SQLHelper.getPositionalSQLParameterValues();
+		return getSqlHelper().getPositionalSQLParameterValues();
 	}
 
 	/**
@@ -563,21 +563,21 @@ component accessors="true" {
 	 * @simple Whether to return a simply array or full objects
 	 */
 	any function getPositionalSQLParameterTypes( required boolean simple = true ){
-		return variables.SQLHelper.getPositionalSQLParameterTypes( argumentCollection = arguments );
+		return getSqlHelper().getPositionalSQLParameterTypes( argumentCollection = arguments );
 	}
 
 	/**
 	 * Returns a formatted array of parameter value and types
 	 */
 	array function getPositionalSQLParameters(){
-		return variables.SQLHelper.getPositionalSQLParameters();
+		return getSqlHelper().getPositionalSQLParameters();
 	}
 
 	/**
 	 * Retrieves the SQL Log
 	 */
 	array function getSQLLog(){
-		return variables.SQLHelper.getLog();
+		return getSqlHelper().getLog();
 	}
 
 	/**
@@ -587,8 +587,8 @@ component accessors="true" {
 	 * @formatSql           Format the SQL to execute
 	 */
 	BaseBuilder function startSqlLog( boolean returnExecutableSql = false, boolean formatSql = false ){
-		variables.SQLHelper.setReturnExecutableSql( arguments.returnExecutableSql );
-		variables.SQLHelper.setFormatSql( arguments.formatSql );
+		getSqlHelper().setReturnExecutableSql( arguments.returnExecutableSql );
+		getSqlHelper().setFormatSql( arguments.formatSql );
 		variables.sqlLoggerActive = true;
 		return this;
 	}
@@ -607,7 +607,7 @@ component accessors="true" {
 	 * @label The label to use for the sql log record
 	 */
 	BaseBuilder function logSQL( required String label ){
-		variables.SQLHelper.log( argumentCollection = arguments );
+		getSqlHelper().log( argumentCollection = arguments );
 		return this;
 	}
 

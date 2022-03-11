@@ -61,6 +61,7 @@ component {
 	this.ormEnabled = "true";
 
 	this.ormSettings = {
+		dialect 			  : "org.hibernate.dialect.MySQL5InnoDBDialect",
 		cfclocation           : [ "models" ],
 		logSQL                : true,
 		dbcreate              : "update",
@@ -107,7 +108,9 @@ component {
 	}
 
 	public void function onSessionStart(){
-		application.cbBootStrap.onSessionStart();
+		if ( structKeyExists( application, "cbBootstrap" ) ){
+			application.cbBootStrap.onSessionStart();
+		}
 	}
 
 	public void function onSessionEnd( struct sessionScope, struct appScope ){

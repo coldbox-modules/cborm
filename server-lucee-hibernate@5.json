@@ -10,11 +10,18 @@
         },
         "rewrites":{
             "enable":"true"
+        },
+		"webroot":"test-harness",
+        "aliases":{
+            "/moduleroot/cborm":"./"
         }
     },
     "jvm":{
         "heapSize":"1024",
         "args":"-Dlucee.extensions='https://ext.lucee.org/hibernate-orm-5.4.29.6-BETA.lex'"
     },
-    "openBrowser":"false"
+    "openBrowser":"false",
+	"cfconfig": {
+		"file" : ".cfconfig.json"
+	}
 }

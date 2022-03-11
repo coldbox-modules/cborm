@@ -3,8 +3,15 @@
  * www.ortussolutions.com
  * ---
  * A proxy to hibernate org.hibernate.criterion.Restrictions object to allow for criteria based querying
+ *
+ * @see https://docs.jboss.org/hibernate/stable/orm/javadocs/org/hibernate/criterion/Restrictions.html
  */
-component singleton {
+component singleton access="true" {
+
+	/**
+	 * The java proxy builder
+	 */
+	property name="javaProxy";
 
 	// Lookup map of Hibernate to CF Types. Used for auto casting.
 	this.TYPES = {
@@ -40,9 +47,12 @@ component singleton {
 
 	/**
 	 * Constructor
+	 *
+	 * @javaProxy.inject JavaProxyBuilder@cborm
 	 */
-	Restrictions function init(){
-		variables.restrictions = createObject( "java", "org.hibernate.criterion.Restrictions" );
+	Restrictions function init( required javaProxy ){
+		variables.javaProxy    = arguments.javaProxy;
+		variables.restrictions = arguments.javaProxy.build( "org.hibernate.criterion.Restrictions" );
 		return this;
 	}
 
@@ -355,10 +365,9 @@ component singleton {
 	 * @type The class type to build: StringType, BooleanType, YesNoType, LongType
 	 */
 	function buildHibernateType( required type ){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return createObject( "java", "org.hibernate.type.#arguments.type#" );
-		}
-		return createObject( "java", "org.hibernate.type.#arguments.type#" ).INSTANCE;
+		var javaType = variables.javaProxy.build( "org.hibernate.type.#arguments.type#" );
+		// Return the Adobe or Lucee Approach of the instance type
+		return server.keyExists( "lucee" ) ? javaType : javaType.INSTANCE;
 	}
 
 	/**
@@ -502,8 +511,7 @@ component singleton {
 	/**
 	 * If a method does not exist, we will try to match it to a Hibernate native function, if not an exception is thrown
 	 *
-	 * @missingMethodName     
-	 * @missingMethodArguments
+	 * @missingMethodName
 	 *
 	 * @throws RuntimeException
 	 */

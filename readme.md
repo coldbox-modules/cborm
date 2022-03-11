@@ -2,9 +2,11 @@
 
 # Welcome To The ColdBox ORM Module
 
-[![Build Status](https://travis-ci.com/coldbox-modules/cborm.svg?branch=development)](https://travis-ci.com/coldbox-modules/cborm)
+[![cborm CI](https://github.com/coldbox-modules/cborm/actions/workflows/ci.yml/badge.svg)](https://github.com/coldbox-modules/cborm/actions/workflows/ci.yml)
 
-This module will enhance your experience when working with the ColdFusion ORM powered by Hibernate.  It will not only enhance it with dynamic goodness but give you a fluent and human approach to working with Hibernate.
+<img src="https://forgebox.io/api/v1/entry/cborm/badges/version" />
+
+This module will enhance your experience when working with the ColdFusion (CFML) ORM powered by Hibernate.  It will not only enhance it with dynamic goodness but give you a fluent and human approach to working with Hibernate.  It will finally make working with ORM NOT SUCK!
 
 ## Features
 
@@ -83,9 +85,12 @@ Apache License, Version 2.0.
 
 * Lucee 5+
   * Hibernate 3.5.x
-* ColdFusion 2016
+  * Hibernate 5.x via the new hibernate extension
+* ColdFusion 2016 (DEPRECATED)
   * Hibernate 4.3.10
 * ColdFusion 2018
+  * Hibernate 5.2.11
+* ColdFusion 2021
   * Hibernate 5.2.11
 
 # INSTRUCTIONS
@@ -96,7 +101,7 @@ Use CommandBox cli to install:
 box install cborm
 ```
 
-Unfortunately, due to the way that ORM is loaded by ColdFusion, if you are using the ORM EventHandler or ActiveEntity or any ColdBox Proxies that require ORM, you must create an Application Mapping in the `Application.cfc` like this:
+Unfortunately, due to the way that ORM is loaded by ColdFusion, if you are using the ORM EventHandler or `ActiveEntity` or any ColdBox Proxies that require ORM, you must create an Application Mapping in the `Application.cfc` like this:
 
 ```js
 this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";
@@ -159,8 +164,9 @@ All contributions welcome! Feel free to fix a typo, add a feature :rocket:, or a
 
 If you want to get hacking on CBORM, here's how to start:
 
-1. Clone down this repo
-2. Start a MySQL service you can connect to for running the CBORM test suite. Here's an example of a Docker mysql service:
+1. Make sure you have CommandBox installed: https://www.ortussolutions.com/products/commandbox#download
+2. Star, Fork, and Clone down this repo: https://github.com/coldbox-modules/cborm
+3. Start a MySQL 5+ service or you can use our `docker-compose.yml` file. Just make sure you have Docker installed. `run-script startdbs` or run it manually below.
 
 ```bash
 docker run \
@@ -175,9 +181,10 @@ docker run \
     mysql
 ```
 
-3. Copy `test-harness/.env.template` to `test-harness/.env` and enter the database credentials used in step 2 above ☝
-4. Start a test server - `box cd tests` and `box start server-lucee@5.json`
-5. Hack away! :laptop:
+3. Copy `.env.template` to `.env` and enter the database credentials used in step 2 above ☝
+4. Install the project dependencies with CommandBox `box run-script install:dependencies`
+5. Start a test server - `box start server-lucee@5.json` (You can use adobe or other engines)
+6. Hack away! :laptop:
 
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp

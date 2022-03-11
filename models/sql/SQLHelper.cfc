@@ -3,7 +3,9 @@
  * www.ortussolutions.com
  * ---
  * Simple utility for extracting SQL from native Criteria Query objects.
- * One SQL Helper is created per CriteriaBuilder
+ * One SQL Helper is created per `CriteriaBuilder`
+ *
+ * @author Luis Majano
  */
 component accessors="true" {
 
@@ -18,7 +20,7 @@ component accessors="true" {
 	property
 		name   ="formatSql"
 		type   ="boolean"
-		default="false";
+		default="true";
 
 	/**
 	 * Bit to return the executable SQL or not
@@ -40,8 +42,8 @@ component accessors="true" {
 		boolean returnExecutableSql = false,
 		boolean formatSql           = false
 	){
-		// Setup properties
 		variables.cb           = arguments.criteriaBuilder;
+		variables.ormService   = variables.cb.getOrmService();
 		variables.entityName   = variables.cb.getEntityName();
 		variables.criteriaImpl = variables.cb.getNativeCriteria();
 		variables.ormSession   = variables.criteriaImpl.getSession();
@@ -67,7 +69,9 @@ component accessors="true" {
 		variables.hibernateVersion = listFirst( variables.ormUtil.getHibernateVersion(), "." );
 		switch ( variables.hibernateVersion ) {
 			case "3":
-				variables.formatter        = createObject( "java", "org.hibernate.jdbc.util.BasicFormatterImpl" );
+				variables.formatter = variables.ormService.buildJavaProxy(
+					"org.hibernate.jdbc.util.BasicFormatterImpl"
+				);
 				// Lucee Hibernate 3+, waayyyyy old.
 				variables.hibernateVersion = "3";
 				variables.dialect          = variables.ormFactory.getDialect();
@@ -81,8 +85,7 @@ component accessors="true" {
 				};
 				break;
 			case "4":
-				variables.formatter = createObject(
-					"java",
+				variables.formatter = variables.ormService.buildJavaProxy(
 					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
 				);
 				variables.dialect        = variables.ormFactory.getDialect();
@@ -96,12 +99,13 @@ component accessors="true" {
 				};
 				break;
 			case "5":
-				variables.formatter = createObject(
-					"java",
+				variables.formatter = variables.ormService.buildJavaProxy(
 					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
 				);
 				// Set SQL Dialect ACF2018:Hibernate5.2+
-				var jdbcServiceClass     = createObject( "java", "org.hibernate.engine.jdbc.spi.JdbcServices" ).getClass();
+				var jdbcServiceClass = variables.ormService
+					.buildJavaProxy( "org.hibernate.engine.jdbc.spi.JdbcServices" )
+					.getClass();
 				var jdbcService          = variables.ormFactory.getServiceRegistry().getService( jdbcServiceClass );
 				variables.dialect        = jdbcService.getDialect();
 				variables.dialectSupport = {
@@ -127,11 +131,13 @@ component accessors="true" {
 	 * @label The label for the log record
 	 */
 	SQLHelper function log( string label = "Criteria" ){
-		var logentry = {
-			"type" : arguments.label,
-			"sql"  : getSQL( argumentCollection = arguments )
-		};
-		arrayAppend( variables.log, logentry );
+		arrayAppend(
+			variables.log,
+			{
+				"type" : arguments.label,
+				"sql"  : getSQL( argumentCollection = arguments )
+			}
+		);
 
 		return this;
 	}
@@ -185,8 +191,6 @@ component accessors="true" {
 
 	/**
 	 * Gets the positional SQL parameter values from the criteria query
-	 *
-	 * @return array
 	 */
 	array function getPositionalSQLParameterValues(){
 		return getCriteriaQueryTranslator().getQueryParameters().getPositionalParameterValues();
@@ -470,14 +474,16 @@ component accessors="true" {
 		}
 
 		// not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
-		return createObject( "java", "org.hibernate.loader.criteria.CriteriaJoinWalker" ).init(
-			persister, // persister (loadable)
-			getCriteriaQueryTranslator(), // translator
-			variables.ormFactory, // factory
-			variables.criteriaImpl, // criteria
-			variables.entityName, // rootEntityName
-			variables.ormSession.getLoadQueryInfluencers() // loadQueryInfluencers
-		);
+		return variables.ormService
+			.buildJavaProxy( "org.hibernate.loader.criteria.CriteriaJoinWalker" )
+			.init(
+				persister, // persister (loadable)
+				getCriteriaQueryTranslator(), // translator
+				variables.ormFactory, // factory
+				variables.criteriaImpl, // criteria
+				variables.entityName, // rootEntityName
+				variables.ormSession.getLoadQueryInfluencers() // loadQueryInfluencers
+			);
 	}
 
 	/**
@@ -487,12 +493,14 @@ component accessors="true" {
 	 */
 	private any function getCriteriaQueryTranslator(){
 		// create new criteria query translator; we'll use this to build up the query string
-		return createObject( "java", "org.hibernate.loader.criteria.CriteriaQueryTranslator" ).init(
-			variables.ormFactory, // factory
-			variables.criteriaImpl, // criteria
-			variables.entityName, // rootEntityName
-			variables.criteriaImpl.getAlias() // rootSQLAlias
-		);
+		return variables.ormService
+			.buildJavaProxy( "org.hibernate.loader.criteria.CriteriaQueryTranslator" )
+			.init(
+				variables.ormFactory, // factory
+				variables.criteriaImpl, // criteria
+				variables.entityName, // rootEntityName
+				variables.criteriaImpl.getAlias() // rootSQLAlias
+			);
 	}
 
 }

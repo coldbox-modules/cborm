@@ -1382,9 +1382,7 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush, datasource ){
-				var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
-					"delete from #arguments.entityName#"
-				);
+				var sqlBuffer = getStringBuilder( "delete from #arguments.entityName#" );
 
 				// Do we have arguments?
 				if ( structCount( arguments ) > 3 ) {
@@ -1569,7 +1567,7 @@ component accessors="true" {
 		string where = "",
 		any params   = structNew()
 	){
-		var buffer  = createObject( "java", "java.lang.StringBuilder" ).init( "" );
+		var buffer  = getStringBuilder();
 		var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
 
 
@@ -1612,10 +1610,8 @@ component accessors="true" {
 	 * @entityName The entity name to count on
 	 */
 	numeric function countWhere( required string entityName ){
-		var sqlBuffer = createObject( "java", "java.lang.StringBuilder" ).init(
-			"select count(id) from #arguments.entityName#"
-		);
-		var options = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
+		var sqlBuffer = getStringBuilder( "select count(id) from #arguments.entityName#" );
+		var options   = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
 
 		// Do we have arguments?
 		if ( structCount( arguments ) > 1 ) {
@@ -1728,6 +1724,18 @@ component accessors="true" {
 	/*****************************************************************************************/
 	/********************************* ORM UTILITIES *****************************************/
 	/*****************************************************************************************/
+
+	/**
+	 * Build a java proxy object using our Java Proxy Builder
+	 *
+	 * @type The type of Java Proxy class to build using our Java Proxy Builder
+	 */
+	function buildJavaProxy( required type ){
+		if ( isNull( variables.javaProxyBuilder ) ) {
+			variables.javaProxyBuilder = getWireBox().getInstance( "JavaProxyBuilder@cborm" );
+		}
+		return variables.javaProxyBuilder.build( arguments.type );
+	}
 
 	/**
 	 * Clear the session removes all the entities that are loaded or created in the session.
@@ -1855,10 +1863,11 @@ process(
 	 * @return cborm.models.criterion.Restrictions
 	 */
 	function getRestrictions(){
+		// Lazy Loading injection
 		if ( !isNull( variables.restrictions ) ) {
 			return variables.restrictions;
 		}
-		variables.restrictions = variables.wirebox.getInstance( "cborm.models.criterion.Restrictions" );
+		variables.restrictions = variables.wirebox.getInstance( "Restrictions@cborm" );
 		return variables.restrictions;
 	}
 
@@ -1881,11 +1890,8 @@ process(
 	){
 		// mix in yourself as a dependency
 		arguments.ormService = this;
-		// create new criteria builder
-		return variables.wirebox.getInstance(
-			name          = "cborm.models.criterion.CriteriaBuilder",
-			initArguments = arguments
-		);
+		// create new criteria builder, it's a transient
+		return variables.wirebox.getInstance( "CriteriaBuilder@cborm", arguments );
 	}
 
 
@@ -1958,6 +1964,17 @@ process(
 		if ( !isNull( results ) ) {
 			return results;
 		}
+	}
+
+	/**
+	 * Build out a Java string builder
+	 *
+	 * @seed The string to seed the builder with
+	 *
+	 * @return java.lang.StringBuilder
+	 */
+	private function getStringBuilder( seed = "" ){
+		return createObject( "java", "java.lang.StringBuilder" ).init( arguments.seed );
 	}
 
 }

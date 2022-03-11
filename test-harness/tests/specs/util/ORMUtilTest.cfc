@@ -45,7 +45,7 @@ component extends="tests.resources.BaseTest" skip="isCF" {
 	}
 
 	function testGetHibernateVersion(){
-		writeDump( ormutil.getHibernateVersion() );
+		debug( ormutil.getHibernateVersion() );
 		/**
 		 * ! LUCEE-ONLY
 		 */

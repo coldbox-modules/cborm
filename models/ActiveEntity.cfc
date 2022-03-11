@@ -26,6 +26,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	property name="validationResult" persistent="false";
 
 	/**
+	 * Marker used for quick determination if we are in an Active Entity or not
+	 */
+	this.activeEntity = true;
+
+	/**
 	 * Active Entity Constructor, if you override it, make sure you call super.init()
 	 *
 	 * @queryCacheRegion The query cache region to use if not we will use one for you
