@@ -7,16 +7,12 @@
 component accessors="true" {
 
 	property name="injector";
-	property name="log";
-
 
 	/**
 	 * Constructor as per interface
 	 */
 	public any function init( required any injector ){
 		variables.injector = arguments.injector;
-		variables.log      = arguments.injector.getLogBox().getLogger( this );
-
 		return this;
 	}
 

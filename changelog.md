@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.9.0] => 2022-
+
+### Added
+
+* Removed unecessary on load logging to increase performance
+
+
+----
+
 ## [v3.8.0] => 2022-MAR-09
 
 ### Fixed
