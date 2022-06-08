@@ -1614,11 +1614,12 @@ component accessors="true" {
 		var options   = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
 
 		// Do we have arguments?
+		var params = {};
 		if ( structCount( arguments ) > 1 ) {
 			sqlBuffer.append( " WHERE" );
 
 			// Go over Params and incorporate them
-			var params = arguments
+			params = arguments
 				// filter out reserved names
 				.filter( function( key, value ){
 					return ( !listFindNoCase( "entityName", arguments.key ) );
