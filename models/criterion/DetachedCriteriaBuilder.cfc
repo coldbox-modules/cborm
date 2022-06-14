@@ -31,17 +31,11 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			.buildJavaProxy( "org.hibernate.criterion.DetachedCriteria" )
 			.forEntityName( arguments.entityName, arguments.alias );
 
-		// We don't use the normal restrictions object, we use the subclass: SubQueries specific to detached criteria queries
-		var subQueriesRestrictions = arguments.ormService
-			.getWireBox()
-			.getInstance( "SubQueries@cborm" )
-			.setDetachedCriteria( detachedCriteria );
-
 		// Super size me
 		super.init(
 			entityName  : arguments.entityName,
 			criteria    : detachedCriteria,
-			restrictions: subQueriesRestrictions,
+			restrictions: new Subqueries( arguments.ormService.getWireBox().getInstance( "JavaProxyBuilder@cborm" ), detachedCriteria ),
 			ormService  : arguments.ormService
 		);
 
@@ -51,7 +45,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * pass off arguments to higher-level restriction builder, and handle the results
 	 *
-	 * @missingMethodName     
+	 * @missingMethodName
 	 * @missingMethodArguments
 	 */
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
