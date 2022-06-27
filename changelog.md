@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Removed unecessary on load logging to increase performance
 
+### Fixed
+
+* `countWhere()` invalid SQL exception if no arguments are provided: https://github.com/coldbox-modules/cborm/pull/54
 
 ----
 
