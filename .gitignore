@@ -5,6 +5,7 @@
 # Engine + Secrets + databases
 .env
 .engine/**
+test-harness/.engine
 .db/**
 
 # Dependencies

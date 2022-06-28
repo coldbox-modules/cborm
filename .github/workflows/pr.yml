@@ -13,6 +13,8 @@ on:
 jobs:
   tests:
     uses: coldbox-modules/cborm/.github/workflows/tests.yml@development
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # Format PR
   format:

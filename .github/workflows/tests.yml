@@ -14,10 +14,15 @@ jobs:
     env:
       DB_USER: root
       DB_PASSWORD: root
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        experimental: [false]
+        include:
+          - cfengine: "lucee-hibernate@5.4"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
