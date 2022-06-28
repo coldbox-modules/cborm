@@ -1614,24 +1614,25 @@ component accessors="true" {
 		var options   = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
 
 		// Do we have arguments?
+		var params = {};
 		if ( structCount( arguments ) > 1 ) {
 			sqlBuffer.append( " WHERE" );
+
+			// Go over Params and incorporate them
+			params = arguments
+				// filter out reserved names
+				.filter( function( key, value ){
+					return ( !listFindNoCase( "entityName", arguments.key ) );
+				} )
+				.reduce( function( accumulator, key, value ){
+					accumulator[ key ] = value;
+					sqlBuffer.append( " #key# = :#key# AND" );
+					return accumulator;
+				}, {} );
+
+			// Finalize ANDs
+			sqlBuffer.append( " 1 = 1" );
 		}
-
-		// Go over Params and incorporate them
-		var params = arguments
-			// filter out reserved names
-			.filter( function( key, value ){
-				return ( !listFindNoCase( "entityName", arguments.key ) );
-			} )
-			.reduce( function( accumulator, key, value ){
-				accumulator[ key ] = value;
-				sqlBuffer.append( " #key# = :#key# AND" );
-				return accumulator;
-			}, {} );
-
-		// Finalize ANDs
-		sqlBuffer.append( " 1 = 1" );
 
 		// Caching?
 		if ( getUseQueryCaching() ) {
