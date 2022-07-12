@@ -1,10 +1,4 @@
-﻿/**
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-*/
-component {
+﻿component {
 
 	// UPDATE THE NAME OF THE MODULE IN TESTING BELOW
 	request.MODULE_NAME = "cborm";
@@ -21,11 +15,7 @@ component {
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 
 	// The application root
-	rootPath = reReplaceNoCase(
-		this.mappings[ "/tests" ],
-		"tests(\\|/)",
-		""
-	);
+	rootPath                         = reReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" );
 	this.mappings[ "/root" ]         = rootPath;
 	this.mappings[ "/cbvalidation" ] = rootPath & "/modules/cbvalidation";
 	this.mappings[ "/cbi18n" ]       = rootPath & "/modules/cbvalidation/modules/cbi18n";
@@ -44,6 +34,7 @@ component {
 	this.datasource  = "coolblog";
 	this.ormEnabled  = "true";
 	this.ormSettings = {
+		dialect               : "org.hibernate.dialect.MySQL5InnoDBDialect",
 		cfclocation           : [ "/root/models" ],
 		logSQL                : true,
 		dbcreate              : "update",
@@ -59,6 +50,7 @@ component {
 	public boolean function onRequestStart( String targetPage ){
 		if ( url.keyExists( "fwreinit" ) ) {
 			ormReload();
+			cleanupApp();
 			if ( structKeyExists( server, "lucee" ) ) {
 				pagePoolClear();
 			}
@@ -68,6 +60,10 @@ component {
 	}
 
 	public function onRequestEnd(){
+		cleanupApp();
+	}
+
+	private function cleanupApp(){
 		// CB 6 graceful shutdown
 		if ( !isNull( application.cbController ) ) {
 			application.cbController.getLoaderService().processShutdown();

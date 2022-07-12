@@ -1,20 +1,21 @@
 /**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-
-@Author Luis Majano
-@Description A cool annotation based Transaction Aspect for WireBox
-	This interceptor will inspect objects for the 'transactional' annotation and if found,
-	it will wrap it in a transaction safe hibernate transaction.  This aspect is a self binding
-	aspect for WireBox that registers itself using the two annotations below
-@classMatcher any
-@methodMatcher annotatedWith:transactional
-
-The transactional annotation can have a value if you are using multi-datasources with ORM.
-The value of the transactional annotation denotes the dsn.
-**/
+ * ********************************************************************************
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ********************************************************************************
+ *
+ * This interceptor will inspect objects for the 'transactional' annotation and if found,
+ * it will wrap it in a transaction safe hibernate transaction.  This aspect is a self binding
+ * aspect for WireBox that registers itself using the two annotations below
+ *
+ * The transactional annotation can have a value if you are using multi-datasources with ORM.
+ * The value of the transactional annotation denotes the dsn.
+ *
+ * @Author        Luis Majano
+ * @Description   A cool annotation based Transaction Aspect for WireBox
+ * @classMatcher  any
+ * @methodMatcher annotatedWith:transactional
+ **/
 component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 
 	// Dependencies
@@ -88,10 +89,7 @@ component implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 				tx.rollback();
 			} catch ( any e ) {
 				// silent rollback as something really went wrong
-				variables.log.error(
-					"Error rolling back transaction: #e.detail# #e.message#",
-					e
-				);
+				variables.log.error( "Error rolling back transaction: #e.detail# #e.message#", e );
 			}
 			// throw it
 			rethrow;

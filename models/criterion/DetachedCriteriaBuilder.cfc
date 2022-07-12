@@ -1,51 +1,60 @@
 /**
-********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-
-Description :
-	Based on the general approach of CriteriaBuilder.cfc, DetachedCriteriaBuilder allows you
-	to create a detached criteria query that can be used:
-		* in conjuction with critierion.Subqueries to add a programmatically built subquery as a criterion of another criteria query
-		* as a detachedSQLProjection, which allows you to build a programmatic subquery that is added as a projection to another criteria query
-*/
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Based on the general approach of CriteriaBuilder.cfc, DetachedCriteriaBuilder allows you
+ * to create a detached criteria query that can be used:
+ * - in conjuction with critierion.Subqueries to add a programmatically built subquery as a criterion of another criteria query
+ * - as a detachedSQLProjection, which allows you to build a programmatic subquery that is added as a projection to another criteria query
+ *
+ * @author Luis Majano
+ * @see    https://docs.jboss.org/hibernate/stable/orm/javadocs/org/hibernate/criterion/DetachedCriteria.html
+ * @see    cborm.models.criterion.CriteriaBuilder
+ */
 import cborm.models.*;
 component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 	/**
-	 * Constructor
+	 * Constructor: Usually called by the `createSubcriteria` in the `CriteriaBuilder` object
+	 *
+	 * @entityName The entity name for the subcriteria
+	 * @alias      The entity alias to use in the subcriteria
+	 * @ormService A reference back to the calling orm service
 	 */
 	DetachedCriteriaBuilder function init(
 		required string entityName,
 		required string alias,
-		required any ORMService
+		required any ormService
 	){
-		// create new DetachedCriteria
-		var criteria = createObject(
-			"java",
-			"org.hibernate.criterion.DetachedCriteria"
-		).forEntityName(
-			arguments.entityName,
-			arguments.alias
-		);
+		// create new java DetachedCriteria
+		var detachedCriteria = arguments.ormService
+			.buildJavaProxy( "org.hibernate.criterion.DetachedCriteria" )
+			.forEntityName( arguments.entityName, arguments.alias );
 
-		// setup base builder with detached criteria and subqueries
+		// We don't use the normal restrictions object, we use the subclass: SubQueries specific to detached criteria queries
+		var subQueriesRestrictions = arguments.ormService
+			.getWireBox()
+			.getInstance( "SubQueries@cborm" )
+			.setDetachedCriteria( detachedCriteria );
+
+		// Super size me
 		super.init(
-			entityName   = arguments.entityName,
-			criteria     = criteria,
-			restrictions = new Subqueries( criteria ),
-			ORMService   = arguments.ORMService
+			entityName  : arguments.entityName,
+			criteria    : detachedCriteria,
+			restrictions: subQueriesRestrictions,
+			ormService  : arguments.ormService
 		);
 
 		return this;
 	}
 
-	// pass off arguments to higher-level restriction builder, and handle the results
-	any function onMissingMethod(
-		required string missingMethodName,
-		required struct missingMethodArguments
-	){
+	/**
+	 * pass off arguments to higher-level restriction builder, and handle the results
+	 *
+	 * @missingMethodName     
+	 * @missingMethodArguments
+	 */
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
 		// get the restriction/new criteria
 		var r = createRestriction( argumentCollection = arguments );
 
@@ -80,43 +89,53 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		return this;
 	}
 
-	public any function getNativeCriteria(){
-		var ormsession = variables.ORMService.getORM().getSession();
+	/**
+	 * Get a native executable criteria object.
+	 *
+	 * @see https://docs.jboss.org/hibernate/stable/orm/javadocs/org/hibernate/Criteria.html
+	 */
+	any function getNativeCriteria(){
+		var ormsession = variables.ORMService.getORM().getSession( variables.ormService.getDatasource() );
 		return variables.nativeCriteria.getExecutableCriteria( ormsession );
 	}
 
-	public any function createDetachedSQLProjection(){
+	/**
+	 * Create the detached sql projection
+	 *
+	 * @see https://docs.jboss.org/hibernate/stable/orm/javadocs/org/hibernate/criterion/Projection.html
+	 *
+	 * @return org.hibernate.criterion.Projection
+	 */
+	any function createDetachedSQLProjection(){
+		var sqlHelper   = getSqlHelper();
 		// get the sql with replaced parameters
-		var sql         = SQLHelper.getSql( returnExecutableSql = true );
-		var alias       = SQLHelper.getProjectionAlias();
-		var uniqueAlias = SQLHelper.generateSQLAlias();
+		var sql         = sqlHelper.getSql( returnExecutableSql = true );
+		var alias       = sqlHelper.getProjectionAlias();
+		var uniqueAlias = sqlHelper.generateSQLAlias();
 		// by default, alias is this_...convert it to the alias provided
 		sql             = replaceNoCase(
 			sql,
 			"this_",
-			SQLHelper.getRootSQLAlias(),
+			sqlHelper.getRootSQLAlias(),
 			"all"
 		);
 		// wrap it up and uniquely alias it
 		sql = "( #sql# ) as " & alias;
 
 		// now that we have the sql string, we can create the sqlProjection
-		var projection = this.PROJECTIONS.sqlProjection(
-			sql,
-			[ alias ],
-			SQLHelper.getProjectedTypes()
-		);
+		var projection = this.PROJECTIONS.sqlProjection( sql, [ alias ], sqlHelper.getProjectedTypes() );
 		// finally, add the alias to the projection list so we can sort on the column if needed
 		return this.PROJECTIONS.alias( projection, alias );
 	}
 
 	/**
 	 * Join an association, assigning an alias to the joined association.
+	 *
 	 * @associationName The name of the association property
-	 * @alias The alias to use for this association property on restrictions
-	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 * @alias           The alias to use for this association property on restrictions
+	 * @joinType        The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
 	 */
-	public any function createAlias(
+	any function createAlias(
 		required string associationName,
 		required string alias,
 		numeric joinType = this.INNER_JOIN
@@ -129,11 +148,12 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	}
 	/**
 	 * Create a new Criteria, "rooted" at the associated entity and using an Inner Join
+	 *
 	 * @associationName The name of the association property to root the restrictions with
-	 * @alias The alias to use for this association property on restrictions
-	 * @joinType The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
+	 * @alias           The alias to use for this association property on restrictions
+	 * @joinType        The hibernate join type to use, by default it uses an inner join. Available as properties: criteria.FULL_JOIN, criteria.INNER_JOIN, criteria.LEFT_JOIN
 	 */
-	public any function createCriteria(
+	any function createCriteria(
 		required string associationName,
 		string alias,
 		numeric joinType = this.INNER_JOIN
@@ -159,15 +179,12 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	 */
 	any function maxResults( required numeric maxResults ){
 		getNativeCriteria().setMaxResults( javacast( "int", arguments.maxResults ) );
-		if ( SQLHelper.canLogLimitOffset() ) {
+		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
-			if ( ORMService.getEventHandling() ) {
+			if ( variables.ormService.getEventHandling() ) {
 				variables.eventManager.processState(
 					"onCriteriaBuilderAddition",
-					{
-						"type"            : "Max",
-						"criteriaBuilder" : this
-					}
+					{ "type" : "Max", "criteriaBuilder" : this }
 				);
 			}
 		}

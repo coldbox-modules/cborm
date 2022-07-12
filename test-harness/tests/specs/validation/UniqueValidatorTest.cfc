@@ -21,13 +21,7 @@ component extends="tests.resources.BaseTest" {
 		assertEquals( true, r );
 
 		// 1: No ID, Unique
-		r = model.validate(
-			result,
-			category,
-			"category",
-			"luis",
-			"true"
-		);
+		r = model.validate( result, category, "category", "luis", "true" );
 		assertEquals( true, r );
 		// 2: No ID, Not Unique
 		r = model.validate(
@@ -39,13 +33,9 @@ component extends="tests.resources.BaseTest" {
 		);
 		assertEquals( false, r );
 
-		var category = entityLoad(
-			"Category",
-			{ category : "ColdBox" },
-			true
-		);
+		var category = entityLoad( "Category", { category : "ColdBox" }, true );
 		// 3: With ID, the same
-		r = model.validate(
+		r            = model.validate(
 			result,
 			category,
 			"category",
@@ -63,13 +53,7 @@ component extends="tests.resources.BaseTest" {
 		);
 		assertEquals( true, r );
 		// 4: With ID, and NOT unique
-		r = model.validate(
-			result,
-			category,
-			"category",
-			"News",
-			"true"
-		);
+		r = model.validate( result, category, "category", "News", "true" );
 		assertEquals( false, r );
 	}
 

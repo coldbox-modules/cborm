@@ -41,14 +41,11 @@ component extends="tests.resources.BaseTest" skip="isCF" {
 	}
 
 	function testGetDefaultDatasource(){
-		assertEquals(
-			"coolblog",
-			ormutil.getDefaultDatasource()
-		);
+		assertEquals( "coolblog", ormutil.getDefaultDatasource() );
 	}
 
 	function testGetHibernateVersion(){
-		writeDump( ormutil.getHibernateVersion() );
+		debug( ormutil.getHibernateVersion() );
 		/**
 		 * ! LUCEE-ONLY
 		 */
@@ -56,15 +53,9 @@ component extends="tests.resources.BaseTest" skip="isCF" {
 			return extension.name == "Hibernate ORM Engine";
 		} );
 		if ( listContains( hibernateExtension.version, "5.4.29" ) > 0 ) {
-			assertEquals(
-				"5.4.29.1",
-				ormutil.getHibernateVersion()
-			);
+			assertEquals( "5.4.29.1", ormutil.getHibernateVersion() );
 		} else {
-			assertEquals(
-				"3.5.5-Final",
-				ormutil.getHibernateVersion()
-			);
+			assertEquals( "3.5.5-Final", ormutil.getHibernateVersion() );
 		}
 	}
 

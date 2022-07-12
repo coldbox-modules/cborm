@@ -14,12 +14,9 @@ component extends="tests.resources.BaseTest" {
 			createStub().$( "processState" )
 		);
 		ormService.setORMEventHandler( mockEventHandler );
-		ormservice.seteventHandling( false );
+		ormservice.setEventHandling( false );
 
-		criteria = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "User",
-			ORMService = ormService
-		);
+		criteria    = ormService.newCriteria( "User" );
 		subCriteria = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
 		subCriteria.init(
 			entityName = "User",
@@ -35,10 +32,8 @@ component extends="tests.resources.BaseTest" {
 
 	function testCreateCriteria(){
 		// with join Type
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).withusers( criteria.LEFT_JOIN )
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.withusers( criteria.LEFT_JOIN )
 			.like( "lastName", "M%" )
 			.peek( function( criteria ){
 				debug( "running in a peek" );
@@ -47,13 +42,8 @@ component extends="tests.resources.BaseTest" {
 
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 
-		var r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createCriteria(
-				associationName = "users",
-				joinType        = criteria.INNER_JOIN
-			)
+		var r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createCriteria( associationName = "users", joinType = criteria.INNER_JOIN )
 			.like( "lastName", "M%" )
 			.list();
 
@@ -61,29 +51,20 @@ component extends="tests.resources.BaseTest" {
 
 
 		// No Joins
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).withusers()
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.withusers()
 			.like( "lastName", "M%" )
 			.list();
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 		// with alias
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createCriteria(
-				associationName = "users",
-				alias           = "user"
-			)
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createCriteria( associationName = "users", alias = "user" )
 			.like( "user.lastName", "M%" )
 			.list();
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 		// with alias & join type
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createCriteria(
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createCriteria(
 				associationName = "users",
 				alias           = "user",
 				joinType        = criteria.LEFT_JOIN
@@ -92,10 +73,8 @@ component extends="tests.resources.BaseTest" {
 			.list();
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 		// with alias & join type & withClause
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createCriteria(
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createCriteria(
 				associationName = "users",
 				alias           = "user",
 				joinType        = criteria.LEFT_JOIN,
@@ -107,18 +86,14 @@ component extends="tests.resources.BaseTest" {
 
 	function testCreateAlias(){
 		// with alias and join type
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createAlias( "users", "u", criteria.INNER_JOIN )
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" )
 			.list();
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 		// with alias,join type and withClause
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createAlias(
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createAlias(
 				"users",
 				"u",
 				criteria.LEFT_JOIN,
@@ -128,18 +103,14 @@ component extends="tests.resources.BaseTest" {
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 
 		// no join type
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createAlias( "users", "u" )
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createAlias( "users", "u" )
 			.like( "u.lastName", "M%" )
 			.list();
 		assertEquals( "Administrator", r[ 1 ].getRole() );
 		// no join type, but withClause
-		r = new cborm.models.criterion.CriteriaBuilder(
-			entityName = "Role",
-			ormService = ormService
-		).createAlias(
+		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+			.createAlias(
 				associationName = "users",
 				alias           = "u",
 				withClause      = criteria.restrictions.like( "u.lastName", "M%" )
@@ -158,6 +129,20 @@ component extends="tests.resources.BaseTest" {
 		assertTrue( r gt 0 );
 	}
 
+	function testDetacheSQLProjection(){
+		r = criteria
+			.withProjections(
+				detachedSQLProjection = [
+					criteria.createSubcriteria( "Role", "Role1" ).withProjections( count = "Role1.role:Role" )
+				]
+			)
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
+			.list();
+		debug( r );
+	}
+
 	function testWithProjections(){
 		r = criteria
 			.withProjections(
@@ -165,21 +150,60 @@ component extends="tests.resources.BaseTest" {
 				rowCount = true,
 				max      = "lastLogin"
 			)
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
 			.list();
-
-		assertTrue( isArray( r ) );
-
-		r = criteria.withProjections( property = "firstName,lastName" ).list();
 
 		assertTrue( isArray( r ) );
 
 		r = criteria
+			.withProjections( property = "firstName,lastName" )
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
+			.list();
+
+		assertTrue( isArray( r ) );
+	}
+
+	function testSQlProjections(){
+		var categoryCriteria = new cborm.models.criterion.CriteriaBuilder(
+			entityName = "Category",
+			ORMService = ormService
+		);
+
+		r = categoryCriteria
 			.withProjections(
-				detachedSQLProjection = [
-					criteria.createSubcriteria( "Role", "Role1" ).withProjections( count = "Role1.role:Role" )
+				groupProperty = "catid",
+				sqlProjection = [
+					{
+						sql      : "count( category_id )",
+						alias    : "count",
+						property : "catid"
+					}
+				],
+				sqlGroupProjection = [
+					{
+						sql      : "year( modifydate )",
+						group    : "year( modifydate )",
+						alias    : "modifiedDate",
+						property : "id"
+					},
+					{
+						sql      : "dateDiff('2021-12-31 23:59:59','2021-12-30')",
+						group    : "dateDiff('2021-12-31 23:59:59','2021-12-30')",
+						alias    : "someDateDiff",
+						property : "id"
+					}
 				]
 			)
+			.asStruct()
+			.peek( function( c ){
+				debug( c.getSql( true, true ) );
+			} )
 			.list();
+		debug( r );
 		assertTrue( isArray( r ) );
 	}
 
@@ -398,50 +422,24 @@ component extends="tests.resources.BaseTest" {
 
 	function testGetSQL(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		// test it returns a string
 		assertTrue( isSimpleValue( r.getSQL() ) );
 		// test it returns non-executable sql
-		assertTrue(
-			findNoCase(
-				"?",
-				r.getSQL( returnExecutableSql = false )
-			)
-		);
+		assertTrue( findNoCase( "?", r.getSQL( returnExecutableSql = false ) ) );
 		// test it returns executable sql
-		assertFalse(
-			findNoCase(
-				"?",
-				r.getSQL( returnExecutableSql = true )
-			)
-		);
+		assertFalse( findNoCase( "?", r.getSQL( returnExecutableSql = true ) ) );
 		// test it returns non-formatted sql
-		assertFalse(
-			findNoCase(
-				"<pre>",
-				r.getSQL( formatSql = false )
-			)
-		);
+		assertFalse( findNoCase( "<pre>", r.getSQL( formatSql = false ) ) );
 		// test it returns formatted sql
-		assertTrue(
-			findNoCase(
-				"<pre>",
-				r.getSQL( formatSql = true )
-			)
-		);
+		assertTrue( findNoCase( "<pre>", r.getSQL( formatSql = true ) ) );
 	}
 
 	function testGetSqlLog(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 
@@ -450,10 +448,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testStartSqlLog(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.startSqlLog()
 			.like( "u.lastName", "M%" );
@@ -463,10 +458,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testStopSqlLog(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.startSqlLog()
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" )
@@ -477,10 +469,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testLogSql(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 
@@ -493,10 +482,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testCanLogSql(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		// make the private method public
@@ -511,10 +497,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testHasProjection(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		// make the private method public
@@ -529,10 +512,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testGetPositionalSQLParameterValues(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var values = r.getPositionalSQLParameterValues();
@@ -544,10 +524,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testGetPositionalSQLParameterTypes(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var simpletypes   = r.getPositionalSQLParameterTypes( true );
@@ -562,10 +539,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testGetPositionalSQLParameters(){
 		r = criteria
-			.init(
-				entityName = "Role",
-				ormService = ormService
-			)
+			.init( entityName = "Role", ormService = ormService )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
 		var params = r.getPositionalSQLParameters();

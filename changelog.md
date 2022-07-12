@@ -7,33 +7,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
-## [v3.5.0] => 2021-AUG
+## [v3.9.0] => 2022-
 
 ### Added
 
-* Migration to github actions from travis
-* Adobe 2021 Support and testing automation
-* Hibernate 5.4+ support for Lucee
-* New ORM events based on Hibernate 5.4 Events: `ORMFlush, ORMAutoFlush, ORMPreFlush, ORMDirtyCheck, ORMEvict, and ORMClear`
-* Added a `isInTransaction()` util helper method to all the orm services. This adds the ability to check whether the current executing code is inside a Hibernate transaction. Useful for preventing nested transactions via
+* Removed unecessary on load logging to increase performance
 
 ### Fixed
 
-* ActiveEntity `evict()` had the wrong method and arguments delegated to the parent class.
+* `countWhere()` invalid SQL exception if no arguments are provided: https://github.com/coldbox-modules/cborm/pull/54
+
+----
+
+## [v3.8.0] => 2022-MAR-09
+
+### Fixed
+
+* CBORM-32 - Non-Primary DSN Entities not found. Multi-datasource discovery of entities using virtual services and active entity. This was a regresion since version 1.5. This brings back multi-datasource support for active entity, and virtual entity services. https://github.com/coldbox-modules/cborm/pull/52
+* Detached `Subqueries` was marked as a singleton when indeed it was indeed a transient. This could have created scoping issues on subquery based detached criteria building.
+* Varscoping issues in `BaseBuilder` detached projections
+* `DetachedCriteriaBuilder` was not passing the `datasource` to native criteria objects
+
+### Added
+
+* Root `docker-compose.yml` to startup MySQL, or PostgreSQL in docker, for further hacking and testing.
+* Java proxy caching to avoid Lucee OSGi issues and increase Java object building performance
+* New method in the BaseOrmService: `buildJavaProxy()` which leverages our `JavaProxyBuilder`
+* Lazy loading of SQL Helper in criteria queries
+* New module template guidelines and CI
+* Leverage WireBox aliases for contstruction of internal objects
+* Tons of internal docs and links to hibernate docs
+
+----
+
+## [v3.7.0] => 2022-JAN-13
+
+### Added
+
+* [CBORM-29](https://ortussolutions.atlassian.net/browse/CBORM-29) Allow SQL projections to be functions containing commas
+
+----
+
+## [v3.6.0] => 2022-JAN-10
+
+### Added
+
+* Removed usage of interface on DSL. Causes more issues than anything with multiple engines.
+
+### Changed
+
+* Renamed default object DSL
+
+----
+
+## [v3.5.1] => 2022-JAN-10
+
+### Fixed
+
+* Removed usage of interface on DSL. Causes more issues than anything with multiple engines.
+
+----
+
+## [v3.5.0] => 2021-DEC-16
+
+### Fixed
+
+* [CBORM-20](https://ortussolutions.atlassian.net/browse/CBORM-20) ActiveEntity `evict()` had the wrong method and arguments delegated to the parent class.
+* [CBORM-9](https://ortussolutions.atlassian.net/browse/CBORM-9) ACF2021 - org.hibernate.SessionFactory.getAllClassMetadata is no longer supported
+
+### Improved
+
+* [CBORM-14](https://ortussolutions.atlassian.net/browse/CBORM-14) Inline datasource discovery in base orm service to get a performance boost
+* [CBORM-13](https://ortussolutions.atlassian.net/browse/CBORM-13) virtual entity service double creating the orm utility, use the parent one instead of duplicating the effort
+* [CBORM-12](https://ortussolutions.atlassian.net/browse/CBORM-12) Lazy load the getORMUtil\(\) and use it only when required.
+
+### Added
+
+* [CBORM-22](https://ortussolutions.atlassian.net/browse/CBORM-22) New orm util support method: setupHibernateLogging\(\) thanks to michael born
+* [CBORM-19](https://ortussolutions.atlassian.net/browse/CBORM-19) Added a `isInTransaction()` util helper method to all the orm services.
+* [CBORM-18](https://ortussolutions.atlassian.net/browse/CBORM-18) New ORM events based on Hibernate 5.4 Events: `ORMFlush, ORMAutoFlush, ORMPreFlush, ORMDirtyCheck, ORMEvict, and ORMClear`
+* [CBORM-17](https://ortussolutions.atlassian.net/browse/CBORM-17) Hibernate 5.4 support for lucee new extension
+* [CBORM-16](https://ortussolutions.atlassian.net/browse/CBORM-16) Adobe 2021 support and testing automations
+* [CBORM-15](https://ortussolutions.atlassian.net/browse/CBORM-15) Migration to github actions
+* [CBORM-11](https://ortussolutions.atlassian.net/browse/CBORM-11) Allow Criteria Builder Get\(\) and getOrFail\(\) Methods to Return Projection List Properties
+* [CBORM-21](https://ortussolutions.atlassian.net/browse/CBORM-21) New cfformating rules
 
 ### Compatibility
 
 * If you upgrade your lucee ORM extension to use Hibernate 5.4, all positional paramters in HQL using `?` has been deprecated. You will have to use the `?x` approach where `x` is a number according to the position in the sql:
-  
+
 ```sql
 // Old Syntax
-select p 
-from Person p 
+select p
+from Person p
 where p.name like ? and p.isStatus = ?
 
 // New Syntax
-select p 
-from Person p 
+select p
+from Person p
 where p.name like ?1 and p.isStatus = ?2
 ```
 
@@ -62,7 +133,7 @@ where p.name like ?1 and p.isStatus = ?2
 
 * Added ACF2016 compatibilities on elvis operator which sucks on ACF2016
 * Avoid using member function son some arrays to allow for working with Java arrays
-  
+
 ----
 
 ## [v3.2.1] => 2021-MAR-31

@@ -7,23 +7,25 @@
 component accessors="true" {
 
 	property name="injector";
-	property name="log";
-
 
 	/**
 	 * Constructor as per interface
 	 */
 	public any function init( required any injector ){
 		variables.injector = arguments.injector;
-		variables.log      = arguments.injector.getLogBox().getLogger( this );
-
 		return this;
 	}
 
 	/**
-	 * Process an incoming DSL definition and produce an object with it.
+	 * Process an incoming DSL definition and produce an object with it
+	 *
+	 * @definition   The injection dsl definition structure to process. Keys: name, dsl
+	 * @targetObject The target object we are building the DSL dependency for. If empty, means we are just requesting building
+	 * @targetID     The target ID we are building this dependency for
+	 *
+	 * @return coldbox.system.ioc.dsl.IDSLBuilder
 	 */
-	public any function process( required definition, targetObject ){
+	function process( required definition, targetObject, targetID ){
 		var DSLNamespace = listFirst( arguments.definition.dsl, ":" );
 
 		switch ( DSLNamespace ) {

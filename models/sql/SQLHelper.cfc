@@ -3,7 +3,9 @@
  * www.ortussolutions.com
  * ---
  * Simple utility for extracting SQL from native Criteria Query objects.
- * One SQL Helper is created per CriteriaBuilder
+ * One SQL Helper is created per `CriteriaBuilder`
+ *
+ * @author Luis Majano
  */
 component accessors="true" {
 
@@ -18,7 +20,7 @@ component accessors="true" {
 	property
 		name   ="formatSql"
 		type   ="boolean"
-		default="false";
+		default="true";
 
 	/**
 	 * Bit to return the executable SQL or not
@@ -31,17 +33,17 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @criteriaBuilder The builder this helper is linked to
+	 * @criteriaBuilder     The builder this helper is linked to
 	 * @returnExecutableSql To return the executable SQL or not
-	 * @formatSQL Pretty format the SQL or not
+	 * @formatSQL           Pretty format the SQL or not
 	 */
 	SQLHelper function init(
 		required any criteriaBuilder,
 		boolean returnExecutableSql = false,
 		boolean formatSql           = false
 	){
-		// Setup properties
 		variables.cb           = arguments.criteriaBuilder;
+		variables.ormService   = variables.cb.getOrmService();
 		variables.entityName   = variables.cb.getEntityName();
 		variables.criteriaImpl = variables.cb.getNativeCriteria();
 		variables.ormSession   = variables.criteriaImpl.getSession();
@@ -64,14 +66,10 @@ component accessors="true" {
 	 */
 	private function setupHibernateProperties(){
 		// get formatter for sql string beautification: ACF vs Lucee
-		variables.hibernateVersion = listFirst(
-			variables.ormUtil.getHibernateVersion(),
-			"."
-		);
+		variables.hibernateVersion = listFirst( variables.ormUtil.getHibernateVersion(), "." );
 		switch ( variables.hibernateVersion ) {
 			case "3":
-				variables.formatter = createObject(
-					"java",
+				variables.formatter = variables.ormService.buildJavaProxy(
 					"org.hibernate.jdbc.util.BasicFormatterImpl"
 				);
 				// Lucee Hibernate 3+, waayyyyy old.
@@ -87,8 +85,7 @@ component accessors="true" {
 				};
 				break;
 			case "4":
-				variables.formatter = createObject(
-					"java",
+				variables.formatter = variables.ormService.buildJavaProxy(
 					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
 				);
 				variables.dialect        = variables.ormFactory.getDialect();
@@ -102,15 +99,13 @@ component accessors="true" {
 				};
 				break;
 			case "5":
-				variables.formatter = createObject(
-					"java",
+				variables.formatter = variables.ormService.buildJavaProxy(
 					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"
 				);
 				// Set SQL Dialect ACF2018:Hibernate5.2+
-				var jdbcServiceClass = createObject(
-					"java",
-					"org.hibernate.engine.jdbc.spi.JdbcServices"
-				).getClass();
+				var jdbcServiceClass = variables.ormService
+					.buildJavaProxy( "org.hibernate.engine.jdbc.spi.JdbcServices" )
+					.getClass();
 				var jdbcService          = variables.ormFactory.getServiceRegistry().getService( jdbcServiceClass );
 				variables.dialect        = jdbcService.getDialect();
 				variables.dialectSupport = {
@@ -136,11 +131,13 @@ component accessors="true" {
 	 * @label The label for the log record
 	 */
 	SQLHelper function log( string label = "Criteria" ){
-		var logentry = {
-			"type" : arguments.label,
-			"sql"  : getSQL( argumentCollection = arguments )
-		};
-		arrayAppend( variables.log, logentry );
+		arrayAppend(
+			variables.log,
+			{
+				"type" : arguments.label,
+				"sql"  : getSQL( argumentCollection = arguments )
+			}
+		);
 
 		return this;
 	}
@@ -149,7 +146,7 @@ component accessors="true" {
 	 * Returns the SQL string that will be prepared for the criteria object at the time of request
 	 *
 	 * @returnExecutableSql Whether or not to do query param replacements on returned SQL string
-	 * @formatSql Whether to format the sql
+	 * @formatSql           Whether to format the sql
 	 */
 	string function getSQL(
 		boolean returnExecutableSql = getReturnExecutableSql(),
@@ -194,8 +191,6 @@ component accessors="true" {
 
 	/**
 	 * Gets the positional SQL parameter values from the criteria query
-	 *
-	 * @return array
 	 */
 	array function getPositionalSQLParameterValues(){
 		return getCriteriaQueryTranslator().getQueryParameters().getPositionalParameterValues();
@@ -203,6 +198,7 @@ component accessors="true" {
 
 	/**
 	 * Gets positional SQL parameter types from the criteria query
+	 *
 	 * @simple Whether to return a simply array or full objects
 	 */
 	any function getPositionalSQLParameterTypes( required Boolean simple = true ){
@@ -212,10 +208,7 @@ component accessors="true" {
 		}
 		var simplifiedTypes = [];
 		for ( var x = 1; x <= arrayLen( types ); x++ ) {
-			arrayAppend(
-				simplifiedTypes,
-				types[ x ].getName()
-			);
+			arrayAppend( simplifiedTypes, types[ x ].getName() );
 		}
 		return simplifiedTypes;
 	}
@@ -229,13 +222,7 @@ component accessors="true" {
 		var types  = getPositionalSQLParameterTypes( true );
 		// loop over them
 		for ( var x = 1; x <= arrayLen( types ); x++ ) {
-			arrayAppend(
-				params,
-				{
-					"type"  : types[ x ],
-					"value" : values[ x ]
-				}
-			);
+			arrayAppend( params, { "type" : types[ x ], "value" : values[ x ] } );
 		}
 		return params;
 	}
@@ -287,8 +274,9 @@ component accessors="true" {
 
 	/**
 	 * Small utility method to convert weird arrays from Java methods into something CF understands
-	 * @array {Array} The array to convert
 	 * return Array
+	 *
+	 * @array {Array} The array to convert
 	 */
 	private array function convertToCFArray( required any array ){
 		var newArray = [];
@@ -307,6 +295,7 @@ component accessors="true" {
 
 	/**
 	 * replace query parameter placeholders with their actual values (for detachedSQLProjection)
+	 *
 	 * @sql The sql string to massage
 	 */
 	private string function replaceQueryParameters( required string sql ){
@@ -330,20 +319,7 @@ component accessors="true" {
 		var useOffset = hasFirstRow && useLimit && variables.dialectSupport.limitOffset;
 		var reverse   = variables.dialectSupport.bindLimitParametersInReverseOrder;
 		/**
-            APPROACH:
-            Unfortunately, there does not seem to be any really good way to retrieve the SQL that will be executed,
-            since it isn't actually sent to the db engine as executable SQL
-            So, we have to rely upon the QueryTranslator to provide us details about positional paramters that are going to be sent
-            However, the "limit/offset" data isn't handled by the Translator, so we also need to spin up a regular SQL Query to determine
-            how many total ordinal parameters are getting sent with the query string.
-
-            This, combined with info that Hibernate knows about each db dialect, we can smartly fill in the gaps for the "limit/offset"
-            information, as well as fill in the ordinal parameters values and return a SQL string that is as close to the actual string
-            that will be executed on the db as possible.
-
-            So the actual idea is to take the ordinal parameter values and types which QueryTranslator knows about, and intelligently add to
-            those lists based on the dialect of the database engine.
-         */
+		 */
 		// if we have positional parameters
 		if ( positionalParameterCount ) {
 			var positionalValues = convertToCFArray( values );
@@ -351,10 +327,7 @@ component accessors="true" {
 			// if our query at this point in time is using "limit/offset"
 			if ( useLimit ) {
 				// we'll reuse this
-				var integerType = createObject(
-					"java",
-					"org.hibernate.type.IntegerType"
-				);
+				var integerType = createObject( "java", "org.hibernate.type.IntegerType" );
 				// Ex: Engines like SQL Server put limits first
 				if ( variables.dialectSupport.bindLimitParametersFirst ) {
 					positionalValues = bindLimitParameters( positionalValues, false, selection );
@@ -385,12 +358,7 @@ component accessors="true" {
 					arguments.sql = reReplaceNoCase( arguments.sql, "\?", pvTyped, "one" );
 				} else if ( type.getName() == "text" ) {
 					// remove parameter placeholders
-					arguments.sql = reReplaceNoCase(
-						arguments.sql,
-						"\?",
-						"'#value#'",
-						"one"
-					);
+					arguments.sql = reReplaceNoCase( arguments.sql, "\?", "'#value#'", "one" );
 				}
 				// association values can't be cast to SQL string by normal convention; just do a simple replace
 				else {
@@ -398,21 +366,17 @@ component accessors="true" {
 				}
 			}
 			// for some reason, JoinWalker doesn't sync up root paramters with the generated alias...so fix those
-			arguments.sql = reReplaceNoCase(
-				arguments.sql,
-				"this\.",
-				"this_.",
-				"all"
-			);
+			arguments.sql = reReplaceNoCase( arguments.sql, "this\.", "this_.", "all" );
 		}
 		return arguments.sql;
 	}
 
 	/**
 	 * Inserts parameter values into the running list based on the dialect of the database engine
+	 *
 	 * @positionalValues The positional values for this query
-	 * @append Whether values are appended or prepended to the array
-	 * @selection The current row selection
+	 * @append           Whether values are appended or prepended to the array
+	 * @selection        The current row selection
 	 */
 	private Array function bindLimitParameters(
 		required Array positionalValues,
@@ -433,27 +397,18 @@ component accessors="true" {
 			// if offset/limit are reversed
 			// EX: Other engines "reverse" this and use: LIMIT {limit}, {offset}
 			if ( reverse ) {
-				arrayAppend(
-					newPositionalValues,
-					arguments.selection.getMaxRows()
-				);
+				arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
 				arrayAppend( newPositionalValues, firstRow );
 			}
 			// EX: In MySQL, offset limit are: LIMIT {offset}, {limit}
 			else {
 				arrayAppend( newPositionalValues, firstRow );
-				arrayAppend(
-					newPositionalValues,
-					arguments.selection.getMaxRows()
-				);
+				arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
 			}
 		}
 		// no start row...just add regular limit
 		else {
-			arrayAppend(
-				newPositionalValues,
-				arguments.selection.getMaxRows()
-			);
+			arrayAppend( newPositionalValues, arguments.selection.getMaxRows() );
 		}
 		// APPEND: Engines like MySQL, etc. put limit/offset at the end of the statement
 		if ( arguments.append ) {
@@ -469,6 +424,7 @@ component accessors="true" {
 
 	/**
 	 * Determines whether the database engine allows for the use of "limit/offset" syntax
+	 *
 	 * @selection The current row selection
 	 */
 	private Boolean function useLimit( required any selection ){
@@ -477,6 +433,7 @@ component accessors="true" {
 
 	/**
 	 * Determines whether the current row selection has a limit already applied
+	 *
 	 * @selection The current row selection
 	 */
 	private Boolean function hasMaxRows( required any selection ){
@@ -485,6 +442,7 @@ component accessors="true" {
 
 	/**
 	 * Gets the first row (or 0) for the current row selection
+	 *
 	 * @selection The current row selection
 	 */
 	private Numeric function getFirstRow( required any selection ){
@@ -493,6 +451,7 @@ component accessors="true" {
 
 	/**
 	 * Gets correct "limit" value for the current row selection
+	 *
 	 * @selection The current row selection
 	 */
 	private Numeric function getMaxOrLimit( required any selection ){
@@ -503,6 +462,7 @@ component accessors="true" {
 
 	/**
 	 * gets an instance of CriteriaJoinWalker, which can allow for translating criteria query into a sql string
+	 *
 	 * @return org.hibernate.loader.criteria.CriteriaJoinWalker
 	 */
 	private any function getCriteriaJoinWalker(){
@@ -514,34 +474,33 @@ component accessors="true" {
 		}
 
 		// not nearly as cool as the walking dead kind, but is still handy for turning a criteria into a sql string ;)
-		return createObject(
-			"java",
-			"org.hibernate.loader.criteria.CriteriaJoinWalker"
-		).init(
-			persister, // persister (loadable)
-			getCriteriaQueryTranslator(), // translator
-			variables.ormFactory, // factory
-			variables.criteriaImpl, // criteria
-			variables.entityName, // rootEntityName
-			variables.ormSession.getLoadQueryInfluencers() // loadQueryInfluencers
-		);
+		return variables.ormService
+			.buildJavaProxy( "org.hibernate.loader.criteria.CriteriaJoinWalker" )
+			.init(
+				persister, // persister (loadable)
+				getCriteriaQueryTranslator(), // translator
+				variables.ormFactory, // factory
+				variables.criteriaImpl, // criteria
+				variables.entityName, // rootEntityName
+				variables.ormSession.getLoadQueryInfluencers() // loadQueryInfluencers
+			);
 	}
 
 	/**
 	 * gets an instance of CriteriaQueryTranslator, which can prepares criteria query for conversion to SQL
+	 *
 	 * @return org.hibernate.loader.criteria.CriteriaQueryTranslator
 	 */
 	private any function getCriteriaQueryTranslator(){
 		// create new criteria query translator; we'll use this to build up the query string
-		return createObject(
-			"java",
-			"org.hibernate.loader.criteria.CriteriaQueryTranslator"
-		).init(
-			variables.ormFactory, // factory
-			variables.criteriaImpl, // criteria
-			variables.entityName, // rootEntityName
-			variables.criteriaImpl.getAlias() // rootSQLAlias
-		);
+		return variables.ormService
+			.buildJavaProxy( "org.hibernate.loader.criteria.CriteriaQueryTranslator" )
+			.init(
+				variables.ormFactory, // factory
+				variables.criteriaImpl, // criteria
+				variables.entityName, // rootEntityName
+				variables.criteriaImpl.getAlias() // rootSQLAlias
+			);
 	}
 
 }

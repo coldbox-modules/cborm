@@ -17,6 +17,13 @@
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
+	function testEvictionByEntityObject(){
+		ormClearSession();
+		var test = entityLoad( "ActiveUser", testUserID, true );
+		test.evict();
+		expect( test.sessionContains( test ) ).toBeFalse();
+	}
+
 	function testCountByDynamically(){
 		// Test simple Equals
 		t = activeUser.countByLastName( "majano" );
@@ -24,10 +31,7 @@
 	}
 	function testFindByDynamically(){
 		t = activeUser.findAllByLastNameLessThanEquals( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThanEquals"
-		);
+		assert( arrayLen( t ), "Conditionals LessThanEquals" );
 		// Test simple Equals
 		t = activeUser.findByLastName( "majano" );
 		assert( isObject( t ), "FindBylastName" );
@@ -36,20 +40,11 @@
 		assert( isNull( t ), "Invalid last name" );
 		// Using Conditionals
 		t = activeUser.findAllByLastNameLessThan( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThan"
-		);
+		assert( arrayLen( t ), "Conditionals LessThan" );
 		t = activeUser.findAllByLastNameGreaterThan( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThan"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThan" );
 		t = activeUser.findAllByLastNameGreaterThanEquals( "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThanEqauls"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThanEqauls" );
 		t = activeUser.findByLastNameLike( "ma%" );
 		assert( isObject( t ), "Conditionals Like" );
 		t = activeUser.findAllByLastNameNotEqual( "Majano" );
@@ -59,26 +54,17 @@
 		t = activeUser.findAllByLastNameIsNotNull();
 		assert( arrayLen( t ), "Conditionals isNull" );
 		t = activeUser.findAllByLastLoginBetween( "01/01/2009", "01/01/2012" );
-		assert(
-			arrayLen( t ),
-			"Conditionals between"
-		);
+		assert( arrayLen( t ), "Conditionals between" );
 		t = activeUser.findByLastLoginBetween( "01/01/2008", "11/01/2008" );
 		assert( isNull( t ), "Conditionals between" );
 		t = activeUser.findAllByLastLoginNotBetween( "01/01/2009", "01/01/2012" );
-		assert(
-			arrayLen( t ),
-			"Conditionals not between"
-		);
+		assert( arrayLen( t ), "Conditionals not between" );
 		t = activeUser.findAllByLastNameInList( "Majano,Fernando" );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = activeUser.findAllByLastNameInList( listToArray( "Majano,Fernando" ) );
 		assert( arrayLen( t ), "Conditionals inList" );
 		t = activeUser.findAllByLastNameNotInList( listToArray( "Majano,Fernando" ) );
-		assert(
-			arrayLen( t ),
-			"Conditionals NotinList"
-		);
+		assert( arrayLen( t ), "Conditionals NotinList" );
 	}
 
 	function testFindByDynamicallyBadProperty(){
@@ -121,12 +107,7 @@
 		user = activeUser.new();
 		assertFalse( isNull( user ) );
 
-		user = activeUser.new(
-			properties = {
-				firstName : "Luis",
-				lastName  : "UnitTest"
-			}
-		);
+		user = activeUser.new( properties = { firstName : "Luis", lastName : "UnitTest" } );
 		assertEquals( "Luis", user.getFirstName() );
 	}
 
@@ -201,14 +182,12 @@
 			ormClearSession();
 			ormCloseSession();
 
-			var q       = new Query( sql = "select * from users where firstName = 'unitTest'" );
-			var results = q.execute().getResult();
+			var results = queryExecute( "select * from users where firstName = 'unitTest'" );
 			expect( results.recordcount ).toBe( 0 );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			var q = new Query( datasource = "coolblog" );
-			q.execute( sql = "delete from users where firstName = 'unitTest'" );
+			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
 	}
 
@@ -231,14 +210,12 @@
 			ormCloseSession();
 
 			// Try to load
-			var q       = new Query( sql = "select * from users where firstName = 'unitTest'" );
-			var results = q.execute().getResult();
+			var results = queryExecute( "select * from users where firstName = 'unitTest'" );
 			expect( results.recordcount ).toBe( 0 );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			var q = new Query( datasource = "coolblog" );
-			q.execute( sql = "delete from users where firstName = 'unitTest'" );
+			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
 	}
 
@@ -252,7 +229,6 @@
 			entitySave( user );
 		}
 		ormFlush();
-		q = new Query( datasource = "coolblog" );
 
 		try {
 			if ( structKeyExists( server, "lucee" ) ) {
@@ -262,12 +238,12 @@
 			ormFlush();
 			user.clear();
 
-			result = q.execute( sql = "select * from users where userName = 'unitTest'" );
-			assertEquals( 0, result.getResult().recordcount );
+			result = queryExecute( "select * from users where userName = 'unitTest'" );
+			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
 			fail( e.detail & e.message & e.stackTrace );
 		} finally {
-			q.execute( sql = "delete from users where userName = 'unitTest'" );
+			queryExecute( "delete from users where userName = 'unitTest'" );
 		}
 	}
 
@@ -344,8 +320,7 @@
 	}
 
 	private function deleteCategories(){
-		var q = new Query( datasource = "coolblog" );
-		q.execute( sql = "delete from categories where category = 'unitTest'" );
+		queryExecute( "delete from categories where category = 'unitTest'" );
 	}
 
 }

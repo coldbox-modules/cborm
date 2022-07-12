@@ -1,6 +1,6 @@
 {
     "name":"ColdBox ORM Extensions",
-    "version":"3.5.0",
+    "version":"3.9.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com",
     "homepage":"https://github.com/coldbox-modules/cborm",
@@ -31,14 +31,37 @@
         "cbstreams":"^1.5.0",
         "cbpaginator":"^2.0.0"
     },
+    "devDependencies":{
+        "commandbox-cfformat":"*",
+        "commandbox-docbox":"*",
+        "commandbox-dotenv":"*",
+        "commandbox-cfconfig":"*"
+    },
     "ignore":[
         "**/.*",
-        "test-harness"
+        "test-harness",
+        "/server*.json"
     ],
+    "testbox":{
+        "runner":"http://localhost:60299/tests/runner.cfm"
+    },
     "scripts":{
+        "build:module":"task run taskFile=build/Build.cfc :projectName=`package show slug` :version=`package show version`",
+        "build:docs":"task run taskFile=build/Build.cfc target=docs :projectName=`package show slug` :version=`package show version`",
         "release":"recipe build/release.boxr",
         "format":"cfformat run aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc --overwrite",
         "format:watch":"cfformat watch aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc ./.cfformat.json",
-        "format:check":"cfformat check aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc"
+        "format:check":"cfformat check aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc",
+        "cfpm":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
+        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
+        "install:2021":"run-script cfpm:install zip,debugger,orm,mysql,postgresql,sqlserver,feed",
+        "install:dependencies":"install && cd test-harness && install",
+        "startdbs":"!docker-compose -f docker-compose.yml up"
+    },
+    "installPaths":{
+        "cbvalidation":"modules/cbvalidation/",
+        "mementifier":"modules/mementifier/",
+        "cbstreams":"modules/cbstreams/",
+        "cbpaginator":"modules/cbpaginator/"
     }
 }

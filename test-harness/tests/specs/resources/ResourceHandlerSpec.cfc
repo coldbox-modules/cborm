@@ -97,10 +97,7 @@ component extends="tests.resources.BaseTest" {
 				} );
 				given( "an invalid id", function(){
 					then( "then I should see an error message", function(){
-						var event = this.PUT(
-							"/roles/2323",
-							{ role : "unit_test" }
-						);
+						var event    = this.PUT( "/roles/2323", { role : "unit_test" } );
 						var response = event.getPrivateValue( "response" );
 
 						// expectations go here.

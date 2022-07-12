@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano & Mike McKellip
  *
  * Lucee Based ORM Utility
+ *
+ * @author Luis Majano & Mike McKellip
  */
 component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.util.IORMUtil" {
 
@@ -12,8 +13,7 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 	 * Get hibernate session object
 	 *
 	 * @datasource optional datasource
-	 *
-	 * @override
+	 * @override  
 	 */
 	any function getSession( string datasource ){
 		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
@@ -29,10 +29,7 @@ component extends="cborm.models.util.ORMUtilSupport" implements="cborm.models.ut
 	any function getSessionEntityMode( required ormSession, required entity ){
 		if ( listFirst( getHibernateVersion(), "." ) >= 5 ) {
 			return arguments.ormSession
-				.getEntityPersister(
-					arguments.ormSession.getEntityName( arguments.entity ),
-					arguments.entity
-				)
+				.getEntityPersister( arguments.ormSession.getEntityName( arguments.entity ), arguments.entity )
 				.getEntityMode();
 		} else {
 			return arguments.ormSession.getEntityMode();

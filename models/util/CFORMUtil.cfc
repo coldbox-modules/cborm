@@ -2,9 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * @author Luis Majano & Mike McKellip
  *
  * Adobe CF Based ORM Utility
+ *
+ * @author Luis Majano & Mike McKellip
  */
 component implements="cborm.models.util.IORMUtil" extends="cborm.models.util.ORMUtilSupport" {
 
@@ -17,10 +18,7 @@ component implements="cborm.models.util.IORMUtil" extends="cborm.models.util.ORM
 	 */
 	any function getSessionEntityMode( required ormSession, required entity ){
 		return arguments.ormSession
-			.getEntityPersister(
-				arguments.ormSession.getEntityName( arguments.entity ),
-				arguments.entity
-			)
+			.getEntityPersister( arguments.ormSession.getEntityName( arguments.entity ), arguments.entity )
 			.getEntityMode();
 	}
 

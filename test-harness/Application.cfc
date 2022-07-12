@@ -61,6 +61,7 @@ component {
 	this.ormEnabled = "true";
 
 	this.ormSettings = {
+		dialect 			  : "org.hibernate.dialect.MySQL5InnoDBDialect",
 		cfclocation           : [ "models" ],
 		logSQL                : true,
 		dbcreate              : "update",
@@ -75,6 +76,9 @@ component {
 
 	// application start
 	public boolean function onApplicationStart(){
+
+		new cborm.models.util.ORMUtilSupport().setupHibernateLogging();
+
 		application.cbBootstrap = new coldbox.system.Bootstrap(
 			COLDBOX_CONFIG_FILE,
 			COLDBOX_APP_ROOT_PATH,
@@ -87,6 +91,9 @@ component {
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
+		if ( !structKeyExists( application, "cbBootstrap" ) ){
+			onApplicationStart();
+		}
 		if ( url.keyExists( "fwreinit" ) ) {
 			if ( server.keyExists( "lucee" ) ) {
 				pagePoolClear();
@@ -101,10 +108,9 @@ component {
 	}
 
 	public void function onSessionStart(){
-		if ( !structKeyExists( application, "cbBootstrap" ) ){
-			onApplicationStart();
+		if ( structKeyExists( application, "cbBootstrap" ) ){
+			application.cbBootStrap.onSessionStart();
 		}
-		application.cbBootStrap.onSessionStart();
 	}
 
 	public void function onSessionEnd( struct sessionScope, struct appScope ){

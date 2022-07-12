@@ -10,10 +10,17 @@
         },
         "rewrites":{
             "enable":"true"
+        },
+		"webroot":"test-harness",
+        "aliases":{
+            "/moduleroot/cborm":"./"
         }
     },
     "jvm":{
         "heapSize":"1024"
     },
-    "openBrowser":"false"
+    "openBrowser":"false",
+	"cfconfig": {
+		"file" : ".cfconfig.json"
+	}
 }

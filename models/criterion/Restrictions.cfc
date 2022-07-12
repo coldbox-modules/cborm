@@ -3,8 +3,15 @@
  * www.ortussolutions.com
  * ---
  * A proxy to hibernate org.hibernate.criterion.Restrictions object to allow for criteria based querying
+ *
+ * @see https://docs.jboss.org/hibernate/stable/orm/javadocs/org/hibernate/criterion/Restrictions.html
  */
-component singleton {
+component singleton access="true" {
+
+	/**
+	 * The java proxy builder
+	 */
+	property name="javaProxy";
 
 	// Lookup map of Hibernate to CF Types. Used for auto casting.
 	this.TYPES = {
@@ -40,12 +47,12 @@ component singleton {
 
 	/**
 	 * Constructor
+	 *
+	 * @javaProxy.inject JavaProxyBuilder@cborm
 	 */
-	Restrictions function init(){
-		variables.restrictions = createObject(
-			"java",
-			"org.hibernate.criterion.Restrictions"
-		);
+	Restrictions function init( required javaProxy ){
+		variables.javaProxy    = arguments.javaProxy;
+		variables.restrictions = arguments.javaProxy.build( "org.hibernate.criterion.Restrictions" );
 		return this;
 	}
 
@@ -80,17 +87,11 @@ component singleton {
 	/**
 	 * Where a property equals a particular value, you can also use eq()
 	 *
-	 * @property The target property
+	 * @property      The target property
 	 * @propertyValue The value
 	 */
-	any function isEq(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.eq(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function isEq( required string property, required any propertyValue ){
+		return variables.restrictions.eq( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -99,10 +100,7 @@ component singleton {
 	 * @property
 	 */
 	any function isTrue( required string property ){
-		return variables.restrictions.eq(
-			arguments.property,
-			javacast( "boolean", true )
-		);
+		return variables.restrictions.eq( arguments.property, javacast( "boolean", true ) );
 	}
 
 	/**
@@ -111,96 +109,63 @@ component singleton {
 	 * @property
 	 */
 	any function isFalse( required string property ){
-		return variables.restrictions.eq(
-			arguments.property,
-			javacast( "boolean", false )
-		);
+		return variables.restrictions.eq( arguments.property, javacast( "boolean", false ) );
 	}
 
 	/**
 	 * Where one property must equal another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
-	any function eqProperty(
-		required string property,
-		required string otherProperty
-	){
-		return variables.restrictions.eqProperty(
-			arguments.property,
-			arguments.otherProperty
-		);
+	any function eqProperty( required string property, required string otherProperty ){
+		return variables.restrictions.eqProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
 	 * Where a property is greater than a particular value, you can also use gt()
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
-	any function isGt(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.gt(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function isGt( required string property, required any propertyValue ){
+		return variables.restrictions.gt( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a one property must be greater than another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
-	any function gtProperty(
-		required string property,
-		required string otherProperty
-	){
-		return variables.restrictions.gtProperty(
-			arguments.property,
-			arguments.otherProperty
-		);
+	any function gtProperty( required string property, required string otherProperty ){
+		return variables.restrictions.gtProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
 	 * Where a property is greater than or equal to a particular value, you can also use ge()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function isGe(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.ge(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function isGe( required string property, required any propertyValue ){
+		return variables.restrictions.ge( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a one property must be greater than or equal to another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
-	any function geProperty(
-		required string property,
-		required string otherProperty
-	){
-		return variables.restrictions.geProperty(
-			arguments.property,
-			arguments.otherProperty
-		);
+	any function geProperty( required string property, required string otherProperty ){
+		return variables.restrictions.geProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
 	 * Where an objects id equals the specified value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function idEQ( required any propertyValue ){
@@ -210,34 +175,22 @@ component singleton {
 	/**
 	 * A case-insensitive 'like' expression
 	 */
-	any function ilike(
-		required string property,
-		required string propertyValue
-	){
-		return variables.restrictions.ilike(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function ilike( required string property, required string propertyValue ){
+		return variables.restrictions.ilike( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a property is contained within the specified list of values, the property value can be a collection (struct) or array or list, you can also use in()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function isIn(
-		required string property,
-		required any propertyValue
-	){
+	any function isIn( required string property, required any propertyValue ){
 		// infalte to array if simple values
 		if ( isSimpleValue( arguments.propertyValue ) ) {
 			arguments.propertyValue = listToArray( arguments.propertyValue );
 		}
-		return variables.restrictions.in(
-			arguments.property,
-			arguments.propertyValue
-		);
+		return variables.restrictions.in( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -268,7 +221,7 @@ component singleton {
 	/**
 	 * Where a property is not null
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isNotNull( required string property ){
@@ -278,209 +231,131 @@ component singleton {
 	/**
 	 * Where a property is less than a particular value, you can also use lt()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function islt(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.lt(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function islt( required string property, required any propertyValue ){
+		return variables.restrictions.lt( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a one property must be less than another
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function ltProperty(
-		required string property,
-		required string otherProperty
-	){
-		return variables.restrictions.ltProperty(
-			arguments.property,
-			arguments.otherProperty
-		);
+	any function ltProperty( required string property, required string otherProperty ){
+		return variables.restrictions.ltProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
 	 * Where a property is less than or equal a particular value, you can also use le()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function isle(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.le(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function isle( required string property, required any propertyValue ){
+		return variables.restrictions.le( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a one property must be less than or equal to another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
-	any function leProperty(
-		required string property,
-		required string otherProperty
-	){
-		return variables.restrictions.leProperty(
-			arguments.property,
-			arguments.otherProperty
-		);
+	any function leProperty( required string property, required string otherProperty ){
+		return variables.restrictions.leProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
 	 * Equivalent to SQL like expression
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function like(
-		required string property,
-		required string propertyValue
-	){
-		return variables.restrictions.like(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function like( required string property, required string propertyValue ){
+		return variables.restrictions.like( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a property does not equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function ne(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.ne(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function ne( required string property, required any propertyValue ){
+		return variables.restrictions.ne( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where one property does not equal another
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function neProperty(
-		required string property,
-		required any otherProperty
-	){
-		return variables.restrictions.neProperty(
-			arguments.property,
-			arguments.otherProperty
-		);
+	any function neProperty( required string property, required any otherProperty ){
+		return variables.restrictions.neProperty( arguments.property, arguments.otherProperty );
 	}
 
 	/**
 	 * Where a collection property's size equals a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function sizeEq(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.sizeEq(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function sizeEq( required string property, required any propertyValue ){
+		return variables.restrictions.sizeEq( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a collection property's size is greater than a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function sizeGT(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.sizeGT(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function sizeGT( required string property, required any propertyValue ){
+		return variables.restrictions.sizeGT( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a collection property's size is greater than or equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function sizeGE(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.sizeGE(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function sizeGE( required string property, required any propertyValue ){
+		return variables.restrictions.sizeGE( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a collection property's size is less than a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function sizeLT(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.sizeLT(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function sizeLT( required string property, required any propertyValue ){
+		return variables.restrictions.sizeLT( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a collection property's size is less than or equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function sizeLE(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.sizeLE(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function sizeLE( required string property, required any propertyValue ){
+		return variables.restrictions.sizeLE( arguments.property, arguments.propertyValue );
 	}
 
 	/**
 	 * Where a collection property's size is not equal to a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
-	any function sizeNE(
-		required string property,
-		required any propertyValue
-	){
-		return variables.restrictions.sizeNE(
-			arguments.property,
-			arguments.propertyValue
-		);
+	any function sizeNE( required string property, required any propertyValue ){
+		return variables.restrictions.sizeNE( arguments.property, arguments.propertyValue );
 	}
 
 	/**
@@ -490,28 +365,18 @@ component singleton {
 	 * @type The class type to build: StringType, BooleanType, YesNoType, LongType
 	 */
 	function buildHibernateType( required type ){
-		if ( structKeyExists( server, "lucee" ) ) {
-			return createObject(
-				"java",
-				"org.hibernate.type.#arguments.type#"
-			);
-		}
-		return createObject(
-			"java",
-			"org.hibernate.type.#arguments.type#"
-		).INSTANCE;
+		var javaType = variables.javaProxy.build( "org.hibernate.type.#arguments.type#" );
+		// Return the Adobe or Lucee Approach of the instance type
+		return server.keyExists( "lucee" ) ? javaType : javaType.INSTANCE;
 	}
 
 	/**
 	 * Use arbitrary SQL to modify the resultset
 	 *
-	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
+	 * @sql    The sql to execute, it can contain parameters via positional `?` placeholders
 	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
-	function sql(
-		required string sql,
-		array params = []
-	){
+	function sql( required string sql, array params = [] ){
 		// No params, just execute
 		if ( !params.len() ) {
 			return variables.restrictions.sqlRestriction( arguments.sql );
@@ -575,14 +440,10 @@ component singleton {
 	 * Use arbitrary SQL to modify the resultset
 	 *
 	 * @deprecated Use the `sql()` function instead
-	 *
-	 * @sql The sql to execute, it can contain parameters via positional `?` placeholders
-	 * @params This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
+	 * @sql        The sql to execute, it can contain parameters via positional `?` placeholders
+	 * @params     This is an array of value definitions which need to be a struct of { value: , type: } or if the value is a simple value, we will try to infer it's type
 	 */
-	any function sqlRestriction(
-		required string sql,
-		array params = []
-	){
+	any function sqlRestriction( required string sql, array params = [] ){
 		return this.sql( argumentCollection = arguments );
 	}
 
@@ -651,14 +512,10 @@ component singleton {
 	 * If a method does not exist, we will try to match it to a Hibernate native function, if not an exception is thrown
 	 *
 	 * @missingMethodName
-	 * @missingMethodArguments
 	 *
 	 * @throws RuntimeException
 	 */
-	any function onMissingMethod(
-		required string missingMethodName,
-		required struct missingMethodArguments
-	){
+	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
 		// detect dynamic negation
 		if ( left( arguments.missingMethodName, 3 ) eq "not" && len( arguments.missingMethodName ) > 3 ) {
 			// remove NOT

@@ -19,11 +19,7 @@
 		ormservice.init();
 
 		// Mock event handler
-		ormservice.$property(
-			"ORMEventHandler",
-			"variables",
-			mockEH
-		);
+		ormservice.$property( "ORMEventHandler", "variables", mockEH );
 
 		// Test ID's
 		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
@@ -42,32 +38,16 @@
 	function testFindAllByDynamically(){
 		// Using Conditionals
 		t = ormservice.findAllByLastNameLessThan( "User", "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThan"
-		);
+		assert( arrayLen( t ), "Conditionals LessThan" );
 
-		t = ormservice.findAllByLastNameLessThanEquals(
-			"User",
-			"Majano",
-			{ sortBy : "LastName" }
-		);
-		assert(
-			arrayLen( t ),
-			"Conditionals LessThanEquals"
-		);
+		t = ormservice.findAllByLastNameLessThanEquals( "User", "Majano", { sortBy : "LastName" } );
+		assert( arrayLen( t ), "Conditionals LessThanEquals" );
 
 		t = ormservice.findAllByLastNameGreaterThan( "User", "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThan"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThan" );
 
 		t = ormservice.findAllByLastNameGreaterThanEquals( "User", "Majano" );
-		assert(
-			arrayLen( t ),
-			"Conditionals GreaterThanEqauls"
-		);
+		assert( arrayLen( t ), "Conditionals GreaterThanEqauls" );
 
 		t = ormservice.findAllByLastNameNotEqual( "User", "Majano" );
 		assert( arrayLen( t ), "Conditionals Equal" );
@@ -78,20 +58,11 @@
 		t = ormservice.findAllByLastNameInList( "User", "Majano,Fernando" );
 		assert( arrayLen( t ), "Conditionals inList" );
 
-		t = ormservice.findAllByLastNameInList(
-			"User",
-			listToArray( "Majano,Fernando" )
-		);
+		t = ormservice.findAllByLastNameInList( "User", listToArray( "Majano,Fernando" ) );
 		assert( arrayLen( t ), "Conditionals inList" );
 
-		t = ormservice.findAllByLastNameNotInList(
-			"User",
-			listToArray( "Majano,Fernando" )
-		);
-		assert(
-			arrayLen( t ),
-			"Conditionals NotinList"
-		);
+		t = ormservice.findAllByLastNameNotInList( "User", listToArray( "Majano,Fernando" ) );
+		assert( arrayLen( t ), "Conditionals NotinList" );
 	}
 
 	function testFindByDynamically(){
@@ -108,10 +79,7 @@
 		t = ormservice.findByLastLoginBetween( "User", "01/01/2008", "11/01/2008" );
 		assert( isNull( t ), "Conditionals between" );
 		t = ormservice.findByLastLoginNotBetween( "User", "2008-01-01", "2013-01-01" );
-		assert(
-			!isNull( t ),
-			"Conditionals not between"
-		);
+		assert( !isNull( t ), "Conditionals not between" );
 	}
 
 	function testFindByDynamicallyBadProperty(){
@@ -125,14 +93,8 @@
 	}
 
 	function testExists(){
-		assertEquals(
-			false,
-			ormservice.exists( "Category", "123" )
-		);
-		assertEquals(
-			true,
-			ormservice.exists( "Category", testCatID )
-		);
+		assertEquals( false, ormservice.exists( "Category", "123" ) );
+		assertEquals( true, ormservice.exists( "Category", testCatID ) );
 	}
 
 	function testClear(){
@@ -191,13 +153,7 @@
 		ormservice.new( "User" );
 
 		// Test with arguments.
-		user = ormService.new(
-			entityName = "User",
-			properties = {
-				firstName : "luis",
-				lastName  : "majano"
-			}
-		);
+		user = ormService.new( entityName = "User", properties = { firstName : "luis", lastName : "majano" } );
 		debug( user );
 		assertEquals( "luis", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
@@ -205,13 +161,7 @@
 
 	function testNewWithProperties(){
 		// Test Porperties
-		user = ormService.new(
-			"User",
-			{
-				firstName : "pio",
-				lastName  : "majano"
-			}
-		);
+		user = ormService.new( "User", { firstName : "pio", lastName : "majano" } );
 		debug( user );
 		assertEquals( "pio", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
@@ -241,17 +191,9 @@
 		assertTrue( isNull( user.getID() ) );
 
 		// ReturnNew = false
-		user = ormService.get(
-			entityName = "User",
-			id         = 4,
-			returnNew  = false
-		);
+		user = ormService.get( entityName = "User", id = 4, returnNew = false );
 		assertTrue( isNull( user ) );
-		user = ormService.get(
-			entityName = "User",
-			id         = 0,
-			returnNew  = false
-		);
+		user = ormService.get( entityName = "User", id = 0, returnNew = false );
 		assertTrue( isNull( user ) );
 	}
 
@@ -269,11 +211,7 @@
 	}
 
 	function testIsDirty(){
-		var role = entityLoad(
-			"Role",
-			{ role : "Administrator" },
-			true
-		);
+		var role = entityLoad( "Role", { role : "Administrator" }, true );
 		expect( ormService.isDirty( role ) ).toBeFalse();
 
 		expect( ormService.isDirty( entityNew( "Category" ) ) ).toBeFalse();
@@ -318,10 +256,7 @@
 			true
 		);
 
-		r = ormService.getAll(
-			entityName = "Category",
-			properties = "catid as id,category as category"
-		);
+		r = ormService.getAll( entityName = "Category", properties = "catid as id,category as category" );
 		assertTrue( arrayLen( r ) );
 
 		r = ormService.getAll(
@@ -340,17 +275,11 @@
 		r = ormService.getAll( "Category", [ testCatID, testCatID ] );
 		assertTrue( isObject( r[ 1 ] ) );
 
-		r = ormService.getAll(
-			entityName = "Category",
-			sortOrder  = "category desc"
-		);
+		r = ormService.getAll( entityName = "Category", sortOrder = "category desc" );
 		assertTrue( arrayLen( r ) );
 
 		// readonly
-		r = ormService.getAll(
-			entityName = "Category",
-			readOnly   = true
-		);
+		r = ormService.getAll( entityName = "Category", readOnly = true );
 		assertTrue( arrayLen( r ) );
 	}
 
@@ -368,22 +297,13 @@
 			if ( structKeyExists( server, "lucee" ) ) {
 				ormCloseSession();
 			}
-			var test = entityLoad(
-				"Category",
-				{ category : "unittest" }
-			);
+			var test = entityLoad( "Category", { category : "unittest" } );
 			debug( test );
-			ormservice.delete(
-				entity        = test[ 1 ],
-				transactional = false
-			);
+			ormservice.delete( entity = test[ 1 ], transactional = false );
 			ormFlush();
 			ormservice.clear();
 
-			var test = entityLoad(
-				"Category",
-				{ category : "unittest" }
-			);
+			var test = entityLoad( "Category", { category : "unittest" } );
 			// debug(test);
 			assertTrue( arrayLen( test ) eq 0 );
 		} catch ( any e ) {
@@ -406,22 +326,14 @@
 			if ( structKeyExists( server, "lucee" ) ) {
 				ormCloseSession();
 			}
-			test = entityLoad(
-				"Category",
-				{ "category" : "unitTest" },
-				true
-			);
+			test = entityLoad( "Category", { "category" : "unitTest" }, true );
 			// debug(test);
 			ormservice.delete(
 				entity        = test,
 				flush         = true,
 				transactional = false
 			);
-			test = entityLoad(
-				"Category",
-				{ category : "unitTest" },
-				true
-			);
+			test = entityLoad( "Category", { category : "unitTest" }, true );
 			assertTrue( isNull( test ) );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
@@ -460,7 +372,6 @@
 			entitySave( cat );
 		}
 		ormFlush();
-		q = new Query( datasource = "coolblog" );
 
 		try {
 			if ( structKeyExists( server, "lucee" ) ) {
@@ -473,8 +384,8 @@
 			);
 			debug( "Removed #results# records" );
 			ormFlush();
-			var result = q.execute( sql = "select * from categories where category = 'unitTest'" );
-			assertEquals( 0, result.getResult().recordcount );
+			var result = queryExecute( "select * from categories where category = 'unitTest'" );
+			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
@@ -490,7 +401,6 @@
 			entitySave( cat );
 		}
 		ormFlush();
-		q = new Query( datasource = "coolblog" );
 
 		try {
 			var count = ormService.deleteWhere(
@@ -500,8 +410,8 @@
 			);
 			debug( "Delete where: #count#" );
 
-			var result = q.execute( sql = "select * from categories where category = 'unitTest'" );
-			assertEquals( 0, result.getResult().recordcount );
+			var result = queryExecute( "select * from categories where category = 'unitTest'" );
+			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
@@ -559,8 +469,7 @@
 			assertTrue( len( cat.getCatID() ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().postSave ) );
-			var q      = new Query( datasource = "coolblog" );
-			var result = q.execute( sql = "select * from categories where category = 'unitTest'" ).getResult();
+			var result = queryExecute( "select * from categories where category = 'unitTest'" );
 			assertTrue( result.recordcount eq 0 );
 		} catch ( any e ) {
 			fail( e.detail & e.message );
@@ -589,10 +498,7 @@
 			if ( structKeyExists( server, "lucee" ) ) {
 				ormCloseSession();
 			}
-			ormservice.saveAll(
-				entities      = [ cat, cat2 ],
-				transactional = false
-			);
+			ormservice.saveAll( entities = [ cat, cat2 ], transactional = false );
 			assertTrue( len( cat.getCatID() ) );
 			assertTrue( len( cat2.getCatID() ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
@@ -643,17 +549,12 @@
 	}
 
 	function testRefresh(){
-		cat = entityLoad(
-			"Category",
-			{ category : "Training" },
-			true
-		);
+		cat                 = entityLoad( "Category", { category : "Training" }, true );
 		id                  = cat.getCatID();
 		originalDescription = cat.getDescription();
 
 		try {
-			var q = new Query( datasource = "coolblog" );
-			q.execute( sql = "update categories set description = 'unittest' where category_id = '#id#'" );
+			queryExecute( "update categories set description = 'unittest' where category_id = '#id#'" );
 
 			ormservice.refresh( cat );
 
@@ -661,8 +562,9 @@
 		} catch ( any e ) {
 			fail( e.detail & e.message );
 		} finally {
-			var q = new Query( datasource = "coolblog" );
-			q.execute( sql = "update categories set description = '#originalDescription#' where category_id = '#id#'" );
+			queryExecute(
+				"update categories set description = '#originalDescription#' where category_id = '#id#'"
+			);
 		}
 	}
 
@@ -673,11 +575,7 @@
 		count = ormService.count( "Category", "category='general'" );
 		assertEquals( 2, count );
 
-		count = ormService.count(
-			"Category",
-			"category=?",
-			[ "Training" ]
-		);
+		count = ormService.count( "Category", "category=?", [ "Training" ] );
 		assertEquals( 1, count );
 
 		count = ormService.count(
@@ -690,11 +588,11 @@
 		count = ormService.count( "Category", "category like 'gen%'" );
 		assertEquals( 2, count );
 
-		count = ormService.countWhere(
-			entityName = "Category",
-			category   = "Training"
-		);
+		count = ormService.countWhere( entityName = "Category", category = "Training" );
 		assertEquals( 1, count );
+
+		count = ormService.countWhere( entityName = "Category" );
+		assertTrue( count > 1 );
 	}
 
 	function testList(){
@@ -726,6 +624,7 @@
 
 		/**
 		 * Test the Hibernate 5.3+ syntax.
+		 *
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
 		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
@@ -748,34 +647,20 @@
 	}
 
 	function testFindIt(){
-		test = ormservice.findIt(
-			"from Category where category = ?",
-			[ "Training" ]
-		);
+		test = ormservice.findIt( "from Category where category = ?", [ "Training" ] );
 		assertEquals( "Training", test.getCategory() );
 
-		test = ormservice.findIt(
-			"from Category where category = :category",
-			{ category : "Training" }
-		);
+		test = ormservice.findIt( "from Category where category = :category", { category : "Training" } );
 		assertEquals( "Training", test.getCategory() );
 	}
 
 	function testFindByExample(){
-		var sample = entityLoad(
-			"Category",
-			{ category : "Training" },
-			true
-		);
+		var sample     = entityLoad( "Category", { category : "Training" }, true );
 		var testSample = ormService.findByExample( sample, true );
 		assertEquals( "Training", testSample.getCategory() );
 
-		var sample = entityLoad(
-			"Category",
-			{ category : "Training" },
-			true
-		);
-		var test = ormService.findByExample( sample );
+		var sample = entityLoad( "Category", { category : "Training" }, true );
+		var test   = ormService.findByExample( sample );
 		assertEquals( "Training", test[ 1 ].getCategory() );
 	}
 
@@ -788,6 +673,7 @@
 
 		/**
 		 * Test the Hibernate 5.3+ syntax.
+		 *
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
 		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
@@ -798,34 +684,18 @@
 		test = ormservice.findAll( sql, [ "Training" ] );
 		assertEquals( 1, arrayLen( test ) );
 
-		test = ormservice.findAll(
-			"from Category where category = :category",
-			{ category : "Training" }
-		);
+		test = ormservice.findAll( "from Category where category = :category", { category : "Training" } );
 		assertEquals( 1, arrayLen( test ) );
 
-		test = ormService.findAll(
-			query  = "from Category",
-			max    = 2,
-			offset = 1
-		);
+		test = ormService.findAll( query = "from Category", max = 2, offset = 1 );
 		assertEquals( 2, arrayLen( test ) );
 	}
 
 	function testFindWhere(){
-		test = ormservice.findWhere(
-			"Category",
-			{ category : "Training" }
-		);
+		test = ormservice.findWhere( "Category", { category : "Training" } );
 		assertEquals( "Training", test.getCategory() );
 
-		test = ormservice.findWhere(
-			"User",
-			{
-				firstName : "Luis",
-				lastName  : "Majano"
-			}
-		);
+		test = ormservice.findWhere( "User", { firstName : "Luis", lastName : "Majano" } );
 		assertEquals( "Majano", test.getLastName() );
 	}
 
@@ -840,13 +710,7 @@
 		);
 		assertEquals( 2, arrayLen( test ) );
 
-		test = ormservice.findAllWhere(
-			"User",
-			{
-				firstName : "Luis",
-				lastName  : "Majano"
-			}
-		);
+		test = ormservice.findAllWhere( "User", { firstName : "Luis", lastName : "Majano" } );
 		assertEquals( 1, arrayLen( test ) );
 	}
 
@@ -882,10 +746,7 @@
 		test = ormservice.convertIDValueToJavaType( entityName = "User", id = 1 );
 		assertEquals( [ 1 ], test );
 
-		test = ormservice.convertIDValueToJavaType(
-			entityName = "User",
-			id         = [ "1", "2", "3" ]
-		);
+		test = ormservice.convertIDValueToJavaType( entityName = "User", id = [ "1", "2", "3" ] );
 		assertEquals( [ 1, 2, 3 ], test );
 	}
 
@@ -980,8 +841,7 @@
 	}
 
 	private function deleteCategories(){
-		var q = new Query( datasource = "coolblog" );
-		q.execute( sql = "delete from categories where category = 'unitTest'" );
+		queryExecute( "delete from categories where category = 'unitTest'" );
 	}
 
 }
