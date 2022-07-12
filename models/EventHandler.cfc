@@ -100,10 +100,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
 	public void function onDirtyCheck( dirtyCheckEvent ){
-		announceInterception(
-			"ORMDirtyCheck",
-			{ event : arguments.dirtyCheckEvent }
-		);
+		announceInterception( "ORMDirtyCheck", { event : arguments.dirtyCheckEvent } );
 	}
 
 	/**
@@ -111,10 +108,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
 	public void function onEvict( evictEvent ){
-		announceInterception(
-			"ORMEvict",
-			{ event : arguments.evictEvent }
-		);
+		announceInterception( "ORMEvict", { event : arguments.evictEvent } );
 	}
 
 	/**
@@ -122,10 +116,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
 	public void function onClear( clearEvent ){
-		announceInterception(
-			"ORMClear",
-			{ event : arguments.clearEvent }
-		);
+		announceInterception( "ORMClear", { event : arguments.clearEvent } );
 	}
 
 	/**
@@ -133,10 +124,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
 	public void function onFlush( flushEvent ){
-		announceInterception(
-			"ORMFlush",
-			{ event : arguments.flushEvent }
-		);
+		announceInterception( "ORMFlush", { event : arguments.flushEvent } );
 	}
 
 	/**
@@ -144,10 +132,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	 * Lucee with Hibernate 5.4+ ONLY
 	 */
 	public void function onAutoFlush( autoFlushEvent ){
-		announceInterception(
-			"ORMAutoFlush",
-			{ event : arguments.autoFlushEvent }
-		);
+		announceInterception( "ORMAutoFlush", { event : arguments.autoFlushEvent } );
 	}
 
 	/**
