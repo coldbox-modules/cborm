@@ -145,6 +145,33 @@ component accessors="true" {
 	/*****************************************************************************************/
 
 	/**
+	 * Functional construct for if statements operating over this service and family of services
+	 *
+	 * The success/failure closures accept the entity in question as the first argument
+	 * <pre>
+	 * when( true|false, ( entity )=> {}, ( entity )=> {} )
+	 * </pre>
+	 *
+	 * @target  The boolean evaluator, it has to evaluate to true or false
+	 * @success The closure/lambda to execute if the boolean value is true
+	 * @failure The closure/lambda to execute if the boolean value is false
+	 *
+	 * @return Returns the same object so you can further use chaining
+	 */
+	BaseORMService function when(
+		required boolean target,
+		required success,
+		failure
+	){
+		if ( arguments.target ) {
+			arguments.success( this );
+		} else if ( !isNull( arguments.failure ) ) {
+			arguments.failure( this );
+		}
+		return this;
+	}
+
+	/**
 	 * Lazy loading of the ORM utility according to the CFML engine you are on
 	 * - LuceeORMUtil : For Lucee Engines
 	 * - CFORMUtil : For Adobe Engines

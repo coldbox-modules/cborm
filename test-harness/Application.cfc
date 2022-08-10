@@ -1,8 +1,7 @@
 /**
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 */
 component {
 
@@ -11,7 +10,7 @@ component {
 	request.MODULE_PATH = "cborm";
 
 	// Application properties
-	this.name              = hash( getCurrentTemplatePath() );
+	this.name              = "cborm test harness";
 	this.sessionManagement = true;
 	this.sessionTimeout    = createTimespan( 0, 0, 15, 0 );
 	this.setClientCookies  = true;
