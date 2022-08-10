@@ -7,7 +7,6 @@
 	function setup(){
 		ormCloseSession();
 		ormClearSession();
-
 		super.setup();
 		// If Lucee, close the current ORM session to avoid stackoverflow bug
 		activeUser = getMockBox().prepareMock( entityNew( "ActiveUser" ) );
@@ -15,6 +14,26 @@
 		// Test ID's
 		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
+	}
+
+	function testWhenOperations(){
+		var results = "";
+
+		activeUser.when( false, function( user ){
+			results = true;
+		}, function( user ){
+			results = false;
+		} );
+
+		expect(	results ).toBeFalse();
+
+		activeUser.when( true, function( user ){
+			results = true;
+		}, function( user ){
+			results = false;
+		} );
+
+		expect(	results ).toBeTrue();
 	}
 
 	function testEvictionByEntityObject(){

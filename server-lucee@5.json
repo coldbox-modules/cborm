@@ -11,7 +11,7 @@
         "rewrites":{
             "enable":"true"
         },
-		"webroot":"test-harness",
+        "webroot":"test-harness",
         "aliases":{
             "/moduleroot/cborm":"./"
         }
@@ -20,7 +20,7 @@
         "heapSize":"1024"
     },
     "openBrowser":"false",
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    }
 }

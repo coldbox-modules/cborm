@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v3.9.0] => 2022-AUG-10
+
+### Added
+
+* New `when( boolean, success, fail )` fluent construct for `ActiveEntity`, `VirtualEntityService` and the `BaseORMService` to allow for fluent chaining of operations on an entity or it's service.
+* Migration to new ColdBox Virtual App Testing approaches
+* Removed unecessary on load logging to increase performance
+* Hibernate 5.4 on Lucee experimental testing
+
+### Fixed
+
+* `countWhere()` invalid SQL exception if no arguments are provided: https://github.com/coldbox-modules/cborm/pull/54
+
+----
+
 ## [v3.8.0] => 2022-MAR-09
 
 ### Fixed

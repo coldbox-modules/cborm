@@ -1,6 +1,6 @@
 {
     "name":"ColdBox ORM Extensions",
-    "version":"3.8.0",
+    "version":"3.9.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com",
     "homepage":"https://github.com/coldbox-modules/cborm",
@@ -55,8 +55,8 @@
         "cfpm":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
         "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
         "install:2021":"run-script cfpm:install zip,debugger,orm,mysql,postgresql,sqlserver,feed",
-		"install:dependencies" : "install && cd test-harness && install",
-		"startdbs": "!docker-compose -f docker-compose.yml up"
+        "install:dependencies":"install && cd test-harness && install",
+        "startdbs":"!docker-compose -f docker-compose.yml up"
     },
     "installPaths":{
         "cbvalidation":"modules/cbvalidation/",

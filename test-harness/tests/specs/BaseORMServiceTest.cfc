@@ -590,6 +590,9 @@
 
 		count = ormService.countWhere( entityName = "Category", category = "Training" );
 		assertEquals( 1, count );
+
+		count = ormService.countWhere( entityName = "Category" );
+		assertTrue( count > 1 );
 	}
 
 	function testList(){

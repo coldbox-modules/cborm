@@ -48,29 +48,31 @@
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
-		if ( url.keyExists( "fwreinit" ) ) {
-			ormReload();
-			cleanupApp();
-			if ( structKeyExists( server, "lucee" ) ) {
+
+		// Set a high timeout for long running tests
+		setting requestTimeout="9999";
+		// New ColdBox Virtual Application Starter
+		request.coldBoxVirtualApp = new coldbox.system.testing.VirtualApp( appMapping = "/root" );
+
+		// ORM Reload for fresh results
+		if( structKeyExists( url, "fwreinit" ) ){
+			if( structKeyExists( server, "lucee" ) ){
 				pagePoolClear();
 			}
+			ormReload();
+			request.coldBoxVirtualApp.shutdown();
+		}
+
+		// If hitting the runner or specs, prep our virtual app
+		if ( getBaseTemplatePath().replace( expandPath( "/tests" ), "" ).reFindNoCase( "(runner|specs)" ) ) {
+			request.coldBoxVirtualApp.startup();
 		}
 
 		return true;
 	}
 
 	public function onRequestEnd(){
-		cleanupApp();
-	}
-
-	private function cleanupApp(){
-		// CB 6 graceful shutdown
-		if ( !isNull( application.cbController ) ) {
-			application.cbController.getLoaderService().processShutdown();
-		}
-
-		structDelete( application, "cbController" );
-		structDelete( application, "wirebox" );
+		request.coldBoxVirtualApp.shutdown();
 	}
 
 }
