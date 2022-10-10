@@ -86,8 +86,6 @@ Apache License, Version 2.0.
 * Lucee 5+
   * Hibernate 3.5.x
   * Hibernate 5.x via the new hibernate extension
-* ColdFusion 2016 (DEPRECATED)
-  * Hibernate 4.3.10
 * ColdFusion 2018
   * Hibernate 5.2.11
 * ColdFusion 2021

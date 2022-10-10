@@ -1,6 +1,6 @@
 {
     "name":"ColdBox ORM Extensions",
-    "version":"3.10.0",
+    "version":"4.0.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com",
     "homepage":"https://github.com/coldbox-modules/cborm",
@@ -26,9 +26,9 @@
         "Joel Watson <existdissolve@gmail.com>"
     ],
     "dependencies":{
-        "cbvalidation":"^3.0.0",
-        "mementifier":"^2.0.0",
-        "cbstreams":"^1.5.0",
+        "cbvalidation":"^4.0.0",
+        "mementifier":"^3.0.0",
+        "cbstreams":"^2.0.0",
         "cbpaginator":"^2.0.0"
     },
     "devDependencies":{

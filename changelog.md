@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v4.0.0] => 2022-OCT-10
+
+### Added
+
+* Upgraded all dependencies to major bumps
+
+### Changed
+
+* Dropped ACF2016 Support
+
+----
+
 ## [v3.9.0] => 2022-AUG-10
 
 ### Added

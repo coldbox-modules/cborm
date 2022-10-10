@@ -5,7 +5,7 @@ on:
   workflow_call:
     secrets:
       SLACK_WEBHOOK_URL:
-        required: true
+        required: false
 
 jobs:
   tests:
@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
         experimental: [false]
         include:
           - cfengine: "lucee-hibernate@5.4"
