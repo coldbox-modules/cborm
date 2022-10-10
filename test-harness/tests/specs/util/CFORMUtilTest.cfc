@@ -63,8 +63,6 @@ component extends="tests.resources.BaseTest" skip="isLucee" {
 		// Fragile test: These will need updating if (and only if) the engines upgrade the installed Hibernate version
 		if ( listFirst( server.coldfusion.productVersion ) == 2018 ) {
 			assertEquals( "5.2.11.SNAPSHOT", ormutil.getHibernateVersion() );
-		} else if ( listFirst( server.coldfusion.productVersion ) == 2016 ) {
-			assertEquals( "4.3.10.Final", ormutil.getHibernateVersion() );
 		}
 	}
 

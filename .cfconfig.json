@@ -16,7 +16,7 @@
 			"validate":"false"
         }
 	},
-	"adminPassword":"commandbox",
+	"adminPassword":"coldbox",
 	"debuggingEnabled":true,
 	"whitespaceManagement":"white-space-pref",
     "debuggingReportExecutionTimes":false,

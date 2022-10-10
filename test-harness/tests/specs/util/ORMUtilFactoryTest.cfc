@@ -29,17 +29,6 @@ component extends="testbox.system.BaseSpec" {
 				skip = isLucee
 			);
 
-			it(
-				title = "can get lucee > 4.3 instance",
-				body  = function(){
-					factory.$( "getPlatform", "lucee" ).$( "getLuceeVersion", "4.3.000" );
-					var u = factory.getORMUtil();
-					expect( u ).toBeInstanceOf( "cborm.models.util.LuceeORMUtil" );
-				},
-				skip = function(){
-					return ( isLucee() and findNoCase( "4.3", server.lucee.version ) ) ? false : true;
-				}
-			);
 		} );
 	}
 
