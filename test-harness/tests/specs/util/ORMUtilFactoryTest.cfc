@@ -28,7 +28,6 @@ component extends="testbox.system.BaseSpec" {
 				},
 				skip = isLucee
 			);
-
 		} );
 	}
 
