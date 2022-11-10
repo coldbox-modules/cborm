@@ -49,7 +49,7 @@ component accessors="true" {
 	 *
 	 * @lazy true
 	 */
-	property name="beanPopulator" persistent="false";
+	property name="objectPopulator" persistent="false";
 
 	/**
 	 * The system ORM utility object depending on the CFML Engine you are on
@@ -880,7 +880,7 @@ component accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
 	){
-		return getBeanPopulator().populateFromStruct( argumentCollection = arguments );
+		return getObjectPopulator().populateFromStruct( argumentCollection = arguments );
 	}
 
 	/**
@@ -911,7 +911,7 @@ component accessors="true" {
 		boolean composeRelationships = true,
 		required string prefix
 	){
-		return getBeanPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
+		return getObjectPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
 
 	/**
@@ -940,7 +940,7 @@ component accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
 	){
-		return getBeanPopulator().populateFromJSON( argumentCollection = arguments );
+		return getObjectPopulator().populateFromJSON( argumentCollection = arguments );
 	}
 
 	/**
@@ -972,7 +972,7 @@ component accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
 	){
-		return getBeanPopulator().populateFromXML( argumentCollection = arguments );
+		return getObjectPopulator().populateFromXML( argumentCollection = arguments );
 	}
 
 	/**
@@ -1003,20 +1003,27 @@ component accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true
 	){
-		return getBeanPopulator().populateFromQuery( argumentCollection = arguments );
+		return getObjectPopulator().populateFromQuery( argumentCollection = arguments );
+	}
+
+	/**
+	 * @deprecated
+	 */
+	function getBeanPopulator(){
+		return getObjectPopulator();
 	}
 
 	/**
 	 * Lazy load an entity populator
 	 *
-	 * @return coldbox.system.core.dynamic.BeanPopulator
+	 * @return coldbox.system.core.dynamic.ObjectPopulator
 	 */
-	function getBeanPopulator(){
-		if ( !isNull( variables.beanPopulator ) ) {
-			return variables.beanPopulator;
+	function getObjectPopulator(){
+		if ( !isNull( variables.objectPopulator ) ) {
+			return variables.objectPopulator;
 		}
-		variables.beanPopulator = new coldbox.system.core.dynamic.BeanPopulator();
-		return variables.beanPopulator;
+		variables.objectPopulator = variables.wirebox.getObjectPopulator();
+		return variables.objectPopulator;
 	}
 
 	/*****************************************************************************************/
