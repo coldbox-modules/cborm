@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v4.1.0] => 2022-NOV-10
+
+### Changed
+
+* Updated the way the populator is retrieved so we can be forwards compatible
+
+----
+
 ## [v4.0.0] => 2022-OCT-10
 
 ### Added
