@@ -19,21 +19,29 @@
 	function testWhenOperations(){
 		var results = "";
 
-		activeUser.when( false, function( user ){
-			results = true;
-		}, function( user ){
-			results = false;
-		} );
+		activeUser.when(
+			false,
+			function( user ){
+				results = true;
+			},
+			function( user ){
+				results = false;
+			}
+		);
 
-		expect(	results ).toBeFalse();
+		expect( results ).toBeFalse();
 
-		activeUser.when( true, function( user ){
-			results = true;
-		}, function( user ){
-			results = false;
-		} );
+		activeUser.when(
+			true,
+			function( user ){
+				results = true;
+			},
+			function( user ){
+				results = false;
+			}
+		);
 
-		expect(	results ).toBeTrue();
+		expect( results ).toBeTrue();
 	}
 
 	function testEvictionByEntityObject(){
