@@ -4,7 +4,7 @@ component extends="tests.resources.BaseTest" {
 		ormService       = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
 		mockEventHandler = getMockBox()
 			.createMock( "cborm.models.EventHandler" )
-			.$( "getEventManager", getMockBox().createStub().$( "processState" ) );
+			.$( "getEventManager", getMockBox().createStub().$( "announce" ) );
 		ormService.setORMEventHandler( mockEventHandler );
 
 		criteria = getMockBox().createMock( "cborm.models.criterion.CriteriaBuilder" );
