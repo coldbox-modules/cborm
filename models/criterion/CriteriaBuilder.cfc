@@ -143,7 +143,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState( "beforeCriteriaBuilderList", { "criteriaBuilder" : this } );
+			variables.eventManager.announce( "beforeCriteriaBuilderList", { "criteriaBuilder" : this } );
 		}
 
 		// Get listing
@@ -151,7 +151,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"afterCriteriaBuilderList",
 				{ "criteriaBuilder" : this, "results" : results }
 			);
@@ -176,7 +176,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * pass off arguments to higher-level restriction builder, and handle the results
 	 *
-	 * @missingMethodName     
+	 * @missingMethodName
 	 * @missingMethodArguments
 	 */
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
@@ -194,7 +194,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "Restriction", "criteriaBuilder" : this }
 			);
@@ -220,7 +220,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "Subquery", "criteriaBuilder" : this }
 			);
@@ -284,7 +284,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( variables.ORMService.getEventHandling() ) {
-				variables.eventManager.processState(
+				variables.eventManager.announce(
 					"onCriteriaBuilderAddition",
 					{ "type" : "Offset", "criteriaBuilder" : this }
 				);
@@ -303,7 +303,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( variables.ORMService.getEventHandling() ) {
-				variables.eventManager.processState(
+				variables.eventManager.announce(
 					"onCriteriaBuilderAddition",
 					{ "type" : "Max", "criteriaBuilder" : this }
 				);
@@ -372,7 +372,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	any function get( properties = "" ){
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState( "beforeCriteriaBuilderGet", { "criteriaBuilder" : this } );
+			variables.eventManager.announce( "beforeCriteriaBuilderGet", { "criteriaBuilder" : this } );
 		}
 
 		// Do we have any properties to add?
@@ -385,7 +385,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// process interception
 		if ( !isNull( result ) && variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"afterCriteriaBuilderGet",
 				{ "criteriaBuilder" : this, "result" : result }
 			);
@@ -404,7 +404,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	numeric function count( propertyName = "" ){
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState( "beforeCriteriaBuilderCount", { "criteriaBuilder" : this } );
+			variables.eventManager.announce( "beforeCriteriaBuilderCount", { "criteriaBuilder" : this } );
 		}
 
 		// else project on the local criterias
@@ -416,7 +416,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "Count", "criteriaBuilder" : this }
 			);
@@ -429,7 +429,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 
 		// process interception
 		if ( variables.ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"afterCriteriaBuilderCount",
 				{ "criteriaBuilder" : this, "results" : results }
 			);

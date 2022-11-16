@@ -51,7 +51,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * pass off arguments to higher-level restriction builder, and handle the results
 	 *
-	 * @missingMethodName     
+	 * @missingMethodName
 	 * @missingMethodArguments
 	 */
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
@@ -76,7 +76,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 			default:
 				nativeCriteria.add( r );
 				// process interception
-				variables.eventManager.processState(
+				variables.eventManager.announce(
 					"onCriteriaBuilderAddition",
 					{
 						"type"            : "Subquery Restriction",
@@ -182,7 +182,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 		if ( getSqlHelper().canLogLimitOffset() ) {
 			// process interception
 			if ( variables.ormService.getEventHandling() ) {
-				variables.eventManager.processState(
+				variables.eventManager.announce(
 					"onCriteriaBuilderAddition",
 					{ "type" : "Max", "criteriaBuilder" : this }
 				);

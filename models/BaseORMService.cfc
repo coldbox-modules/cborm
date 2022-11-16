@@ -420,7 +420,7 @@ component accessors="true" {
 		if ( getEventHandling() ) {
 			getORMEventHandler()
 				.getEventManager()
-				.processState(
+				.announce(
 					"beforeOrmExecuteQuery",
 					{
 						"query"   : arguments.query,
@@ -443,7 +443,7 @@ component accessors="true" {
 		if ( getEventHandling() ) {
 			getORMEventHandler()
 				.getEventManager()
-				.processState(
+				.announce(
 					"afterOrmExecuteQuery",
 					{
 						"query"   : arguments.query,
