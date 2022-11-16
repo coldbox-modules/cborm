@@ -224,10 +224,7 @@ component extends="coldbox.system.RestHandler" {
 		prc.oEntity = validateOrFail( argumentCollection = arguments.validate );
 
 		// announce it
-		announce(
-			"#variables.settings.resources.eventPrefix#pre#variables.entity#Save",
-			{ entity : prc.oEntity }
-		);
+		announce( "#variables.settings.resources.eventPrefix#pre#variables.entity#Save", { entity : prc.oEntity } );
 
 		// Save it
 		invoke(
@@ -429,10 +426,7 @@ component extends="coldbox.system.RestHandler" {
 		);
 
 		// announce it
-		announce(
-			"#variables.settings.resources.eventPrefix#post#variables.entity#Delete",
-			{ id : rc.id }
-		);
+		announce( "#variables.settings.resources.eventPrefix#post#variables.entity#Delete", { id : rc.id } );
 
 		// Marshall it out
 		prc.response.addMessage( "#variables.entity# deleted!" );
