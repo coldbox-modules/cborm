@@ -162,7 +162,7 @@ component accessors="true" {
 
 		// process interception
 		if ( ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "Order", "criteriaBuilder" : this }
 			);
@@ -209,7 +209,7 @@ component accessors="true" {
 
 		// announce
 		if ( ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "Alias", "criteriaBuilder" : this }
 			);
@@ -242,7 +242,7 @@ component accessors="true" {
 				nativeCriteria = nativeCriteria.createCriteria( arguments.associationName, arguments.joinType );
 				// announce
 				if ( ORMService.getEventHandling() ) {
-					variables.eventManager.processState(
+					variables.eventManager.announce(
 						"onCriteriaBuilderAddition",
 						{
 							"type"            : "New Criteria w/Join Type",
@@ -281,7 +281,7 @@ component accessors="true" {
 			}
 		}
 		if ( ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "New Criteria", "criteriaBuilder" : this }
 			);
@@ -351,7 +351,7 @@ component accessors="true" {
 
 		// announce
 		if ( ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "Projection", "criteriaBuilder" : this }
 			);
@@ -482,7 +482,7 @@ component accessors="true" {
 
 		// announce
 		if ( ORMService.getEventHandling() ) {
-			variables.eventManager.processState(
+			variables.eventManager.announce(
 				"onCriteriaBuilderAddition",
 				{ "type" : "Projection", "criteriaBuilder" : this }
 			);
@@ -716,7 +716,7 @@ component accessors="true" {
 
 			// announce
 			if ( ORMService.getEventHandling() ) {
-				variables.eventManager.processState(
+				variables.eventManager.announce(
 					"onCriteriaBuilderAddition",
 					{ "type" : "Projection", "criteriaBuilder" : this }
 				);

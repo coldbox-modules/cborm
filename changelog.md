@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v4.3.0] => 2022-NOV-16
+
+### Changed
+
+* Updated `processState()` to `announce()` to stay compliant
+
+----
+
 ## [v4.2.0] => 2022-NOV-16
 
 ### Changed
