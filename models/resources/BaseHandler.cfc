@@ -109,7 +109,7 @@ component extends="coldbox.system.RestHandler" {
 		}
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#pre#variables.entity#List",
 			{
 				criteria : ( isNull( arguments.criteria ) ? newCriteria() : arguments.criteria ),
@@ -145,7 +145,7 @@ component extends="coldbox.system.RestHandler" {
 		}
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#post#variables.entity#List",
 			{ count : prc.recordCount, records : prc.records }
 		);
@@ -224,7 +224,7 @@ component extends="coldbox.system.RestHandler" {
 		prc.oEntity = validateOrFail( argumentCollection = arguments.validate );
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#pre#variables.entity#Save",
 			{ entity : prc.oEntity }
 		);
@@ -237,7 +237,7 @@ component extends="coldbox.system.RestHandler" {
 		);
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#post#variables.entity#Save",
 			{ entity : prc.oEntity }
 		);
@@ -288,13 +288,13 @@ component extends="coldbox.system.RestHandler" {
 		param rc.id             = 0;
 
 		// announce it
-		announceInterception( "#variables.settings.resources.eventPrefix#pre#variables.entity#Show", {} );
+		announce( "#variables.settings.resources.eventPrefix#pre#variables.entity#Show", {} );
 
 		// Get by id
 		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#post#variables.entity#Show",
 			{ entity : prc.oEntity }
 		);
@@ -365,7 +365,7 @@ component extends="coldbox.system.RestHandler" {
 		prc.oEntity = validateOrFail( argumentCollection = arguments.validate );
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#pre#variables.entity#Update",
 			{ entity : prc.oEntity }
 		);
@@ -378,7 +378,7 @@ component extends="coldbox.system.RestHandler" {
 		);
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#post#variables.entity#Update",
 			{ entity : prc.oEntity }
 		);
@@ -416,7 +416,7 @@ component extends="coldbox.system.RestHandler" {
 		prc.oEntity = variables.ormService.getOrFail( rc.id );
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#pre#variables.entity#Delete",
 			{ entity : prc.oEntity }
 		);
@@ -429,7 +429,7 @@ component extends="coldbox.system.RestHandler" {
 		);
 
 		// announce it
-		announceInterception(
+		announce(
 			"#variables.settings.resources.eventPrefix#post#variables.entity#Delete",
 			{ id : rc.id }
 		);
