@@ -11,7 +11,7 @@ component extends="tests.resources.BaseTest" {
 		ormService       = createMock( "cborm.models.BaseORMService" ).init();
 		mockEventHandler = createMock( "cborm.models.EventHandler" ).$(
 			"getEventManager",
-			createStub().$( "processState" )
+			createStub().$( "announce" )
 		);
 		ormService.setORMEventHandler( mockEventHandler );
 		ormservice.setEventHandling( false );
