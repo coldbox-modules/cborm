@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [v4.3.2] => 2022-NOV-17
+
+### Fixed
+
+* Removal of `lazy` annotations that conflict with cb7 lazy properties
+
+----
+
 ## [v4.3.1] => 2022-NOV-16
 
 ### Fixed
