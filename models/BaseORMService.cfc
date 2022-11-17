@@ -43,11 +43,6 @@ component accessors="true" {
 	property name="ORMEventHandler" persistent="false";
 
 	/**
-	 * The object populator.
-	 */
-	property name="beanPopulator" persistent="false";
-
-	/**
 	 * The system ORM utility object depending on the CFML Engine you are on.
 	 */
 	property name="ORM" persistent="false";
@@ -116,6 +111,8 @@ component accessors="true" {
 		variables.eventHandling    = arguments.eventHandling;
 		variables.useTransactions  = arguments.useTransactions;
 		variables.defaultAsQuery   = arguments.defaultAsQuery;
+		// We go out to app scope due to the ORM loading at application startup time.
+		// This is on purpose
 		variables.wirebox          = application.wirebox;
 		variables.logger           = variables.wirebox.getLogBox().getLogger( this );
 
@@ -1001,14 +998,14 @@ component accessors="true" {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated Please do not use. Use `getObjectPopulator()`
 	 */
 	function getBeanPopulator(){
 		return getObjectPopulator();
 	}
 
 	/**
-	 * Lazy load an entity populator
+	 * Get access to the object populator objet
 	 *
 	 * @return coldbox.system.core.dynamic.ObjectPopulator
 	 */
