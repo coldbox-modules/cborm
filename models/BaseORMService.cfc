@@ -38,23 +38,17 @@ component accessors="true" {
 		persistent="false";
 
 	/**
-	 * The system ORM event handler to transmit ORM events to
-	 *
-	 * @lazy true
+	 * The system ORM event handler to transmit ORM events to.
 	 */
 	property name="ORMEventHandler" persistent="false";
 
 	/**
-	 * The object populator
-	 *
-	 * @lazy true
+	 * The object populator.
 	 */
-	property name="objectPopulator" persistent="false";
+	property name="beanPopulator" persistent="false";
 
 	/**
-	 * The system ORM utility object depending on the CFML Engine you are on
-	 *
-	 * @lazy true
+	 * The system ORM utility object depending on the CFML Engine you are on.
 	 */
 	property name="ORM" persistent="false";
 
