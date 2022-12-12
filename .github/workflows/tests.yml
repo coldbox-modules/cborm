@@ -23,6 +23,8 @@ jobs:
         include:
           - cfengine: "lucee-hibernate@5.4"
             experimental: true
+          - cfengine: "lucee@6"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
