@@ -81,7 +81,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: test-harness/tests/results/**/*.xml
+          junit_files: test-harness/tests/results/**/*.xml
           check_name: "${{ matrix.cfengine }} Test Results"
 
       - name: Upload Test Results to Artifacts
