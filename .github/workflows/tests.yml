@@ -23,6 +23,7 @@ jobs:
         experimental: [ false ]
         include:
           - cfengine: "lucee-hibernate@5.4"
+            coldboxVersion: "^6.0.0"
             experimental: true
           - coldboxVersion: "be"
             cfengine: "lucee@5"
