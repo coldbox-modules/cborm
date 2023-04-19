@@ -6,7 +6,7 @@
 	}
 
 	function setup(){
-		ormservice = getMockBox().createMock( "cborm.models.VirtualEntityService" );
+		ormservice = createMock( "cborm.models.VirtualEntityService" );
 		// Mocks
 		ormservice.init( entityname = "User" );
 

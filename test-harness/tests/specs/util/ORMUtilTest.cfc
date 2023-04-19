@@ -1,7 +1,7 @@
 component extends="tests.resources.BaseTest" skip="isCF" {
 
 	function setup(){
-		ormUtil = getMockBox().createMock( "cborm.models.util.LuceeORMUtil" );
+		ormUtil = createMock( "cborm.models.util.LuceeORMUtil" );
 	}
 
 	function testflush(){

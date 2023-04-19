@@ -1,7 +1,7 @@
 component extends="tests.resources.BaseTest" {
 
 	function setup(){
-		variables.ormUtil = getMockBox().createMock( "cborm.models.util.ORMUtilSupport" );
+		variables.ormUtil = createMock( "cborm.models.util.ORMUtilSupport" );
 	}
 
 	function testIsInTransaction(){
