@@ -176,7 +176,7 @@ component accessors="true" extends="cborm.models.criterion.BaseBuilder" {
 	/**
 	 * pass off arguments to higher-level restriction builder, and handle the results
 	 *
-	 * @missingMethodName
+	 * @missingMethodName     
 	 * @missingMethodArguments
 	 */
 	any function onMissingMethod( required string missingMethodName, required struct missingMethodArguments ){
