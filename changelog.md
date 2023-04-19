@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-----
+## [Unreleased]
+
+### Added
+
+- Github Actions updated
+- Github support files
+- ColdBox 7+ automated testing
 
 ## [v4.3.2] => 2022-NOV-17
 
@@ -13,15 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Removal of `lazy` annotations that conflict with cb7 lazy properties
 
-----
-
 ## [v4.3.1] => 2022-NOV-16
 
 ### Fixed
 
 * Updated `processState()` to `announce()` on all tests
-
-----
 
 ## [v4.3.0] => 2022-NOV-16
 
@@ -29,23 +31,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Updated `processState()` to `announce()` to stay compliant
 
-----
-
 ## [v4.2.0] => 2022-NOV-16
 
 ### Changed
 
 * Updated `announceInterception()` to `announce()` to stay compliant
 
-----
-
 ## [v4.1.0] => 2022-NOV-10
 
 ### Changed
 
 * Updated the way the populator is retrieved so we can be forwards compatible
-
-----
 
 ## [v4.0.0] => 2022-OCT-10
 
@@ -56,8 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Dropped ACF2016 Support
-
-----
 
 ## [v3.9.0] => 2022-AUG-10
 
@@ -71,8 +65,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * `countWhere()` invalid SQL exception if no arguments are provided: https://github.com/coldbox-modules/cborm/pull/54
-
-----
 
 ## [v3.8.0] => 2022-MAR-09
 
@@ -93,15 +85,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Leverage WireBox aliases for contstruction of internal objects
 * Tons of internal docs and links to hibernate docs
 
-----
-
 ## [v3.7.0] => 2022-JAN-13
 
 ### Added
 
 * [CBORM-29](https://ortussolutions.atlassian.net/browse/CBORM-29) Allow SQL projections to be functions containing commas
-
-----
 
 ## [v3.6.0] => 2022-JAN-10
 
@@ -113,15 +101,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Renamed default object DSL
 
-----
-
 ## [v3.5.1] => 2022-JAN-10
 
 ### Fixed
 
 * Removed usage of interface on DSL. Causes more issues than anything with multiple engines.
-
-----
 
 ## [v3.5.0] => 2021-DEC-16
 
@@ -164,15 +148,11 @@ where p.name like ?1 and p.isStatus = ?2
 ```
 
 
-----
-
 ## [v3.4.0] => 2021-APR-27
 
 ### Added
 
 * Support for Adobe 2021 on resource loader
-
-----
 
 ## [v3.3.0] => 2021-APR-27
 
@@ -189,15 +169,11 @@ where p.name like ?1 and p.isStatus = ?2
 * Added ACF2016 compatibilities on elvis operator which sucks on ACF2016
 * Avoid using member function son some arrays to allow for working with Java arrays
 
-----
-
 ## [v3.2.1] => 2021-MAR-31
 
 ### Fixed
 
 * Wrong object to get the event handler manager when doing execute query calls
-
-----
 
 ## [v3.2.0] => 2021-MAR-31
 
@@ -210,8 +186,6 @@ where p.name like ?1 and p.isStatus = ?2
 
 * Moved `afterCriteriaBuilderList` event before results conversions
 
-----
-
 ## [v3.1.0] => 2021-MAR-30
 
 ### Added
@@ -223,8 +197,6 @@ where p.name like ?1 and p.isStatus = ?2
 
 * Fixed http to https for downloads
 * Fixed watcher pathing
-
-----
 
 ## [v3.0.0] => 2021-FEB-12
 
@@ -241,8 +213,6 @@ where p.name like ?1 and p.isStatus = ?2
 ### Fixed
 
 * [<a href='https://ortussolutions.atlassian.net/browse/CBORM-2'>CBORM-2</a>] - isDirty() not working with ActiveEntity due to missing entity passed
-
-----
 
 ## [v2.6.0] => 2020-NOV-25
 
@@ -267,8 +237,6 @@ where p.name like ?1 and p.isStatus = ?2
 * Increased timeouts for tests, due to Adobe issues with long compile times in latest patch levels that suck!
 * Unique validator test was clearing the full app scope and trigger multiple testing issues
 
-----
-
 ## [v2.5.0] => 2020-APR-20
 
 * `Features` : Introduction of the automatic resource handler for ORM Entities based on ColdBox's 6 resources and RestHandler
@@ -276,15 +244,11 @@ where p.name like ?1 and p.isStatus = ?2
 * `Bug` : Fix on `getOrFail()` where if the id was 0, it would still return an empty object.
 * `Task` : Added formatting via cfformat
 
-----
-
 ## [v2.4.0] => 2020-JAN-31
 
 * `Feature` : Upgraded to `cbValidation` 2.0.0
 * `Feature` : Updated the unique validator to match 2.0.0 standards
 * `Feature` : Upgraded to `mementifier` 2.0.0
-
-----
 
 ## [v2.3.0]
 
@@ -292,13 +256,9 @@ where p.name like ?1 and p.isStatus = ?2
 * `bug` : Fixed `asStream` typo on `executeQuery()`
 * `bug` : Missing ACF2016 compat on tests
 
-----
-
 ## [v2.2.1]
 
 * `bug` : virtual entity service still had `entity` required for casting methods
-
-----
 
 ## [v2.2.0]
 
@@ -332,14 +292,10 @@ newCriteria()
 * `Bug`: ACF2016 issues with elvis operator.
 * `Bug`: `getOrFail()` had an invalid throw statement
 
-----
-
 ## [v2.1.0]
 
 * Change `populate()` in ActiveEntity so the target is the last argument so you can just pass a struct as the first argument [#29](https://github.com/coldbox-modules/cborm/issues/29)
 *  Make the `save()` operation return the saved entity or array of entities instead of the BaseORM service [#28](https://github.com/coldbox-modules/cborm/issues/28)
-
-----
 
 ## [v2.0.0]
 
@@ -488,9 +444,7 @@ this.TYPES = {
 results = ormservice.findByLastLoginBetween( "User", "01/01/2008", "11/01/2008", { sortBy="LastName" } );
 ```
 
-* All dynamic finders/counters values are autocasted, you no longer need to cast the values, we will do this for you. You can turn it off via the `autocast:false` in the options to the calls.
-
-----#
+* All dynamic finders/counters values are autocasted, you no longer need to cast the values, we will do this for you. You can turn it off via the `autocast:false` in the options to the calls.#
 
 ## [Virtual Entity Service]
 
