@@ -5,10 +5,10 @@ component extends="tests.resources.BaseTest" {
 		// Load our test injector for ORM entity binding
 	}
 	function setup(){
-		ormService   = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
-		rootcriteria = getMockBox().createMock( "cborm.models.criterion.CriteriaBuilder" );
+		ormService   = createMock( "cborm.models.BaseORMService" ).init();
+		rootcriteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
 		rootcriteria.init( entityName = "User", ORMService = ormService );
-		criteria         = getMockBox().createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
+		criteria         = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
 		mockEventManager = getMockBox().createStub();
 		mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
 		mockService      = getMockBox()

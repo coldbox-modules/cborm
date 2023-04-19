@@ -2,7 +2,7 @@ component extends="tests.resources.BaseTest" skip="isLucee" {
 
 	function setup(){
 		super.setup();
-		ormUtil = getMockBox().createMock( "cborm.models.util.CFORMUtil" );
+		ormUtil = createMock( "cborm.models.util.CFORMUtil" );
 		// CF ENGINE MUST HAVE coolblog as a DSN
 		dsn     = "coolblog";
 	}

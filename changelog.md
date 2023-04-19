@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Github Actions updated
 - Github support files
 - ColdBox 7+ automated testing
+- More test scenarios and test cleanups
 
 ## [v4.3.2] => 2022-NOV-17
 

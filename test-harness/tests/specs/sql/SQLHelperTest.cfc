@@ -1,15 +1,15 @@
 component extends="tests.resources.BaseTest" {
 
 	function setup(){
-		ormService       = getMockBox().createMock( "cborm.models.BaseORMService" ).init();
+		ormService       = createMock( "cborm.models.BaseORMService" ).init();
 		mockEventHandler = getMockBox()
 			.createMock( "cborm.models.EventHandler" )
 			.$( "getEventManager", getMockBox().createStub().$( "announce" ) );
 		ormService.setORMEventHandler( mockEventHandler );
 
-		criteria = getMockBox().createMock( "cborm.models.criterion.CriteriaBuilder" );
+		criteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
 		criteria.init( entityName = "User", ormservice = ormservice );
-		SQLHelper = getMockBox().createMock( "cborm.models.sql.SQLHelper" );
+		SQLHelper = createMock( "cborm.models.sql.SQLHelper" );
 		SQLHelper.init( criteria );
 
 		// Test ID's

@@ -7,7 +7,7 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testValidate(){
-		result       = getMockBox().createMock( "cbvalidation.models.result.ValidationResult" ).init();
+		result       = createMock( "cbvalidation.models.result.ValidationResult" ).init();
 		var category = entityNew( "Category" );
 
 		// null

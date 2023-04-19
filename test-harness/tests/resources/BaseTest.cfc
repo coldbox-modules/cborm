@@ -26,7 +26,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	function withRollback( target ){
 		transaction {
 			try {
-				arguments.target();
+				arguments.target( argumentCollection = arguments );
 			} catch ( any e ) {
 				rethrow;
 			} finally {

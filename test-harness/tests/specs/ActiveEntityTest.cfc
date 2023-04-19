@@ -9,7 +9,7 @@
 		ormClearSession();
 		super.setup();
 		// If Lucee, close the current ORM session to avoid stackoverflow bug
-		activeUser = getMockBox().prepareMock( entityNew( "ActiveUser" ) );
+		activeUser = prepareMock( entityNew( "ActiveUser" ) );
 
 		// Test ID's
 		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
@@ -166,7 +166,7 @@
 		mockEventHandler.$( "preSave" );
 		mockEventHandler.$( "postSave" );
 
-		user = getMockBox().prepareMock( entityNew( "ActiveUser" ) );
+		user = prepareMock( entityNew( "ActiveUser" ) );
 		user.$property(
 			"ORMEventHandler",
 			"variables",
