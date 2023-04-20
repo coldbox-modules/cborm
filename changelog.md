@@ -304,18 +304,19 @@ where p.name like ?1 and p.isStatus = ?2
 
 - You will need to move the `orm` configuration structure in your `config/ColdBox.cfc` to the `moduleSettings` struct and rename it to `cborm` to standardize it to module settings.
 
+```js
+moduleSettings = {
 
-    moduleSettings = {
+	cborm = {
+		inject = {
+			enabled = true,
+			includes = "",
+			excludes = ""
+		}
+	}
 
-    	cborm = {
-    		inject = {
-    			enabled = true,
-    			includes = "",
-    			excludes = ""
-    		}
-    	}
-
-    };
+};
+```
 
 - `deleteByQuery()` reworked entirely to do native bulk delete queries.  It now also returns the number of records removed
 - The `evict()` method was renamed to `evictCollection()` to better satisfy the same contract in hibernate
@@ -350,43 +351,47 @@ where p.name like ?1 and p.isStatus = ?2
 - The `sql()` restriction now supports binding positional parameters. You can pass them in an array and we will infer the types: `sql( "id = ? and isActive = ?", [ "123", true ] )`.  Or you can pass in a struct of `{value:"", type:""}` instead:
 
 
-    restrictions.sql( "userName = ? and firstName like ?", [
-    	{ value : "joe", type : "string" },
-    	{ value : "%joe%", type : "string" }
-    ] );
+```js
+restrictions.sql( "userName = ? and firstName like ?", [
+	{ value : "joe", type : "string" },
+	{ value : "%joe%", type : "string" }
+] );
+```
 
 The available types are the following which match the Hibernate Types
 
-    this.TYPES = {
-    	"string" 		: "StringType",
-    	"clob"			: "ClobType",
-    	"text"			: "TextType",
-    	"char"			: "ChareacterType",
-    	"boolean" 		: "BooleanType",
-    	"yesno" 		: "YesNoType",
-    	"truefalse"		: "TrueFalseType",
-    	"byte" 			: "ByteType",
-    	"short" 		: "ShortType",
-    	"integer" 		: "IntegerType",
-    	"long" 			: "LongType",
-    	"float"			: "FloatType",
-    	"double" 		: "DoubleType",
-    	"bigInteger"	: "BigIntegerType",
-    	"bigDecimal"	: "BigDecimalType",
-    	"timestamp" 	: "TimestampType",
-    	"time" 			: "TimeType",
-    	"date" 			: "DateType",
-    	"calendar"		: "CalendarType",
-    	"currency"		: "CurrencyType",
-    	"locale" 		: "LocaleType",
-    	"timezone"		: "TimeZoneType",
-    	"url" 			: "UrlType",
-    	"class" 		: "ClassType",
-    	"blob" 			: "BlobType",
-    	"binary" 		: "BinaryType",
-    	"uuid" 			: "UUIDCharType",
-    	"serializable"	: "SerializableType"
-    };
+```js
+this.TYPES = {
+	"string" 		: "StringType",
+	"clob"			: "ClobType",
+	"text"			: "TextType",
+	"char"			: "ChareacterType",
+	"boolean" 		: "BooleanType",
+	"yesno" 		: "YesNoType",
+	"truefalse"		: "TrueFalseType",
+	"byte" 			: "ByteType",
+	"short" 		: "ShortType",
+	"integer" 		: "IntegerType",
+	"long" 			: "LongType",
+	"float"			: "FloatType",
+	"double" 		: "DoubleType",
+	"bigInteger"	: "BigIntegerType",
+	"bigDecimal"	: "BigDecimalType",
+	"timestamp" 	: "TimestampType",
+	"time" 			: "TimeType",
+	"date" 			: "DateType",
+	"calendar"		: "CalendarType",
+	"currency"		: "CurrencyType",
+	"locale" 		: "LocaleType",
+	"timezone"		: "TimeZoneType",
+	"url" 			: "UrlType",
+	"class" 		: "ClassType",
+	"blob" 			: "BlobType",
+	"binary" 		: "BinaryType",
+	"uuid" 			: "UUIDCharType",
+	"serializable"	: "SerializableType"
+};
+```
 
 - Detached Criteria builder now has a `maxResults( maxResults )` method to limit the results by
 - Detached Criteria sql projections now take aliases into account
@@ -515,7 +520,5 @@ Remember this entity extends the Virtual Service, so we get all the features abo
 ## 1.0.0
 
 - Create first module version
-
-[Unreleased]: https://github.com/coldbox-modules/cborm/compare/v4.4.0...HEAD
 
 [4.4.0]: https://github.com/coldbox-modules/cborm/compare/13af593fa8a7bf2c4396e9be9d0dd0bb6899e935...v4.4.0
