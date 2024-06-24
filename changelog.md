@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Tons of updates to automated testing.
-- Automated tewsting for Lucee 6.
+- Automated tewsting for Lucee 6 as experimental, since it's broken.
 - Automated testing for Adobe 2023.
 
 ### Changed
