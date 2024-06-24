@@ -1,24 +1,44 @@
-component extends="tests.resources.BaseTest" skip="true"{
+component extends="tests.resources.BaseTest" skip="true" {
 
 	function testIsInTransaction(){
-		assertEquals( false, ormutil.isInTransaction(), "no transaction" );
+		assertEquals(
+			false,
+			ormutil.isInTransaction(),
+			"no transaction"
+		);
 
 		transaction {
-			assertEquals( true, ormutil.isInTransaction(), "simple transaction" );
+			assertEquals(
+				true,
+				ormutil.isInTransaction(),
+				"simple transaction"
+			);
 		}
 
-		assertEquals( false, ormutil.isInTransaction(), "outside transaction" );
+		assertEquals(
+			false,
+			ormutil.isInTransaction(),
+			"outside transaction"
+		);
 
 		transaction {
 			ormGetSession();
 			var test = entityLoad( "User", { firstName : "Luis" }, true );
-			assertEquals( true, ormutil.isInTransaction(), "second transaction" );
+			assertEquals(
+				true,
+				ormutil.isInTransaction(),
+				"second transaction"
+			);
 			ormFlush();
-			assertEquals( true, ormutil.isInTransaction(), "second transaction" );
+			assertEquals(
+				true,
+				ormutil.isInTransaction(),
+				"second transaction"
+			);
 		}
 
 		ormFlush();
-		assertEquals( false, ormutil.isInTransaction()  );
+		assertEquals( false, ormutil.isInTransaction() );
 	}
 
 	function testflush(){

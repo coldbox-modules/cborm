@@ -37,7 +37,6 @@ component extends="tests.resources.BaseTest" {
 				skip = !isLucee()
 			);
 		} );
-
 	}
 
 }

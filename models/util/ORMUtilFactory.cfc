@@ -12,8 +12,8 @@ import cborm.models.util.support.*;
 component {
 
 	this.isBoxLang = server.keyExists( "boxlang" );
-	this.isLucee = server.keyExists( "lucee" );
-	this.isAdobe = server.coldfusion.productname == "ColdFusion Server";
+	this.isLucee   = server.keyExists( "lucee" );
+	this.isAdobe   = server.coldfusion.productname == "ColdFusion Server";
 
 	/**
 	 * Get the ORM Utility object
@@ -21,19 +21,17 @@ component {
 	 * @return IORMUtil
 	 */
 	function getORMUtil(){
-
-		if( this.isAdobe ){
+		if ( this.isAdobe ) {
 			return new AdobeORMUtil();
 		}
 
-		if( this.isLucee ){
+		if ( this.isLucee ) {
 			return new LuceeORMUtil();
 		}
 
-		if( this.isBoxLang ){
+		if ( this.isBoxLang ) {
 			return new BoxLangORMUtil();
 		}
-
 	}
 
 	/**

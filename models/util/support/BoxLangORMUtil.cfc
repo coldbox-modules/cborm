@@ -7,9 +7,7 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-component
-	implements="IORMUtil"
-	extends="ORMUtilSupport" {
+component implements="IORMUtil" extends="ORMUtilSupport" {
 
 
 }

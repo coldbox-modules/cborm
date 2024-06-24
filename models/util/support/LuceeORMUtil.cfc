@@ -7,15 +7,13 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-component
-	implements="IORMUtil"
-	extends="ORMUtilSupport"{
+component implements="IORMUtil" extends="ORMUtilSupport" {
 
 	/**
 	 * Get hibernate session object
 	 *
 	 * @datasource optional datasource
-	 * @override
+	 * @override  
 	 */
 	any function getSession( string datasource ){
 		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
@@ -28,7 +26,7 @@ component
 	 * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
 	 */
 	public boolean function isInTransaction(){
-		return IsWithinTransaction();
+		return isWithinTransaction();
 	}
 
 	/**

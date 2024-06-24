@@ -7,9 +7,7 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-component
-	implements="IORMUtil"
-	extends="ORMUtilSupport" {
+component implements="IORMUtil" extends="ORMUtilSupport" {
 
 	/**
 	 * Cross-engine transaction detection.
@@ -24,7 +22,7 @@ component
 
 	public string function getHibernateVersion(){
 		// Dumb Adobe proxy crap
-		var version =  createObject( "java", "org.hibernate.Version" );
+		var version = createObject( "java", "org.hibernate.Version" );
 
 		if ( version.getVersionString() != "[WORKING]" ) {
 			return version.getVersionString();
