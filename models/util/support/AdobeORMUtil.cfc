@@ -22,4 +22,20 @@ component
 		return !isNull( transactionObj.getCurrent() );
 	}
 
+	public string function getHibernateVersion(){
+		// Dumb Adobe proxy crap
+		var version =  createObject( "java", "org.hibernate.Version" );
+
+		if ( version.getVersionString() != "[WORKING]" ) {
+			return version.getVersionString();
+		} else {
+			return version
+				.getClass()
+				.getClassLoader()
+				.getBundle()
+				.getVersion()
+				.toString();
+		}
+	}
+
 }

@@ -26,7 +26,7 @@
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 		test2      = [ "1", "2" ];
 
-		variables.ormUtil = createMock( "cborm.models.util.ORMUtilSupport" );
+		variables.ormUtil = new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
 
 	function testCountByDynamically(){
