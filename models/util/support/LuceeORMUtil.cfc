@@ -22,19 +22,6 @@ component
 	}
 
 	/**
-	 * Work around the insanity of Lucee's custom Hibernate jar,
-	 * which has a bad MANIFEST.MF with no specified `Implementation-Version` config.
-	 */
-	public string function getHibernateVersion(){
-		return createObject( "java", "org.hibernate.Version" )
-			.getClass()
-			.getClassLoader()
-			.getBundle()
-			.getVersion()
-			.toString();
-	}
-
-	/**
 	 * Cross-engine transaction detection.
 	 * Useful for preventing nested transactions.
 	 *

@@ -20,7 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Lucee detection of transaction was incorrect.
+- Lucee Hibernate version was incorrect
+- Lucee detection of transaction was incorrect
+- SQL Helper not using the appropriate engine helper
 
 ## [4.4.0] - 2023-04-19
 
