@@ -22,7 +22,7 @@ component extends="tests.resources.BaseTest" {
 				title = "can get adobe instance",
 				body  = function(){
 					var u = factory.getORMUtil();
-					expect( u ).toBeInstanceOf( "cborm.models.util.support.CFORMUtil" );
+					expect( u ).toBeInstanceOf( "cborm.models.util.support.AdobeORMUtil" );
 				},
 				skip = !isCF()
 			);
