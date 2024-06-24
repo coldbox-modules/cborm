@@ -1917,7 +1917,7 @@ process(
 		// mix in yourself as a dependency
 		arguments.ormService = this;
 		// create new criteria builder, it's a transient
-		return variables.wirebox.getInstance( "CriteriaBuilder@cborm", arguments );
+		return new criterion.CriteriaBuilder( argumentCollection = arguments );
 	}
 
 

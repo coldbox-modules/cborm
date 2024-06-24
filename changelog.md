@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tons of updates to automated testing
+- Automated tewsting for Lucee 6
+- Automated testing for Adobe 2023
+
+### Changed
+
+- Changed the way of creating base criteria queries due to Adobe bug.
+
 ## [4.4.0] - 2023-04-19
 
 ### Added
