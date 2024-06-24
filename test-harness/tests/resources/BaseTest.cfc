@@ -13,9 +13,6 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	function beforeAll(){
 		super.beforeAll();
 		getWireBox().autowire( this );
-
-		var ormUtil = createMock( "cborm.models.util.ORMUtilSupport" );
-		debug( "Hibernate version is: #ormUtil.getHibernateVersion()#" );
 	}
 
 	// executes after all suites+specs in the run() method
@@ -36,11 +33,31 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	}
 
 	function isCF(){
-		return ( structKeyExists( server, "lucee" ) ? false : true );
+		return server.coldfusion.productname == "ColdFusion Server";
+	}
+
+	function notCF(){
+		return !isCF();
+	}
+
+	function isLucee(){
+		return server.keyExists( "lucee" );
+	}
+
+	function notLucee(){
+		return !isLucee();
+	}
+
+	function isBoxLang(){
+		return server.keyExists( "boxlang" );
+	}
+
+	function notBoxLang(){
+		return !isBoxLang();
 	}
 
 	function isCF2018Plus(){
-		if ( !structKeyExists( server, "lucee" ) && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
+		if ( isCF() && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
 			return true;
 		}
 		return false;

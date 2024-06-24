@@ -7,9 +7,13 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-import cborm.models.util.*;
+import cborm.models.util.support.*;
 
 component {
+
+	this.isBoxLang = server.keyExists( "boxlang" );
+	this.isLucee = server.keyExists( "lucee" );
+	this.isAdobe = server.coldfusion.productname == "ColdFusion Server";
 
 	/**
 	 * Get the ORM Utility object
@@ -17,13 +21,19 @@ component {
 	 * @return IORMUtil
 	 */
 	function getORMUtil(){
-		// Adobe ColdFusion
-		if ( getPlatform() == "ColdFusion Server" ) {
-			return new CFORMUtil();
+
+		if( this.isAdobe ){
+			return new AdobeORMUtil();
 		}
 
-		// Lucee Support
-		return new LuceeORMUtil();
+		if( this.isLucee ){
+			return new LuceeORMUtil();
+		}
+
+		if( this.isBoxLang ){
+			return new BoxLangORMUtil();
+		}
+
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /**
  * My BDD Test
  */
-component extends="testbox.system.BaseSpec" {
+component extends="tests.resources.BaseTest" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -17,22 +17,27 @@ component extends="testbox.system.BaseSpec" {
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
-		// all your suites go here.
 		describe( "ORM Util Factory", function(){
 			it(
 				title = "can get adobe instance",
 				body  = function(){
+					var u = factory.getORMUtil();
+					expect( u ).toBeInstanceOf( "cborm.models.util.support.CFORMUtil" );
+				},
+				skip = !isCF()
+			);
+
+			it(
+				title = "can get lucee instance",
+				body  = function(){
 					factory.$( "getPlatform", "ColdFusion Server" );
 					var u = factory.getORMUtil();
-					expect( u ).toBeInstanceOf( "cborm.models.util.CFORMUtil" );
+					expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
 				},
-				skip = isLucee
+				skip = !isLucee()
 			);
 		} );
-	}
 
-	function isLucee(){
-		return structKeyExists( server, "lucee" );
 	}
 
 }

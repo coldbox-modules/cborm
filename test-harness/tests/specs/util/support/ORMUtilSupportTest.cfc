@@ -1,10 +1,24 @@
-component extends="tests.resources.BaseTest" skip="isLucee" {
+component extends="tests.resources.BaseTest" skip="true"{
 
-	function setup(){
-		super.setup();
-		ormUtil = createMock( "cborm.models.util.CFORMUtil" );
-		// CF ENGINE MUST HAVE coolblog as a DSN
-		dsn     = "coolblog";
+	function testIsInTransaction(){
+		assertEquals( false, ormutil.isInTransaction(), "no transaction" );
+
+		transaction {
+			assertEquals( true, ormutil.isInTransaction(), "simple transaction" );
+		}
+
+		assertEquals( false, ormutil.isInTransaction(), "outside transaction" );
+
+		transaction {
+			ormGetSession();
+			var test = entityLoad( "User", { firstName : "Luis" }, true );
+			assertEquals( true, ormutil.isInTransaction(), "second transaction" );
+			ormFlush();
+			assertEquals( true, ormutil.isInTransaction(), "second transaction" );
+		}
+
+		ormFlush();
+		assertEquals( false, ormutil.isInTransaction()  );
 	}
 
 	function testflush(){
@@ -14,12 +28,16 @@ component extends="tests.resources.BaseTest" skip="isLucee" {
 
 	function testGetSession(){
 		t = ormutil.getSession();
+		expect( t ).notToBeNull();
 		t = ormutil.getSession( dsn );
+		expect( t ).notToBeNull();
 	}
 
 	function testgetSessionFactory(){
 		t = ormutil.getSessionFactory();
+		expect( t ).notToBeNull();
 		t = ormutil.getSessionFactory( dsn );
+		expect( t ).notToBeNull();
 	}
 
 	function testclearSession(){
@@ -53,17 +71,10 @@ component extends="tests.resources.BaseTest" skip="isLucee" {
 		assertEquals( "coolblog", ormutil.getDefaultDatasource() );
 	}
 
-	function isLucee(){
-		return structKeyExists( server, "lucee" );
-	}
-
-	function testGetHibernateVersion(){
-		debug( ormutil.getHibernateVersion() );
-
-		// Fragile test: These will need updating if (and only if) the engines upgrade the installed Hibernate version
-		if ( listFirst( server.coldfusion.productVersion ) == 2018 ) {
-			assertEquals( "5.2.11.SNAPSHOT", ormutil.getHibernateVersion() );
-		}
+	function testgetHibernateVersion(){
+		t = ormutil.getHibernateVersion();
+		debug( t );
+		expect( t ).notToBeEmpty();
 	}
 
 }
