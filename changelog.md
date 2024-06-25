@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.0] - 2024-06-25
+
 ### Added
 
 - Tons of updates to automated testing.
@@ -367,7 +369,6 @@ moduleSettings = {
 - `sqlRestriction()` deprecated in favor of the shorthand notation: `sql()`
 - The `sql()` restriction now supports binding positional parameters. You can pass them in an array and we will infer the types: `sql( "id = ? and isActive = ?", [ "123", true ] )`.  Or you can pass in a struct of `{value:"", type:""}` instead:
 
-
 ```js
 restrictions.sql( "userName = ? and firstName like ?", [
 	{ value : "joe", type : "string" },
@@ -539,3 +540,5 @@ Remember this entity extends the Virtual Service, so we get all the features abo
 - Create first module version
 
 [4.4.0]: https://github.com/coldbox-modules/cborm/compare/13af593fa8a7bf2c4396e9be9d0dd0bb6899e935...v4.4.0
+[unreleased]: https://github.com/coldbox-modules/cborm/compare/v4.5.0...HEAD
+[4.5.0]: https://github.com/coldbox-modules/cborm/compare/0c00ca878b2563eac9150614f656ccaeb1a350be...v4.5.0
