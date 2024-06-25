@@ -1,8 +1,8 @@
 {
-    "name":"cborm-lucee@5",
+    "name":"cborm-lucee@6",
     "app":{
-        "serverHomeDirectory":".engine/lucee5",
-        "cfengine":"lucee@5"
+        "serverHomeDirectory":".engine/lucee6",
+        "cfengine":"lucee@6"
     },
     "web":{
         "http":{
@@ -23,7 +23,7 @@
     "cfconfig":{
         "file":".cfconfig.json"
     },
-    "env":{
+	"env":{
         "LUCEE_EXTENSIONS":"D062D72F-F8A2-46F0-8CBC91325B2F067B"
     }
 }

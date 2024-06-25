@@ -3,7 +3,7 @@
  * www.ortussolutions.com
  * ---
  *
- * An agnostic CFML Engine utility class
+ * An agnostic CFML Engine utility class for working with Hibernate ORM.
  *
  * @author Luis Majano & Mike McKellip
  */
@@ -25,20 +25,6 @@ component singleton {
 		var log4jLevel   = createObject( "java", "org.apache.log4j.Level" );
 		var hibernateLog = Logger.getLogger( "org.hibernate" );
 		hibernateLog.setLevel( log4jLevel[ arguments.level ] );
-
-		/**
-		 * Redirect all Hibernate logs to system.out
-		 */
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-			var printWriter     = getPageContext().getConfig().getOutWriter();
-			var layout          = createObject( "java", "lucee.commons.io.log.log4j.layout.ClassicLayout" );
-			var consoleAppender = createObject( "java", "lucee.commons.io.log.log4j.appender.ConsoleAppender" ).init(
-				printWriter,
-				layout
-			);
-			hibernateLog.addAppender( consoleAppender );
-			writeDump( var = "** Lucee Hibernate Logging Redirected", output = "console" );
-		}
 	}
 
 	/**
@@ -55,9 +41,11 @@ component singleton {
 	}
 
 	/**
-	 * Get session
+	 * Get the hibernate session
 	 *
 	 * @datasource Optional datsource
+	 *
+	 * @return org.hibernate.Session
 	 */
 	any function getSession( string datasource ){
 		if ( !isNull( arguments.datasource ) ) {
@@ -179,37 +167,23 @@ component singleton {
 	}
 
 	/**
-	 * Work around the insanity of Lucee's custom Hibernate jar,
-	 * which has a bad MANIFEST.MF with no specified `Implementation-Version` config.
+	 * Get the Hibernate version
 	 */
 	public string function getHibernateVersion(){
-		var version = createObject( "java", "org.hibernate.Version" );
-
-		if ( version.getVersionString() != "[WORKING]" ) {
-			return version.getVersionString();
-		} else {
-			return version
-				.getClass()
-				.getClassLoader()
-				.getBundle()
-				.getVersion()
-				.toString();
-		}
+		return createObject( "java", "org.hibernate.Version" ).getVersionString();
 	}
 
 	/**
-	 * Cross-engine transaction detection.
-	 * Useful for preventing nested transactions.
+	 * Retrieve the entity mode in effect for this session.
 	 *
-	 * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
+	 * @ormSession Pass the hibernate ORM session
+	 *
+	 * @return https://docs.jboss.org/hibernate/core/3.5/javadocs/org/hibernate/EntityMode.html
 	 */
-	public boolean function isInTransaction(){
-		if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
-			return ormGetSession().isTransactionInProgress();
-		} else {
-			var transactionObj = createObject( "java", "coldfusion.tagext.sql.TransactionTag" );
-			return !isNull( transactionObj.getCurrent() );
-		}
+	any function getSessionEntityMode( required ormSession, required entity ){
+		return arguments.ormSession
+			.getEntityPersister( arguments.ormSession.getEntityName( arguments.entity ), arguments.entity )
+			.getEntityMode();
 	}
 
 }

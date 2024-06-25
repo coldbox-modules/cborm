@@ -5,10 +5,10 @@
     "private":true,
     "description":"",
     "dependencies":{
+        "coldbox":"^7.0.0",
         "cbvalidation":"^4.0.0",
         "mementifier":"^3.0.0",
         "cbstreams":"^2.0.0",
-        "coldbox":"be",
         "cbpaginator":"^2.0.0"
     },
     "devDependencies":{

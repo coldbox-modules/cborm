@@ -26,7 +26,7 @@
 		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 		test2      = [ "1", "2" ];
 
-		variables.ormUtil = createMock( "cborm.models.util.ORMUtilSupport" );
+		variables.ormUtil = new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
 
 	function testCountByDynamically(){
@@ -100,7 +100,7 @@
 	function testClear(){
 		test  = entityLoad( "User" );
 		stats = ormservice.getSessionStatistics();
-		debug( stats );
+		// debug( stats );
 
 		ormservice.clear();
 
@@ -154,7 +154,7 @@
 
 		// Test with arguments.
 		user = ormService.new( entityName = "User", properties = { firstName : "luis", lastName : "majano" } );
-		debug( user );
+		// debug( user );
 		assertEquals( "luis", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
 	}
@@ -162,7 +162,7 @@
 	function testNewWithProperties(){
 		// Test Porperties
 		user = ormService.new( "User", { firstName : "pio", lastName : "majano" } );
-		debug( user );
+		// debug( user );
 		assertEquals( "pio", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
 	}
@@ -245,7 +245,7 @@
 		test.setDescription( "dirty dirty" );
 
 		var properties = ormService.getDirtyPropertyNames( test );
-		debug( properties );
+		// debug( properties );
 		expect( properties ).toHaveLength( 2 );
 	}
 
@@ -298,7 +298,7 @@
 				ormCloseSession();
 			}
 			var test = entityLoad( "Category", { category : "unittest" } );
-			debug( test );
+			// debug( test );
 			ormservice.delete( entity = test[ 1 ], transactional = false );
 			ormFlush();
 			ormservice.clear();
@@ -616,7 +616,7 @@
 
 	function testExecuteQuery(){
 		var test = ormservice.executeQuery( query = "from Category" );
-		debug( test );
+		// debug( test );
 		assertTrue( isArray( test ) );
 		assertTrue( arrayLen( test ) );
 

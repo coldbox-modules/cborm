@@ -1,8 +1,8 @@
 {
-    "name":"cborm-lucee@5",
+    "name":"cborm-adobe@2023",
     "app":{
-        "serverHomeDirectory":".engine/lucee5",
-        "cfengine":"lucee@5"
+        "serverHomeDirectory":".engine/adobe2023",
+        "cfengine":"adobe@2023"
     },
     "web":{
         "http":{
@@ -13,7 +13,7 @@
         },
         "webroot":"test-harness",
         "aliases":{
-            "/moduleroot/cborm":"./"
+            "/moduleroot/cborm":"../"
         }
     },
     "jvm":{
@@ -23,7 +23,7 @@
     "cfconfig":{
         "file":".cfconfig.json"
     },
-    "env":{
-        "LUCEE_EXTENSIONS":"D062D72F-F8A2-46F0-8CBC91325B2F067B"
+    "scripts":{
+        "onServerInstall":"cfpm install zip,debugger,mysql,orm,postgresql,sqlserver,feed"
     }
 }

@@ -48,7 +48,7 @@ component accessors="true" {
 		variables.criteriaImpl = variables.cb.getNativeCriteria();
 		variables.ormSession   = variables.criteriaImpl.getSession();
 		variables.ormFactory   = variables.ormSession.getFactory();
-		variables.ormUtil      = new cborm.models.util.ORMUtilSupport();
+		variables.ormUtil      = new cborm.models.util.ORMUtilFactory().getORMUtil();
 
 		// Load Hibernate Properties Accordingly to version
 		setupHibernateProperties();
@@ -65,7 +65,7 @@ component accessors="true" {
 	 * Setup hibernate class properties according to Hibernate version with CFML Engine
 	 */
 	private function setupHibernateProperties(){
-		// get formatter for sql string beautification: ACF vs Lucee
+		// get formatter for sql string beautification
 		variables.hibernateVersion = listFirst( variables.ormUtil.getHibernateVersion(), "." );
 		switch ( variables.hibernateVersion ) {
 			case "3":
