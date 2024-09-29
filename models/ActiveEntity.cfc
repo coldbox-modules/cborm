@@ -18,10 +18,7 @@
  *
  * These methods are only active if WireBox entity injection is available.
  */
-component
-	extends       ="cborm.models.VirtualEntityService"
-	accessors     ="true"
-{
+component extends="cborm.models.VirtualEntityService" accessors="true" {
 
 	/**
 	 * If populated, it will be from the last cbValidation made on the entity
@@ -469,7 +466,7 @@ component
 		required type,
 		message = "",
 		detail  = ""
-	) {
+	){
 		if ( arguments.target ) {
 			throw(
 				type    = arguments.type,
@@ -495,7 +492,7 @@ component
 		required type,
 		message = "",
 		detail  = ""
-	) {
+	){
 		if ( !arguments.target ) {
 			throw(
 				type    = arguments.type,
