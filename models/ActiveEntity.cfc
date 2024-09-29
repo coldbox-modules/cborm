@@ -19,10 +19,10 @@
  * These methods are only active if WireBox entity injection is available.
  */
 component
-	extends="cborm.models.VirtualEntityService"
-	accessors="true"
-	transientCache = false
-	delegates = "Flow@coreDelegates"
+	extends       ="cborm.models.VirtualEntityService"
+	accessors     ="true"
+	transientCache=false
+	delegates     ="Flow@coreDelegates"
 {
 
 	/**
