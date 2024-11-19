@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [CBORM-37](https://ortussolutions.atlassian.net/browse/CBORM-37) - Fixed issue on `PostLoad` event handler for multi-datasource entities
+
 ### Added
 
 - Added several flow helpers to `ActiveEntity`:
