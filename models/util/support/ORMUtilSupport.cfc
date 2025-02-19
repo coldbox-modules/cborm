@@ -186,4 +186,31 @@ component singleton {
 			.getEntityMode();
 	}
 
+	/**
+	 * Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
+	 *
+	 * @entity The entity to get it's name from
+	 *
+	 * @return The entity name
+	 */
+	function getEntityGivenName( required entity ){
+		// Short-cut discovery via ActiveEntity
+		if ( structKeyExists( arguments.entity, "getEntityName" ) ) {
+			return arguments.entity.getEntityName();
+		}
+
+		// Hibernate Discovery
+		try {
+			var entityName = getSession( getEntityDatasource( arguments.entity ) ).getEntityName(
+				arguments.entity
+			);
+		} catch ( org.hibernate.TransientObjectException e ) {
+			// ignore it, it is not in session, go for long-discovery
+		}
+
+		// Long Discovery
+		var md = getMetadata( arguments.entity );
+		return ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+	}
+
 }

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [CBORM-37](https://ortussolutions.atlassian.net/browse/CBORM-37) - Fixed issue on `PostLoad` event handler for multi-datasource entities
+- Removal of old deprecated engines
+
+### Added
+
+- BoxLang auto-testing
+- Added several flow helpers to `ActiveEntity`:
+  - `peek( closure )` to allow for peeking into the building process.  Pass in your closure that receives the entity and interact with it.
+  - `when( boolean, successClosure, failureClosure )` that you can use to build functional entities without the use of if statements.
+  - `unless( boolean, successClosure, failureClosure )` that you can use to build functional entities without the use of if statements. The opposite of `when()`.
+  - `throwIf( boolean, type, [message], [detail] )` that you can use to throw an exception if a condition is met.
+  - `throwUnless( boolean, type, [message], [detail] )` that you can use to throw an exception if a condition is not met.
+
 ## [4.5.0] - 2024-06-25
 
 ### Added

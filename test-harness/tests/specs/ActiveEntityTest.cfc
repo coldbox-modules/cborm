@@ -104,7 +104,7 @@
 		t = activeUser.findByLastName();
 	}
 
-	function testIsValid(){
+	function testIsValidWithFlow(){
 		r = activeUser.isValid();
 		assertFalse( r );
 
@@ -112,6 +112,11 @@
 		activeUser.setLastName( "Majano" );
 		activeUser.setUsername( "LuisMajano" );
 		activeUser.setPassword( "LuisMajano" );
+
+		activeUser.peek( ( user ) => {
+			debug( "In Peek" );
+		} );
+
 		r = activeUser.isValid();
 		assertTrue( r );
 	}
