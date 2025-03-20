@@ -21,7 +21,6 @@ component {
 	 * @return IORMUtil
 	 */
 	function getORMUtil(){
-
 		if ( this.isBoxLang ) {
 			return new BoxLangORMUtil();
 		}

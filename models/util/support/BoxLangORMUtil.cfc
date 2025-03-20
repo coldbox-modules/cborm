@@ -8,10 +8,12 @@
  * @author Luis Majano & Mike McKellip
  */
 component implements="IORMUtil" extends="LuceeORMUtil" {
+
 	/**
 	 * Get the Hibernate version
 	 */
 	public string function getHibernateVersion(){
 		return ORMGetHibernateVersion();
 	}
+
 }
