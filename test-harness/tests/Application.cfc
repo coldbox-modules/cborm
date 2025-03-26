@@ -39,11 +39,12 @@
 		logSQL                : true,
 		dbcreate              : "update",
 		secondarycacheenabled : false,
-		cacheProvider         : "ehcache",
+		cacheProvider         : "ConcurrentHashMap",
 		flushAtRequestEnd     : false,
 		eventhandling         : true,
 		eventHandler          : "cborm.models.EventHandler",
-		skipcfcWithError      : false
+		skipcfcWithError      : false,
+		saveMapping           : true
 	};
 
 	// request start

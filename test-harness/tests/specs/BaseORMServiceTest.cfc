@@ -307,7 +307,7 @@
 			// debug(test);
 			assertTrue( arrayLen( test ) eq 0 );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -336,7 +336,7 @@
 			test = entityLoad( "Category", { category : "unitTest" }, true );
 			assertTrue( isNull( test ) );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -358,7 +358,7 @@
 
 			assertTrue( count gt 0 );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -387,7 +387,7 @@
 			var result = queryExecute( "select * from categories where category = 'unitTest'" );
 			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -413,7 +413,7 @@
 			var result = queryExecute( "select * from categories where category = 'unitTest'" );
 			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -443,7 +443,7 @@
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().postSave ) );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -472,7 +472,7 @@
 			var result = queryExecute( "select * from categories where category = 'unitTest'" );
 			assertTrue( result.recordcount eq 0 );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		}
 	}
 
@@ -504,7 +504,7 @@
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().postSave ) );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -542,7 +542,7 @@
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().postSave ) );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			deleteCategories();
 		}
@@ -560,7 +560,7 @@
 
 			assertEquals( "unittest", cat.getDescription() );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			queryExecute(
 				"update categories set description = '#originalDescription#' where category_id = '#id#'"
@@ -627,6 +627,7 @@
 		 *
 		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
 		 */
+
 		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
 			// hibernate 5.3+ JPA syntax
 			sql = "from Category where category = ?1";

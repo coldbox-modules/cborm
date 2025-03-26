@@ -1397,7 +1397,7 @@ component accessors="true" {
 
 				// Do we have arguments?
 				if ( structCount( arguments ) > 3 ) {
-					sqlBuffer.append( " WHERE" );
+					sqlBuffer.append( " WHERE " );
 				} else {
 					throw(
 						message = "No where arguments sent, aborting deletion",
@@ -1406,20 +1406,21 @@ component accessors="true" {
 					);
 				}
 
+				var whereStatements = []
 				// Go over Params and incorporate them
-				var params = arguments
+				var params          = arguments
 					// filter out reserved names
 					.filter( function( key, value ){
 						return ( !listFindNoCase( "entityName,flush,datasource", arguments.key ) );
 					} )
 					.reduce( function( accumulator, key, value ){
 						accumulator[ key ] = value;
-						sqlBuffer.append( " #key# = :#key# AND" );
+						whereStatements.append( "#key# = :#key#" );
 						return accumulator;
 					}, {} );
 
 				// Finalize ANDs
-				sqlBuffer.append( " 1 = 1" );
+				sqlBuffer.append( whereStatements.toList( " AND " ) );
 
 				// start DLM deleteion
 				try {

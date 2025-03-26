@@ -114,7 +114,7 @@
 			test = entityLoad( "User", { firstName : "unittest" }, true );
 			assertTrue( isNull( test ) );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
@@ -140,7 +140,7 @@
 			result = queryExecute( "select * from users where userName = 'unitTest'" );
 			assertEquals( 0, result.recordcount );
 		} catch ( any e ) {
-			fail( e.detail & e.message & e.stackTrace );
+			rethrow;
 		} finally {
 			queryExecute( "delete from users where userName = 'unitTest'" );
 		}

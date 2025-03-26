@@ -189,7 +189,7 @@
 				assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
 				assertTrue( arrayLen( mockEventHandler.$callLog().postSave ) );
 			} catch ( any e ) {
-				fail( e.detail & e.message );
+				rethrow;
 			} finally {
 				transactionRollback();
 			}
@@ -217,7 +217,7 @@
 			var results = queryExecute( "select * from users where firstName = 'unitTest'" );
 			expect( results.recordcount ).toBe( 0 );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
@@ -245,7 +245,7 @@
 			var results = queryExecute( "select * from users where firstName = 'unitTest'" );
 			expect( results.recordcount ).toBe( 0 );
 		} catch ( any e ) {
-			fail( e.detail & e.message );
+			rethrow;
 		} finally {
 			queryExecute( "delete from users where firstName = 'unitTest'" );
 		}
@@ -344,7 +344,7 @@
 				user.setLastname( "Person" );
 				assertTrue( user.isDirty() );
 			} catch ( any e ) {
-				fail( e.detail & e.message );
+				rethrow;
 			} finally {
 				transactionRollback();
 			}
