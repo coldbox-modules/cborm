@@ -44,7 +44,7 @@
 		eventhandling         : true,
 		eventHandler          : "cborm.models.EventHandler",
 		skipcfcWithError      : false,
-		saveMapping : true
+		saveMapping           : true
 	};
 
 	// request start
