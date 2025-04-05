@@ -240,9 +240,14 @@ component accessors="true" {
 		required propertyName,
 		required value
 	){
-		var hibernateMD = getEntityMetadata( arguments.entity );
+		if( server.keyExists( "boxlang" ) ){
+			// BL casters are smart enough to handle generic objects
+			return value;
+		} else {
+			var hibernateMD = getEntityMetadata( arguments.entity );
+			return hibernateMD.getPropertyType( arguments.propertyName ).fromStringValue( arguments.value );
+		}
 
-		return hibernateMD.getPropertyType( arguments.propertyName ).fromStringValue( arguments.value );
 	}
 
 	/**
