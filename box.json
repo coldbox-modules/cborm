@@ -27,16 +27,14 @@
     ],
     "dependencies":{
         "cbvalidation":"^4.0.0",
-        "mementifier":"be",
+        "mementifier":"^3.0.0",
         "cbstreams":"^2.0.0",
         "cbpaginator":"^2.0.0"
     },
     "devDependencies":{
         "commandbox-boxlang":"*",
         "commandbox-cfformat":"*",
-        "commandbox-docbox":"*",
-        "commandbox-dotenv":"*",
-        "commandbox-cfconfig":"*"
+        "commandbox-docbox":"*"
     },
     "ignore":[
         "**/.*",
