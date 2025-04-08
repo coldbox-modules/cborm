@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Refresh dependencies to new CommandBox standards
+- Autocasting in BoxLang is smarter, so just passthrough
+- Autotesting engines for each JDK they support
+
 ## [4.7.0] - 2025-03-26
+
+### Added
+
+- BoxLang certification and auto-testing
 
 ## [4.6.0] - 2025-02-19
 
