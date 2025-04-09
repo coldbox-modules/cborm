@@ -33,14 +33,14 @@ component extends="tests.resources.BaseTest" {
 					var u = factory.getORMUtil();
 					expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
 				},
-				skip = !isLucee()
+				skip = !isLucee() && !isBoxLang()
 			);
 
 			it(
 				title = "can get BoxLang instance",
 				body  = function(){
 					var u = factory.getORMUtil();
-					expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
+					expect( u ).toBeInstanceOf( "cborm.models.util.support.BoxLangORMUtil" );
 				},
 				skip = !isBoxLang()
 			);
