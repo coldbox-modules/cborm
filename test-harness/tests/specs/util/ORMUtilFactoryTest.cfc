@@ -42,7 +42,7 @@ component extends="tests.resources.BaseTest" {
 					var u = factory.getORMUtil();
 					expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
 				},
-				skip = !BoxLang()
+				skip = !boxLang()
 			);
 		} );
 	}
