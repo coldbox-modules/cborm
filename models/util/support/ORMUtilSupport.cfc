@@ -44,7 +44,7 @@ component singleton {
 	 * Get hibernate session object
 	 *
 	 * @datasource optional datasource
-	 * @override
+	 * @override  
 	 */
 	any function getSession( string datasource ){
 		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
@@ -211,7 +211,7 @@ component singleton {
 	 * Useful for preventing nested transactions.
 	 */
 	public boolean function isInTransaction(){
-		return IsWithinTransaction();
+		return isWithinTransaction();
 	}
 
 }
