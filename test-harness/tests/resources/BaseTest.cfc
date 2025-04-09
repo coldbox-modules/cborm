@@ -2,7 +2,11 @@
  * This is the ForgeBox Base Integration Test CFC
  * Place any helpers or traits for all integration tests here.
  */
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
+component
+	extends   ="coldbox.system.testing.BaseTestCase"
+	appMapping="/root"
+	autowire
+{
 
 	// Do not unload per test bundle to improve performance.
 	this.unloadColdBox = false;
@@ -12,7 +16,6 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
 		super.beforeAll();
-		getWireBox().autowire( this );
 	}
 
 	// executes after all suites+specs in the run() method
@@ -32,24 +35,12 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 		}
 	}
 
-	function isCF(){
-		return server.coldfusion.productname == "ColdFusion Server";
-	}
-
 	function notCF(){
-		return !isCF();
-	}
-
-	function isLucee(){
-		return server.keyExists( "lucee" );
+		return !isAdobe();
 	}
 
 	function notLucee(){
 		return !isLucee();
-	}
-
-	function isBoxLang(){
-		return server.keyExists( "boxlang" );
 	}
 
 	function notBoxLang(){
@@ -57,7 +48,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 	}
 
 	function isCF2018Plus(){
-		if ( isCF() && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
+		if ( isAdobe() && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
 			return true;
 		}
 		return false;

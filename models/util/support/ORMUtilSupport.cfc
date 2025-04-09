@@ -41,20 +41,13 @@ component singleton {
 	}
 
 	/**
-	 * Get the hibernate session
+	 * Get hibernate session object
 	 *
-	 * @datasource Optional datsource
-	 *
-	 * @return org.hibernate.Session
+	 * @datasource optional datasource
+	 * @override  
 	 */
 	any function getSession( string datasource ){
-		if ( !isNull( arguments.datasource ) ) {
-			// get actual session from coldfusion.orm.hibernate.SessionWrapper
-			return ormGetSession( arguments.datasource ).getActualSession();
-		} else {
-			// get actual session from coldfusion.orm.hibernate.SessionWrapper
-			return ormGetSession().getActualSession();
-		}
+		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
 	}
 
 	/**
@@ -211,6 +204,14 @@ component singleton {
 		// Long Discovery
 		var md = getMetadata( arguments.entity );
 		return ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+	}
+
+	/**
+	 * Cross-engine transaction detection.
+	 * Useful for preventing nested transactions.
+	 */
+	public boolean function isInTransaction(){
+		return isWithinTransaction();
 	}
 
 }

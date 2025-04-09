@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- More BoxLang Compats
+
+### Removed
+
+- Old HIbernate 3 support
+
+## [4.8.0] - 2025-04-08
+
+### Added
+
 - Refresh dependencies to new CommandBox standards
 - Autocasting in BoxLang is smarter, so just passthrough
 - Autotesting engines for each JDK they support

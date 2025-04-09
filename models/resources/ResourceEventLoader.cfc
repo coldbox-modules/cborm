@@ -22,7 +22,6 @@ component singleton {
 	property name="log"                inject="logbox:logger:{this}";
 	property name="interceptorService" inject="coldbox:interceptorService";
 	property name="settings"           inject="coldbox:moduleSettings:cborm";
-	property name="ormUtil"            inject="ormUtilSupport@cborm";
 
 	/**
 	 * Constructor
@@ -65,11 +64,7 @@ component singleton {
 	 * Get the entity map according to engine
 	 */
 	private function getEntityMap(){
-		if ( listFirst( variables.ormUtil.getHibernateVersion(), "." ) >= 5 ) {
-			return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
-		} else {
-			return structKeyArray( ormGetSessionFactory().getAllClassMetadata() );
-		}
+		return arrayToList( ormGetSessionFactory().getMetaModel().getAllEntityNames() ).listToArray();
 	};
 
 }

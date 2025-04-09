@@ -12,8 +12,8 @@ import cborm.models.util.support.*;
 component {
 
 	this.isBoxLang = server.keyExists( "boxlang" );
-	this.isLucee   = server.keyExists( "lucee" );
-	this.isAdobe   = server.coldfusion.productname == "ColdFusion Server";
+	this.isLucee   = server.keyExists( "lucee" ) && !this.isBoxLang;
+	this.isAdobe   = server.keyExists( "coldfusion" ) && server.coldfusion.productname == "ColdFusion Server";
 
 	/**
 	 * Get the ORM Utility object
