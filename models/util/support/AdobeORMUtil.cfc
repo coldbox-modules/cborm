@@ -7,7 +7,11 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-component implements="IORMUtil" extends="ORMUtilSupport" singleton{
+component
+	implements="IORMUtil"
+	extends   ="ORMUtilSupport"
+	singleton
+{
 
 	/**
 	 * Cross-engine transaction detection.

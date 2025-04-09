@@ -7,7 +7,11 @@
  *
  * @author Luis Majano
  */
-component implements="IORMUtil" extends="ORMUtilSupport" singleton{
+component
+	implements="IORMUtil"
+	extends   ="ORMUtilSupport"
+	singleton
+{
 
 	/**
 	 * Get the Hibernate version
