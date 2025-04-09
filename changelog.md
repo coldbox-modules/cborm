@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.9.0] - 2025-04-09
+
 ## [4.8.0] - 2025-04-08
 
 ### Added
@@ -581,7 +583,8 @@ Remember this entity extends the Virtual Service, so we get all the features abo
 - Create first module version
 
 [4.4.0]: https://github.com/coldbox-modules/cborm/compare/13af593fa8a7bf2c4396e9be9d0dd0bb6899e935...v4.4.0
-[unreleased]: https://github.com/coldbox-modules/cborm/compare/v4.8.0...HEAD
+[unreleased]: https://github.com/coldbox-modules/cborm/compare/v4.9.0...HEAD
+[4.9.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.9.0
 [4.8.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.8.0
 [4.7.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.7.0
 [4.6.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.6.0
