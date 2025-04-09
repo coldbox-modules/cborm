@@ -24,17 +24,25 @@ component extends="tests.resources.BaseTest" {
 					var u = factory.getORMUtil();
 					expect( u ).toBeInstanceOf( "cborm.models.util.support.AdobeORMUtil" );
 				},
-				skip = !isCF()
+				skip = !isAdobe()
 			);
 
 			it(
 				title = "can get lucee instance",
 				body  = function(){
-					factory.$( "getPlatform", "ColdFusion Server" );
 					var u = factory.getORMUtil();
 					expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
 				},
 				skip = !isLucee()
+			);
+
+			it(
+				title = "can get BoxLang instance",
+				body  = function(){
+					var u = factory.getORMUtil();
+					expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
+				},
+				skip = !BoxLang()
 			);
 		} );
 	}

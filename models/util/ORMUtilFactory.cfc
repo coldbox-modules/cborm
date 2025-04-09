@@ -13,7 +13,7 @@ component {
 
 	this.isBoxLang = server.keyExists( "boxlang" );
 	this.isLucee   = server.keyExists( "lucee" );
-	this.isAdobe   = server.coldfusion.productname == "ColdFusion Server";
+	this.isAdobe   = server.keyExists( "coldfusion" ) && server.coldfusion.productname == "ColdFusion Server";
 
 	/**
 	 * Get the ORM Utility object
