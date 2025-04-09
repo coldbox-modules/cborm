@@ -5,9 +5,9 @@
  *
  * The BoxLang based ORM utility support
  *
- * @author Luis Majano & Mike McKellip
+ * @author Luis Majano
  */
-component implements="IORMUtil" extends="LuceeORMUtil" {
+component implements="IORMUtil" extends="ORMUtilSupport" singleton{
 
 	/**
 	 * Get the Hibernate version

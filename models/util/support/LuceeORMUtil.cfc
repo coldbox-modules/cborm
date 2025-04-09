@@ -7,27 +7,7 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-component implements="IORMUtil" extends="ORMUtilSupport" {
-
-	/**
-	 * Get hibernate session object
-	 *
-	 * @datasource optional datasource
-	 * @override  
-	 */
-	any function getSession( string datasource ){
-		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
-	}
-
-	/**
-	 * Cross-engine transaction detection.
-	 * Useful for preventing nested transactions.
-	 *
-	 * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
-	 */
-	public boolean function isInTransaction(){
-		return isWithinTransaction();
-	}
+component implements="IORMUtil" extends="ORMUtilSupport" singleton{
 
 	/**
 	 * Sets up Hibernate logging levels and redirects logs to system out.

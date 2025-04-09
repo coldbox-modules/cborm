@@ -7,7 +7,7 @@
  *
  * @author Luis Majano & Mike McKellip
  */
-component implements="IORMUtil" extends="ORMUtilSupport" {
+component implements="IORMUtil" extends="ORMUtilSupport" singleton{
 
 	/**
 	 * Cross-engine transaction detection.
@@ -20,6 +20,26 @@ component implements="IORMUtil" extends="ORMUtilSupport" {
 		return !isNull( transactionObj.getCurrent() );
 	}
 
+	/**
+	 * Get the hibernate session
+	 *
+	 * @datasource Optional datsource
+	 *
+	 * @return org.hibernate.Session
+	 */
+	any function getSession( string datasource ){
+		if ( !isNull( arguments.datasource ) ) {
+			// get actual session from coldfusion.orm.hibernate.SessionWrapper
+			return ormGetSession( arguments.datasource ).getActualSession();
+		} else {
+			// get actual session from coldfusion.orm.hibernate.SessionWrapper
+			return ormGetSession().getActualSession();
+		}
+	}
+
+	/**
+	 * Get the Hibernate version
+	 */
 	public string function getHibernateVersion(){
 		// Dumb Adobe proxy crap
 		var version = createObject( "java", "org.hibernate.Version" );
