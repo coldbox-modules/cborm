@@ -2,7 +2,11 @@
  * This is the ForgeBox Base Integration Test CFC
  * Place any helpers or traits for all integration tests here.
  */
-component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" autowire {
+component
+	extends   ="coldbox.system.testing.BaseTestCase"
+	appMapping="/root"
+	autowire
+{
 
 	// Do not unload per test bundle to improve performance.
 	this.unloadColdBox = false;
