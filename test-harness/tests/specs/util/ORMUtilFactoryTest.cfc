@@ -18,7 +18,7 @@ component extends="tests.resources.BaseTest" {
 
 	function run(){
 		describe( "ORM Util Factory", function(){
-			if( isAdobe() ){
+			if ( isAdobe() ) {
 				it(
 					title = "can get adobe instance",
 					body  = function(){
@@ -28,7 +28,7 @@ component extends="tests.resources.BaseTest" {
 				);
 			}
 
-			if( isLucee() && !isBoxLang() ){
+			if ( isLucee() && !isBoxLang() ) {
 				it(
 					title = "can get lucee instance",
 					body  = function(){
@@ -38,7 +38,7 @@ component extends="tests.resources.BaseTest" {
 				);
 			}
 
-			if( isBoxLang() ){
+			if ( isBoxLang() ) {
 				it(
 					title = "can get BoxLang instance",
 					body  = function(){
