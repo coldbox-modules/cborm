@@ -18,32 +18,35 @@ component extends="tests.resources.BaseTest" {
 
 	function run(){
 		describe( "ORM Util Factory", function(){
-			it(
-				title = "can get adobe instance",
-				body  = function(){
-					var u = factory.getORMUtil();
-					expect( u ).toBeInstanceOf( "cborm.models.util.support.AdobeORMUtil" );
-				},
-				skip = !isAdobe()
-			);
+			if( isAdobe() ){
+				it(
+					title = "can get adobe instance",
+					body  = function(){
+						var u = factory.getORMUtil();
+						expect( u ).toBeInstanceOf( "cborm.models.util.support.AdobeORMUtil" );
+					}
+				);
+			}
 
-			it(
-				title = "can get lucee instance",
-				body  = function(){
-					var u = factory.getORMUtil();
-					expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
-				},
-				skip = !isLucee() && !isBoxLang()
-			);
+			if( isLucee() && !isBoxLang() ){
+				it(
+					title = "can get lucee instance",
+					body  = function(){
+						var u = factory.getORMUtil();
+						expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
+					}
+				);
+			}
 
-			it(
-				title = "can get BoxLang instance",
-				body  = function(){
-					var u = factory.getORMUtil();
-					expect( u ).toBeInstanceOf( "cborm.models.util.support.BoxLangORMUtil" );
-				},
-				skip = !isBoxLang()
-			);
+			if( isBoxLang() ){
+				it(
+					title = "can get BoxLang instance",
+					body  = function(){
+						var u = factory.getORMUtil();
+						expect( u ).toBeInstanceOf( "cborm.models.util.support.BoxLangORMUtil" );
+					}
+				);
+			}
 		} );
 	}
 
