@@ -115,7 +115,7 @@ component access="true" {
 	/**
 	 * Where one property must equal another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function eqProperty( required string property, required string otherProperty ){
@@ -125,7 +125,7 @@ component access="true" {
 	/**
 	 * Where a property is greater than a particular value, you can also use gt()
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function isGt( required string property, required any propertyValue ){
@@ -135,7 +135,7 @@ component access="true" {
 	/**
 	 * Where a one property must be greater than another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function gtProperty( required string property, required string otherProperty ){
@@ -145,7 +145,7 @@ component access="true" {
 	/**
 	 * Where a property is greater than or equal to a particular value, you can also use ge()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isGe( required string property, required any propertyValue ){
@@ -155,7 +155,7 @@ component access="true" {
 	/**
 	 * Where a one property must be greater than or equal to another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function geProperty( required string property, required string otherProperty ){
@@ -165,7 +165,7 @@ component access="true" {
 	/**
 	 * Where an objects id equals the specified value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function idEQ( required any propertyValue ){
@@ -182,7 +182,7 @@ component access="true" {
 	/**
 	 * Where a property is contained within the specified list of values, the property value can be a collection (struct) or array or list, you can also use in()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isIn( required string property, required any propertyValue ){
@@ -221,7 +221,7 @@ component access="true" {
 	/**
 	 * Where a property is not null
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isNotNull( required string property ){
@@ -231,7 +231,7 @@ component access="true" {
 	/**
 	 * Where a property is less than a particular value, you can also use lt()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function islt( required string property, required any propertyValue ){
@@ -241,7 +241,7 @@ component access="true" {
 	/**
 	 * Where a one property must be less than another
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function ltProperty( required string property, required string otherProperty ){
@@ -251,7 +251,7 @@ component access="true" {
 	/**
 	 * Where a property is less than or equal a particular value, you can also use le()
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function isle( required string property, required any propertyValue ){
@@ -261,7 +261,7 @@ component access="true" {
 	/**
 	 * Where a one property must be less than or equal to another
 	 *
-	 * @property
+	 * @property     
 	 * @otherProperty
 	 */
 	any function leProperty( required string property, required string otherProperty ){
@@ -271,7 +271,7 @@ component access="true" {
 	/**
 	 * Equivalent to SQL like expression
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function like( required string property, required string propertyValue ){
@@ -281,7 +281,7 @@ component access="true" {
 	/**
 	 * Where a property does not equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function ne( required string property, required any propertyValue ){
@@ -291,7 +291,7 @@ component access="true" {
 	/**
 	 * Where one property does not equal another
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function neProperty( required string property, required any otherProperty ){
@@ -301,7 +301,7 @@ component access="true" {
 	/**
 	 * Where a collection property's size equals a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeEq( required string property, required any propertyValue ){
@@ -311,7 +311,7 @@ component access="true" {
 	/**
 	 * Where a collection property's size is greater than a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeGT( required string property, required any propertyValue ){
@@ -321,7 +321,7 @@ component access="true" {
 	/**
 	 * Where a collection property's size is greater than or equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeGE( required string property, required any propertyValue ){
@@ -331,7 +331,7 @@ component access="true" {
 	/**
 	 * Where a collection property's size is less than a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeLT( required string property, required any propertyValue ){
@@ -341,7 +341,7 @@ component access="true" {
 	/**
 	 * Where a collection property's size is less than or equal a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeLE( required string property, required any propertyValue ){
@@ -351,7 +351,7 @@ component access="true" {
 	/**
 	 * Where a collection property's size is not equal to a particular value
 	 *
-	 * @property
+	 * @property     
 	 * @propertyValue
 	 */
 	any function sizeNE( required string property, required any propertyValue ){
