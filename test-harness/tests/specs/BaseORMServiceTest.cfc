@@ -797,7 +797,7 @@
 
 	function testMerge(){
 		// SKIP until https://luceeserver.atlassian.net/browse/LDEV-1992 is resolved
-		if ( server.keyExists( "lucee" ) && listFirst( server.lucee.version, "." ) eq 5 ) {
+		if ( server.keyExists( "lucee" ) && listFirst( server.lucee.version, "." ) lt 7 ) {
 			return;
 		}
 		// loaded entity
@@ -815,7 +815,7 @@
 
 	function testMergeArray(){
 		// SKIP until https://luceeserver.atlassian.net/browse/LDEV-1992 is resolved
-		if ( server.keyExists( "lucee" ) && listFirst( server.lucee.version, "." ) eq 5 ) {
+		if ( server.keyExists( "lucee" ) && listFirst( server.lucee.version, "." ) lt 7 ) {
 			return;
 		}
 		test = entityLoad( "User", { firstName : "Luis" }, true );
