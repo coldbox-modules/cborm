@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Adobe 2025 Certification
+- BoxLang BE Tests
+
+### Fixed
+
+- Concurrency fix for restrictions overlapping under high loads
+
+## [4.9.0] - 2025-04-09
+
+### Added
+
 - More BoxLang Compats
 
 ### Removed

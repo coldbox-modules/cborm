@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"boxlang@1",
-        "serverHomeDirectory":".engine/boxlang-cfml-1"
+        "cfengine":"boxlang@be",
+        "serverHomeDirectory":".engine/boxlang-cfml-be"
     },
-    "name":"cborm-boxlang-cfml@1",
+    "name":"cborm-boxlang-cfml@be",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -31,7 +31,7 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mysql,bx-derby,bx-compat-cfml@be,bx-orm@be --noSave"
+        "onServerInitialInstall":"install bx-mysql,bx-derby,bx-compat-cfml,bx-orm@be --noSave"
     },
     "-trace":true
 }

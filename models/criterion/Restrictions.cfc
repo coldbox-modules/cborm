@@ -6,7 +6,7 @@
  *
  * @see https://docs.jboss.org/hibernate/stable/orm/javadocs/org/hibernate/criterion/Restrictions.html
  */
-component singleton access="true" {
+component access="true" {
 
 	/**
 	 * The java proxy builder

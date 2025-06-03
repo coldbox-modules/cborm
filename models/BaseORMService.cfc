@@ -1880,12 +1880,7 @@ process(
 	 * @return cborm.models.criterion.Restrictions
 	 */
 	function getRestrictions(){
-		// Lazy Loading injection
-		if ( !isNull( variables.restrictions ) ) {
-			return variables.restrictions;
-		}
-		variables.restrictions = variables.wirebox.getInstance( "Restrictions@cborm" );
-		return variables.restrictions;
+		return variables.wirebox.getInstance( "Restrictions@cborm" );
 	}
 
 	/**
