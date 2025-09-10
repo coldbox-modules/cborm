@@ -353,7 +353,30 @@ component accessors="true" {
 				var value = positionalValues[ x ];
 				// cast values to appropriate SQL type
 				if ( !type.isAssociationType() && type.getName() != "text" ) {
-					var pvTyped   = type.objectToSQLstring( value, getDialect() );
+					var pvTyped = value;
+					if (
+						isInstanceOf(
+							type,
+							"org.hibernate.type.descriptor.converter.AttributeConverterTypeAdapter"
+						)
+					) {
+						var modelType = type.getModelType();
+						switch ( modelType ) {
+							case "string":
+							case "text": {
+								pvTyped = "'" & value & "'";
+								break;
+							}
+							case "timestamp": {
+								pvTyped = "'" & dateTimeFormat( value, "iso" ) & "'"
+							}
+							default: {
+								break;
+							}
+						}
+					} else {
+						pvTyped = type.objectToSQLstring( value, getDialect() );
+					}
 					// remove parameter placeholders
 					arguments.sql = reReplaceNoCase( arguments.sql, "\?", pvTyped, "one" );
 				} else if ( type.getName() == "text" ) {
