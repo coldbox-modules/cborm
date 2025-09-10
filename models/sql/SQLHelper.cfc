@@ -368,7 +368,7 @@ component accessors="true" {
 								break;
 							}
 							case "timestamp": {
-								pvTyped = "'" & dateTimeFormat( value, "iso" ) & "'"
+								pvTyped = "'" & dateTimeFormat( value, "iso" ) & "'";
 							}
 							default: {
 								break;
