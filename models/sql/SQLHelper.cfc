@@ -369,6 +369,7 @@ component accessors="true" {
 							}
 							case "timestamp": {
 								pvTyped = "'" & dateTimeFormat( value, "iso" ) & "'";
+								break;
 							}
 							default: {
 								break;
