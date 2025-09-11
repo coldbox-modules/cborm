@@ -1,9 +1,9 @@
 {
     "app":{
         "cfengine":"boxlang@1",
-        "serverHomeDirectory":".engine/boxlang-cfml"
+        "serverHomeDirectory":".engine/boxlang"
     },
-    "name":"cborm-boxlang-cfml@1",
+    "name":"cborm-boxlang@1",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -22,7 +22,7 @@
     "JVM":{
         "heapSize":"1024",
         "javaVersion":"openjdk21_jre",
-        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888 -Dboxlang.debugMode=true"
+        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8887 -Dboxlang.debugMode=true"
     },
     "cfconfig":{
         "file":".cfconfig.json"
@@ -31,7 +31,7 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mysql,bx-derby,bx-compat-cfml,bx-orm --noSave"
+        "onServerInitialInstall":"install bx-mysql,bx-derby,bx-orm --noSave"
     },
     "-trace":true
 }
