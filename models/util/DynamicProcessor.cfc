@@ -437,9 +437,24 @@ component accessors="true" singleton {
 		required value,
 		required ormService
 	){
-		return getEntityMetadata( arguments.entityName, arguments.ormService )
-			.getPropertyType( arguments.propertyName )
-			.fromStringValue( arguments.value );
+		var propertyType = getEntityMetadata( arguments.entityName, arguments.ormService ).getPropertyType(
+			arguments.propertyName
+		);
+		if ( isInstanceOf( propertyType, "org.hibernate.type.descriptor.converter.AttributeConverterTypeAdapter" ) ) {
+			var converter = propertyType.getAttributeConverter();
+			if (
+				isInstanceOf(
+					converter,
+					"org.hibernate.metamodel.model.convert.internal.JpaAttributeConverterImpl"
+				)
+			) {
+				return converter.toRelationalValue( arguments.value );
+			} else {
+				return converter.convertToDatabaseColumn( arguments.value );
+			}
+		} else {
+			return propertyType.fromStringValue( javacast( "string", arguments.value ) );
+		}
 	}
 
 	/**
