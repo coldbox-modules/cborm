@@ -163,9 +163,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Lazy loading of the ORM utility according to the CFML engine you are on
-	 * - LuceeORMUtil : For Lucee Engines
-	 * - CFORMUtil : For Adobe Engines
+	 * Lazy loading of the ORM utility according to the engine you are on.
 	 *
 	 * @return cborm.models.util.IORMUtil
 	 */
@@ -1189,7 +1187,8 @@ component accessors="true" {
 	/**
 	 * Get an entity's hibernate metadata
 	 *
-	 * @see    https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/metadata/ClassMetadata.html
+	 * @see    https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
+	 * 
 	 * @entity The entity name or entity object
 	 *
 	 * @return The Hibernate Java ClassMetadata Object

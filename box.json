@@ -10,10 +10,10 @@
         "url":"https://github.com/coldbox-modules/cborm"
     },
     "bugs":"https://ortussolutions.atlassian.net/browse/CBORM",
-    "shortDescription":"Enhances the ColdFusion ORM with tons of utilities.",
+    "shortDescription":"Enhances the Hibernate ORM on BoxLang + CFML Engines with tons of utilities.",
     "slug":"cborm",
     "type":"modules",
-    "keywords":"hibernate, orm extensions, orm, coldfusion orm, cfml orm",
+    "keywords":"hibernate, orm extensions, orm",
     "license":[
         {
             "type":"Apache2",
@@ -47,7 +47,6 @@
     "scripts":{
         "build:module":"task run taskFile=build/Build.cfc :projectName=`package show slug` :version=`package show version`",
         "build:docs":"task run taskFile=build/Build.cfc target=docs :projectName=`package show slug` :version=`package show version`",
-        "release":"recipe build/release.boxr",
         "format":"cfformat run aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc --overwrite",
         "format:watch":"cfformat watch aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc ./.cfformat.json",
         "format:check":"cfformat check aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc ./.cfformat.json",
@@ -55,16 +54,13 @@
         "startdbs":"!docker-compose -f docker-compose.yml up",
         "start:boxlang":"server start serverConfigFile=server-boxlang-cfml@1.json",
         "start:lucee":"server start serverConfigFile=server-lucee@5.json",
-        "start:2021":"server start serverConfigFile=server-adobe@2021.json",
-        "start:2023":"server start serverConfigFile=server-adobe@2023.json",
+        "start:adobe":"server start serverConfigFile=server-adobe@2025.json",
         "stop:boxlang":"server stop serverConfigFile=server-boxlang-cfml@1.json",
         "stop:lucee":"server stop serverConfigFile=server-lucee@5.json",
-        "stop:2021":"server stop serverConfigFile=server-adobe@2021.json",
-        "stop:2023":"server stop serverConfigFile=server-adobe@2023.json",
+        "stop:adobe":"server stop serverConfigFile=server-adobe@2025.json",
         "logs:boxlang":"server log serverConfigFile=server-boxlang-cfml@1.json --follow",
         "logs:lucee":"server log serverConfigFile=server-lucee@5.json --follow",
-        "logs:2021":"server log serverConfigFile=server-adobe@2021.json --follow",
-        "logs:2023":"server log serverConfigFile=server-adobe@2023.json --follow"
+        "logs:adobe":"server log serverConfigFile=server-adobe@2025.json --follow"
     },
     "installPaths":{
         "cbvalidation":"modules/cbvalidation/",
