@@ -83,13 +83,12 @@ Apache License, Version 2.0.
 
 ## SYSTEM REQUIREMENTS
 
-* Lucee 5+
-  * Hibernate 3.5.x
+* Boxlang 1+
+  * Hibernate 5.x via the `bx-orm` module
+* Lucee 5+ (Maintenance Mode)
   * Hibernate 5.x via the new hibernate extension
-* ColdFusion 2018
-  * Hibernate 5.2.11
-* ColdFusion 2021
-  * Hibernate 5.2.11
+* ColdFusion 2023, 2025 via their orm module
+  * Hibernate 5.x
 
 # INSTRUCTIONS
 
@@ -181,7 +180,7 @@ docker run \
 
 3. Copy `.env.template` to `.env` and enter the database credentials used in step 2 above ☝
 4. Install the project dependencies with CommandBox `box run-script install:dependencies`
-5. Start a test server - `box start server-lucee@5.json` (You can use adobe or other engines)
+5. Start a test server - `box start server-boxlang-cfml@1.json`
 6. Hack away! :laptop:
 
 ********************************************************************************

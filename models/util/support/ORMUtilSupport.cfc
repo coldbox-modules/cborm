@@ -3,7 +3,7 @@
  * www.ortussolutions.com
  * ---
  *
- * An agnostic CFML Engine utility class for working with Hibernate ORM.
+ * An agnostic Engine utility class for working with Hibernate ORM.
  *
  * @author Luis Majano & Mike McKellip
  */
@@ -12,7 +12,8 @@ component singleton {
 	/**
 	 * Sets up Hibernate logging levels and redirects logs to system out.
 	 *
-	 * @level The logging level to set in hibernate: ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF, TRACE
+	 * @deprecated Do not use anymore, the engine will provide this, this will be removed on v5
+	 * @level      The logging level to set in hibernate: ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF, TRACE
 	 */
 	void function setupHibernateLogging( level = "WARN" ){
 		/**
@@ -41,10 +42,12 @@ component singleton {
 	}
 
 	/**
-	 * Get hibernate session object
+	 * Get the Hibernate session object
 	 *
+	 * @see        https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/Session.html
 	 * @datasource optional datasource
-	 * @override  
+	 *
+	 * @return org.hibernate.Session
 	 */
 	any function getSession( string datasource ){
 		return ( !isNull( arguments.datasource ) ? ormGetSession( arguments.datasource ) : ormGetSession() );
@@ -53,7 +56,10 @@ component singleton {
 	/**
 	 * Get session factory
 	 *
+	 * @see        https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/SessionFactory.html
 	 * @datasource Optional datsource
+	 *
+	 * @return org.hibernate.SessionFactory
 	 */
 	any function getSessionFactory( string datasource ){
 		if ( !isNull( arguments.datasource ) ) {
@@ -110,6 +116,8 @@ component singleton {
 	 *
 	 * @entity            The entity reference. Can be passed as an object or as the entity name.
 	 * @defaultDatasource The default datasource to use if not, do self-discovery
+	 *
+	 * @return The entity datasource
 	 */
 	string function getEntityDatasource( required entity, string defaultDatasource ){
 		// DEFAULT datasource
@@ -131,6 +139,8 @@ component singleton {
 
 	/**
 	 * Get the default application datasource
+	 *
+	 * @return Default application datasource
 	 */
 	string function getDefaultDatasource(){
 		// get application metadata
@@ -149,7 +159,9 @@ component singleton {
 	/**
 	 * Get an entity's metadata from hibernate
 	 *
-	 * @see        https://docs.jboss.org/hibernate/orm/3.5/javadocs/org/hibernate/SessionFactory.html
+	 * @see        https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/SessionFactory.html
+	 * @see        https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
+	 * @todo       This method is deprecated in Hibernate: Use the descriptors from EntityManagerFactory.getMetamodel() instead
 	 * @entityName The entity name
 	 * @datasource The datasource string to use for the lookup
 	 *
@@ -169,9 +181,10 @@ component singleton {
 	/**
 	 * Retrieve the entity mode in effect for this session.
 	 *
+	 * @see        https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/EntityMode.html
 	 * @ormSession Pass the hibernate ORM session
 	 *
-	 * @return https://docs.jboss.org/hibernate/core/3.5/javadocs/org/hibernate/EntityMode.html
+	 * @return org.hibernate.EntityMode
 	 */
 	any function getSessionEntityMode( required ormSession, required entity ){
 		return arguments.ormSession
