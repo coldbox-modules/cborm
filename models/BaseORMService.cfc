@@ -1188,7 +1188,6 @@ component accessors="true" {
 	 * Get an entity's hibernate metadata
 	 *
 	 * @see    https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
-	 * 
 	 * @entity The entity name or entity object
 	 *
 	 * @return The Hibernate Java ClassMetadata Object

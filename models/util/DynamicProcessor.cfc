@@ -421,15 +421,14 @@ component accessors="true" singleton {
 
 	/**
 	 * Coverts a value to the correct javaType for the property passed in.
-	 * 
-	 * @see https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
-	 * @see https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/type/Type.html
 	 *
+	 * @see          https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
+	 * @see          https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/type/Type.html
 	 * @entityName   The entity name
 	 * @propertyName The property name
 	 * @value        The property value
 	 * @ormService   The reference ORM service
-	 * 
+	 *
 	 * @return The incoming <code>value</code> casted to the appropropriate type
 	 */
 	private any function autoCast(
@@ -445,9 +444,8 @@ component accessors="true" singleton {
 
 	/**
 	 * Get the entity metdata from cache or load it up
-	 * 
-	 * @see https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
 	 *
+	 * @see        https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
 	 * @entityName The target entity name
 	 * @ormService The reference ORM service
 	 */
