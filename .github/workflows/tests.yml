@@ -96,12 +96,16 @@ jobs:
           mkdir -p test-harness/tests/results
           box testbox run --verbose outputFile=test-harness/tests/results/test-results outputFormats=json,antjunit
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+      - name: Publish Test Reports
+        uses: mikepenz/action-junit-report@v5.6.2
         if: always()
         with:
-          junit_files: test-harness/tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} ColdBox ${{ matrix.coldboxVersion }} Test Results"
+          report_paths: |
+            test-harness/tests/results/**/*.xml
+          check_name: "TestBox Report ${{ matrix.cfengine }}-${{ matrix.coldboxVersion }}"
+          include_passed: false
+          fail_on_failure: true
+          detailed_summary: true
 
       - name: Upload Test Results to Artifacts
         if: always()
