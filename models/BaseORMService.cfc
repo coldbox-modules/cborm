@@ -1778,7 +1778,7 @@ component accessors="true" {
 	boolean function sessionContains( required any entity ){
 		var ormSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
 		// Hibernate 5 Approach: left( getOrm().getHibernateVersion(), 1 ) > 5
-		if ( server.coldfusion.productVersion.listFirst() >= 2018 ) {
+		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productVersion.listFirst() >= 2018 ) {
 			return ormSession.contains( getEntityGivenName( arguments.entity ), arguments.entity );
 		}
 		return ormSession.contains( arguments.entity );
