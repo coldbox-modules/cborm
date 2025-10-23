@@ -404,7 +404,7 @@ component accessors="true" {
 
 		// iterate and add dynamically if the incoming argument exists, man, so much easier if we had closures.
 		for ( var pType in arguments ) {
-			if ( structKeyExists( arguments, pType ) AND NOT listFindNoCase( excludes, pType ) ) {
+			if ( structKeyExists( arguments, pType ) && NOT listFindNoCase( excludes, pType ) && !isNull( projectionList ) ) {
 				addProjection(
 					arguments[ pType ],
 					lCase( pType ),
