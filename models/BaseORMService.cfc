@@ -598,7 +598,7 @@ component accessors="true" {
 		// Streams Support
 		if ( arguments.asStream ) {
 			// If Hibernate 5, return native stream: left( getOrm().getHibernateVersion(), 1 ) > 5
-			if ( listFirst( server.coldfusion.productVersion ) >= 2018 ) {
+			if ( server.keyExists( "coldfusion" ) && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
 				return variables.wirebox
 					.getInstance( "StreamBuilder@cbStreams" )
 					.new()
