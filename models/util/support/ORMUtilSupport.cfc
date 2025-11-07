@@ -129,9 +129,10 @@ component singleton {
 			arguments.entity = entityNew( arguments.entity );
 		}
 
-		var md = getMetadata( arguments.entity );
-		if ( structKeyExists( md, "datasource" ) ) {
-			datasource = md.datasource;
+		var md          = getMetadata( arguments.entity );
+		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
+		if ( structKeyExists( annotations, "datasource" ) ) {
+			datasource = annotations.datasource;
 		}
 
 		return datasource;
@@ -207,16 +208,15 @@ component singleton {
 
 		// Hibernate Discovery
 		try {
-			return getSession( getEntityDatasource( arguments.entity ) ).getEntityName(
-				arguments.entity
-			);
+			return getSession( getEntityDatasource( arguments.entity ) ).getEntityName( arguments.entity );
 		} catch ( org.hibernate.TransientObjectException e ) {
 			// ignore it, it is not in session, go for long-discovery
 		}
 
 		// Long Discovery
-		var md = getMetadata( arguments.entity );
-		return ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+		var md          = getMetadata( arguments.entity );
+		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
+		return ( annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." ) );
 	}
 
 	/**

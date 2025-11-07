@@ -31,7 +31,7 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mysql,bx-derby,bx-compat-cfml@be,bx-orm@be --noSave"
+        "onServerInitialInstall":"install bx-mysql,bx-derby,bx-compat-cfml,bx-orm --noSave"
     },
     "-trace":true
 }

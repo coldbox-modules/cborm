@@ -48,7 +48,10 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	){
 		// Calculate name via metadata
 		var md               = getMetadata( this );
-		arguments.entityName = ( md.keyExists( "entityName" ) ? md.entityName : listLast( md.name, "." ) );
+		var annotations      = md.keyExists( "annotations" ) ? md.annotations : md;
+		arguments.entityName = (
+			annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." )
+		);
 
 		// Store query cache region
 		if ( isNull( arguments.queryCacheRegion ) ) {
@@ -56,8 +59,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		}
 
 		// Verify datasource just in case.
-		if ( md.keyExists( "datasource" ) ) {
-			arguments.datasource = md.datasource;
+		if ( annotations.keyExists( "datasource" ) ) {
+			arguments.datasource = annotations.datasource;
 		}
 
 		// init the super class with our own arguments

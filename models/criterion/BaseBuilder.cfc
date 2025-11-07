@@ -404,7 +404,7 @@ component accessors="true" {
 
 		// iterate and add dynamically if the incoming argument exists, man, so much easier if we had closures.
 		for ( var pType in arguments ) {
-			if ( structKeyExists( arguments, pType ) AND NOT listFindNoCase( excludes, pType ) ) {
+			if ( !isNull( arguments[ pType ] ) AND NOT listFindNoCase( excludes, pType ) ) {
 				addProjection(
 					arguments[ pType ],
 					lCase( pType ),
@@ -414,23 +414,23 @@ component accessors="true" {
 		}
 
 		// id
-		if ( structKeyExists( arguments, "id" ) ) {
+		if ( !isNull( arguments.id ) ) {
 			projectionList.add( this.PROJECTIONS.id() );
 		}
 
 		// rowCount
-		if ( structKeyExists( arguments, "rowCount" ) ) {
+		if ( !isNull( arguments.rowCount ) ) {
 			projectionList.add( this.PROJECTIONS.rowCount() );
 		}
 
 		// distinct
-		if ( structKeyExists( arguments, "distinct" ) ) {
+		if ( !isNull( arguments.distinct ) ) {
 			addProjection( arguments.distinct, "property", projectionList );
 			projectionList = this.PROJECTIONS.distinct( projectionList );
 		}
 
 		// detachedSQLProjection
-		if ( structKeyExists( arguments, "detachedSQLProjection" ) ) {
+		if ( !isNull( arguments.detachedSQLProjection ) ) {
 			// allow single or arrary of detachedSQLProjection
 			var projectionCollection = !isArray( arguments.detachedSQLProjection ) ? [
 				arguments.detachedSQLProjection
@@ -442,7 +442,7 @@ component accessors="true" {
 		}
 
 		// sqlProjection
-		if ( structKeyExists( arguments, "sqlProjection" ) ) {
+		if ( !isNull( arguments.sqlProjection ) ) {
 			// allow for either an array of sqlProjections, or a stand-alone config for one
 			var sqlargs = !isArray( arguments.sqlProjection ) ? [ arguments.sqlProjection ] : arguments.sqlProjection;
 			// loop over sqlProjections
@@ -460,7 +460,7 @@ component accessors="true" {
 		}
 
 		// sqlGroupProjection
-		if ( structKeyExists( arguments, "sqlGroupProjection" ) ) {
+		if ( !isNull( arguments.sqlGroupProjection ) ) {
 			// allow for either an array of sqlGroupProjections, or a stand-alone config for one
 			var sqlargs = !isArray( arguments.sqlGroupProjection ) ? [ arguments.sqlGroupProjection ] : arguments.sqlGroupProjection;
 			// loop over sqlGroupProjections
