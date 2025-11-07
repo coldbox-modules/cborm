@@ -207,9 +207,7 @@ component singleton {
 
 		// Hibernate Discovery
 		try {
-			return getSession( getEntityDatasource( arguments.entity ) ).getEntityName(
-				arguments.entity
-			);
+			return getSession( getEntityDatasource( arguments.entity ) ).getEntityName( arguments.entity );
 		} catch ( org.hibernate.TransientObjectException e ) {
 			// ignore it, it is not in session, go for long-discovery
 		}
