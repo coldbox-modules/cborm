@@ -102,7 +102,7 @@ userService.findAllByCreatedDateBetween(startDate, endDate);
 ```cfml
 component extends="cborm.models.resources.BaseHandler" {
     property name="ormService" inject="entityService:User";
-    
+
     variables.entity = "User";
     variables.sortOrder = "lastName,firstName";
 }
