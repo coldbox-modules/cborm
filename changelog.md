@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add workflow_dispatch trigger to cron.yml for manual workflow execution
+- Duplicate ORM settings for BoxLang-only runtime compatibility
+- full var scoping to avoid warnings on IDE
+
+### Fixed
+
+- BOX-163 : Dead code, possible bug, in `entityGivenName` method of `ORMUtilSupport.cfc` not returning Hibernate result and producing a `null` error.
+- BoxLang Prime support improvements with defensive coding
+- Conditional event handler for Adobe ColdFusion
+- Move CFIDE EventHandler interface reference to ACFEventHandler for better ACF isolation
+- Drop ACF-only interface annotation for BoxLang Prime support
+- More defensive coding for server.coldfusion blocks
+- Use @be tag for bx-compat-cfml in BoxLang server tests
+
 ## [4.11.0] - 2025-09-11
 
 ### Added

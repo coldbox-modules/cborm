@@ -61,11 +61,5 @@
         "logs:boxlang":"server log serverConfigFile=server-boxlang-cfml@1.json --follow",
         "logs:lucee":"server log serverConfigFile=server-lucee@5.json --follow",
         "logs:adobe":"server log serverConfigFile=server-adobe@2025.json --follow"
-    },
-    "installPaths":{
-        "cbvalidation":"modules/cbvalidation/",
-        "mementifier":"modules/mementifier/",
-        "cbstreams":"modules/cbstreams/",
-        "cbpaginator":"modules/cbpaginator/"
     }
 }

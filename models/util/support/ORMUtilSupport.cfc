@@ -207,7 +207,7 @@ component singleton {
 
 		// Hibernate Discovery
 		try {
-			var entityName = getSession( getEntityDatasource( arguments.entity ) ).getEntityName(
+			return getSession( getEntityDatasource( arguments.entity ) ).getEntityName(
 				arguments.entity
 			);
 		} catch ( org.hibernate.TransientObjectException e ) {
