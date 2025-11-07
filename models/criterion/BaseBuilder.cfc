@@ -701,8 +701,13 @@ component accessors="true" {
 		}
 
 		// iterate array and add projections
-		writeDump( var=arguments, top = 5, showUDFs = false, expand = false );
-		writeDump( var=callStackGet(), expand=false );
+		writeDump(
+			var      = arguments,
+			top      = 5,
+			showUDFs = false,
+			expand   = false
+		);
+		writeDump( var = callStackGet(), expand = false );
 
 		for ( var thisP in arguments.propertyName ) {
 			// add projection into the projection list
