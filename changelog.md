@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.12.0] - 2025-11-07
+
 ### Added
 
 - Add workflow_dispatch trigger to cron.yml for manual workflow execution
@@ -620,7 +622,8 @@ Remember this entity extends the Virtual Service, so we get all the features abo
 - Create first module version
 
 [4.4.0]: https://github.com/coldbox-modules/cborm/compare/13af593fa8a7bf2c4396e9be9d0dd0bb6899e935...v4.4.0
-[unreleased]: https://github.com/coldbox-modules/cborm/compare/v4.11.0...HEAD
+[unreleased]: https://github.com/coldbox-modules/cborm/compare/v4.12.0...HEAD
+[4.12.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.12.0
 [4.11.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.11.0
 [4.10.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.10.0
 [4.9.0]: https://github.com/coldbox-modules/cborm/compare/HEAD...v4.9.0
