@@ -11,7 +11,7 @@
  * chain ORM interceptions.
  *
  */
-component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler" {
+component extends="coldbox.system.remote.ColdboxProxy" {
 
 	/**
 	 * preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad

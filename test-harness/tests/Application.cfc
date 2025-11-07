@@ -42,9 +42,12 @@
 		cacheProvider         : "ConcurrentHashMap",
 		flushAtRequestEnd     : false,
 		eventhandling         : true,
-		eventHandler          : "cborm.models.EventHandler",
+		eventHandler          : server.keyExists( "coldfusion" ) ? "cborm.models.ACFEventHandler" : "cborm.models.EventHandler",
 		skipcfcWithError      : false,
-		saveMapping           : false
+		saveMapping           : false,
+		// BoxLang Config Keys - The aliases above are only handled by the cfml compat module
+		entityPaths           : [ "/root/models" ],
+		ingnoreParseErrors    : false
 	};
 
 	// request start

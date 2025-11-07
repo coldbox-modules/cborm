@@ -598,7 +598,7 @@ component accessors="true" {
 		// Streams Support
 		if ( arguments.asStream ) {
 			// If Hibernate 5, return native stream: left( getOrm().getHibernateVersion(), 1 ) > 5
-			if ( listFirst( server.coldfusion.productVersion ) >= 2018 ) {
+			if ( server.keyExists( "coldfusion" ) && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
 				return variables.wirebox
 					.getInstance( "StreamBuilder@cbStreams" )
 					.new()
@@ -1778,7 +1778,7 @@ component accessors="true" {
 	boolean function sessionContains( required any entity ){
 		var ormSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
 		// Hibernate 5 Approach: left( getOrm().getHibernateVersion(), 1 ) > 5
-		if ( server.coldfusion.productVersion.listFirst() >= 2018 ) {
+		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productVersion.listFirst() >= 2018 ) {
 			return ormSession.contains( getEntityGivenName( arguments.entity ), arguments.entity );
 		}
 		return ormSession.contains( arguments.entity );

@@ -97,7 +97,7 @@ jobs:
           box testbox run --verbose outputFile=test-harness/tests/results/test-results outputFormats=json,antjunit
 
       - name: Publish Test Reports
-        uses: mikepenz/action-junit-report@v5.6.2
+        uses: mikepenz/action-junit-report@v6.0.0
         if: always()
         with:
           report_paths: |
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload Test Results to Artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results-${{ matrix.cfengine }}-${{ matrix.coldboxVersion }}
           path: |
@@ -122,7 +122,7 @@ jobs:
 
       - name: Upload Debug Logs To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.coldboxVersion }}
           path: |
