@@ -48,8 +48,10 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	){
 		// Calculate name via metadata
 		var md               = getMetadata( this );
-		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
-		arguments.entityName = ( annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." ) );
+		var annotations      = md.keyExists( "annotations" ) ? md.annotations : md;
+		arguments.entityName = (
+			annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." )
+		);
 
 		// Store query cache region
 		if ( isNull( arguments.queryCacheRegion ) ) {

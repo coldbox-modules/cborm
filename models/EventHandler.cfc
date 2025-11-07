@@ -128,7 +128,9 @@ component extends="coldbox.system.remote.ColdboxProxy" {
 				// Long Discovery
 				var md          = getMetadata( arguments.entity );
 				var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
-				args.entityName = ( annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." ) );
+				args.entityName = (
+					annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." )
+				);
 			}
 		}
 

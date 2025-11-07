@@ -129,7 +129,7 @@ component singleton {
 			arguments.entity = entityNew( arguments.entity );
 		}
 
-		var md = getMetadata( arguments.entity );
+		var md          = getMetadata( arguments.entity );
 		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
 		if ( structKeyExists( annotations, "datasource" ) ) {
 			datasource = annotations.datasource;
@@ -214,7 +214,7 @@ component singleton {
 		}
 
 		// Long Discovery
-		var md = getMetadata( arguments.entity );
+		var md          = getMetadata( arguments.entity );
 		var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
 		return ( annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." ) );
 	}
