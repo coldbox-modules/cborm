@@ -69,7 +69,7 @@ component {
 		automanageSession     : false,
 		flushAtRequestEnd     : false,
 		eventhandling         : true,
-		eventHandler          : server.keyExists( "coldfusion" ) ? "cborm.models.ACFEventHandler" : "cborm.models.EventHandler",
+		eventHandler          : server.keyExists( "boxlang" ) ? "cborm.models.BXEventHandler" : "cborm.models.EventHandler",
 		skipcfcWithError      : false
 	};
 
