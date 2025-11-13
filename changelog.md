@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Regression Event Handler not implementing interface methods properly for ACF
+
 ## [4.12.0] - 2025-11-07
 
 ### Added

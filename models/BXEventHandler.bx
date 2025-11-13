@@ -1,14 +1,12 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This Event Handler listens to ORM events and announces them as ColdBox events.
- * This event handler should ONLY be used for CFML engines that support ORM event handlers.
- *
- * If you are using BoxLang PRIME ORM, use the BXEventHandler.cfc instead.
+ * Event Handler that listens to ORM events and announces them as ColdBox events
+ * using BoxLang PRIME ORM.
  *
  */
-component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler" {
+class extends="coldbox.system.remote.ColdboxProxy" {
 
 	/**
 	 * preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
