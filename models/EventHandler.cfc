@@ -2,13 +2,10 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Generic Hibernate Event Handler that ties to the ColdBox proxy for ColdBox Operations.
- * This is just a base class you can inherit from to give you access to your ColdBox
- * Application and the CF9 ORM event handler methods. Then you just need to
- * use a la carte.
+ * This Event Handler listens to ORM events and announces them as ColdBox events.
+ * This event handler should ONLY be used for CFML engines that support ORM event handlers.
  *
- * We also execute interception points that match the ORM events so you can eaisly
- * chain ORM interceptions.
+ * If you are using BoxLang PRIME ORM, use the BXEventHandler.cfc instead.
  *
  */
 component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler" {
