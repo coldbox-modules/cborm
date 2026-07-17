@@ -1,6 +1,6 @@
-# CBOrm Copilot Instructions
+# CBORM Copilot Instructions
 
-CBOrm is a ColdBox module that **enhances and abstracts Hibernate ORM** for CFML engines (BoxLang, Lucee, Adobe ColdFusion). It extends Hibernate with service layers, Active Record patterns, fluent criteria queries, dynamic finders, RESTful resources, and AOP transaction management.
+CBORM is a ColdBox module that **enhances and abstracts Hibernate ORM** for BoxLang and Adobe ColdFusion engines. It extends Hibernate with service layers, Active Record patterns, fluent criteria queries, dynamic finders, RESTful resources, and AOP transaction management.
 
 ## Core Architecture
 

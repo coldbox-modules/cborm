@@ -38,11 +38,12 @@ jobs:
       issues: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
-      - name: Setup CommandBox
-        uses: Ortus-Solutions/setup-commandbox@v2.0.1
+      - name: Setup Boxlang & CommandBox
+        uses: ortus-boxlang/setup-boxlang@main
         with:
+          with-commandbox: true
           forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
 
       - name: Setup Java
@@ -97,7 +98,7 @@ jobs:
 
       - name: Upload Build Artifacts
         if: success()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ env.MODULE_ID }}
           path: |
@@ -170,7 +171,7 @@ jobs:
     steps:
       # Checkout development
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: development
 
