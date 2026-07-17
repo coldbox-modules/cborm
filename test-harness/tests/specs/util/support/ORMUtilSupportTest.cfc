@@ -62,18 +62,18 @@ component extends="tests.resources.BaseTest" skip="true" {
 
 	function testclearSession(){
 		var t = ormutil.clearSession();
-		t = ormutil.clearSession( dsn );
+		t     = ormutil.clearSession( dsn );
 	}
 
 	function testcloseSession(){
 		var t = ormutil.closeSession();
-		t = ormutil.closeSession( dsn );
+		t     = ormutil.closeSession( dsn );
 	}
 
 	function testevictQueries(){
 		var t = ormutil.evictQueries();
-		t = ormutil.evictQueries( "users" );
-		t = ormutil.evictQueries( "users", dsn );
+		t     = ormutil.evictQueries( "users" );
+		t     = ormutil.evictQueries( "users", dsn );
 	}
 
 	function testGetEntityDatasource(){
