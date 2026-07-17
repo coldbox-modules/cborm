@@ -77,7 +77,7 @@ jobs:
           npm install -g markdownlint-cli
           markdownlint changelog.md --fix
           box install commandbox-docbox
-          box task run taskfile=build/Build target=run :version=${{ env.VERSION }} :projectName=${{ env.MODULE_ID }} :buildID=${{ env.BUILD_ID }} :branch=${{ env.BRANCH }}
+          box task run taskfile=Build target=run :version=${{ env.VERSION }} :projectName=${{ env.MODULE_ID }} :buildID=${{ env.BUILD_ID }} :branch=${{ env.BRANCH }}
 
       - name: Commit Changelog [unreleased] with latest version
         uses: EndBug/add-and-commit@v9.1.4
