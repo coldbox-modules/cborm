@@ -6,13 +6,15 @@ component extends="tests.resources.BaseTest" {
 
 		// mocks
 		variables.mockMapping = getMockBox().createEmptyMock( "coldbox.system.ioc.config.Mapping" );
-		variables.mockLogger  = createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false ).$( "error" );
+		variables.mockLogger  = createEmptyMock( "coldbox.system.logging.Logger" )
+			.$( "canDebug", false )
+			.$( "error" );
 		variables.hTransaction.setLog( mockLogger );
 	}
 
 	function testInvokeMethodInTransaction(){
 		// default Datasource mock
-		var md         = { name : "save", access : "public", transactional : "" };
+		var md             = { name : "save", access : "public", transactional : "" };
 		// mock invocation
 		var mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )
@@ -36,7 +38,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testInvokeMethodNotInTransaction(){
 		// default Datasource mock
-		var md         = { name : "save", access : "public", transactional : "" };
+		var md             = { name : "save", access : "public", transactional : "" };
 		// mock invocation
 		var mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )

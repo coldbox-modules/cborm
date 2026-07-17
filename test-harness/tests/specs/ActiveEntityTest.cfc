@@ -166,7 +166,7 @@
 
 	function testSave(){
 		// mocks
-		if( isBoxLang() ){
+		if ( isBoxLang() ) {
 			mockEventHandler = getMockBox().createEmptyMock( "cborm.models.BXEventHandler" );
 		} else {
 			mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );

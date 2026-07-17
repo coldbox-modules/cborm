@@ -1,9 +1,9 @@
 component extends="tests.resources.BaseTest" {
 
 	function setup(){
-		variables.ormService       = createMock( "cborm.models.BaseORMService" ).init();
+		variables.ormService = createMock( "cborm.models.BaseORMService" ).init();
 
-		if( isBoxLang() ){
+		if ( isBoxLang() ) {
 			variables.mockEventHandler = getMockBox()
 				.createMock( "cborm.models.BXEventHandler" )
 				.$( "getEventManager", getMockBox().createStub().$( "announce" ) );

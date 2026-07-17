@@ -805,10 +805,18 @@ component accessors="true" {
 				associationName : right( arguments.missingMethodName, len( arguments.missingMethodName ) - 4 )
 			};
 			// join type
-			if ( structKeyExists( arguments.missingMethodArguments, "1" ) && isNull( arguments.missingMethodArguments[ 1 ] ) ) {
+			if (
+				structKeyExists( arguments.missingMethodArguments, "1" ) && isNull(
+					arguments.missingMethodArguments[ 1 ]
+				)
+			) {
 				args.joinType = arguments.missingMethodArguments[ 1 ];
 			}
-			if ( structKeyExists( arguments.missingMethodArguments, "joinType" ) && isNull( arguments.missingMethodArguments.joinType ) ) {
+			if (
+				structKeyExists( arguments.missingMethodArguments, "joinType" ) && isNull(
+					arguments.missingMethodArguments.joinType
+				)
+			) {
 				args.joinType = arguments.missingMethodArguments.joinType;
 			}
 			// create the dynamic criteria

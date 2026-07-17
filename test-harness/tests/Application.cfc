@@ -45,13 +45,13 @@
 		saveMapping           : false
 	}
 	// Engine specific settings for ORM
-	if( server.keyExists( "boxlang" ) ){
-		this.ormSettings.entityPaths = [ "/root/models" ]
+	if ( server.keyExists( "boxlang" ) ) {
+		this.ormSettings.entityPaths        = [ "/root/models" ]
 		this.ormSettings.ingnoreParseErrors = false
-		this.ormSettings.eventHandler = "cborm.models.BXEventHandler"
+		this.ormSettings.eventHandler       = "cborm.models.BXEventHandler"
 	} else {
-		this.ormSettings.cfclocation = [ "/root/models" ]
-		this.ormSettings.eventHandler = "cborm.models.EventHandler"
+		this.ormSettings.cfclocation      = [ "/root/models" ]
+		this.ormSettings.eventHandler     = "cborm.models.EventHandler"
 		this.ormSettings.skipcfcWithError = false
 	}
 

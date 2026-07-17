@@ -14,10 +14,10 @@
 
 		variables.ormservice = createMock( "cborm.models.BaseORMService" )
 
-		if( isBoxLang() ){
-			variables.mockEH     = createMock( "cborm.models.BXEventHandler" )
+		if ( isBoxLang() ) {
+			variables.mockEH = createMock( "cborm.models.BXEventHandler" )
 		} else {
-			variables.mockEH     = createMock( "cborm.models.EventHandler" )
+			variables.mockEH = createMock( "cborm.models.EventHandler" )
 		}
 		variables.mockEH.$( "announceInterception", true ).$( "announce", true )
 
@@ -25,7 +25,11 @@
 		variables.ormservice.init();
 
 		// Mock event handler
-		variables.ormservice.$property( "ORMEventHandler", "variables", variables.mockEH );
+		variables.ormservice.$property(
+			"ORMEventHandler",
+			"variables",
+			variables.mockEH
+		);
 
 		// Test ID's
 		variables.testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
@@ -419,7 +423,7 @@
 	function testSave(){
 		// mocks
 		// mocks
-		if( isBoxLang() ) {
+		if ( isBoxLang() ) {
 			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
 		} else {
 			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
@@ -450,7 +454,7 @@
 
 	function testSaveNoTransaction(){
 		// mocks
-		if( isBoxLang() ) {
+		if ( isBoxLang() ) {
 			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
 		} else {
 			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
@@ -482,7 +486,7 @@
 	function testSaveAll(){
 		// mocks
 		// mocks
-		if( isBoxLang() ) {
+		if ( isBoxLang() ) {
 			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
 		} else {
 			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
@@ -518,7 +522,7 @@
 	function testSaveAllWithFlush(){
 		// mocks
 		// mocks
-		if( isBoxLang() ) {
+		if ( isBoxLang() ) {
 			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
 		} else {
 			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
