@@ -108,8 +108,8 @@
 
 		try {
 			ormservice.deleteByID( user.getID() );
-			var test = entityLoad( "User", { firstName : "unittest" }, true );
-			assertTrue( isNull( test ) );
+			var user = entityLoad( "User", { firstName : "unittest" }, true );
+			assertTrue( isNull( user ) );
 		} catch ( any e ) {
 			rethrow;
 		} finally {
