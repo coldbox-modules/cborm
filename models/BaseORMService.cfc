@@ -181,9 +181,7 @@ component accessors="true" {
 	 */
 	function getORMEventHandler(){
 		if ( isNull( variables.ORMEventHandler ) ) {
-			variables.ORMEventHandler = server.keyExists( "boxlang" ) ?
-				new cborm.models.BXEventHandler() :
-				new cborm.models.EventHandler()
+			variables.ORMEventHandler = server.keyExists( "boxlang" ) ? new cborm.models.BXEventHandler() : new cborm.models.EventHandler()
 		}
 		return variables.ORMEventHandler
 	}
