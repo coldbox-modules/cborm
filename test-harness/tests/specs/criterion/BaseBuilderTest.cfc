@@ -8,31 +8,39 @@ component extends="tests.resources.BaseTest" {
 	function setup(){
 		super.setup();
 
-		ormService       = createMock( "cborm.models.BaseORMService" ).init();
-		mockEventHandler = createMock( "cborm.models.EventHandler" ).$(
-			"getEventManager",
-			createStub().$( "announce" )
-		);
-		ormService.setORMEventHandler( mockEventHandler );
-		ormservice.setEventHandling( false );
+		variables.ormService       = createMock( "cborm.models.BaseORMService" ).init();
+		if( isBoxLang() ){
+			variables.mockEventHandler = createMock( "cborm.models.BXEventHandler" ).$(
+				"getEventManager",
+				createStub().$( "announce" )
+			);
+		} else {
+			variables.mockEventHandler = createMock( "cborm.models.EventHandler" ).$(
+				"getEventManager",
+				createStub().$( "announce" )
+			);
+		}
 
-		criteria    = ormService.newCriteria( "User" );
-		subCriteria = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
-		subCriteria.init(
+		variables.ormService.setORMEventHandler( variables.mockEventHandler );
+		variables.ormService.setEventHandling( false );
+
+		variables.criteria    = variables.ormService.newCriteria( "User" );
+		variables.subCriteria = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
+		variables.subCriteria.init(
 			entityName = "User",
 			alias      = "User2",
-			ormService = ormService
+			ormService = variables.ormService
 		);
 
 		// Test ID's
-		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
-		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
-		test2      = [ "1", "2" ];
+		variables.testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
+		variables.testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
+		variables.test2      = [ "1", "2" ];
 	}
 
 	function testCreateCriteria(){
 		// with join Type
-		r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
+		var r = new cborm.models.criterion.CriteriaBuilder( entityName = "Role", ormService = ormService )
 			.withusers( criteria.LEFT_JOIN )
 			.like( "lastName", "M%" )
 			.peek( function( criteria ){

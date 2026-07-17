@@ -12,19 +12,25 @@
 	function setup(){
 		super.setup();
 
-		ormservice = createMock( "cborm.models.BaseORMService" );
-		mockEH     = createMock( "cborm.models.EventHandler" ).$( "announceInterception", true ).$( "announce", true );
+		variables.ormservice = createMock( "cborm.models.BaseORMService" )
+
+		if( isBoxLang() ){
+			variables.mockEH     = createMock( "cborm.models.BXEventHandler" )
+		} else {
+			variables.mockEH     = createMock( "cborm.models.EventHandler" )
+		}
+		variables.mockEH.$( "announceInterception", true ).$( "announce", true )
 
 		// Mocks
-		ormservice.init();
+		variables.ormservice.init();
 
 		// Mock event handler
-		ormservice.$property( "ORMEventHandler", "variables", mockEH );
+		variables.ormservice.$property( "ORMEventHandler", "variables", variables.mockEH );
 
 		// Test ID's
-		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
-		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
-		test2      = [ "1", "2" ];
+		variables.testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
+		variables.testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
+		variables.test2      = [ "1", "2" ];
 
 		variables.ormUtil = new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
@@ -421,7 +427,12 @@
 
 	function testSave(){
 		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		// mocks
+		if( isBoxLang() ) {
+			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
+		} else {
+			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		}
 		mockEventHandler.$( "preSave" );
 		mockEventHandler.$( "postSave" );
 		ormService.$property(
@@ -430,7 +441,7 @@
 			mockEventHandler
 		);
 
-		cat = entityNew( "Category" );
+		var cat = entityNew( "Category" );
 		cat.setCategory( "unitTest" );
 		cat.setDescription( "unitTest at #now()#" );
 
@@ -438,7 +449,7 @@
 			if ( structKeyExists( server, "lucee" ) ) {
 				ormCloseSession();
 			}
-			ormservice.save( entity = cat, transactional = false );
+			var result = ormservice.save( entity = cat, transactional = false );
 			assertTrue( len( cat.getCatID() ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().postSave ) );
@@ -451,7 +462,11 @@
 
 	function testSaveNoTransaction(){
 		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		if( isBoxLang() ) {
+			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
+		} else {
+			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		}
 		mockEventHandler.$( "preSave" );
 		mockEventHandler.$( "postSave" );
 		ormService.$property(
@@ -460,7 +475,7 @@
 			mockEventHandler
 		);
 
-		cat = entityNew( "Category" );
+		var cat = entityNew( "Category" );
 		cat.setCategory( "unitTest" );
 		cat.setDescription( "unitTest at #now()#" );
 
@@ -478,7 +493,12 @@
 
 	function testSaveAll(){
 		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		// mocks
+		if( isBoxLang() ) {
+			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
+		} else {
+			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		}
 		mockEventHandler.$( "preSave" ).$( "postSave" );
 		ormService.$property(
 			"ORMEventHandler",
@@ -486,11 +506,11 @@
 			mockEventHandler
 		);
 
-		cat = entityNew( "Category" );
+		var cat = entityNew( "Category" );
 		cat.setCategory( "unitTest" );
 		cat.setDescription( "unitTest at #now()#" );
 
-		cat2 = entityNew( "Category" );
+		var cat2 = entityNew( "Category" );
 		cat2.setCategory( "unitTest" );
 		cat2.setDescription( "unitTest at #now()#" );
 
@@ -512,7 +532,12 @@
 
 	function testSaveAllWithFlush(){
 		// mocks
-		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		// mocks
+		if( isBoxLang() ) {
+			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
+		} else {
+			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
+		}
 		mockEventHandler.$( "preSave" ).$( "postSave" );
 		ormService.$property(
 			"ORMEventHandler",
@@ -520,11 +545,11 @@
 			mockEventHandler
 		);
 
-		cat = entityNew( "Category" );
+		var cat = entityNew( "Category" );
 		cat.setCategory( "unitTest" );
 		cat.setDescription( "unitTest at #now()#" );
 
-		cat2 = entityNew( "Category" );
+		var cat2 = entityNew( "Category" );
 		cat2.setCategory( "unitTest" );
 		cat2.setDescription( "unitTest at #now()#" );
 
@@ -549,9 +574,9 @@
 	}
 
 	function testRefresh(){
-		cat                 = entityLoad( "Category", { category : "Training" }, true );
-		id                  = cat.getCatID();
-		originalDescription = cat.getDescription();
+		var cat                 = entityLoad( "Category", { category : "Training" }, true );
+		var id                  = cat.getCatID();
+		var originalDescription = cat.getDescription();
 
 		try {
 			queryExecute( "update categories set description = 'unittest' where category_id = '#id#'" );
@@ -569,35 +594,35 @@
 	}
 
 	function testCount(){
-		count = ormService.count( "Category" );
+		var count = ormService.count( "Category" );
 		assertTrue( count gt 0 );
 
-		count = ormService.count( "Category", "category='general'" );
+		var count = ormService.count( "Category", "category='general'" );
 		assertEquals( 2, count );
 
-		count = ormService.count( "Category", "category=?", [ "Training" ] );
+		var count = ormService.count( "Category", "category=?", [ "Training" ] );
 		assertEquals( 1, count );
 
-		count = ormService.count(
+		var count = ormService.count(
 			"Category",
 			"category=:category",
 			{ category : "Training" }
 		);
 		assertEquals( 1, count );
 
-		count = ormService.count( "Category", "category like 'gen%'" );
+		var count = ormService.count( "Category", "category like 'gen%'" );
 		assertEquals( 2, count );
 
-		count = ormService.countWhere( entityName = "Category", category = "Training" );
+		var count = ormService.countWhere( entityName = "Category", category = "Training" );
 		assertEquals( 1, count );
 
-		count = ormService.countWhere( entityName = "Category" );
+		var count = ormService.countWhere( entityName = "Category" );
 		assertTrue( count > 1 );
 	}
 
 	function testList(){
-		criteria = { category : "general" };
-		test     = ormservice.list(
+		var criteria = { category : "general" };
+		var test     = ormservice.list(
 			entityName = "Category",
 			sortorder  = "category asc",
 			criteria   = criteria
@@ -606,7 +631,7 @@
 
 		// as array
 		ormservice.setDefaultAsQuery( true );
-		test = ormservice.list(
+		var test = ormservice.list(
 			entityName = "Category",
 			sortorder  = "category asc",
 			criteria   = criteria
@@ -648,10 +673,10 @@
 	}
 
 	function testFindIt(){
-		test = ormservice.findIt( "from Category where category = ?", [ "Training" ] );
+		var test = ormservice.findIt( "from Category where category = ?", [ "Training" ] );
 		assertEquals( "Training", test.getCategory() );
 
-		test = ormservice.findIt( "from Category where category = :category", { category : "Training" } );
+		var test = ormservice.findIt( "from Category where category = :category", { category : "Training" } );
 		assertEquals( "Training", test.getCategory() );
 	}
 
@@ -682,77 +707,77 @@
 			sql = "from Category where category = ?1";
 		}
 
-		test = ormservice.findAll( sql, [ "Training" ] );
+		var test = ormservice.findAll( sql, [ "Training" ] );
 		assertEquals( 1, arrayLen( test ) );
 
-		test = ormservice.findAll( "from Category where category = :category", { category : "Training" } );
+		var test = ormservice.findAll( "from Category where category = :category", { category : "Training" } );
 		assertEquals( 1, arrayLen( test ) );
 
-		test = ormService.findAll( query = "from Category", max = 2, offset = 1 );
+		var test = ormService.findAll( query = "from Category", max = 2, offset = 1 );
 		assertEquals( 2, arrayLen( test ) );
 	}
 
 	function testFindWhere(){
-		test = ormservice.findWhere( "Category", { category : "Training" } );
+		var test = ormservice.findWhere( "Category", { category : "Training" } );
 		assertEquals( "Training", test.getCategory() );
 
-		test = ormservice.findWhere( "User", { firstName : "Luis", lastName : "Majano" } );
+		var test = ormservice.findWhere( "User", { firstName : "Luis", lastName : "Majano" } );
 		assertEquals( "Majano", test.getLastName() );
 	}
 
 	function testFindAllWhere(){
-		test = ormservice.findAllWhere( "Category", { category : "general" } );
+		var test = ormservice.findAllWhere( "Category", { category : "general" } );
 		assertEquals( 2, arrayLen( test ) );
 
-		test = ormservice.findAllWhere(
+		var test = ormservice.findAllWhere(
 			"Category",
 			{ category : "general" },
 			"category desc"
 		);
 		assertEquals( 2, arrayLen( test ) );
 
-		test = ormservice.findAllWhere( "User", { firstName : "Luis", lastName : "Majano" } );
+		var test = ormservice.findAllWhere( "User", { firstName : "Luis", lastName : "Majano" } );
 		assertEquals( 1, arrayLen( test ) );
 	}
 
 
 	function testGetKey(){
-		test = ormservice.getKey( "Category" );
+		var test = ormservice.getKey( "Category" );
 		assertEquals( "catid", test );
 
-		test = ormservice.getKey( "User" );
+		var test = ormservice.getKey( "User" );
 		assertEquals( "id", test );
 	}
 
 	function testGetPropertyNames(){
-		test = ormservice.getPropertyNames( "Category" );
+		var test = ormservice.getPropertyNames( "Category" );
 		assertEquals( 4, arrayLen( test ) );
 
-		test = ormservice.getPropertyNames( "User" );
+		var test = ormservice.getPropertyNames( "User" );
 		assertEquals( 6, arrayLen( test ) );
 	}
 
 	function testGetTableName(){
-		test = ormservice.getTableName( "Category" );
+		var test = ormservice.getTableName( "Category" );
 		assertEquals( "categories", test );
 
-		test = ormservice.getTableName( "User" );
+		var test = ormservice.getTableName( "User" );
 		assertEquals( "users", test );
 
-		test = ormservice.getTableName( entityNew( "User" ) );
+		var test = ormservice.getTableName( entityNew( "User" ) );
 		assertEquals( "users", test );
 	}
 
 	function testConvertIDValueToJavaType(){
-		test = ormservice.convertIDValueToJavaType( entityName = "User", id = 1 );
+		var test = ormservice.convertIDValueToJavaType( entityName = "User", id = 1 );
 		assertEquals( [ 1 ], test );
 
-		test = ormservice.convertIDValueToJavaType( entityName = "User", id = [ "1", "2", "3" ] );
+		var test = ormservice.convertIDValueToJavaType( entityName = "User", id = [ "1", "2", "3" ] );
 		assertEquals( [ 1, 2, 3 ], test );
 	}
 
 	function testConvertValueToJavaType(){
-		test = ormservice.convertValueToJavaType(
+		var test = ormservice.convertValueToJavaType(
 			entityName   = "User",
 			propertyName = "id",
 			value        = testUserID
@@ -764,33 +789,33 @@
 		UserService     = ormservice.CreateService( entityName = "User" );
 		CategoryService = ormservice.CreateService( entityName = "Category" );
 
-		test = UserService.getKey();
+		var test = UserService.getKey();
 		assertEquals( "id", test );
 
-		test = UserService.getTableName();
+		var test = UserService.getTableName();
 		assertEquals( "users", test );
 
-		test = CategoryService.getKey();
+		var test = CategoryService.getKey();
 		assertEquals( "catid", test );
 
-		test = CategoryService.getTableName();
+		var test = CategoryService.getTableName();
 		assertEquals( "categories", test );
 	}
 
 	function testgetEntityGivenName(){
 		// loaded entity
-		test = entityLoad( "User", { firstName : "Luis" }, true );
-		r    = ormservice.getEntityGivenName( test );
+		var test = entityLoad( "User", { firstName : "Luis" }, true );
+		var r    = ormservice.getEntityGivenName( test );
 		// debug( r );
 		assertEquals( "User", r );
 
-		r = ormservice.getEntityGivenName( entityNew( "User" ) );
+		var r = ormservice.getEntityGivenName( entityNew( "User" ) );
 		// debug( r );
 		assertEquals( "User", r );
 	}
 
 	function testNewCriteria(){
-		c = ormservice.newCriteria( "User" );
+		var c = ormservice.newCriteria( "User" );
 		expect( c ).toBeComponent();
 		expect( c.getEntityName() ).toBe( "User" );
 	}
@@ -818,14 +843,14 @@
 		if ( server.keyExists( "lucee" ) && listFirst( server.lucee.version, "." ) lt 7 ) {
 			return;
 		}
-		test = entityLoad( "User", { firstName : "Luis" }, true );
+		var test = entityLoad( "User", { firstName : "Luis" }, true );
 
 		ormClearSession();
-		stats = ormservice.getSessionStatistics();
+		var stats = ormservice.getSessionStatistics();
 		assertEquals( 0, stats.entityCount );
 
-		aTests = ormservice.merge( [ test ] );
-		stats  = ormservice.getSessionStatistics();
+		var aTests = ormservice.merge( [ test ] );
+		var stats  = ormservice.getSessionStatistics();
 		assertEquals( 1, stats.entityCount );
 		expect( aTests ).toBeArray();
 	}

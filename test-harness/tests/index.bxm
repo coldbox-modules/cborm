@@ -1,11 +1,9 @@
-<cfscript>
-	// No cf debugging
-	cfsetting( showdebugoutput="false" );
+<bx:script>
 	// GLOBAL VARIABLES
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 	TESTBOX_VERSION = new testbox.system.TestBox().getVersion();
 	// TEST LOCATIONS -> UPDATE AS YOU SEE FIT
-	rootMapping = "/tests";
+	rootMapping = "/tests/";
 
 	// Local Variables
 	rootPath 	= expandPath( rootMapping );
@@ -42,22 +40,22 @@
 		backPath.pop();
 		backPath = backPath.toList( "/" );
 	}
-</cfscript>
+</bx:script>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#TESTBOX_VERSION#">
 	<title>TestBox Browser</title>
-	<cfoutput>
+	<bx:output>
 		<style>#fileRead( '#ASSETS_DIR#/css/main.css' )#</style>
 		<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
 		<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
 		<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
 		<script>#fileRead( '#ASSETS_DIR#/js/stupidtable.min.js' )#</script>
-	</cfoutput>
+	</bx:output>
 </head>
-<cfoutput>
+<bx:output>
 <body>
 
 <div id="tb-runner" class="container">
@@ -90,24 +88,24 @@
 				Below is a listing of the runners matching the "runner*.(cfm|bxm)" pattern.
 			</p>
 
-			<cfset runners = directoryList( targetPath, false, "query", "runner*.cfm|runner*.bxm" )>
-			<cfif runners.recordCount eq 0>
+			<bx:set runners = directoryList( targetPath, false, "query", "runner*.cfm|runner*.bxm" )>
+			<bx:if runners.recordCount eq 0>
 				<p class="alert alert-warning">No runners found in this directory</p>
-			<cfelse>
-				<cfloop query="runners">
+			<bx:else>
+				<bx:loop query="runners">
 					<a
 						href="#runners.name#"
 						target="_blank"
-						<cfif listLast( runners.name, "." ) eq "bxm">
+						<bx:if listLast( runners.name, "." ) eq "bxm">
 							class="btn btn-success btn-sm my-1 mx-1"
-						<cfelse>
+						<bx:else>
 							class="btn btn-info btn-sm my-1 mx-1"
-						</cfif>
+						</bx:if>
 					>
 						#runners.name#
 					</a>
-				</cfloop>
-			</cfif>
+				</bx:loop>
+			</bx:if>
 		</div>
 	</div>
 
@@ -126,35 +124,35 @@
 					<legend>#targetPath.replace( rootPath, "" )#</legend>
 
 					<!--- Show Back If we are traversing --->
-					<cfif len( url.path )>
-						<a href="index.cfm?path=#URLEncodedFormat( backPath )#">
+					<bx:if len( url.path )>
+						<a href="index.bxm?path=#URLEncodedFormat( backPath )#">
 							<button type="button" class="btn btn-secondary btn-sm my-1">&##xAB; Back</button>
 						</a>
 						<br>
 						<hr>
-					</cfif>
+					</bx:if>
 
-					<cfloop query="qResults">
+					<bx:loop query="qResults">
 						<!--- Skip . folder file names and runners and Application.bx, cfc--->
-						<cfif
+						<bx:if
 							refind( "^\.", qResults.name )
 							OR
 							( listLast( qresults.name, ".") eq "cfm" OR listLast( qresults.name, ".") eq "bxm" )
 							OR
 							( qResults.name eq "Application.cfc" OR qResults.name eq "Application.bx" )
 						>
-							<cfcontinue>
-						</cfif>
+							<bx:continue>
+						</bx:if>
 
-						<cfif qResults.type eq "Dir">
+						<bx:if qResults.type eq "Dir">
 							<a
 								class="btn btn-secondary btn-sm my-1"
-								href="index.cfm?path=#urlEncodedFormat( url.path & "/" & qResults.name )#"
+								href="index.bxm?path=#urlEncodedFormat( url.path & "/" & qResults.name )#"
 							>
 								&##x271A; #qResults.name#
 							</a>
 							<br />
-						<cfelseif listLast( qresults.name, ".") eq "cfm" OR listLast( qresults.name, ".") eq "bxm">
+						<bx:elseif listLast( qresults.name, ".") eq "cfm" || listLast( qresults.name, ".") eq "bxm">
 							<a
 								class="btn btn-primary btn-sm my-1"
 								href="#executePath & "/" & qResults.name#"
@@ -163,26 +161,25 @@
 								#qResults.name#
 							</a>
 							<br />
-						<cfelseif
-							listLast( qresults.name, ".") eq "cfc" OR listLast( qresults.name, ".") eq "bx"
+						<bx:elseif
+							listLast( qresults.name, ".") eq "cfc" || listLast( qresults.name, ".") eq "bx"
 						>
 							<a
-								<cfif listLast( qresults.name, ".") eq "bx">
+								<bx:if listLast( qresults.name, ".") eq "bx">
 									data-bx="true"
 									class="btn btn-success btn-sm my-1"
-								<cfelse>
+								<bx:else>
 									data-bx="false"
 									class="btn btn-info btn-sm my-1"
-								</cfif>
+								</bx:if>
 								href="#executePath & "/" & qResults.name#?method=runRemote"
 								target="_blank"
 							>
 								#qResults.name#
 							</a>
 							<br />
-						</cfif>
-
-					</cfloop>
+						</bx:if>
+					</bx:loop>
 				</fieldset>
 			</form>
 		</div>
@@ -191,4 +188,4 @@
 
 </body>
 </html>
-</cfoutput>
+</bx:output>

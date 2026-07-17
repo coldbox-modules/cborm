@@ -9,11 +9,11 @@
 		ormClearSession();
 		super.setup();
 		// If Lucee, close the current ORM session to avoid stackoverflow bug
-		activeUser = prepareMock( entityNew( "ActiveUser" ) );
+		variables.activeUser = prepareMock( entityNew( "ActiveUser" ) );
 
 		// Test ID's
-		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
-		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
+		variables.testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
+		variables.testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
 	function testWhenOperations(){
@@ -167,7 +167,12 @@
 
 	function testSave(){
 		// mocks
-		mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
+		if( isBoxLang() ){
+			mockEventHandler = getMockBox().createEmptyMock( "cborm.models.BXEventHandler" );
+		} else {
+			mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
+		}
+
 		mockEventHandler.$( "preSave" );
 		mockEventHandler.$( "postSave" );
 
@@ -326,7 +331,7 @@
 	}
 
 	function testIsDirty(){
-		user = activeUser.new(
+		var user = activeUser.new(
 			properties = {
 				firstName : "Some",
 				lastName  : "Person",

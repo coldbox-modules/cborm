@@ -1,20 +1,28 @@
 component extends="tests.resources.BaseTest" {
 
 	function setup(){
-		ormService       = createMock( "cborm.models.BaseORMService" ).init();
-		mockEventHandler = getMockBox()
-			.createMock( "cborm.models.EventHandler" )
-			.$( "getEventManager", getMockBox().createStub().$( "announce" ) );
-		ormService.setORMEventHandler( mockEventHandler );
+		variables.ormService       = createMock( "cborm.models.BaseORMService" ).init();
 
-		criteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
-		criteria.init( entityName = "User", ormservice = ormservice );
-		SQLHelper = createMock( "cborm.models.sql.SQLHelper" );
-		SQLHelper.init( criteria );
+		if( isBoxLang() ){
+			variables.mockEventHandler = getMockBox()
+				.createMock( "cborm.models.BXEventHandler" )
+				.$( "getEventManager", getMockBox().createStub().$( "announce" ) );
+		} else {
+			variables.mockEventHandler = getMockBox()
+				.createMock( "cborm.models.EventHandler" )
+				.$( "getEventManager", getMockBox().createStub().$( "announce" ) );
+		}
+
+		variables.ormService.setORMEventHandler( variables.mockEventHandler );
+
+		variables.criteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
+		variables.criteria.init( entityName = "User", ormservice = variables.ormService );
+		variables.SQLHelper = createMock( "cborm.models.sql.SQLHelper" );
+		variables.SQLHelper.init( variables.criteria );
 
 		// Test ID's
-		testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
-		testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
+		variables.testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
+		variables.testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 	}
 
 	function testLog(){
@@ -49,7 +57,7 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testGetPositionalSQLParameterValues(){
-		r = criteria
+		var r = criteria
 			.init( entityName = "Role", ormservice = ormservice )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
@@ -61,7 +69,7 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testGetPositionalSQLParameterTypes(){
-		r = criteria
+		var r = criteria
 			.init( entityName = "Role", ormservice = ormservice )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );
@@ -76,7 +84,7 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testGetPositionalSQLParameters(){
-		r = criteria
+		var r = criteria
 			.init( entityName = "Role", ormservice = ormservice )
 			.createAlias( "users", "u", criteria.INNER_JOIN )
 			.like( "u.lastName", "M%" );

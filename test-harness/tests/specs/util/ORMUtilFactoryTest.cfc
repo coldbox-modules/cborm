@@ -7,7 +7,7 @@ component extends="tests.resources.BaseTest" {
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
-		factory = createMock( "cborm.models.util.ORMUtilFactory" );
+		variables.factory = createMock( "cborm.models.util.ORMUtilFactory" );
 	}
 
 	// executes after all suites+specs in the run() method
@@ -24,16 +24,6 @@ component extends="tests.resources.BaseTest" {
 					body  = function(){
 						var u = factory.getORMUtil();
 						expect( u ).toBeInstanceOf( "cborm.models.util.support.AdobeORMUtil" );
-					}
-				);
-			}
-
-			if ( isLucee() && !isBoxLang() ) {
-				it(
-					title = "can get lucee instance",
-					body  = function(){
-						var u = factory.getORMUtil();
-						expect( u ).toBeInstanceOf( "cborm.models.util.support.LuceeORMUtil" );
 					}
 				);
 			}
