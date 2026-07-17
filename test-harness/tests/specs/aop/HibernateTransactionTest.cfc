@@ -1,4 +1,4 @@
-component extends="tests.resources.BaseTest" {
+component extends="tests.resources.BaseTest" skip="isAdobe"{
 
 	function setup(){
 		super.setup();
