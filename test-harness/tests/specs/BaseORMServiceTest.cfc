@@ -300,9 +300,6 @@
 		ormFlush();
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			var test = entityLoad( "Category", { category : "unittest" } );
 			// debug( test );
 			ormservice.delete( entity = test[ 1 ], transactional = false );
@@ -329,9 +326,6 @@
 		ormFlush();
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			test = entityLoad( "Category", { "category" : "unitTest" }, true );
 			// debug(test);
 			ormservice.delete(
@@ -380,9 +374,6 @@
 		ormFlush();
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			var results = ormservice.deleteByQuery(
 				query         = "from Category where category = :category",
 				params        = { category : "unitTest" },
@@ -446,9 +437,6 @@
 		cat.setDescription( "unitTest at #now()#" );
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			var result = ormservice.save( entity = cat, transactional = false );
 			assertTrue( len( cat.getCatID() ) );
 			assertTrue( arrayLen( mockEventHandler.$callLog().preSave ) );
@@ -515,9 +503,6 @@
 		cat2.setDescription( "unitTest at #now()#" );
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			ormservice.saveAll( entities = [ cat, cat2 ], transactional = false );
 			assertTrue( len( cat.getCatID() ) );
 			assertTrue( len( cat2.getCatID() ) );
@@ -554,9 +539,6 @@
 		cat2.setDescription( "unitTest at #now()#" );
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			ormservice.saveAll(
 				entities      = [ cat, cat2 ],
 				flush         = true,
@@ -647,12 +629,6 @@
 
 		var sql = "from Category where category = ?";
 
-		/**
-		 * Test the Hibernate 5.3+ syntax.
-		 *
-		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
-		 */
-
 		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
 			// hibernate 5.3+ JPA syntax
 			sql = "from Category where category = ?1";
@@ -697,11 +673,6 @@
 		 */
 		var sql = "from Category where category = ?";
 
-		/**
-		 * Test the Hibernate 5.3+ syntax.
-		 *
-		 * @see https://luceeserver.atlassian.net/browse/LDEV-3641
-		 */
 		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
 			// hibernate 5.3+ JPA syntax
 			sql = "from Category where category = ?1";
@@ -821,10 +792,6 @@
 	}
 
 	function testMerge(){
-		// SKIP until https://luceeserver.atlassian.net/browse/LDEV-1992 is resolved
-		if ( server.keyExists( "lucee" ) && listFirst( server.lucee.version, "." ) lt 7 ) {
-			return;
-		}
 		// loaded entity
 		var test  = entityLoad( "User", { firstName : "Luis" }, true );
 		var stats = ormservice.getSessionStatistics();
@@ -839,10 +806,6 @@
 	}
 
 	function testMergeArray(){
-		// SKIP until https://luceeserver.atlassian.net/browse/LDEV-1992 is resolved
-		if ( server.keyExists( "lucee" ) && listFirst( server.lucee.version, "." ) lt 7 ) {
-			return;
-		}
 		var test = entityLoad( "User", { firstName : "Luis" }, true );
 
 		ormClearSession();

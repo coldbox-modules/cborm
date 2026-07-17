@@ -8,7 +8,6 @@
 		ormCloseSession();
 		ormClearSession();
 		super.setup();
-		// If Lucee, close the current ORM session to avoid stackoverflow bug
 		variables.activeUser = prepareMock( entityNew( "ActiveUser" ) );
 
 		// Test ID's
@@ -268,9 +267,6 @@
 		ormFlush();
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			activeUser.deleteWhere( userName = "unitTest" );
 			ormFlush();
 			user.clear();

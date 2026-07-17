@@ -107,9 +107,6 @@
 		ormFlush();
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			ormservice.deleteByID( user.getID() );
 			var test = entityLoad( "User", { firstName : "unittest" }, true );
 			assertTrue( isNull( test ) );
@@ -132,9 +129,6 @@
 		ormFlush();
 
 		try {
-			if ( structKeyExists( server, "lucee" ) ) {
-				ormCloseSession();
-			}
 			ormService.deleteWhere( userName = "unitTest" );
 
 			var result = queryExecute( "select * from users where userName = 'unitTest'" );
