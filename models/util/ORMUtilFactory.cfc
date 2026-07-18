@@ -12,7 +12,6 @@ import cborm.models.util.support.*;
 component {
 
 	this.isBoxLang = server.keyExists( "boxlang" );
-	this.isLucee   = server.keyExists( "lucee" ) && !this.isBoxLang;
 	this.isAdobe   = server.keyExists( "coldfusion" ) && server.coldfusion.productname == "ColdFusion Server";
 
 	/**
@@ -21,16 +20,10 @@ component {
 	 * @return IORMUtil
 	 */
 	function getORMUtil(){
-		if ( this.isBoxLang ) {
-			return new BoxLangORMUtil();
-		}
-
 		if ( this.isAdobe ) {
-			return new AdobeORMUtil();
-		}
-
-		if ( this.isLucee ) {
-			return new LuceeORMUtil();
+			return new AdobeORMUtil()
+		} else {
+			return new BoxLangORMUtil()
 		}
 	}
 
@@ -39,13 +32,6 @@ component {
 	 */
 	private string function getPlatform(){
 		return server.coldfusion.productname;
-	}
-
-	/**
-	 * Get lucee version
-	 */
-	private string function getLuceeVersion(){
-		return server.lucee.version;
 	}
 
 }

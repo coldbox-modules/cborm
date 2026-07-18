@@ -1,11 +1,11 @@
 component extends="tests.resources.BaseTest" {
 
 	function setup(){
-		subCriteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName(
+		variables.subCriteria = createObject( "java", "org.hibernate.criterion.DetachedCriteria" ).forEntityName(
 			"User",
 			"u"
 		);
-		subqueries = createMock( "cborm.models.criterion.Subqueries" )
+		variables.subqueries = createMock( "cborm.models.criterion.Subqueries" )
 			.init( new cborm.models.util.JavaProxyBuilder() )
 			.setDetachedCriteria( subCriteria );
 	}

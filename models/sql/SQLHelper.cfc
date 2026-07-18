@@ -68,22 +68,6 @@ component accessors="true" {
 		// get formatter for sql string beautification
 		variables.hibernateVersion = listFirst( variables.ormUtil.getHibernateVersion(), "." );
 		switch ( variables.hibernateVersion ) {
-			case "3":
-				variables.formatter = variables.ormService.buildJavaProxy(
-					"org.hibernate.jdbc.util.BasicFormatterImpl"
-				);
-				// Lucee Hibernate 3+, waayyyyy old.
-				variables.hibernateVersion = "3";
-				variables.dialect          = variables.ormFactory.getDialect();
-				variables.dialectSupport   = {
-					limit                             : variables.dialect.supportsLimit(),
-					limitOffset                       : variables.dialect.supportsLimitOffset(),
-					useMaxForLimit                    : variables.dialect.useMaxForLimit(),
-					forceLimitUsage                   : variables.dialect.forceLimitUsage(),
-					bindLimitParametersFirst          : variables.dialect.bindLimitParametersFirst(),
-					bindLimitParametersInReverseOrder : variables.dialect.bindLimitParametersInReverseOrder()
-				};
-				break;
 			case "4":
 				variables.formatter = variables.ormService.buildJavaProxy(
 					"org.hibernate.engine.jdbc.internal.BasicFormatterImpl"

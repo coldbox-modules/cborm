@@ -16,8 +16,6 @@ component
 	/**
 	 * Cross-engine transaction detection.
 	 * Useful for preventing nested transactions.
-	 *
-	 * @see https://dev.lucee.org/t/determine-if-code-is-inside-cftransaction/7358
 	 */
 	public boolean function isInTransaction(){
 		var transactionObj = createObject( "java", "coldfusion.tagext.sql.TransactionTag" );

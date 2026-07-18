@@ -366,8 +366,7 @@ component access="true" {
 	 */
 	function buildHibernateType( required type ){
 		var javaType = variables.javaProxy.build( "org.hibernate.type.#arguments.type#" );
-		// Return the Adobe or Lucee Approach of the instance type
-		return server.keyExists( "lucee" ) ? javaType : javaType.INSTANCE;
+		return javaType.INSTANCE;
 	}
 
 	/**

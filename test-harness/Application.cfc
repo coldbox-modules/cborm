@@ -6,118 +6,121 @@
 component {
 
 	// UPDATE THE NAME OF THE MODULE IN TESTING BELOW
-	request.MODULE_NAME = "cborm";
-	request.MODULE_PATH = "cborm";
+	request.MODULE_NAME = "cborm"
+	request.MODULE_PATH = "cborm"
 
 	// Application properties
-	this.name              = "cborm test harness";
-	this.sessionManagement = true;
-	this.sessionTimeout    = createTimespan( 0, 0, 15, 0 );
-	this.setClientCookies  = true;
-
-	/**************************************
-	LUCEE Specific Settings
-	**************************************/
+	this.name              = "cborm test harness"
+	this.sessionManagement = true
+	this.sessionTimeout    = createTimespan( 0, 0, 15, 0 )
+	this.setClientCookies  = true
 	// buffer the output of a tag/function body to output in case of a exception
-	this.bufferOutput                   = true;
+	this.bufferOutput                   = true
 	// Activate Gzip Compression
-	this.compression                    = false;
+	this.compression                    = false
 	// Turn on/off white space managemetn
-	this.whiteSpaceManagement           = "smart";
+	this.whiteSpaceManagement           = "smart"
 	// Turn on/off remote cfc content whitespace
-	this.suppressRemoteComponentContent = false;
+	this.suppressRemoteComponentContent = false
 
 	// COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP
-	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() );
+	COLDBOX_APP_ROOT_PATH = getDirectoryFromPath( getCurrentTemplatePath() )
 	// The web server mapping to this application. Used for remote purposes or static purposes
-	COLDBOX_APP_MAPPING   = "";
+	COLDBOX_APP_MAPPING   = ""
 	// COLDBOX PROPERTIES
-	COLDBOX_CONFIG_FILE   = "";
+	COLDBOX_CONFIG_FILE   = ""
 	// COLDBOX APPLICATION KEY OVERRIDE
-	COLDBOX_APP_KEY       = "";
+	COLDBOX_APP_KEY       = ""
 
 	// Mappings
-	this.mappings[ "/root" ] = COLDBOX_APP_ROOT_PATH;
+	this.mappings[ "/root" ] = COLDBOX_APP_ROOT_PATH
 
 	// Map back to its root
 	moduleRootPath = reReplaceNoCase(
 		this.mappings[ "/root" ],
 		"#request.MODULE_PATH#(\\|/)test-harness(\\|/)",
 		""
-	);
+	)
 	modulePath = reReplaceNoCase(
 		this.mappings[ "/root" ],
 		"test-harness(\\|/)",
 		""
-	);
+	)
 
 	// Module Root + Path Mappings
-	this.mappings[ "/moduleroot" ]            = moduleRootPath;
-	this.mappings[ "/#request.MODULE_NAME#" ] = modulePath;
+	this.mappings[ "/moduleroot" ]            = moduleRootPath
+	this.mappings[ "/#request.MODULE_NAME#" ] = modulePath
 
 	// ORM definitions
-	this.datasource = "coolblog";
-	this.ormEnabled = "true";
+	this.datasource = "coolblog"
+	this.ormEnabled = "true"
 
 	this.ormSettings = {
 		dialect 			  : "org.hibernate.dialect.MySQL5InnoDBDialect",
-		cfclocation           : [ "models" ],
 		logSQL                : true,
 		dbcreate              : "update",
 		secondarycacheenabled : false,
 		cacheProvider         : "ehcache",
 		automanageSession     : false,
 		flushAtRequestEnd     : false,
-		eventhandling         : true,
-		eventHandler          : server.keyExists( "boxlang" ) ? "cborm.models.BXEventHandler" : "cborm.models.EventHandler",
-		skipcfcWithError      : false
-	};
+		eventhandling         : true
+	}
+	// Engine specific settings for ORM
+	if( server.keyExists( "boxlang" ) ){
+		this.ormSettings.entityPaths = [ "models" ]
+		this.ormSettings.ingnoreParseErrors = false
+		this.ormSettings.eventHandler = "cborm.models.BXEventHandler"
+	} else {
+		this.ormSettings.cfclocation = [ "models" ]
+		this.ormSettings.eventHandler = "cborm.models.EventHandler"
+		this.ormSettings.skipcfcWithError = false
+	}
 
 	// application start
 	public boolean function onApplicationStart(){
 
-		//new cborm.models.util.ORMUtilSupport().setupHibernateLogging();
+		//new cborm.models.util.ORMUtilSupport().setupHibernateLogging()
 
 		application.cbBootstrap = new coldbox.system.Bootstrap(
 			COLDBOX_CONFIG_FILE,
 			COLDBOX_APP_ROOT_PATH,
 			COLDBOX_APP_KEY,
 			COLDBOX_APP_MAPPING
-		);
-		application.cbBootstrap.loadColdbox();
-		return true;
+		)
+		application.cbBootstrap.loadColdbox()
+		return true
 	}
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
 		if ( !structKeyExists( application, "cbBootstrap" ) ){
-			onApplicationStart();
+			onApplicationStart()
 		}
 		if ( url.keyExists( "fwreinit" ) ) {
-			if ( server.keyExists( "lucee" ) ) {
-				pagePoolClear();
+			if ( server.keyExists( "boxlang" ) ) {
+				pagePoolClear()
 			}
-			ormReload();
+			ormReload()
 		}
 
 		// Process ColdBox Request
-		application.cbBootstrap.onRequestStart( arguments.targetPage );
+		application.cbBootstrap.onRequestStart( arguments.targetPage )
 
-		return true;
+		return true
 	}
 
 	public void function onSessionStart(){
 		if ( structKeyExists( application, "cbBootstrap" ) ){
-			application.cbBootStrap.onSessionStart();
+			application.cbBootStrap.onSessionStart()
 		}
 	}
 
 	public void function onSessionEnd( struct sessionScope, struct appScope ){
-		arguments.appScope.cbBootStrap.onSessionEnd( argumentCollection = arguments );
+		arguments.appScope.cbBootStrap.onSessionEnd( argumentCollection = arguments )
 	}
 
 	public boolean function onMissingTemplate( template ){
-		return application.cbBootstrap.onMissingTemplate( argumentCollection = arguments );
+		return application.cbBootstrap.onMissingTemplate( argumentCollection = arguments )
 	}
 
 }

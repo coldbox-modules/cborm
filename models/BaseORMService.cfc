@@ -175,15 +175,15 @@ component accessors="true" {
 	}
 
 	/**
-	 * Lazy loading event handler for performance
+	 * Returns the ORM event handler, if you are on BoxLang it will return the BXEventHandler, else it will return the default EventHandler
 	 *
-	 * @return cborm.models.EventHandler
+	 * @return cborm.models.EventHandler|cborm.models.BXEventHandler
 	 */
 	function getORMEventHandler(){
 		if ( isNull( variables.ORMEventHandler ) ) {
-			variables.ORMEventHandler = new cborm.models.EventHandler();
+			variables.ORMEventHandler = server.keyExists( "boxlang" ) ? new cborm.models.BXEventHandler() : new cborm.models.EventHandler()
 		}
-		return variables.ORMEventHandler;
+		return variables.ORMEventHandler
 	}
 
 	/**
@@ -193,10 +193,10 @@ component accessors="true" {
 	 */
 	function getDynamicProcessor(){
 		if ( isNull( variables.dynamicProcessor ) ) {
-			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
+			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" )
 		}
 
-		return variables.dynamicProcessor;
+		return variables.dynamicProcessor
 	}
 
 	/**

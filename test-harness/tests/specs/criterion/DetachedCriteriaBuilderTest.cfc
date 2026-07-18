@@ -5,17 +5,17 @@ component extends="tests.resources.BaseTest" {
 		// Load our test injector for ORM entity binding
 	}
 	function setup(){
-		ormService   = createMock( "cborm.models.BaseORMService" ).init();
-		rootcriteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
-		rootcriteria.init( entityName = "User", ORMService = ormService );
-		criteria         = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
-		mockEventManager = getMockBox().createStub();
-		mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
-		mockService      = getMockBox()
+		variables.ormService   = createMock( "cborm.models.BaseORMService" ).init();
+		variables.rootcriteria = createMock( "cborm.models.criterion.CriteriaBuilder" );
+		variables.rootcriteria.init( entityName = "User", ORMService = ormService );
+		variables.criteria         = createMock( "cborm.models.criterion.DetachedCriteriaBuilder" );
+		variables.mockEventManager = getMockBox().createStub();
+		variables.mockEventHandler = getMockBox().createStub().$( "getEventManager", mockEventManager );
+		variables.mockService      = getMockBox()
 			.createEmptyMock( "cborm.models.BaseORMService" )
 			.$( "getORMEventHandler", mockEventHandler );
-		criteria.init( "Role", "Role", ormService );
-		orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
+		variables.criteria.init( "Role", "Role", ormService );
+		variables.orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
 
 	function testCreateDetachedSQLProjection(){

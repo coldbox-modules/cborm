@@ -35,20 +35,25 @@
 	this.ormEnabled  = "true";
 	this.ormSettings = {
 		dialect               : "org.hibernate.dialect.MySQL5InnoDBDialect",
-		cfclocation           : [ "/root/models" ],
-		logSQL                : true,
+		logSQL                : false,
 		dbcreate              : "update",
 		secondarycacheenabled : false,
 		cacheProvider         : "ConcurrentHashMap",
 		flushAtRequestEnd     : false,
 		eventhandling         : true,
-		eventHandler          : server.keyExists( "boxlang" ) ? "cborm.models.BXEventHandler" : "cborm.models.EventHandler",
 		skipcfcWithError      : false,
-		saveMapping           : false,
-		// BoxLang Config Keys - The aliases above are only handled by the cfml compat module
-		entityPaths           : [ "/root/models" ],
-		ingnoreParseErrors    : false
-	};
+		saveMapping           : false
+	}
+	// Engine specific settings for ORM
+	if ( server.keyExists( "boxlang" ) ) {
+		this.ormSettings.entityPaths        = [ "/root/models" ]
+		this.ormSettings.ingnoreParseErrors = false
+		this.ormSettings.eventHandler       = "cborm.models.BXEventHandler"
+	} else {
+		this.ormSettings.cfclocation      = [ "/root/models" ]
+		this.ormSettings.eventHandler     = "cborm.models.EventHandler"
+		this.ormSettings.skipcfcWithError = false
+	}
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
@@ -59,7 +64,7 @@
 
 		// ORM Reload for fresh results
 		if ( structKeyExists( url, "fwreinit" ) ) {
-			if ( structKeyExists( server, "lucee" ) ) {
+			if ( structKeyExists( server, "boxlang" ) ) {
 				pagePoolClear();
 			}
 			ormReload();
@@ -68,7 +73,7 @@
 
 		// If hitting the runner or specs, prep our virtual app
 		if ( getBaseTemplatePath().replace( expandPath( "/tests" ), "" ).reFindNoCase( "(runner|specs)" ) ) {
-			request.coldBoxVirtualApp.startup();
+			request.coldBoxVirtualApp.startup( true );
 		}
 
 		return true;

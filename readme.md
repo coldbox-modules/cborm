@@ -83,10 +83,8 @@ Apache License, Version 2.0.
 
 ## SYSTEM REQUIREMENTS
 
-* Boxlang 1+
-  * Hibernate 5.x via the `bx-orm` module
-* Lucee 5+ (Maintenance Mode)
-  * Hibernate 5.x via the new hibernate extension
+* Boxlang 1+ (Preferred)
+  * Hibernate 5.6.15 via the `bx-orm` module
 * ColdFusion 2023, 2025 via their orm module
   * Hibernate 5.x
 

@@ -7,7 +7,7 @@
  * criteria queries and subqueries
  */
 import cborm.models.*;
-import org.hibernate.*;
+
 component accessors="true" {
 
 	/**
@@ -232,9 +232,9 @@ component accessors="true" {
 		numeric joinType,
 		any withClause
 	){
-		var hasAlias        = structKeyExists( arguments, "alias" );
-		var hasJoinType     = structKeyExists( arguments, "joinType" );
-		var hasWithClause   = structKeyExists( arguments, "withClause" );
+		var hasAlias        = !isNull( arguments.alias );
+		var hasJoinType     = !isNull( arguments.joinType );
+		var hasWithClause   = !isNull( arguments.withClause );
 		var defaultJoinType = this.INNER_JOIN;
 		// if no alias and only join type, special case
 		if ( !hasAlias ) {
@@ -269,7 +269,7 @@ component accessors="true" {
 					arguments.alias,
 					defaultJoinType,
 					arguments.withClause
-				);
+				)
 			}
 			// ...otherwise, only assoicationName, alias, joinType
 			else {
@@ -767,7 +767,7 @@ component accessors="true" {
 		// get all aliases
 		projection.alias = listToArray( arguments.rawProjection.alias );
 		// if there is a grouping spcified, add it to structure
-		if ( structKeyExists( arguments.rawProjection, "group" ) ) {
+		if ( !isNull( arguments.rawProjection.group ) ) {
 			projection.group = arguments.rawProjection.group;
 		}
 		return projection;
@@ -805,10 +805,18 @@ component accessors="true" {
 				associationName : right( arguments.missingMethodName, len( arguments.missingMethodName ) - 4 )
 			};
 			// join type
-			if ( structKeyExists( arguments.missingMethodArguments, "1" ) ) {
+			if (
+				structKeyExists( arguments.missingMethodArguments, "1" ) && isNull(
+					arguments.missingMethodArguments[ 1 ]
+				)
+			) {
 				args.joinType = arguments.missingMethodArguments[ 1 ];
 			}
-			if ( structKeyExists( arguments.missingMethodArguments, "joinType" ) ) {
+			if (
+				structKeyExists( arguments.missingMethodArguments, "joinType" ) && isNull(
+					arguments.missingMethodArguments.joinType
+				)
+			) {
 				args.joinType = arguments.missingMethodArguments.joinType;
 			}
 			// create the dynamic criteria

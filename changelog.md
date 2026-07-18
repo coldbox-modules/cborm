@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Features
+
+- BoxLang Prime support
+
+### Updates
+
+- Updated all CI actions
+- Updated to include BoxLang BE
+- Removed Lucee ORM support, this was in maintenance mode.
+
 ## [4.12.1] - 2025-11-13
 
 ### Fixed

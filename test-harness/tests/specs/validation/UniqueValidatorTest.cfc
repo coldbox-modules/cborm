@@ -3,15 +3,15 @@ component extends="tests.resources.BaseTest" {
 	function setup(){
 		super.setup();
 
-		model = getWireBox().getInstance( "UniqueValidator@cborm" );
+		variables.model = getWireBox().getInstance( "UniqueValidator@cborm" );
 	}
 
 	function testValidate(){
-		result       = createMock( "cbvalidation.models.result.ValidationResult" ).init();
+		var result   = createMock( "cbvalidation.models.result.ValidationResult" ).init();
 		var category = entityNew( "Category" );
 
 		// null
-		r = model.validate(
+		var r = model.validate(
 			result,
 			category,
 			"category",

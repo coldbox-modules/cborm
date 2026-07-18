@@ -1,23 +1,22 @@
-/**
- * Skipping on ACF2018 due to a Hibernate but in 5.2.  Uncomment once they update Hibernate to 5.3+
- */
-component extends="tests.resources.BaseTest" skip="isCF2018Plus" {
+component extends="tests.resources.BaseTest" skip="isAdobe" {
 
 	function setup(){
 		super.setup();
-		hTransaction = createMock( "cborm.aop.HibernateTransaction" ).init();
+		variables.hTransaction = createMock( "cborm.aop.HibernateTransaction" ).init();
 
 		// mocks
-		mockMapping = getMockBox().createEmptyMock( "coldbox.system.ioc.config.Mapping" );
-		mockLogger  = createEmptyMock( "coldbox.system.logging.Logger" ).$( "canDebug", false ).$( "error" );
-		hTransaction.setLog( mockLogger );
+		variables.mockMapping = getMockBox().createEmptyMock( "coldbox.system.ioc.config.Mapping" );
+		variables.mockLogger  = createEmptyMock( "coldbox.system.logging.Logger" )
+			.$( "canDebug", false )
+			.$( "error" );
+		variables.hTransaction.setLog( mockLogger );
 	}
 
 	function testInvokeMethodInTransaction(){
 		// default Datasource mock
-		var md         = { name : "save", access : "public", transactional : "" };
+		var md             = { name : "save", access : "public", transactional : "" };
 		// mock invocation
-		mockInvocation = getMockBox()
+		var mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )
 			.$( "proceed" )
 			.init(
@@ -39,9 +38,9 @@ component extends="tests.resources.BaseTest" skip="isCF2018Plus" {
 
 	function testInvokeMethodNotInTransaction(){
 		// default Datasource mock
-		var md         = { name : "save", access : "public", transactional : "" };
+		var md             = { name : "save", access : "public", transactional : "" };
 		// mock invocation
-		mockInvocation = getMockBox()
+		var mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )
 			.$( "proceed" )
 			.init(
@@ -69,7 +68,7 @@ component extends="tests.resources.BaseTest" skip="isCF2018Plus" {
 			transactional : "coolblog"
 		};
 		// mock invocation
-		mockInvocation = getMockBox()
+		var mockInvocation = getMockBox()
 			.createMock( "coldbox.system.aop.MethodInvocation" )
 			.$( "proceed" )
 			.init(

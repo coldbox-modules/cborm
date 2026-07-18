@@ -1,10 +1,10 @@
 component extends="tests.resources.BaseTest" {
 
 	function setup(){
-		restrictions = createMock( "cborm.models.criterion.Restrictions" ).init(
+		variables.restrictions = createMock( "cborm.models.criterion.Restrictions" ).init(
 			new cborm.models.util.JavaProxyBuilder()
 		);
-		criteria = ormGetSession().createCriteria( "User" );
+		variables.criteria = ormGetSession().createCriteria( "User" );
 	}
 
 	function testSimpleSQLRestriction(){

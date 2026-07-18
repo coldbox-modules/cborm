@@ -39,19 +39,8 @@ component
 		return !isAdobe();
 	}
 
-	function notLucee(){
-		return !isLucee();
-	}
-
 	function notBoxLang(){
 		return !isBoxLang();
-	}
-
-	function isCF2018Plus(){
-		if ( isAdobe() && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
-			return true;
-		}
-		return false;
 	}
 
 }

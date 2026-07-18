@@ -47,43 +47,43 @@ component extends="tests.resources.BaseTest" skip="true" {
 	}
 
 	function testGetSession(){
-		t = ormutil.getSession();
+		var t = ormutil.getSession();
 		expect( t ).notToBeNull();
 		t = ormutil.getSession( dsn );
 		expect( t ).notToBeNull();
 	}
 
 	function testgetSessionFactory(){
-		t = ormutil.getSessionFactory();
+		var t = ormutil.getSessionFactory();
 		expect( t ).notToBeNull();
 		t = ormutil.getSessionFactory( dsn );
 		expect( t ).notToBeNull();
 	}
 
 	function testclearSession(){
-		t = ormutil.clearSession();
-		t = ormutil.clearSession( dsn );
+		var t = ormutil.clearSession();
+		t     = ormutil.clearSession( dsn );
 	}
 
 	function testcloseSession(){
-		t = ormutil.closeSession();
-		t = ormutil.closeSession( dsn );
+		var t = ormutil.closeSession();
+		t     = ormutil.closeSession( dsn );
 	}
 
 	function testevictQueries(){
-		t = ormutil.evictQueries();
-		t = ormutil.evictQueries( "users" );
-		t = ormutil.evictQueries( "users", dsn );
+		var t = ormutil.evictQueries();
+		t     = ormutil.evictQueries( "users" );
+		t     = ormutil.evictQueries( "users", dsn );
 	}
 
 	function testGetEntityDatasource(){
-		d = ormutil.getEntityDatasource( "User" );
+		var d = ormutil.getEntityDatasource( "User" );
 		assertEquals( "coolblog", d );
 
-		d = ormutil.getEntityDatasource( entityNew( "User" ) );
+		var d = ormutil.getEntityDatasource( entityNew( "User" ) );
 		assertEquals( "coolblog", d );
 
-		d = ormutil.getEntityDatasource( entityNew( "Category" ) );
+		var d = ormutil.getEntityDatasource( entityNew( "Category" ) );
 		assertEquals( "coolblog", d );
 	}
 
@@ -92,7 +92,7 @@ component extends="tests.resources.BaseTest" skip="true" {
 	}
 
 	function testgetHibernateVersion(){
-		t = ormutil.getHibernateVersion();
+		var t = ormutil.getHibernateVersion();
 		debug( t );
 		expect( t ).notToBeEmpty();
 	}

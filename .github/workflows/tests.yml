@@ -18,36 +18,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2023", "adobe@2025" ]
-        coldboxVersion: [ "^7.0.0", "^8.0.0" ]
+        cfengine: [ "boxlang-cfml@1", "boxlang@1", "adobe@2023", "adobe@2025" ]
+        coldboxVersion: [ "^8.0.0" ]
         experimental: [ false ]
         # Experimental: ColdBox BE vs All Engines
         include:
-          # BE Vs Lucee Engines
-          - coldboxVersion: "be"
-            cfengine: "lucee@5"
-            experimental: true
-          - coldboxVersion: "be"
-            cfengine: "lucee@6"
-            experimental: true
-          # BE Vs Adobe Engines
           - coldboxVersion: "be"
             cfengine: "adobe@2025"
             experimental: true
-          # BE Vs BoxLang Engines
           - coldboxVersion: "be"
             cfengine: "boxlang-cfml@1"
             experimental: true
           - coldboxVersion: "be"
             cfengine: "boxlang-cfml@be"
             experimental: true
-          # BoxLang No CFML compat
-          - coldboxVersion: "^8.0.0"
+          - coldboxVersion: "be"
             cfengine: "boxlang@1"
+            experimental: true
+          - coldboxVersion: "be"
+            cfengine: "boxlang@be"
             experimental: true
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -76,8 +69,10 @@ jobs:
           printf "DB_BUNDLEVERSION=8.0.19\n" >> .env
           printf "DB_BUNDLENAME=com.mysql.cj\n" >> .env
 
-      - name: Setup CommandBox CLI
-        uses: Ortus-Solutions/setup-commandbox@v2.0.1
+      - name: Setup CommandBox and BoxLang
+        uses: ortus-boxlang/setup-boxlang@main
+        with:
+          with-commandbox: true
 
       - name: Install Dependencies
         run: |
@@ -97,7 +92,7 @@ jobs:
           box testbox run --verbose outputFile=test-harness/tests/results/test-results outputFormats=json,antjunit
 
       - name: Publish Test Reports
-        uses: mikepenz/action-junit-report@v6.0.0
+        uses: mikepenz/action-junit-report@v6.4.2
         if: always()
         with:
           report_paths: |
@@ -109,7 +104,7 @@ jobs:
 
       - name: Upload Test Results to Artifacts
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: test-results-${{ matrix.cfengine }}-${{ matrix.coldboxVersion }}
           path: |
@@ -122,7 +117,7 @@ jobs:
 
       - name: Upload Debug Logs To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.coldboxVersion }}
           path: |
