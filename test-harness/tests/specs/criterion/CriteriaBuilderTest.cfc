@@ -116,7 +116,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testListAsStreams(){
 		criteria.init( entityName = "User", ormService = new cborm.models.BaseORMService() );
-		r = criteria
+		var r = criteria
 			.asStream()
 			.list( sortOrder = "lastName asc, firstName desc" )
 			.filter( function( item ){
