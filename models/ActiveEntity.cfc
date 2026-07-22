@@ -159,6 +159,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate, yourself
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populate(
 		required struct memento,
@@ -170,7 +173,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromStruct( argumentCollection = arguments );
 	}
@@ -189,6 +193,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateWithPrefix(
 		required struct memento,
@@ -201,7 +208,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		required string prefix,
-		any target = this
+		any target = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
@@ -219,6 +227,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromJSON(
 		required string JSONString,
@@ -230,7 +241,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromJSON( argumentCollection = arguments );
 	}
@@ -249,6 +261,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromXML(
 		required string xml,
@@ -261,7 +276,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromXML( argumentCollection = arguments );
 	}
@@ -280,6 +296,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromQuery(
 		required any qry,
@@ -292,7 +311,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromQuery( argumentCollection = arguments );
 	}

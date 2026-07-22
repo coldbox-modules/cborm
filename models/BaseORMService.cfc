@@ -860,6 +860,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populate(
 		required any target,
@@ -871,7 +874,8 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromStruct( argumentCollection = arguments );
 	}
@@ -890,6 +894,9 @@ component accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateWithPrefix(
 		required any target,
@@ -902,7 +909,8 @@ component accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		required string prefix
+		required string prefix,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
@@ -920,6 +928,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromJson(
 		required any target,
@@ -931,7 +942,8 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromJSON( argumentCollection = arguments );
 	}
@@ -950,7 +962,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromXml(
 		required any target,
@@ -963,7 +977,8 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromXML( argumentCollection = arguments );
 	}
@@ -982,6 +997,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromQuery(
 		required any target,
@@ -994,16 +1012,10 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromQuery( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated Please do not use. Use `getObjectPopulator()`
-	 */
-	function getBeanPopulator(){
-		return getObjectPopulator();
 	}
 
 	/**
@@ -1013,10 +1025,10 @@ component accessors="true" {
 	 */
 	function getObjectPopulator(){
 		if ( !isNull( variables.objectPopulator ) ) {
-			return variables.objectPopulator;
+			return variables.objectPopulator
 		}
-		variables.objectPopulator = variables.wirebox.getObjectPopulator();
-		return variables.objectPopulator;
+		variables.objectPopulator = variables.wirebox.getObjectPopulator()
+		return variables.objectPopulator
 	}
 
 	/*****************************************************************************************/
