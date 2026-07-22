@@ -910,7 +910,7 @@ component accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		required string prefix,
-		boolean ignoreTargetLists    = false
+		boolean ignoreTargetLists = false
 	){
 		return getObjectPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}

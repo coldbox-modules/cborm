@@ -208,8 +208,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		required string prefix,
-		any target = this,
-		boolean ignoreTargetLists    = false
+		any target                = this,
+		boolean ignoreTargetLists = false
 	){
 		return getObjectPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
