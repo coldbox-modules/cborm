@@ -778,6 +778,9 @@ component accessors="true" {
 	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
 	 * @include              A list of keys to include in the population from the incoming properties memento
 	 * @exclude              A list of keys to exclude in the population from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The new entity object
 	 */
 	any function new(
 		required string entityName,
@@ -787,14 +790,15 @@ component accessors="true" {
 		nullEmptyExclude             = "",
 		boolean ignoreEmpty          = false,
 		include                      = "",
-		exclude                      = ""
+		exclude                      = "",
+		boolean ignoreTargetLists    = false
 	){
-		var eventHandler = getORMEventHandler();
 		// Build and autowire
+		var eventHandler = getORMEventHandler()
 		var entity       = eventHandler.processEntityInjection(
 			entityName: arguments.entityName,
 			entity    : entityNew( arguments.entityName )
-		);
+		)
 
 		// Population of properties
 		if ( NOT structIsEmpty( arguments.properties ) ) {
@@ -806,16 +810,17 @@ component accessors="true" {
 				nullEmptyExclude     = arguments.nullEmptyExclude,
 				ignoreEmpty          = arguments.ignoreEmpty,
 				include              = arguments.include,
-				exclude              = arguments.exclude
-			);
+				exclude              = arguments.exclude,
+				ignoreTargetLists    = arguments.ignoreTargetLists
+			)
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
 		if ( getEventHandling() ) {
-			eventHandler.postNew( entity, arguments.entityName );
+			eventHandler.postNew( entity, arguments.entityName )
 		}
 
-		return entity;
+		return entity
 	}
 
 	/**
@@ -840,7 +845,7 @@ component accessors="true" {
 		boolean defaultAsQuery  = getDefaultAsQuery(),
 		string datasource       = getDatasource()
 	){
-		return new cborm.models.VirtualEntityService( argumentCollection = arguments );
+		return new cborm.models.VirtualEntityService( argumentCollection = arguments )
 	}
 
 	/*****************************************************************************************/
