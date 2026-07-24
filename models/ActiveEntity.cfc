@@ -374,6 +374,29 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	}
 
 	/**
+	 * Validate the ActiveEntity with the coded constraints -> this.constraints, or passed in shared or implicit constraints
+	 * The entity must have been populated with data before the validation
+	 *
+	 * @fields        One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
+	 * @constraints   An optional shared constraints name or an actual structure of constraints to validate on.
+	 * @locale        An optional locale to use for i18n messages
+	 * @excludeFields An optional list of fields to exclude from the validation.
+	 * @IncludeFields An optional list of fields to include in the validation.
+	 *
+	 * @return cbvalidation.models.result.IValidationResult
+	 */
+	ValidationResult function validate(
+		string fields        = "*",
+		any constraints      = "",
+		string locale        = "",
+		string excludeFields = "",
+		string includeFields = ""
+	){
+		isValid( argumentCollection: arguments )
+		return getValidationResults()
+	}
+
+	/**
 	 * Validate the ActiveEntity with the coded constraints -> this.constraints,
 	 * or passed in shared or implicit constraints
 	 * The entity must have been populated with data before the validation

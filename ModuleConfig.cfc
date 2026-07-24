@@ -41,12 +41,12 @@ component {
 	 */
 	function configure(){
 		// cborm Settings
-		variables.settings = structCopy( variables.SETTING_DEFAULTS );
+		variables.settings = structCopy( variables.SETTING_DEFAULTS )
 
 		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
 		variables.controller
 			.getWireBox()
-			.registerDSL( namespace = "entityService", path = "#moduleMapping#.dsl.OrmDsl" );
+			.registerDSL( namespace = "entityService", path = "#moduleMapping#.dsl.OrmDsl" )
 
 		// Custom Declared Points
 		variables.interceptorSettings = {
@@ -76,10 +76,10 @@ component {
 				"ORMPostFlush",
 				"ORMPreFlush"
 			]
-		};
+		}
 
 		// Custom Declared Interceptors
-		variables.interceptors = [];
+		variables.interceptors = []
 	}
 
 	/**
@@ -87,11 +87,11 @@ component {
 	 */
 	function onLoad(){
 		// Prepare setting defaults
-		variables.settings.resources.append( variables.SETTING_DEFAULTS.resources, false );
-		variables.settings.injection.append( variables.SETTING_DEFAULTS.injection, false );
+		variables.settings.resources.append( variables.SETTING_DEFAULTS.resources, false )
+		variables.settings.injection.append( variables.SETTING_DEFAULTS.injection, false )
 		// Are we loading the event loader
 		if ( variables.settings.resources.eventLoader ) {
-			variables.wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();
+			variables.wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents()
 		}
 	}
 

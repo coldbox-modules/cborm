@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Features
+
+- New `ActiveEntity` method: `validate():ValidationResult` which will validate the entity and return a `ValidationResult` object with all the validation results.
+
 ### Updates
 
 - Added missing `ignoreTargetLists` argument to `populatexxx()` methods in all services.
