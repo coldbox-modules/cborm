@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updates
 
+- Added missing `profiles` to the validation methods in the `ActiveEntity`
 - Added missing `ignoreTargetLists` argument to `populatexxx()` methods in all services.
 
 ## [5.0.0] - 2026-07-18

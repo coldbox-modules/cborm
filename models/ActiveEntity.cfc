@@ -326,39 +326,40 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @locale        An optional locale to use for i18n messages
 	 * @excludeFields An optional list of fields to exclude from the validation.
 	 * @IncludeFields An optional list of fields to include in the validation.
+	 * @profiles      An optional list of profiles to use for the validation.
+	 *
+	 * @return true if the entity is valid, false otherwise
 	 */
 	boolean function isValid(
 		string fields        = "*",
 		any constraints      = "",
 		string locale        = "",
 		string excludeFields = "",
-		string includeFields = ""
+		string includeFields = "",
+		string profiles      = ""
 	){
 		// Get validation manager
-		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" );
-		// validate constraints
-		var thisConstraints   = "";
+		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" )
+		// Get constraints from the entity if they exist, otherwise use the passed in constraints
+		var thisConstraints   = structKeyExists( this, "constraints" ) ? this.constraints : {}
 
-		if ( structKeyExists( this, "constraints" ) ) {
-			thisConstraints = this.constraints;
-		}
-
-		// argument override
+		// If constraints are passed in, use them instead of the entity's constraints
 		if ( !isSimpleValue( arguments.constraints ) OR len( arguments.constraints ) ) {
-			thisConstraints = arguments.constraints;
+			thisConstraints = arguments.constraints
 		}
 
 		// validate and save results in private scope
 		variables.validationResults = validationManager.validate(
-			target        = this,
-			fields        = arguments.fields,
-			constraints   = thisConstraints,
-			locale        = arguments.locale,
-			excludeFields = arguments.excludeFields
-		);
+			target        : this,
+			fields        : arguments.fields,
+			constraints   : thisConstraints,
+			locale        : arguments.locale,
+			excludeFields : arguments.excludeFields,
+			profiles: arguments.profiles
+		)
 
 		// return it
-		return ( !variables.validationResults.hasErrors() );
+		return ( !variables.validationResults.hasErrors() )
 	}
 
 	/**
@@ -381,7 +382,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @constraints   An optional shared constraints name or an actual structure of constraints to validate on.
 	 * @locale        An optional locale to use for i18n messages
 	 * @excludeFields An optional list of fields to exclude from the validation.
-	 * @IncludeFields An optional list of fields to include in the validation.
+	 * @includeFields An optional list of fields to include in the validation.
+	 * @profiles      An optional list of profiles to use for the validation.
 	 *
 	 * @return cbvalidation.models.result.IValidationResult
 	 */
@@ -390,7 +392,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		any constraints      = "",
 		string locale        = "",
 		string excludeFields = "",
-		string includeFields = ""
+		string includeFields = "",
+		string profiles      = ""
 	){
 		isValid( argumentCollection: arguments )
 		return getValidationResults()
@@ -407,7 +410,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @constraints   An optional shared constraints name or an actual structure of constraints to validate on.
 	 * @locale        An optional locale to use for i18n messages
 	 * @excludeFields An optional list of fields to exclude from the validation.
-	 * @IncludeFields An optional list of fields to include in the validation.
+	 * @includeFields An optional list of fields to include in the validation.
+	 * @profiles      An optional list of profiles to use for the validation.
 	 *
 	 * @return The entity back
 	 *
@@ -418,16 +422,17 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		any constraints      = "",
 		string locale        = "",
 		string excludeFields = "",
-		string includeFields = ""
+		string includeFields = "",
+		string profiles      = ""
 	){
-		if ( !this.isValid( argumentCollection = arguments ) ) {
+		if ( !this.isValid( argumentCollection: arguments ) ) {
 			throw(
 				type         = "ValidationException",
 				message      = "The active entity failed to pass validation",
 				extendedInfo = getValidationResults().getAllErrorsAsJson()
-			);
+			)
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -447,8 +452,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @return Returns itself
 	 */
 	function peek( required target ){
-		arguments.target( this );
-		return this;
+		arguments.target( this )
+		return this
 	}
 
 	/**
@@ -467,11 +472,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		failure
 	){
 		if ( arguments.target ) {
-			arguments.success();
+			arguments.success()
 		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure();
+			arguments.failure()
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -490,11 +495,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		failure
 	){
 		if ( !arguments.target ) {
-			arguments.success();
+			arguments.success()
 		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure();
+			arguments.failure()
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -518,9 +523,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 				type    = arguments.type,
 				message = arguments.message,
 				detail  = arguments.detail
-			);
+			)
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -544,9 +549,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 				type    = arguments.type,
 				message = arguments.message,
 				detail  = arguments.detail
-			);
+			)
 		}
-		return this;
+		return this
 	}
 
 }
