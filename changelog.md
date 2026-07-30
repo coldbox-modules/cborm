@@ -11,9 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New `ActiveEntity` method: `validate():ValidationResult` which will validate the entity and return a `ValidationResult` object with all the validation results.
 
-### Updates
+### Improvements
 
-- Added missing `profiles` to the validation methods in the `ActiveEntity`
+- `when(), unless()` closures now receive the instance as an argument to the closures.
+- Added missing `profiles` to the validation methods in the `ActiveEntity`.
 - Added missing `ignoreTargetLists` argument to `populatexxx()` methods in all services.
 
 ## [5.0.0] - 2026-07-18

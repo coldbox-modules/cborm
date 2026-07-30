@@ -350,12 +350,12 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 
 		// validate and save results in private scope
 		variables.validationResults = validationManager.validate(
-			target       : this,
-			fields       : arguments.fields,
-			constraints  : thisConstraints,
-			locale       : arguments.locale,
-			excludeFields: arguments.excludeFields,
-			profiles     : arguments.profiles
+			target        : this,
+			fields        : arguments.fields,
+			constraints   : thisConstraints,
+			locale        : arguments.locale,
+			excludeFields : arguments.excludeFields,
+			profiles: arguments.profiles
 		)
 
 		// return it
@@ -472,9 +472,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		failure
 	){
 		if ( arguments.target ) {
-			arguments.success()
+			arguments.success( this )
 		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure()
+			arguments.failure( this )
 		}
 		return this
 	}
@@ -495,9 +495,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		failure
 	){
 		if ( !arguments.target ) {
-			arguments.success()
+			arguments.success( this )
 		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure()
+			arguments.failure( this )
 		}
 		return this
 	}
