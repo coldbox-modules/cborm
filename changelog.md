@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added missing `profiles` to the validation methods in the `ActiveEntity`.
 - Added missing `ignoreTargetLists` argument to `populatexxx()` methods in all services.
 
+### Fixed
+
+- `isValid()` needs a `this.isValid()` to resolve ambiguity with BIF.
+
 ## [5.0.0] - 2026-07-18
 
 ### Features

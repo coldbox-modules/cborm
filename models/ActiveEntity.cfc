@@ -350,12 +350,12 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 
 		// validate and save results in private scope
 		variables.validationResults = validationManager.validate(
-			target       : this,
-			fields       : arguments.fields,
-			constraints  : thisConstraints,
-			locale       : arguments.locale,
-			excludeFields: arguments.excludeFields,
-			profiles     : arguments.profiles
+			target        : this,
+			fields        : arguments.fields,
+			constraints   : thisConstraints,
+			locale        : arguments.locale,
+			excludeFields : arguments.excludeFields,
+			profiles: arguments.profiles
 		)
 
 		// return it
@@ -395,7 +395,7 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string includeFields = "",
 		string profiles      = ""
 	){
-		isValid( argumentCollection: arguments )
+		this.isValid( argumentCollection: arguments )
 		return getValidationResults()
 	}
 
