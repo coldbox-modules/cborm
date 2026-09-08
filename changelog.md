@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `isValid()` needs a `this.isValid()` to resolve ambiguity with BIF.
+- Fixed lazy dependency initialization when full null support is enabled.
 
 ## [5.0.0] - 2026-07-18
 
