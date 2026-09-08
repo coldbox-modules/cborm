@@ -752,7 +752,7 @@ component accessors="true" {
 		var projectionAlias = "";
 		var sqlParts        = [];
 		var aliasParts      = listToArray( arguments.rawProjection.alias );
-		var rawSQLParts = isArray( arguments.rawProjection.sql ) ? arguments.rawProjection.sql : [];
+		var rawSQLParts     = isArray( arguments.rawProjection.sql ) ? arguments.rawProjection.sql : [];
 
 		// Preserve legacy comma-delimited SQL projections when multiple aliases are provided.
 		if ( !arrayLen( rawSQLParts ) && arrayLen( aliasParts ) > 1 ) {
@@ -764,8 +764,8 @@ component accessors="true" {
 
 		// Build SQL fragments as an array so commas inside SQL functions are preserved.
 		for ( var x = 1; x <= arrayLen( rawSQLParts ); x++ ) {
-			partialSQL = rawSQLParts[ x ];
-			partialSQL = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
+			partialSQL      = rawSQLParts[ x ];
+			partialSQL      = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
 			projectionAlias = arguments.rawProjection.alias;
 			if ( arrayLen( aliasParts ) > 1 ) {
 				projectionAlias = aliasParts[ x ];
