@@ -749,23 +749,29 @@ component accessors="true" {
 		}
 
 		var partialSQL = "";
-		projection.sql = "";
-		// if multiple subqueries have been specified, smartly separate them out into a sql string that will work
-		if ( listLen( arguments.rawProjection.sql ) > 1 && listLen( arguments.rawProjection.alias ) > 1 ) {
-			for ( var x = 1; x <= listLen( arguments.rawProjection.sql ); x++ ) {
-				partialSQL     = listGetAt( arguments.rawProjection.sql, x );
-				partialSQL     = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
-				partialSQL     = partialSQL & " as #listGetAt( arguments.rawProjection.alias, x )#";
-				projection.sql = listAppend( projection.sql, partialSQL );
-			}
-		} else {
-			partialSQL     = arguments.rawProjection.sql;
-			partialSQL     = partialSQL & " as #arguments.rawProjection.alias#";
-			projection.sql = listAppend( projection.sql, partialSQL );
+		var sqlParts   = [];
+		var aliasParts = listToArray( arguments.rawProjection.alias );
+		var rawSQLParts = isArray( arguments.rawProjection.sql ) ? arguments.rawProjection.sql : [];
+
+		// Preserve legacy comma-delimited SQL projections when multiple aliases are provided.
+		if ( !arrayLen( rawSQLParts ) && arrayLen( aliasParts ) > 1 ) {
+			rawSQLParts = listToArray( arguments.rawProjection.sql );
+		}
+		if ( !arrayLen( rawSQLParts ) ) {
+			arrayAppend( rawSQLParts, arguments.rawProjection.sql );
 		}
 
+		// Build SQL fragments as an array so commas inside SQL functions are preserved.
+		for ( var x = 1; x <= arrayLen( rawSQLParts ); x++ ) {
+			partialSQL = rawSQLParts[ x ];
+			partialSQL = reFindNoCase( "^select", partialSQL ) ? "(#partialSQL#)" : partialSQL;
+			partialSQL &= " as #arrayLen( aliasParts ) > 1 ? aliasParts[ x ] : arguments.rawProjection.alias#";
+			arrayAppend( sqlParts, partialSQL );
+		}
+		projection.sql = arrayToList( sqlParts );
+
 		// get all aliases
-		projection.alias = listToArray( arguments.rawProjection.alias );
+		projection.alias = aliasParts;
 		// if there is a grouping spcified, add it to structure
 		if ( !isNull( arguments.rawProjection.group ) ) {
 			projection.group = arguments.rawProjection.group;
