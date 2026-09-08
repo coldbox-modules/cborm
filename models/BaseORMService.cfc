@@ -168,7 +168,7 @@ component accessors="true" {
 	 * @return cborm.models.util.IORMUtil
 	 */
 	function getOrm(){
-		if ( isNull( variables.orm ) ) {
+		if ( !structKeyExists( variables, "orm" ) || isNull( variables.orm ) ) {
 			variables.orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
 		}
 		return variables.orm;
@@ -180,7 +180,7 @@ component accessors="true" {
 	 * @return cborm.models.EventHandler|cborm.models.BXEventHandler
 	 */
 	function getORMEventHandler(){
-		if ( isNull( variables.ORMEventHandler ) ) {
+		if ( !structKeyExists( variables, "ORMEventHandler" ) || isNull( variables.ORMEventHandler ) ) {
 			variables.ORMEventHandler = server.keyExists( "boxlang" ) ? new cborm.models.BXEventHandler() : new cborm.models.EventHandler()
 		}
 		return variables.ORMEventHandler
@@ -192,7 +192,7 @@ component accessors="true" {
 	 * @return cborm.models.util.DynamicProcessor
 	 */
 	function getDynamicProcessor(){
-		if ( isNull( variables.dynamicProcessor ) ) {
+		if ( !structKeyExists( variables, "dynamicProcessor" ) || isNull( variables.dynamicProcessor ) ) {
 			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" )
 		}
 
@@ -1029,7 +1029,7 @@ component accessors="true" {
 	 * @return coldbox.system.core.dynamic.ObjectPopulator
 	 */
 	function getObjectPopulator(){
-		if ( !isNull( variables.objectPopulator ) ) {
+		if ( structKeyExists( variables, "objectPopulator" ) && !isNull( variables.objectPopulator ) ) {
 			return variables.objectPopulator
 		}
 		variables.objectPopulator = variables.wirebox.getObjectPopulator()
