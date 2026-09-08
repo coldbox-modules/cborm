@@ -748,9 +748,9 @@ component accessors="true" {
 			arrayAppend( projection.types, metaData.getPropertyType( prop ) );
 		}
 
-		var partialSQL = "";
-		var sqlParts   = [];
-		var aliasParts = listToArray( arguments.rawProjection.alias );
+		var partialSQL  = "";
+		var sqlParts    = [];
+		var aliasParts  = listToArray( arguments.rawProjection.alias );
 		var rawSQLParts = isArray( arguments.rawProjection.sql ) ? arguments.rawProjection.sql : [];
 
 		// Preserve legacy comma-delimited SQL projections when multiple aliases are provided.
