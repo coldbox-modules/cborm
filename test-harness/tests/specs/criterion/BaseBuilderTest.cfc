@@ -181,7 +181,7 @@ component extends="tests.resources.BaseTest" {
 			ORMService = ormService
 		);
 
-		r = categoryCriteria
+		var r = categoryCriteria
 			.withProjections(
 				groupProperty = "catid",
 				sqlProjection = [

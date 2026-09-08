@@ -168,7 +168,7 @@ component accessors="true" {
 	 * @return cborm.models.util.IORMUtil
 	 */
 	function getOrm(){
-		if ( isNull( variables.orm ) ) {
+		if ( !structKeyExists( variables, "orm" ) || isNull( variables.orm ) ) {
 			variables.orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
 		}
 		return variables.orm;
@@ -180,7 +180,7 @@ component accessors="true" {
 	 * @return cborm.models.EventHandler|cborm.models.BXEventHandler
 	 */
 	function getORMEventHandler(){
-		if ( isNull( variables.ORMEventHandler ) ) {
+		if ( !structKeyExists( variables, "ORMEventHandler" ) || isNull( variables.ORMEventHandler ) ) {
 			variables.ORMEventHandler = server.keyExists( "boxlang" ) ? new cborm.models.BXEventHandler() : new cborm.models.EventHandler()
 		}
 		return variables.ORMEventHandler
@@ -192,7 +192,7 @@ component accessors="true" {
 	 * @return cborm.models.util.DynamicProcessor
 	 */
 	function getDynamicProcessor(){
-		if ( isNull( variables.dynamicProcessor ) ) {
+		if ( !structKeyExists( variables, "dynamicProcessor" ) || isNull( variables.dynamicProcessor ) ) {
 			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" )
 		}
 
@@ -778,6 +778,9 @@ component accessors="true" {
 	 * @ignoreEmpty          Ignore empty values on populations, great for ORM population
 	 * @include              A list of keys to include in the population from the incoming properties memento
 	 * @exclude              A list of keys to exclude in the population from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The new entity object
 	 */
 	any function new(
 		required string entityName,
@@ -787,14 +790,15 @@ component accessors="true" {
 		nullEmptyExclude             = "",
 		boolean ignoreEmpty          = false,
 		include                      = "",
-		exclude                      = ""
+		exclude                      = "",
+		boolean ignoreTargetLists    = false
 	){
-		var eventHandler = getORMEventHandler();
 		// Build and autowire
+		var eventHandler = getORMEventHandler()
 		var entity       = eventHandler.processEntityInjection(
 			entityName: arguments.entityName,
 			entity    : entityNew( arguments.entityName )
-		);
+		)
 
 		// Population of properties
 		if ( NOT structIsEmpty( arguments.properties ) ) {
@@ -806,16 +810,17 @@ component accessors="true" {
 				nullEmptyExclude     = arguments.nullEmptyExclude,
 				ignoreEmpty          = arguments.ignoreEmpty,
 				include              = arguments.include,
-				exclude              = arguments.exclude
-			);
+				exclude              = arguments.exclude,
+				ignoreTargetLists    = arguments.ignoreTargetLists
+			)
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
 		if ( getEventHandling() ) {
-			eventHandler.postNew( entity, arguments.entityName );
+			eventHandler.postNew( entity, arguments.entityName )
 		}
 
-		return entity;
+		return entity
 	}
 
 	/**
@@ -840,7 +845,7 @@ component accessors="true" {
 		boolean defaultAsQuery  = getDefaultAsQuery(),
 		string datasource       = getDatasource()
 	){
-		return new cborm.models.VirtualEntityService( argumentCollection = arguments );
+		return new cborm.models.VirtualEntityService( argumentCollection = arguments )
 	}
 
 	/*****************************************************************************************/
@@ -860,6 +865,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populate(
 		required any target,
@@ -871,7 +879,8 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromStruct( argumentCollection = arguments );
 	}
@@ -890,6 +899,9 @@ component accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateWithPrefix(
 		required any target,
@@ -902,7 +914,8 @@ component accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		required string prefix
+		required string prefix,
+		boolean ignoreTargetLists = false
 	){
 		return getObjectPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
@@ -920,6 +933,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromJson(
 		required any target,
@@ -931,7 +947,8 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromJSON( argumentCollection = arguments );
 	}
@@ -950,7 +967,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
-	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromXml(
 		required any target,
@@ -963,7 +982,8 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromXML( argumentCollection = arguments );
 	}
@@ -982,6 +1002,9 @@ component accessors="true" {
 	 * @nullEmptyInclude     A list of keys to NULL when empty
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
+	 * @ignoreTargetLists    Ignore target lists during population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromQuery(
 		required any target,
@@ -994,16 +1017,10 @@ component accessors="true" {
 		boolean ignoreEmpty          = false,
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
-		boolean composeRelationships = true
+		boolean composeRelationships = true,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromQuery( argumentCollection = arguments );
-	}
-
-	/**
-	 * @deprecated Please do not use. Use `getObjectPopulator()`
-	 */
-	function getBeanPopulator(){
-		return getObjectPopulator();
 	}
 
 	/**
@@ -1012,11 +1029,11 @@ component accessors="true" {
 	 * @return coldbox.system.core.dynamic.ObjectPopulator
 	 */
 	function getObjectPopulator(){
-		if ( !isNull( variables.objectPopulator ) ) {
-			return variables.objectPopulator;
+		if ( structKeyExists( variables, "objectPopulator" ) && !isNull( variables.objectPopulator ) ) {
+			return variables.objectPopulator
 		}
-		variables.objectPopulator = variables.wirebox.getObjectPopulator();
-		return variables.objectPopulator;
+		variables.objectPopulator = variables.wirebox.getObjectPopulator()
+		return variables.objectPopulator
 	}
 
 	/*****************************************************************************************/

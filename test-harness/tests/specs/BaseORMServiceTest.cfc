@@ -45,6 +45,22 @@
 		assert( 1 eq t, "CountBylastName" );
 	}
 
+	function testLazyDependenciesThroughPublicAPI(){
+		var service = new cborm.models.BaseORMService().init();
+		var system  = createObject( "java", "java.lang.System" );
+
+		expect( system.identityHashCode( service.getOrm() ) ).toBe( system.identityHashCode( service.getOrm() ) );
+		expect( system.identityHashCode( service.getORMEventHandler() ) ).toBe(
+			system.identityHashCode( service.getORMEventHandler() )
+		);
+		expect( system.identityHashCode( service.getDynamicProcessor() ) ).toBe(
+			system.identityHashCode( service.getDynamicProcessor() )
+		);
+		expect( system.identityHashCode( service.getObjectPopulator() ) ).toBe(
+			system.identityHashCode( service.getObjectPopulator() )
+		);
+	}
+
 	function testFindAllByDynamically(){
 		// Using Conditionals
 		t = ormservice.findAllByLastNameLessThan( "User", "Majano" );

@@ -159,6 +159,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate, yourself
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populate(
 		required struct memento,
@@ -170,7 +173,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromStruct( argumentCollection = arguments );
 	}
@@ -189,6 +193,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @prefix               The prefix used to filter, Example: 'user' would apply to the following formfield: 'user_id' and 'user_name' but not 'address_id'
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateWithPrefix(
 		required struct memento,
@@ -201,7 +208,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
 		required string prefix,
-		any target = this
+		any target                = this,
+		boolean ignoreTargetLists = false
 	){
 		return getObjectPopulator().populateFromStructWithPrefix( argumentCollection = arguments );
 	}
@@ -219,6 +227,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromJSON(
 		required string JSONString,
@@ -230,7 +241,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromJSON( argumentCollection = arguments );
 	}
@@ -249,6 +261,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromXML(
 		required string xml,
@@ -261,7 +276,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromXML( argumentCollection = arguments );
 	}
@@ -280,6 +296,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @nullEmptyExclude     A list of keys to NOT NULL when empty
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
 	 * @target               The entity to populate
+	 * @ignoreTargetLists    Ignore lists on the target entity, great for ORM population
+	 *
+	 * @return The populated entity
 	 */
 	any function populateFromQuery(
 		required any qry,
@@ -292,7 +311,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		string nullEmptyInclude      = "",
 		string nullEmptyExclude      = "",
 		boolean composeRelationships = true,
-		any target                   = this
+		any target                   = this,
+		boolean ignoreTargetLists    = false
 	){
 		return getObjectPopulator().populateFromQuery( argumentCollection = arguments );
 	}
@@ -306,39 +326,40 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @locale        An optional locale to use for i18n messages
 	 * @excludeFields An optional list of fields to exclude from the validation.
 	 * @IncludeFields An optional list of fields to include in the validation.
+	 * @profiles      An optional list of profiles to use for the validation.
+	 *
+	 * @return true if the entity is valid, false otherwise
 	 */
 	boolean function isValid(
 		string fields        = "*",
 		any constraints      = "",
 		string locale        = "",
 		string excludeFields = "",
-		string includeFields = ""
+		string includeFields = "",
+		string profiles      = ""
 	){
 		// Get validation manager
-		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" );
-		// validate constraints
-		var thisConstraints   = "";
+		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" )
+		// Get constraints from the entity if they exist, otherwise use the passed in constraints
+		var thisConstraints   = structKeyExists( this, "constraints" ) ? this.constraints : {}
 
-		if ( structKeyExists( this, "constraints" ) ) {
-			thisConstraints = this.constraints;
-		}
-
-		// argument override
+		// If constraints are passed in, use them instead of the entity's constraints
 		if ( !isSimpleValue( arguments.constraints ) OR len( arguments.constraints ) ) {
-			thisConstraints = arguments.constraints;
+			thisConstraints = arguments.constraints
 		}
 
 		// validate and save results in private scope
 		variables.validationResults = validationManager.validate(
-			target        = this,
-			fields        = arguments.fields,
-			constraints   = thisConstraints,
-			locale        = arguments.locale,
-			excludeFields = arguments.excludeFields
-		);
+			target       : this,
+			fields       : arguments.fields,
+			constraints  : thisConstraints,
+			locale       : arguments.locale,
+			excludeFields: arguments.excludeFields,
+			profiles     : arguments.profiles
+		)
 
 		// return it
-		return ( !variables.validationResults.hasErrors() );
+		return ( !variables.validationResults.hasErrors() )
 	}
 
 	/**
@@ -354,6 +375,31 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	}
 
 	/**
+	 * Validate the ActiveEntity with the coded constraints -> this.constraints, or passed in shared or implicit constraints
+	 * The entity must have been populated with data before the validation
+	 *
+	 * @fields        One or more fields to validate on, by default it validates all fields in the constraints. This can be a simple list or an array.
+	 * @constraints   An optional shared constraints name or an actual structure of constraints to validate on.
+	 * @locale        An optional locale to use for i18n messages
+	 * @excludeFields An optional list of fields to exclude from the validation.
+	 * @includeFields An optional list of fields to include in the validation.
+	 * @profiles      An optional list of profiles to use for the validation.
+	 *
+	 * @return cbvalidation.models.result.IValidationResult
+	 */
+	ValidationResult function validate(
+		string fields        = "*",
+		any constraints      = "",
+		string locale        = "",
+		string excludeFields = "",
+		string includeFields = "",
+		string profiles      = ""
+	){
+		this.isValid( argumentCollection: arguments )
+		return getValidationResults()
+	}
+
+	/**
 	 * Validate the ActiveEntity with the coded constraints -> this.constraints,
 	 * or passed in shared or implicit constraints
 	 * The entity must have been populated with data before the validation
@@ -364,7 +410,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @constraints   An optional shared constraints name or an actual structure of constraints to validate on.
 	 * @locale        An optional locale to use for i18n messages
 	 * @excludeFields An optional list of fields to exclude from the validation.
-	 * @IncludeFields An optional list of fields to include in the validation.
+	 * @includeFields An optional list of fields to include in the validation.
+	 * @profiles      An optional list of profiles to use for the validation.
 	 *
 	 * @return The entity back
 	 *
@@ -375,16 +422,17 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		any constraints      = "",
 		string locale        = "",
 		string excludeFields = "",
-		string includeFields = ""
+		string includeFields = "",
+		string profiles      = ""
 	){
-		if ( !this.isValid( argumentCollection = arguments ) ) {
+		if ( !this.isValid( argumentCollection: arguments ) ) {
 			throw(
 				type         = "ValidationException",
 				message      = "The active entity failed to pass validation",
 				extendedInfo = getValidationResults().getAllErrorsAsJson()
-			);
+			)
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -404,8 +452,8 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @return Returns itself
 	 */
 	function peek( required target ){
-		arguments.target( this );
-		return this;
+		arguments.target( this )
+		return this
 	}
 
 	/**
@@ -424,11 +472,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		failure
 	){
 		if ( arguments.target ) {
-			arguments.success();
+			arguments.success( this )
 		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure();
+			arguments.failure( this )
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -447,11 +495,11 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 		failure
 	){
 		if ( !arguments.target ) {
-			arguments.success();
+			arguments.success( this )
 		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure();
+			arguments.failure( this )
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -475,9 +523,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 				type    = arguments.type,
 				message = arguments.message,
 				detail  = arguments.detail
-			);
+			)
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -501,9 +549,9 @@ component extends="cborm.models.VirtualEntityService" accessors="true" {
 				type    = arguments.type,
 				message = arguments.message,
 				detail  = arguments.detail
-			);
+			)
 		}
-		return this;
+		return this
 	}
 
 }
