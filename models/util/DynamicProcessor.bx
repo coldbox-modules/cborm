@@ -389,7 +389,7 @@ class accessors="true" singleton {
 	}
 
 	/**
-	 * Rewrite each sort property to its declared case, since HQL property names are case-sensitive.
+	 * Rewrite each sort property to its declared case, so the generated HQL uses the declared names directly.
 	 * A token that is not a known property is left as is.
 	 *
 	 * @sortBy     The sort list, like "lastName desc, firstName"

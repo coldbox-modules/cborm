@@ -280,7 +280,7 @@
 		count = activeUser.count();
 		assertTrue( count gt 0 );
 
-		count = activeUser.count( "firstName='luis'" );
+		count = activeUser.count( "firstname='luis'" );
 		assertEquals( 1, count );
 	}
 

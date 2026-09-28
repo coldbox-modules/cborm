@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All module sources are BoxLang classes (`.bx`), including `ModuleConfig.bx`.
 - `newCriteria()` returns a bx-orm `entityCriteria()` builder. The Hibernate criteria API wrappers (`models/criterion/*`), `SQLHelper`, the ORM utilities (`ORMUtilFactory`, `getOrm()`) and `JavaProxyBuilder` are removed.
 - `getEntityMetadata()` returns the Hibernate 7 entity persister, which keeps the Hibernate 5 `ClassMetadata` methods mementifier and apps use.
-- HQL property names are case-sensitive (Hibernate 6+). Dynamic finders still accept any case, including in `sortBy`.
 - `idCast()`/`autoCast()` (and the `convert...ToJavaType()` aliases) no longer cast: bx-orm converts values itself.
 
 ### Features
@@ -24,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Improvements
 
+- HQL entity and property names stay case-insensitive: bx-orm 2 resolves them to their declared case, and dynamic finders accept any case, including in `sortBy`.
 - One event handler: `cborm.models.EventHandler`. `BXEventHandler` is a deprecated alias.
 - `ORMPostNew` is announced once per `new()`, after the entity is autowired and populated.
 - The `HibernateTransaction` aspect and service transactions ride BoxLang `transaction{}`.

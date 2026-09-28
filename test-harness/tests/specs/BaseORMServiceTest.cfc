@@ -579,7 +579,7 @@
 		var count = ormService.count( "Category", "category='general'" );
 		assertEquals( 2, count );
 
-		var count = ormService.count( "Category", "category=?1", [ "Training" ] );
+		var count = ormService.count( "Category", "category=?", [ "Training" ] );
 		assertEquals( 1, count );
 
 		var count = ormService.count(
@@ -641,7 +641,7 @@
 	}
 
 	function testFindIt(){
-		var test = ormservice.findIt( "from Category where category = ?1", [ "Training" ] );
+		var test = ormservice.findIt( "from Category where category = ?", [ "Training" ] );
 		assertEquals( "Training", test.getCategory() );
 
 		var test = ormservice.findIt( "from Category where category = :category", { category : "Training" } );
@@ -659,7 +659,7 @@
 	}
 
 	function testFindAll(){
-		// JPA-style positional parameters: legacy "?" parameters are not supported by Hibernate 6+
+		// Both JDBC-style "?" and JPA-style "?1" positional parameters work
 		var sql = "from Category where category = ?1";
 
 		var test = ormservice.findAll( sql, [ "Training" ] );

@@ -59,8 +59,6 @@ the quantified subqueries (`subGeAll`, `propertyLtSome`, ...) and the SQL log (`
 | `idCast()` / `convertIdValueToJavaType()` converted ids to Java types | Only normalize an id, list or array to an array: bx-orm converts values itself |
 | `autoCast()` / `convertValueToJavaType()` | Return the value as is |
 | `buildJavaProxy()` | Removed |
-| HQL with legacy `?` parameters | Use `?1`, `?2`, ... or named `:name` parameters (Hibernate 6+) |
-| HQL property names in any case (`firstname`) | Use the property's declared case (`firstName`): Hibernate 6+ is case-sensitive; bx-orm's error suggests the right name |
 | `unique = true` queries | More than one matching row raises an error instead of returning the first; `findIt()` limits to one row |
 
 ### Events
