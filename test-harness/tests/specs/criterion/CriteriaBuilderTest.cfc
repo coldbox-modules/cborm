@@ -30,7 +30,11 @@ component extends="tests.resources.BaseTest" {
 			.withProjections( property = "id,firstName,lastName" )
 			.asStruct()
 			.get();
-		expect( r ).toBeStruct().toHaveKey( "id" ).toHaveKey( "firstName" ).toHaveKey( "lastName" );
+		expect( r )
+			.toBeStruct()
+			.toHaveKey( "id" )
+			.toHaveKey( "firstName" )
+			.toHaveKey( "lastName" );
 	}
 
 	function testWhen(){

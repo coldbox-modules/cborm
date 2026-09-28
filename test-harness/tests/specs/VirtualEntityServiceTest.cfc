@@ -197,7 +197,12 @@
 
 	function testGetRestrictions(){
 		var r = ormservice.getRestrictions();
-		expect( ormservice.newCriteria().add( r.isEq( "lastName", "majano" ) ).count() ).toBe( 1 );
+		expect(
+			ormservice
+				.newCriteria()
+				.add( r.isEq( "lastName", "majano" ) )
+				.count()
+		).toBe( 1 );
 	}
 
 	function testConvertValueToJavaType(){
