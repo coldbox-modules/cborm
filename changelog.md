@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+
+- cborm 6 is a pure BoxLang module: it requires BoxLang with the `bx-orm` 2 module (Hibernate 7). Adobe ColdFusion is no longer supported; use cborm 5.x. CFML applications run through `bx-compat-cfml`. See [UPGRADING.md](UPGRADING.md).
+- All module sources are BoxLang classes (`.bx`), including `ModuleConfig.bx`.
+- `newCriteria()` returns a bx-orm `entityCriteria()` builder. The Hibernate criteria API wrappers (`models/criterion/*`), `SQLHelper`, the ORM utilities (`ORMUtilFactory`, `getOrm()`) and `JavaProxyBuilder` are removed.
+- `getEntityMetadata()` returns the `entityGetMetadata()` struct instead of Hibernate `ClassMetadata`.
+- `idCast()`/`autoCast()` (and the `convert...ToJavaType()` aliases) no longer cast: bx-orm converts values itself.
+
+### Features
+
+- New `ORMPostCommit` interception point, announced once an insert, update or delete is committed.
+- `c.restrictions`, quantified subqueries and the SQL log on criteria, through bx-orm 2.
+- bx-orm criteria events are relayed to ColdBox interceptors.
+
+### Improvements
+
+- One event handler: `cborm.models.EventHandler`. `BXEventHandler` is a deprecated alias.
+- `ORMPostNew` is announced once per `new()`, after the entity is autowired and populated.
+- The `HibernateTransaction` aspect and service transactions ride BoxLang `transaction{}`.
+
+### Fixed
+
+- Dynamic finders with `InList` / `NotInList` bound the raw list string when the compiled HQL came from the cache.
+
 ## [5.1.0] - 2026-09-08
 
 ## [5.0.0] - 2026-07-18

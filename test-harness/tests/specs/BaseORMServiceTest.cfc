@@ -14,11 +14,7 @@
 
 		variables.ormservice = createMock( "cborm.models.BaseORMService" )
 
-		if ( isBoxLang() ) {
-			variables.mockEH = createMock( "cborm.models.BXEventHandler" )
-		} else {
-			variables.mockEH = createMock( "cborm.models.EventHandler" )
-		}
+		variables.mockEH = createMock( "cborm.models.EventHandler" )
 		variables.mockEH.$( "announceInterception", true ).$( "announce", true )
 
 		// Mocks
@@ -35,8 +31,6 @@
 		variables.testUserID = "88B73A03-FEFA-935D-AD8036E1B7954B76";
 		variables.testCatID  = "3A2C516C-41CE-41D3-A9224EA690ED1128";
 		variables.test2      = [ "1", "2" ];
-
-		variables.ormUtil = new cborm.models.util.ORMUtilFactory().getORMUtil();
 	}
 
 	function testCountByDynamically(){
@@ -49,7 +43,6 @@
 		var service = new cborm.models.BaseORMService().init();
 		var system  = createObject( "java", "java.lang.System" );
 
-		expect( system.identityHashCode( service.getOrm() ) ).toBe( system.identityHashCode( service.getOrm() ) );
 		expect( system.identityHashCode( service.getORMEventHandler() ) ).toBe(
 			system.identityHashCode( service.getORMEventHandler() )
 		);
@@ -139,8 +132,8 @@
 		stats = ormservice.getSessionStatistics();
 		assertEquals( 0, stats.entityCount );
 		assertEquals( 0, stats.collectionCount );
-		assertEquals( "[]", stats.entityKeys );
-		assertEquals( "[]", stats.collectionKeys );
+		expect( stats.entityKeys ).toBeEmpty();
+		expect( stats.collectionKeys ).toBeEmpty();
 	}
 
 	function testisSessionDirty(){
@@ -439,11 +432,7 @@
 	function testSave(){
 		// mocks
 		// mocks
-		if ( isBoxLang() ) {
-			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
-		} else {
-			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		}
+		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
 		mockEventHandler.$( "preSave" );
 		mockEventHandler.$( "postSave" );
 		ormService.$property(
@@ -470,11 +459,7 @@
 
 	function testSaveNoTransaction(){
 		// mocks
-		if ( isBoxLang() ) {
-			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
-		} else {
-			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		}
+		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
 		mockEventHandler.$( "preSave" );
 		mockEventHandler.$( "postSave" );
 		ormService.$property(
@@ -502,11 +487,7 @@
 	function testSaveAll(){
 		// mocks
 		// mocks
-		if ( isBoxLang() ) {
-			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
-		} else {
-			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		}
+		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
 		mockEventHandler.$( "preSave" ).$( "postSave" );
 		ormService.$property(
 			"ORMEventHandler",
@@ -538,11 +519,7 @@
 	function testSaveAllWithFlush(){
 		// mocks
 		// mocks
-		if ( isBoxLang() ) {
-			mockEventHandler = createEmptyMock( "cborm.models.BXEventHandler" );
-		} else {
-			mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
-		}
+		mockEventHandler = createEmptyMock( "cborm.models.EventHandler" );
 		mockEventHandler.$( "preSave" ).$( "postSave" );
 		ormService.$property(
 			"ORMEventHandler",
@@ -602,7 +579,7 @@
 		var count = ormService.count( "Category", "category='general'" );
 		assertEquals( 2, count );
 
-		var count = ormService.count( "Category", "category=?", [ "Training" ] );
+		var count = ormService.count( "Category", "category=?1", [ "Training" ] );
 		assertEquals( 1, count );
 
 		var count = ormService.count(
@@ -647,12 +624,7 @@
 		assertTrue( isArray( test ) );
 		assertTrue( arrayLen( test ) );
 
-		var sql = "from Category where category = ?";
-
-		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
-			// hibernate 5.3+ JPA syntax
-			sql = "from Category where category = ?1";
-		}
+		var sql = "from Category where category = ?1";
 
 		var params = [ "general" ];
 		test       = ormservice.executeQuery( query = sql, params = params );
@@ -661,7 +633,7 @@
 
 	function testExecuteQueryWithUpdate(){
 		var test = ormservice.executeQuery(
-			query   = "UPDATE Category SET category = ? where category = 'LM' ",
+			query   = "UPDATE Category SET category = ?1 where category = 'LM' ",
 			params  = [ "LM" ],
 			asQuery = true
 		);
@@ -669,7 +641,7 @@
 	}
 
 	function testFindIt(){
-		var test = ormservice.findIt( "from Category where category = ?", [ "Training" ] );
+		var test = ormservice.findIt( "from Category where category = ?1", [ "Training" ] );
 		assertEquals( "Training", test.getCategory() );
 
 		var test = ormservice.findIt( "from Category where category = :category", { category : "Training" } );
@@ -687,16 +659,8 @@
 	}
 
 	function testFindAll(){
-		/**
-		 * Test the Hibernate 5.2- syntax.
-		 * "legacy-style" JDBC positional parameters are unsupported in 5.3+
-		 */
-		var sql = "from Category where category = ?";
-
-		if ( val( variables.ormUtil.getHibernateVersion() ) >= 5.3 ) {
-			// hibernate 5.3+ JPA syntax
-			sql = "from Category where category = ?1";
-		}
+		// JPA-style positional parameters: legacy "?" parameters are not supported by Hibernate 6+
+		var sql = "from Category where category = ?1";
 
 		var test = ormservice.findAll( sql, [ "Training" ] );
 		assertEquals( 1, arrayLen( test ) );
@@ -760,11 +724,15 @@
 	}
 
 	function testConvertIDValueToJavaType(){
+		// bx-orm converts ids itself: idCast() only normalizes to an array
 		var test = ormservice.convertIDValueToJavaType( entityName = "User", id = 1 );
-		assertEquals( [ 1 ], test );
+		expect( test ).toBe( [ "1" ] );
+
+		var test = ormservice.convertIDValueToJavaType( entityName = "User", id = "1,2" );
+		expect( test ).toBe( [ "1", "2" ] );
 
 		var test = ormservice.convertIDValueToJavaType( entityName = "User", id = [ "1", "2", "3" ] );
-		assertEquals( [ 1, 2, 3 ], test );
+		expect( test ).toBe( [ "1", "2", "3" ] );
 	}
 
 	function testConvertValueToJavaType(){
@@ -806,9 +774,13 @@
 	}
 
 	function testNewCriteria(){
+		// newCriteria() is a bx-orm entityCriteria()
 		var c = ormservice.newCriteria( "User" );
-		expect( c ).toBeComponent();
 		expect( c.getEntityName() ).toBe( "User" );
+		expect( c.isEq( "firstName", "Luis" ).count() ).toBe( 1 );
+
+		var cached = ormservice.newCriteria( entityName = "User", useQueryCaching = true );
+		expect( cached.count() ).toBeGT( 0 );
 	}
 
 	function testMerge(){
@@ -839,8 +811,11 @@
 	}
 
 	function testGetRestrictions(){
+		// Restrictions build conditions to add() to a criteria
 		var r = ormservice.getRestrictions();
-		expect( r ).toBeComponent();
+		var c = ormservice.newCriteria( "User" );
+		expect( c.add( r.isEq( "firstName", "Luis" ) ).count() ).toBe( 1 );
+		expect( c.or( r.isEq( "firstName", "Luis" ), r.isEq( "firstName", "nobody" ) ).count() ).toBe( 1 );
 	}
 
 	function testGetOrFail(){
