@@ -1106,7 +1106,7 @@ class accessors="true" {
 	 * @return string or array
 	 */
 	any function getKey( required entity ){
-		var idProperties = getEntityMetadata( arguments.entity ).idProperties;
+		var idProperties = entityGetMetadata( arguments.entity ).idProperties;
 
 		// Is this a simple key?
 		if ( idProperties.len() == 1 ) {
@@ -1127,7 +1127,7 @@ class accessors="true" {
 	 * @entity The entity name or the actual entity object
 	 */
 	array function getPropertyNames( required entity ){
-		return getEntityMetadata( arguments.entity ).propertyNames;
+		return entityGetMetadata( arguments.entity ).propertyNames;
 	}
 
 	/**
@@ -1136,19 +1136,24 @@ class accessors="true" {
 	 * @entity The entity name or the actual entity object
 	 */
 	string function getTableName( required entity ){
-		return getEntityMetadata( arguments.entity ).tableName;
+		return entityGetMetadata( arguments.entity ).tableName;
 	}
 
 	/**
-	 * Get an entity's metadata struct (`entityGetMetadata()`): entityName, tableName, idProperties, propertyNames,
-	 * properties, associations, ...
+	 * Get an entity's Hibernate metadata: its entity persister, which has the Hibernate 5 `ClassMetadata` methods
+	 * (`getPropertyNames()`, `getPropertyTypes()`, `hasIdentifierProperty()`, `getIdentifierPropertyName()`,
+	 * `getIdentifierType()`, ...). For a BoxLang struct of the same information use `entityGetMetadata()`.
 	 *
+	 * @see    https://docs.jboss.org/hibernate/orm/7.0/javadocs/org/hibernate/persister/entity/EntityPersister.html
 	 * @entity The entity name or entity object
 	 *
-	 * @return The bx-orm entity metadata struct
+	 * @return The Hibernate EntityPersister
 	 */
 	function getEntityMetadata( required entity ){
-		return entityGetMetadata( arguments.entity );
+		var entityName = isObject( arguments.entity ) ? entityGetName( arguments.entity ) : arguments.entity;
+		return ormGetSessionFactory( entityGetDatasource( entityName ) )
+			.getMappingMetamodel()
+			.getEntityDescriptor( entityName );
 	}
 
 	/**

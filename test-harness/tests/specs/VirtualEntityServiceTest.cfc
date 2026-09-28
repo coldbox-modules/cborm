@@ -144,7 +144,8 @@
 		var count = ormService.count();
 		assertTrue( count gt 0 );
 
-		var count = ormService.count( "firstname='luis'" );
+		// HQL property names are case-sensitive in Hibernate 6+
+		var count = ormService.count( "firstName='luis'" );
 		assertEquals( 1, count );
 	}
 
