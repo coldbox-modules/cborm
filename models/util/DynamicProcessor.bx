@@ -143,7 +143,7 @@ class accessors="true" singleton {
 
 		// Sorting Enabled
 		if ( len( options.sortBy ) ) {
-			hql &= " ORDER BY #options.sortBy#";
+			hql &= " ORDER BY #normalizeSortBy( options.sortBy, entityName, arguments.ormService )#";
 		}
 
 		// The query options ormExecuteQuery() understands
@@ -386,6 +386,34 @@ class accessors="true" singleton {
 			}
 		}
 		return variables.propertyNamesCache[ arguments.entityName ];
+	}
+
+	/**
+	 * Rewrite each sort property to its declared case, since HQL property names are case-sensitive.
+	 * A token that is not a known property is left as is.
+	 *
+	 * @sortBy     The sort list, like "lastName desc, firstName"
+	 * @entityName The entity being queried
+	 * @ormService The calling ORM service
+	 *
+	 * @return The sort list with property names in their declared case
+	 */
+	private string function normalizeSortBy(
+		required string sortBy,
+		required entityName,
+		required ormService
+	){
+		var realPropertyNames = getRealPropertyNames( arguments.entityName, arguments.ormService );
+		return listToArray( arguments.sortBy )
+			.map( ( item ) => {
+				var tokens = listToArray( trim( item ), " " );
+				var index  = arrayFindNoCase( realPropertyNames, tokens[ 1 ] );
+				if ( index ) {
+					tokens[ 1 ] = realPropertyNames[ index ];
+				}
+				return arrayToList( tokens, " " );
+			} )
+			.toList( ", " );
 	}
 
 	/**

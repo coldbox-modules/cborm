@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All module sources are BoxLang classes (`.bx`), including `ModuleConfig.bx`.
 - `newCriteria()` returns a bx-orm `entityCriteria()` builder. The Hibernate criteria API wrappers (`models/criterion/*`), `SQLHelper`, the ORM utilities (`ORMUtilFactory`, `getOrm()`) and `JavaProxyBuilder` are removed.
 - `getEntityMetadata()` returns the Hibernate 7 entity persister, which keeps the Hibernate 5 `ClassMetadata` methods mementifier and apps use.
-- HQL property names are case-sensitive (Hibernate 6+).
+- HQL property names are case-sensitive (Hibernate 6+). Dynamic finders still accept any case, including in `sortBy`.
 - `idCast()`/`autoCast()` (and the `convert...ToJavaType()` aliases) no longer cast: bx-orm converts values itself.
 
 ### Features
