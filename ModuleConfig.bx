@@ -1,0 +1,116 @@
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * cborm: ColdBox ORM extensions for BoxLang, built on the bx-orm module (Hibernate 7).
+ */
+class {
+
+	// Module Properties
+	this.title          = "cborm";
+	this.author         = "Ortus Solutions";
+	this.webURL         = "https://www.ortussolutions.com";
+	this.description    = "ColdBox ORM extensions for BoxLang and the bx-orm module";
+	this.modelNamespace = "cborm";
+	this.cfmapping      = "cborm";
+	this.dependencies   = [
+		"cbvalidation",
+		"cbPaginator",
+		"mementifier",
+		"cbstreams"
+	];
+
+	// The criteria events bx-orm announces on the BoxLang runtime, re-announced to ColdBox interceptors
+	variables.CRITERIA_EVENTS = [
+		"onCriteriaBuilderAddition",
+		"beforeCriteriaBuilderList",
+		"afterCriteriaBuilderList",
+		"beforeCriteriaBuilderCount",
+		"afterCriteriaBuilderCount",
+		"beforeCriteriaBuilderGet",
+		"afterCriteriaBuilderGet"
+	];
+
+	variables.SETTING_DEFAULTS = {
+		// Resource Settings
+		resources : {
+			// Enable the ORM Resource Event Loader
+			eventLoader  : false,
+			// Prefix to use on all the registered pre/post{Entity}{Action} events
+			eventPrefix  : "",
+			// Pagination max rows
+			maxRows      : 25,
+			// Pagination max row limit: 0 = no limit
+			maxRowsLimit : 500
+		},
+		// WireBox Injection Bridge
+		injection : { enabled : true, include : "", exclude : "" }
+	};
+
+	/**
+	 * Configure the module: settings, the entityService WireBox DSL and the custom interception points.
+	 */
+	function configure(){
+		// cborm Settings
+		variables.settings = structCopy( variables.SETTING_DEFAULTS );
+
+		// Register Custom DSL, don't map it because it is too late, mapping DSLs are only good by the parent app
+		variables.controller
+			.getWireBox()
+			.registerDSL( namespace = "entityService", path = "#moduleMapping#.dsl.OrmDsl" );
+
+		// Custom Declared Points
+		variables.interceptorSettings = {
+			customInterceptionPoints : duplicate( variables.CRITERIA_EVENTS ).append( [
+				// ORM Service Events
+				"beforeOrmExecuteQuery",
+				"afterOrmExecuteQuery",
+				// ORM Bridge Events
+				"ORMPostNew",
+				"ORMPreLoad",
+				"ORMPostLoad",
+				"ORMPostDelete",
+				"ORMPreDelete",
+				"ORMPreUpdate",
+				"ORMPostUpdate",
+				"ORMPreInsert",
+				"ORMPostInsert",
+				"ORMPreSave",
+				"ORMPostSave",
+				"ORMPostCommit",
+				"ORMPostFlush",
+				"ORMPreFlush"
+			], true )
+		};
+
+		// Custom Declared Interceptors
+		variables.interceptors = [];
+	}
+
+	/**
+	 * Fired when the module is registered and activated: settings defaults, the resource event loader, and the bridge
+	 * that re-announces bx-orm's criteria events to ColdBox interceptors.
+	 */
+	function onLoad(){
+		// Prepare setting defaults
+		variables.settings.resources.append( variables.SETTING_DEFAULTS.resources, false );
+		variables.settings.injection.append( variables.SETTING_DEFAULTS.injection, false );
+		// Are we loading the event loader
+		if ( variables.settings.resources.eventLoader ) {
+			variables.wirebox.getInstance( "ResourceEventLoader@cborm" ).loadEvents();
+		}
+		// Bridge bx-orm criteria events (announced on the BoxLang runtime) to ColdBox
+		variables.criteriaEventBridge = new cborm.models.CriteriaEventBridge( variables.controller );
+		boxRegisterInterceptor( variables.criteriaEventBridge, variables.CRITERIA_EVENTS.toList() );
+	}
+
+	/**
+	 * Fired when the module is unregistered and unloaded: removes the criteria event bridge.
+	 */
+	function onUnload(){
+		if ( !isNull( variables.criteriaEventBridge ) ) {
+			boxUnregisterInterceptor( variables.criteriaEventBridge, variables.CRITERIA_EVENTS.toList() );
+		}
+	}
+
+}

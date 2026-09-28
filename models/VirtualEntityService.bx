@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ********************************************************************************
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
@@ -11,14 +11,13 @@
  * off this object if no additional functionality is needed like this:
  *
  * <pre>
- * UserService=CreateObject("component", "cborm.models.VirtualEntityService").init("User");
+ * UserService = new cborm.models.VirtualEntityService( "User" );
  * </pre>
  *
  * You can also use this virtual service as a template object and extend and override as needed.
  *
  * <pre>
- * import cborm.models.*;
- * component extends="VirtualEntityService"
+ * class extends="cborm.models.VirtualEntityService" {
  * UserService function init(){
  * // setup properties
  * setEntityName('User');
@@ -28,11 +27,12 @@
  * setDefaultAsQuery( true );
  * return this;
  * }
+ * }
  * </pre>
  *
  * @author Curt Gratz & Luis Majano
  */
-component extends="cborm.models.BaseORMService" accessors="true" {
+class extends="cborm.models.BaseORMService" accessors="true" {
 
 	/**
 	 * The entity name that this virtual service is bound to. All operations will be based off this entity name
@@ -77,7 +77,12 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 
 		// Datasource determination
 		if ( isNull( arguments.datasource ) && !structKeyExists( this, "activeEntity" ) ) {
-			variables.datasource = getOrm().getEntityDatasource( arguments.entityName, variables.datasource );
+			// The ORM may not be started yet (e.g. services built at application start); keep the default then
+			try {
+				variables.datasource = entityGetDatasource( arguments.entityName );
+			} catch ( any e ) {
+				// keep the default datasource
+			}
 		}
 
 		return this;
@@ -383,7 +388,7 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
 	 * @defaultAsQuery   To return results as queries or array of objects or reports, default is array as results might not match entities precisely
 	 *
-	 * @return cborm.models.criterion.CriteriaBuilder
+	 * @return The bx-orm criteria builder (entityCriteria())
 	 */
 	any function newCriteria(
 		boolean useQueryCaching = false,
@@ -392,6 +397,16 @@ component extends="cborm.models.BaseORMService" accessors="true" {
 	){
 		arguments.entityName = this.getEntityName();
 		return super.newCriteria( argumentCollection = arguments );
+	}
+
+	/**
+	 * Get the restrictions builder: its methods build conditions (`isEq`, `like`, `or`, ...) to pass to a criteria's
+	 * `add()`, `or()`, `and()` and `not()`
+	 *
+	 * @return The bx-orm criteria restrictions helper
+	 */
+	function getRestrictions(){
+		return super.getRestrictions( this.getEntityName() );
 	}
 
 	/**

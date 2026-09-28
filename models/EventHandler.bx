@@ -1,29 +1,39 @@
-﻿/**
+/**
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This Event Handler listens to ORM events and announces them as ColdBox events.
- * This event handler should ONLY be used for CFML engines that support ORM event handlers.
+ * The bx-orm global event handler that announces ORM events as ColdBox interception points (ORMPreLoad, ORMPostLoad,
+ * ORMPreInsert, ..., ORMPostCommit) and autowires loaded entities with WireBox.
  *
- * If you are using BoxLang PRIME ORM, use the BXEventHandler.cfc instead.
+ * Register it in your ORM settings (and turn event handling on):
  *
+ * <pre>
+ * this.ormSettings = {
+ *     eventHandling : true,
+ *     eventHandler  : "cborm.models.EventHandler"
+ * };
+ * </pre>
  */
-component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler" {
+class extends="coldbox.system.remote.ColdboxProxy" {
 
 	/**
 	 * preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
+	 *
+	 * @entity The entity being loaded
 	 */
 	public void function preLoad( any entity ){
 		announce( "ORMPreLoad", { "entity" : arguments.entity } );
 	}
 
 	/**
-	 * postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
+	 * postLoad called by hibernate which in turn autowires the entity and announces a coldbox interception: ORMPostLoad
+	 *
+	 * @entity The entity loaded
 	 */
 	public void function postLoad( any entity ){
 		var args = {
 			"entity"     : arguments.entity,
-			"entityName" : getOrm().getEntityGivenName( arguments.entity )
+			"entityName" : entityGetName( arguments.entity )
 		};
 		processEntityInjection( args.entityName, args.entity );
 		announce( "ORMPostLoad", args );
@@ -31,6 +41,8 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 
 	/**
 	 * postDelete called by hibernate which in turn announces a coldbox interception: ORMPostDelete
+	 *
+	 * @entity The entity deleted
 	 */
 	public void function postDelete( any entity ){
 		announce( "ORMPostDelete", { "entity" : arguments.entity } );
@@ -38,6 +50,8 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 
 	/**
 	 * preDelete called by hibernate which in turn announces a coldbox interception: ORMPreDelete
+	 *
+	 * @entity The entity being deleted
 	 */
 	public void function preDelete( any entity ){
 		announce( "ORMPreDelete", { "entity" : arguments.entity } );
@@ -45,8 +59,11 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 
 	/**
 	 * preUpdate called by hibernate which in turn announces a coldbox interception: ORMPreUpdate
+	 *
+	 * @entity  The entity being updated
+	 * @oldData The property values before the update
 	 */
-	public void function preUpdate( any entity, Struct oldData = {} ){
+	public void function preUpdate( any entity, struct oldData = {} ){
 		announce(
 			"ORMPreUpdate",
 			{
@@ -58,6 +75,8 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 
 	/**
 	 * postUpdate called by hibernate which in turn announces a coldbox interception: ORMPostUpdate
+	 *
+	 * @entity The entity updated
 	 */
 	public void function postUpdate( any entity ){
 		announce( "ORMPostUpdate", { "entity" : arguments.entity } );
@@ -65,6 +84,8 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 
 	/**
 	 * preInsert called by hibernate which in turn announces a coldbox interception: ORMPreInsert
+	 *
+	 * @entity The entity being inserted
 	 */
 	public void function preInsert( any entity ){
 		announce( "ORMPreInsert", { "entity" : arguments.entity } );
@@ -72,43 +93,84 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 
 	/**
 	 * postInsert called by hibernate which in turn announces a coldbox interception: ORMPostInsert
+	 *
+	 * @entity The entity inserted
 	 */
 	public void function postInsert( any entity ){
 		announce( "ORMPostInsert", { "entity" : arguments.entity } );
 	}
 
 	/**
-	 * preSave called by ColdBox Base service before save() calls
+	 * postCommit called by bx-orm once an insert, update or delete is committed (right away outside a transaction), which
+	 * in turn announces a coldbox interception: ORMPostCommit
+	 *
+	 * @entity     The entity written
+	 * @entityName The entity name
+	 * @action     The write: insert, update or delete
+	 */
+	public void function postCommit( any entity, string entityName = "", string action = "" ){
+		announce(
+			"ORMPostCommit",
+			{
+				"entity"     : arguments.entity,
+				"entityName" : arguments.entityName,
+				"action"     : arguments.action
+			}
+		);
+	}
+
+	/**
+	 * preSave called by the cborm services before save() calls
+	 *
+	 * @entity The entity being saved
 	 */
 	public void function preSave( any entity ){
 		announce( "ORMPreSave", { "entity" : arguments.entity } );
 	}
 
 	/**
-	 * postSave called by ColdBox Base service after transaction commit or rollback via the save() method
+	 * postSave called by the cborm services after save() calls
+	 *
+	 * @entity The entity saved
 	 */
 	public void function postSave( any entity ){
 		announce( "ORMPostSave", { "entity" : arguments.entity } );
 	}
 
 	/**
-	 * Called before the session is flushed.
+	 * Called before the session is flushed. bx-orm does not fire flush events; kept so ColdBox listeners of
+	 * ORMPreFlush can be called by hand.
+	 *
+	 * @entities The entities
 	 */
 	public void function preFlush( any entities ){
 		announce( "ORMPreFlush", { "entities" : arguments.entities } );
 	}
 
 	/**
-	 * Called after the session is flushed.
+	 * Called after the session is flushed. bx-orm does not fire flush events; kept so ColdBox listeners of
+	 * ORMPostFlush can be called by hand.
+	 *
+	 * @entities The entities
 	 */
 	public void function postFlush( any entities ){
 		announce( "ORMPostFlush", { "entities" : arguments.entities } );
 	}
 
 	/**
-	 * postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
+	 * postNew announces a coldbox interception: ORMPostNew. It is called by bx-orm's entityNew() and by the cborm
+	 * services' new(). While a service's new() is running, bx-orm's call is skipped: the service announces it itself
+	 * once the entity is autowired and populated.
+	 *
+	 * @entity     The new entity
+	 * @entityName The entity name, looked up when not given
 	 */
 	public void function postNew( any entity, any entityName ){
+		// A cborm service new() is in progress: it announces ORMPostNew itself
+		if ( request.keyExists( "cbormEntityNewInProgress" ) ) {
+			return;
+		}
+
 		var args = { "entity" : arguments.entity, "entityName" : "" };
 
 		// Do we have an incoming name
@@ -118,17 +180,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 
 		// If we don't have the entity name, then look it up
 		if ( !len( args.entityName ) ) {
-			// Short-cut discovery via ActiveEntity
-			if ( structKeyExists( arguments.entity, "getEntityName" ) ) {
-				args.entityName = arguments.entity.getEntityName();
-			} else {
-				// Long Discovery
-				var md          = getMetadata( arguments.entity );
-				var annotations = md.keyExists( "annotations" ) ? md.annotations : md;
-				args.entityName = (
-					annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." )
-				);
-			}
+			args.entityName = entityGetName( arguments.entity );
 		}
 
 		// Process the announcement
@@ -143,9 +195,9 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	}
 
 	/**
-	 * process entity injection
+	 * Autowire an entity with WireBox, according to the cborm `injection` settings
 	 *
-	 * @entityName the entity to process, we use hash codes to identify builders
+	 * @entityName The entity name
 	 * @entity     The entity object
 	 *
 	 * @return The processed entity
@@ -173,18 +225,6 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 		}
 
 		return arguments.entity;
-	}
-
-	/**
-	 * Lazy loading of the ORM utility according to the CFML engine you are on
-	 *
-	 * @return cborm.models.util.IORMUtil
-	 */
-	private function getOrm(){
-		if ( isNull( variables.orm ) ) {
-			variables.orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
-		}
-		return variables.orm;
 	}
 
 }

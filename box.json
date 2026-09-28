@@ -1,6 +1,6 @@
 {
     "name":"ColdBox ORM Extensions",
-    "version":"5.2.0",
+    "version":"6.0.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/coldbox-modules/cborm/@build.version@/cborm-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com",
     "homepage":"https://github.com/coldbox-modules/cborm",
@@ -10,7 +10,7 @@
         "url":"https://github.com/coldbox-modules/cborm"
     },
     "bugs":"https://ortussolutions.atlassian.net/browse/CBORM",
-    "shortDescription":"Enhances the Hibernate ORM on BoxLang + CFML Engines with tons of utilities.",
+    "shortDescription":"ColdBox ORM extensions for BoxLang: services, active entities, criteria and events on top of the bx-orm module (Hibernate 7).",
     "slug":"cborm",
     "type":"modules",
     "keywords":"hibernate, orm extensions, orm",
@@ -47,17 +47,14 @@
     "scripts":{
         "build:module":"task run taskfile=Build.cfc :projectName=`package show slug` :version=`package show version`",
         "build:docs":"task run taskfile=Build.cfc target=docs :projectName=`package show slug` :version=`package show version`",
-        "format":"cfformat run aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc --overwrite",
-        "format:watch":"cfformat watch aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc ./.cfformat.json",
-        "format:check":"cfformat check aop,dsl,interceptors,models,test-harness/tests/,ModuleConfig.cfc ./.cfformat.json",
+        "format":"cfformat run test-harness/tests/ --overwrite",
+        "format:watch":"cfformat watch test-harness/tests/ ./.cfformat.json",
+        "format:check":"cfformat check test-harness/tests/ ./.cfformat.json",
         "install:dependencies":"install --force && cd test-harness && install --force",
         "startdbs":"!docker-compose -f docker-compose.yml up",
         "start:boxlang":"server start serverConfigFile=server-boxlang-cfml@1.json",
-        "start:adobe":"server start serverConfigFile=server-adobe@2025.json",
         "stop:boxlang":"server stop serverConfigFile=server-boxlang-cfml@1.json",
-        "stop:adobe":"server stop serverConfigFile=server-adobe@2025.json",
-        "logs:boxlang":"server log serverConfigFile=server-boxlang-cfml@1.json --follow",
-        "logs:adobe":"server log serverConfigFile=server-adobe@2025.json --follow"
+        "logs:boxlang":"server log serverConfigFile=server-boxlang-cfml@1.json --follow"
     },
     "installPaths":{
         "cbvalidation":"modules/cbvalidation/",

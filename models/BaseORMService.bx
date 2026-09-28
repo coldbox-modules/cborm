@@ -2,13 +2,14 @@
  * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This is a helper ORM service that will help you abstract some complexities
- * when dealing with CF's ORM via Hibernate.  You can use this service in its
- * concrete form or you can inherit from it and extend it.
+ * A helper ORM service that abstracts the bx-orm module (Hibernate 7) behind a friendly API. Use it in its concrete
+ * form, as a virtual service for one entity (`VirtualEntityService`), as an active record (`ActiveEntity`), or extend
+ * it with your own services.
+ *
+ * Every method delegates to the bx-orm built-in functions (`entityLoad()`, `ormExecuteQuery()`, `entityCriteria()`,
+ * ...), so it works with any bx-orm feature and with the BoxLang `transaction{}` the ORM rides on.
  */
-import cborm.models.util.*;
-
-component accessors="true" {
+class accessors="true" {
 
 	/**
 	 * The name of the cache region to store cached queries, entities, etc.  Defaults to `ORMService.defaultCache`
@@ -43,11 +44,6 @@ component accessors="true" {
 	property name="ORMEventHandler" persistent="false";
 
 	/**
-	 * The system ORM utility object depending on the CFML Engine you are on.
-	 */
-	property name="ORM" persistent="false";
-
-	/**
 	 * The bit that enables automatic transaction demarcation on all save, saveAll, update, delete methods, default is TRUE
 	 */
 	property
@@ -57,7 +53,7 @@ component accessors="true" {
 		persistent="false";
 
 	/**
-	 * The bit that determines the default return value for list(), createCriteria() and executeQuery() as query or arrays, default is query for listing
+	 * The bit that determines the default return value for list(), createCriteria() and executeQuery() as query or arrays, default is array
 	 */
 	property
 		name      ="defaultAsQuery"
@@ -84,7 +80,6 @@ component accessors="true" {
 	 */
 	property name="wirebox" persistent="false";
 
-
 	/************************************** CONSTRUCTOR *********************************************/
 
 	/**
@@ -93,7 +88,7 @@ component accessors="true" {
 	 * @queryCacheRegion The default query cache region to use, by default it uses ORMService.defaultCache
 	 * @useQueryCaching  Activate caching or not
 	 * @eventHandling    Activate event handling or not
-	 * @useTransactions  Use cftransactions around all crud operations or not
+	 * @useTransactions  Use transactions around all crud operations or not
 	 * @defaultAsQuery   Return queries or array of objects by default
 	 * @datasource       The default datasource to use for this service
 	 */
@@ -122,7 +117,7 @@ component accessors="true" {
 			if ( appMD.keyExists( "ormsettings" ) && appMD.ormsettings.keyExists( "datasource" ) ) {
 				variables.datasource = appMD.ormsettings.datasource;
 			} else {
-				variables.datasource = appMD.datasource;
+				variables.datasource = appMD.datasource ?: "";
 			}
 		} else {
 			variables.datasource = arguments.datasource;
@@ -138,9 +133,9 @@ component accessors="true" {
 	/**
 	 * Functional construct for if statements operating over this service and family of services
 	 *
-	 * The success/failure closures accept the entity in question as the first argument
+	 * The success/failure closures accept the service as the first argument
 	 * <pre>
-	 * when( true|false, ( entity )=> {}, ( entity )=> {} )
+	 * when( true|false, ( service )=> {}, ( service )=> {} )
 	 * </pre>
 	 *
 	 * @target  The boolean evaluator, it has to evaluate to true or false
@@ -163,27 +158,15 @@ component accessors="true" {
 	}
 
 	/**
-	 * Lazy loading of the ORM utility according to the engine you are on.
+	 * Returns the cborm ORM event handler, which announces the ORM events as ColdBox interception points.
 	 *
-	 * @return cborm.models.util.IORMUtil
-	 */
-	function getOrm(){
-		if ( !structKeyExists( variables, "orm" ) || isNull( variables.orm ) ) {
-			variables.orm = new cborm.models.util.ORMUtilFactory().getORMUtil();
-		}
-		return variables.orm;
-	}
-
-	/**
-	 * Returns the ORM event handler, if you are on BoxLang it will return the BXEventHandler, else it will return the default EventHandler
-	 *
-	 * @return cborm.models.EventHandler|cborm.models.BXEventHandler
+	 * @return cborm.models.EventHandler
 	 */
 	function getORMEventHandler(){
 		if ( !structKeyExists( variables, "ORMEventHandler" ) || isNull( variables.ORMEventHandler ) ) {
-			variables.ORMEventHandler = server.keyExists( "boxlang" ) ? new cborm.models.BXEventHandler() : new cborm.models.EventHandler()
+			variables.ORMEventHandler = new cborm.models.EventHandler();
 		}
-		return variables.ORMEventHandler
+		return variables.ORMEventHandler;
 	}
 
 	/**
@@ -193,44 +176,35 @@ component accessors="true" {
 	 */
 	function getDynamicProcessor(){
 		if ( !structKeyExists( variables, "dynamicProcessor" ) || isNull( variables.dynamicProcessor ) ) {
-			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" )
+			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
 		}
 
-		return variables.dynamicProcessor
+		return variables.dynamicProcessor;
 	}
 
 	/**
-	 * Convert an Id value to it's Java cast type, this is an alias for `ConvertIdValueToJavaType()`
+	 * Normalize an id, a list of ids or an array of ids into an array of ids.
+	 * bx-orm and Hibernate 7 convert id values to the entity's id type themselves, so no type casting is done.
 	 *
-	 * @entity The entity name or entity object
-	 * @id     The id value to convert
+	 * @deprecated Ids no longer need casting; kept for compatibility
+	 * @entity     The entity name or entity object (unused)
+	 * @id         The id, list of ids or array of ids
+	 *
+	 * @return An array of ids
 	 */
 	any function idCast( required entity, required id ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
-
-		// No component type support for identifiers
-		if ( !isNull( hibernateMD ) and !hibernateMD.getIdentifierType().isComponentType() ) {
-			var identifierType = hibernateMD.getIdentifierType();
-
-			// id conversion to array
-			if ( isSimpleValue( arguments.id ) ) {
-				arguments.id = listToArray( arguments.id );
-			}
-
-			// Convert to Java Type
-			return arguments.id.map( function( thisID ){
-				return identifierType.fromStringValue( thisID );
-			} );
+		if ( isSimpleValue( arguments.id ) ) {
+			return listToArray( arguments.id );
 		}
-
-		return arguments.id;
+		return isArray( arguments.id ) ? arguments.id : [ arguments.id ];
 	}
 
 	/**
-	 * Coverts a value to the correct javaType for the property passed in.
+	 * Returns the value as is: bx-orm and Hibernate 7 convert query values to the property's type themselves.
 	 *
-	 * @entity       The entity name or entity object
-	 * @propertyName The property name
+	 * @deprecated Values no longer need casting; kept for compatibility
+	 * @entity       The entity name or entity object (unused)
+	 * @propertyName The property name (unused)
 	 * @value        The property value
 	 */
 	any function autoCast(
@@ -238,32 +212,24 @@ component accessors="true" {
 		required propertyName,
 		required value
 	){
-		if ( server.keyExists( "boxlang" ) ) {
-			// BL casters are smart enough to handle generic objects
-			return value;
-		} else {
-			var hibernateMD = getEntityMetadata( arguments.entity );
-			return hibernateMD.getPropertyType( arguments.propertyName ).fromStringValue( arguments.value );
-		}
+		return arguments.value;
 	}
 
 	/**
-	 * Coverts an ID, list of ID's, or array of ID's values to the proper Java type
-	 * The method returns a coverted array of ID's
+	 * Normalize an id, list of ids or array of ids into an array of ids.
 	 *
-	 * @deprecated In favor of `idCast()`
+	 * @deprecated In favor of `idCast()`, which is no longer needed
 	 * @entityName The entity name
 	 * @id         The id value to convert
 	 */
 	any function convertIdValueToJavaType( required entityName, required id ){
-		arguments.entity = arguments.entityname;
-		return idCast( argumentCollection = arguments );
+		return idCast( entity = arguments.entityName, id = arguments.id );
 	}
 
 	/**
-	 * Coverts a value to the correct javaType for the property passed in
+	 * Returns the value as is.
 	 *
-	 * @deprecated   In favor of `autoCast()`
+	 * @deprecated   In favor of `autoCast()`, which is no longer needed
 	 * @entityName   The entity name or entity object
 	 * @propertyName The property name
 	 * @value        The property value
@@ -273,8 +239,7 @@ component accessors="true" {
 		required propertyName,
 		required value
 	){
-		arguments.entity = arguments.entityName;
-		return autoCast( argumentCollection = arguments );
+		return arguments.value;
 	}
 
 	/*****************************************************************************************/
@@ -333,7 +298,6 @@ component accessors="true" {
 			options.ignoreCase = arguments.ignoreCase;
 		}
 
-		// Execute Query: https://cfdocs.org/entityload
 		var results = entityLoad(
 			arguments.entityName,
 			arguments.criteria,
@@ -345,7 +309,6 @@ component accessors="true" {
 		if ( isNull( results ) ) {
 			results = [];
 		}
-
 
 		// As Stream or Query
 		if ( arguments.asStream ) {
@@ -398,7 +361,7 @@ component accessors="true" {
 		}
 		if ( len( arguments.datasource ) ) {
 			options.datasource = arguments.datasource;
-		} else {
+		} else if ( len( getDatasource() ) ) {
 			options.datasource = getDatasource();
 		}
 		options.ignorecase = arguments.ignorecase;
@@ -424,7 +387,6 @@ component accessors="true" {
 				);
 		}
 
-		// Get listing: https://cfdocs.org/ormexecutequery
 		var results = ormExecuteQuery(
 			arguments.query,
 			arguments.params,
@@ -481,6 +443,9 @@ component accessors="true" {
 	/**
 	 * Get an entity using a primary key, if the id is not found this method throws an EntityNotFound Exception
 	 *
+	 * @entityName The name of the entity to retrieve
+	 * @id         The primary key
+	 *
 	 * @throws EntityNotFound
 	 */
 	any function getOrFail( required string entityName, required any id ){
@@ -519,7 +484,6 @@ component accessors="true" {
 			OR
 			NOT isSimpleValue( arguments.id )
 		) {
-			// https://cfdocs.org/entityloadbypk
 			var oEntity = entityLoadByPK( arguments.entityName, arguments.id );
 			// Check if not null, then return it
 			if ( !isNull( oEntity ) ) {
@@ -537,7 +501,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Retrieve all the instances from the passed in entity name using the id argument if specified.flash.inflateFlash()
+	 * Retrieve all the instances from the passed in entity name using the id argument if specified.
 	 * You can also use the properties argument so this method can return to you array of structs instead of array of objects.
 	 * The property list must include the `as` alias if not you will get positional keys.
 	 * Example: properties="catID as id, category as category, role as role"
@@ -557,10 +521,12 @@ component accessors="true" {
 		string properties,
 		boolean asStream = false
 	){
-		var results = [];
-
-		// Prepare HQL, it is way faster with HQL
-		var hql = "FROM #arguments.entityName#";
+		var hql     = "FROM #arguments.entityName#";
+		var params  = {};
+		var options = {
+			"datasource" : entityGetDatasource( arguments.entityName ),
+			"readOnly"   : arguments.readOnly
+		};
 
 		// Properties
 		if ( !isNull( arguments.properties ) ) {
@@ -569,9 +535,11 @@ component accessors="true" {
 
 		// ID
 		if ( !isNull( arguments.id ) ) {
-			// type safe conversions
-			arguments.id = convertIDValueToJavaType( entityName = arguments.entityName, id = arguments.id );
-			hql &= " WHERE id in (:idlist)";
+			hql &= " WHERE #idPropertyName( arguments.entityName )# in (:idlist)";
+			params[ "idlist" ] = {
+				value : idCast( entity = arguments.entityName, id = arguments.id ),
+				list  : true
+			};
 		}
 
 		// Sorting
@@ -579,42 +547,33 @@ component accessors="true" {
 			hql &= " ORDER BY #arguments.sortOrder#";
 		}
 
-		// Execute native hibernate query
-		var query = getOrm().getSession( getOrm().getEntityDatasource( arguments.entityName ) ).createQuery( hql );
-
-		// parameter binding
-		if ( !isNull( arguments.id ) ) {
-			query.setParameterList( "idlist", arguments.id );
-		}
-
 		// Caching?
 		if ( getUseQueryCaching() ) {
-			query.setCacheRegion( getQueryCacheRegion() );
-			query.setCacheable( true );
+			options.cacheName = getQueryCacheRegion();
+			options.cacheable = true;
 		}
-		// Read Only
-		query.setReadOnly( javacast( "boolean", arguments.readOnly ) );
+
+		var results = ormExecuteQuery( hql, params, false, options ) ?: [];
 
 		// Streams Support
 		if ( arguments.asStream ) {
-			// If Hibernate 5, return native stream: left( getOrm().getHibernateVersion(), 1 ) > 5
-			if ( server.keyExists( "coldfusion" ) && listFirst( server.coldfusion.productVersion ) >= 2018 ) {
-				return variables.wirebox
-					.getInstance( "StreamBuilder@cbStreams" )
-					.new()
-					.setJStream( query.stream() );
-			} else {
-				return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new( query.list() );
-			}
+			return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new( results );
 		}
 
-		// Normal execution
-		return query.list();
+		return results;
 	}
 
 	/**
 	 * Finds and returns the first result for the given query or throws an exception if not found,
 	 * this method delegates to the `findIt()` method
+	 *
+	 * @query      The HQL Query to execute
+	 * @params     A struct or array of query params
+	 * @timeout    A DB timeout for this query
+	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @datasource The datasource to use
+	 *
+	 * @throws EntityNotFound
 	 */
 	any function findOrFail(
 		required string query,
@@ -658,9 +617,6 @@ component accessors="true" {
 
 	/**
 	 * Find all/single entities by example
-	 *
-	 * https://dzone.com/articles/hibernate-query-example-qbe
-	 * https://cfdocs.org/entityloadbyexample
 	 *
 	 * @example The example entity
 	 * @unique  Unique or array of entities (default)
@@ -707,7 +663,7 @@ component accessors="true" {
 	any function findWhere( required string entityName, struct criteria = {} ){
 		// Caching?
 		if ( getUseQueryCaching() ) {
-			// if we are caching, we will use find all and return an array since entityLoad does not support both unique and caching
+			// if we are caching, we will use find all and return the first one
 			var aEntity = findAllWhere( argumentCollection = arguments );
 			return ( arrayLen( aEntity ) ? aEntity[ 1 ] : javacast( "null", "" ) );
 		} else {
@@ -721,8 +677,11 @@ component accessors="true" {
 	 * @entityName The entity to search for
 	 * @criteria   The filtering criteria to search for.
 	 * @sortOrder  The sorting order
+	 * @ignoreCase Case insensitive or case sensitive searches
+	 * @timeout    A DB timeout for this query
+	 * @asStream   Return a stream if true
 	 */
-	array function findAllWhere(
+	any function findAllWhere(
 		required string entityName,
 		struct criteria    = {},
 		string sortOrder   = "",
@@ -770,6 +729,8 @@ component accessors="true" {
 	/**
 	 * Get a new entity object by entity name and you can pass in the properties structre also to bind the entity with properties
 	 *
+	 * The entity is autowired, populated and then the `ORMPostNew` interception is announced (when event handling is on).
+	 *
 	 * @entityName           The entity to create
 	 * @properties           The structure of data to populate the entity with. By default we will inspect for many-to-one, one-to-many and many-to-many relationships and compose them for you.
 	 * @composeRelationships Automatically attempt to compose relationships from the incoming properties memento
@@ -793,12 +754,19 @@ component accessors="true" {
 		exclude                      = "",
 		boolean ignoreTargetLists    = false
 	){
+		var eventHandler = getORMEventHandler();
+
+		// entityNew() fires bx-orm's own postNew event; the cborm handler skips it while this flag is set so
+		// ORMPostNew is announced once, below, after the entity is autowired and populated.
+		request[ "cbormEntityNewInProgress" ] = true;
+		try {
+			var newEntity = entityNew( arguments.entityName );
+		} finally {
+			request.delete( "cbormEntityNewInProgress" );
+		}
+
 		// Build and autowire
-		var eventHandler = getORMEventHandler()
-		var entity       = eventHandler.processEntityInjection(
-			entityName: arguments.entityName,
-			entity    : entityNew( arguments.entityName )
-		)
+		var entity = eventHandler.processEntityInjection( entityName: arguments.entityName, entity: newEntity );
 
 		// Population of properties
 		if ( NOT structIsEmpty( arguments.properties ) ) {
@@ -812,15 +780,15 @@ component accessors="true" {
 				include              = arguments.include,
 				exclude              = arguments.exclude,
 				ignoreTargetLists    = arguments.ignoreTargetLists
-			)
+			);
 		}
 
 		// Event Handling? If enabled, call the postNew() interception
 		if ( getEventHandling() ) {
-			eventHandler.postNew( entity, arguments.entityName )
+			eventHandler.postNew( entity, arguments.entityName );
 		}
 
-		return entity
+		return entity;
 	}
 
 	/**
@@ -845,7 +813,7 @@ component accessors="true" {
 		boolean defaultAsQuery  = getDefaultAsQuery(),
 		string datasource       = getDatasource()
 	){
-		return new cborm.models.VirtualEntityService( argumentCollection = arguments )
+		return new cborm.models.VirtualEntityService( argumentCollection = arguments );
 	}
 
 	/*****************************************************************************************/
@@ -1030,10 +998,10 @@ component accessors="true" {
 	 */
 	function getObjectPopulator(){
 		if ( structKeyExists( variables, "objectPopulator" ) && !isNull( variables.objectPopulator ) ) {
-			return variables.objectPopulator
+			return variables.objectPopulator;
 		}
-		variables.objectPopulator = variables.wirebox.getObjectPopulator()
-		return variables.objectPopulator
+		variables.objectPopulator = variables.wirebox.getObjectPopulator();
+		return variables.objectPopulator;
 	}
 
 	/*****************************************************************************************/
@@ -1066,92 +1034,41 @@ component accessors="true" {
 	 * @entity The entity or array of entities to refresh
 	 */
 	BaseORMService function refresh( required any entity ){
-		var aObjects = [];
+		var aObjects = isArray( arguments.entity ) ? arguments.entity : [ arguments.entity ];
 
-		if ( !isArray( arguments.entity ) ) {
-			aObjects.append( arguments.entity );
-		} else {
-			aObjects = arguments.entity;
+		for ( var item in aObjects ) {
+			entityReload( item );
 		}
-
-		aObjects.each( function( item ){
-			getOrm().getSession( getOrm().getEntityDatasource( item ) ).refresh( item );
-		} );
-
-		// Null it due to closure memory bugs on some engines
-		aObjects = nullValue();
 
 		return this;
 	}
 
 	/**
-	 * Get an array of properties that are dirty in the entity, empty array if none.
+	 * Get an array of properties that are dirty in the entity, empty array if none or if the entity is not in session.
 	 *
 	 * @entity The entity to check
 	 */
 	array function getDirtyPropertyNames( required entity ){
-		var thisSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
-		var hibernateMD = getEntityMetadata( arguments.entity );
-		var dbState     = hibernateMD.getDatabaseSnapshot( getKeyValue( entity ), thisSession );
-
-		// If this is null, then the entity is not in session
-		if ( isNull( dbState ) ) {
-			return [];
-		}
-
-		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
-
-		var modified = hibernateMD.findModified(
-			dbState,
-			currentState,
-			arguments.entity,
-			thisSession
-		);
-		var dirtyArray = !isNull( local.modified ) ? modified : [];
-
-		return arrayMap( dirtyArray, function( index ){
-			return hibernateMD.getSubclassPropertyName( index );
-		} );
+		return entityGetDirtyProperties( arguments.entity );
 	}
 
 	/**
-	 * Verifies if the entity has dirty data or not.  If the entity is not loaded in session, this method will throw an exception.
+	 * Verifies if the entity has dirty data or not.
 	 *
-	 * @entity The entity to check if lazy
+	 * @entity The entity to check
 	 */
 	boolean function isDirty( required entity ){
-		var thisSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
-		var hibernateMD = getEntityMetadata( arguments.entity );
-		var dbState     = hibernateMD.getDatabaseSnapshot( getKeyValue( arguments.entity ), thisSession );
-
-		// If this is null, then the entity is not in session
-		if ( isNull( dbState ) ) {
-			return false;
-		}
-
-		var currentState = getPropertyValues( thisSession, hibernateMD, arguments.entity );
-
-		var modified = hibernateMD.findModified(
-			dbState,
-			currentState,
-			arguments.entity,
-			thisSession
-		);
-		var dirtyArray = !isNull( local.modified ) ? modified : [];
-
-		return ( arrayLen( dirtyArray ) > 0 );
+		return entityIsDirty( arguments.entity );
 	}
 
 	/**
-	 * Get the unique identifier value for the passed in entity, or null if the instance is not in session
+	 * Get the unique identifier value for the passed in entity, or null if it has none yet
 	 *
 	 * @entity The entity to inspect for it's id
 	 */
 	any function getKeyValue( required entity ){
 		try {
-			return getORM()
-				.getSession( getOrm().getEntityDatasource( arguments.entity ) )
-				.getIdentifier( arguments.entity );
+			return entityGetId( arguments.entity );
 		} catch ( any e ) {
 			return;
 		}
@@ -1167,64 +1084,60 @@ component accessors="true" {
 	 * @return string or array
 	 */
 	any function getKey( required entity ){
-		var hibernateMD = getEntityMetadata( arguments.entity );
+		var idProperties = getEntityMetadata( arguments.entity ).idProperties;
 
 		// Is this a simple key?
-		if ( hibernateMD.hasIdentifierProperty() ) {
-			return hibernateMD.getIdentifierPropertyName();
+		if ( idProperties.len() == 1 ) {
+			return idProperties[ 1 ];
 		}
 
 		// Composite Keys?
-		if ( hibernateMD.getIdentifierType().isComponentType() ) {
-			// Do conversion to CF Array instead of java array, just in case
-			return listToArray( arrayToList( hibernateMD.getIdentifierType().getPropertyNames() ) );
+		if ( idProperties.len() > 1 ) {
+			return idProperties;
 		}
 
 		return "";
 	}
 
 	/**
-	 * Returns the Property Names of the entity via hibernate metadata
+	 * Returns the Property Names of the entity via the entity metadata
 	 *
 	 * @entity The entity name or the actual entity object
 	 */
 	array function getPropertyNames( required entity ){
-		return getEntityMetadata( arguments.entity ).getPropertyNames();
+		return getEntityMetadata( arguments.entity ).propertyNames;
 	}
 
 	/**
-	 * Returns the table name that the current entity belongs to via hibernate metadata
+	 * Returns the table name that the current entity belongs to via the entity metadata
 	 *
 	 * @entity The entity name or the actual entity object
 	 */
 	string function getTableName( required entity ){
-		return getEntityMetadata( arguments.entity ).getTableName();
+		return getEntityMetadata( arguments.entity ).tableName;
 	}
 
 	/**
-	 * Get an entity's hibernate metadata
+	 * Get an entity's metadata struct (`entityGetMetadata()`): entityName, tableName, idProperties, propertyNames,
+	 * properties, associations, ...
 	 *
-	 * @see    https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/metadata/ClassMetadata.html
 	 * @entity The entity name or entity object
 	 *
-	 * @return The Hibernate Java ClassMetadata Object
+	 * @return The bx-orm entity metadata struct
 	 */
 	function getEntityMetadata( required entity ){
-		return getOrm().getEntityMetadata(
-			entityName = ( isObject( arguments.entity ) ? getEntityGivenName( arguments.entity ) : arguments.entity ),
-			datasource = getOrm().getEntityDatasource( arguments.entity, getDatasource() )
-		);
+		return entityGetMetadata( arguments.entity );
 	}
 
 	/**
-	 * Returns the entity name from a given entity object via session lookup or if new object via metadata lookup
+	 * Returns the entity name from a given entity object
 	 *
 	 * @entity The entity to get it's name from
 	 *
 	 * @return The entity name
 	 */
 	function getEntityGivenName( required entity ){
-		return getOrm().getEntityGivenName( arguments.entity );
+		return entityGetName( arguments.entity );
 	}
 
 	/*****************************************************************************************/
@@ -1238,7 +1151,7 @@ component accessors="true" {
 	 *
 	 * @entity        The entity or array of entities to delete
 	 * @flush         Do a flush after deleting, false by default since we use transactions
-	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @transactional Wrap it in a `transaction`, defaults to true
 	 */
 	BaseORMService function delete(
 		required any entity,
@@ -1247,23 +1160,15 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entity, flush ){
-				var objects = [];
+				var objects = isArray( arguments.entity ) ? arguments.entity : [ arguments.entity ];
 
-				if ( !isArray( arguments.entity ) ) {
-					arrayAppend( objects, arguments.entity );
-				} else {
-					objects = arguments.entity;
-				}
-
-				objects.each( function( item ){
+				for ( var item in objects ) {
 					entityDelete( item );
-				} );
-
-				objects = nullValue();
+				}
 
 				// Flush?
 				if ( arguments.flush ) {
-					getOrm().flush();
+					flushDatasource( objects.len() ? entityGetDatasource( objects[ 1 ] ) : getDatasource() );
 				}
 
 				return this;
@@ -1279,7 +1184,7 @@ component accessors="true" {
 	 *
 	 * @entityName    The entity name to delete all from
 	 * @flush         Do a flush after deleting, false by default since we use transactions
-	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @transactional Wrap it in a `transaction`, defaults to true
 	 */
 	numeric function deleteAll(
 		required string entityName,
@@ -1288,17 +1193,18 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush ){
-				var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
+				var options = { "datasource" : entityGetDatasource( arguments.entityName ) };
 
 				var count = ormExecuteQuery(
 					"delete from #arguments.entityName#",
+					{},
 					false,
 					options
 				);
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					getOrm().flush( options.datasource );
+					flushDatasource( options.datasource );
 				}
 
 				return count;
@@ -1319,7 +1225,7 @@ component accessors="true" {
 	 * @entityName    The entity name target
 	 * @id            The single id or an array of Ids to delete
 	 * @flush         Do a flush after deleting, false by default since we use transactions
-	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @transactional Wrap it in a `transaction`, defaults to true
 	 */
 	numeric function deleteByID(
 		required string entityName,
@@ -1329,17 +1235,23 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, id, flush ){
+				var datasource = entityGetDatasource( arguments.entityName );
 				// Bulk Execute
-				var count = ormExecuteQuery(
-					"delete FROM #arguments.entityName# where id in (:idlist)",
-					{ "idlist" : idCast( entity = arguments.entityName, id = arguments.id ) },
+				var count      = ormExecuteQuery(
+					"delete FROM #arguments.entityName# where #idPropertyName( arguments.entityName )# in (:idlist)",
+					{
+						"idlist" : {
+							value : idCast( entity = arguments.entityName, id = arguments.id ),
+							list  : true
+						}
+					},
 					false,
-					{ "datasource" : getOrm().getEntityDatasource( arguments.entityName ) }
+					{ "datasource" : datasource }
 				);
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					getOrm().flush( datasource );
+					flushDatasource( datasource );
 				}
 
 				return count;
@@ -1357,12 +1269,12 @@ component accessors="true" {
 	 * @query         The query to use for deletion
 	 * @params        The params to bind the query with
 	 * @flush         Do a flush after deleting, false by default since we use transactions
-	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @transactional Wrap it in a `transaction`, defaults to true
 	 * @datasource    Add the datasource to use or defaults
 	 */
 	numeric function deleteByQuery(
 		required string query,
-		any params,
+		any params            = {},
 		boolean flush         = false,
 		boolean transactional = getUseTransactions(),
 		string datasource     = getDatasource()
@@ -1374,12 +1286,12 @@ component accessors="true" {
 					"delete #arguments.query#",
 					arguments.params,
 					false,
-					{ "datasource" : arguments.datasource }
+					datasourceOptions( arguments.datasource )
 				);
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					getOrm().flush( datasource );
+					flushDatasource( arguments.datasource );
 				}
 
 				return count;
@@ -1401,7 +1313,7 @@ component accessors="true" {
 	 *
 	 * @entityName    The entity name to target
 	 * @flush         Do a flush after deleting, false by default since we use transactions
-	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @transactional Wrap it in a `transaction`, defaults to true
 	 * @datasource    The datasource to use or the default one
 	 */
 	numeric function deleteWhere(
@@ -1412,12 +1324,19 @@ component accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush, datasource ){
-				var sqlBuffer = getStringBuilder( "delete from #arguments.entityName#" );
+				// Go over the name-value pairs and incorporate them, filtering out reserved names
+				var whereStatements = [];
+				var params          = {};
+				for ( var key in arguments ) {
+					if ( listFindNoCase( "entityName,flush,datasource", key ) || isNull( arguments[ key ] ) ) {
+						continue;
+					}
+					params[ key ] = arguments[ key ];
+					whereStatements.append( "#key# = :#key#" );
+				}
 
 				// Do we have arguments?
-				if ( structCount( arguments ) > 3 ) {
-					sqlBuffer.append( " WHERE " );
-				} else {
+				if ( !whereStatements.len() ) {
 					throw(
 						message = "No where arguments sent, aborting deletion",
 						detail  = "We will not do a full delete via this method, you need to pass in named value arguments.",
@@ -1425,41 +1344,12 @@ component accessors="true" {
 					);
 				}
 
-				var whereStatements = []
-				// Go over Params and incorporate them
-				var params          = arguments
-					// filter out reserved names
-					.filter( function( key, value ){
-						return ( !listFindNoCase( "entityName,flush,datasource", arguments.key ) );
-					} )
-					.reduce( function( accumulator, key, value ){
-						accumulator[ key ] = value;
-						whereStatements.append( "#key# = :#key#" );
-						return accumulator;
-					}, {} );
-
-				// Finalize ANDs
-				sqlBuffer.append( whereStatements.toList( " AND " ) );
-
-				// start DLM deleteion
-				try {
-					var count = ormExecuteQuery(
-						sqlBuffer.toString(),
-						params,
-						false,
-						{ datasource : arguments.datasource }
-					);
-				} catch ( "java.lang.NullPointerException" e ) {
-					throw(
-						message = "A null pointer exception occurred when running the query",
-						detail  = "The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList( arguments )#",
-						type    = "BaseORMService.MaybeInvalidParamCaseException"
-					);
-				} catch ( any e ) {
-					rethrow;
-				}
-
-				return count;
+				return ormExecuteQuery(
+					"delete from #arguments.entityName# WHERE " & whereStatements.toList( " AND " ),
+					params,
+					false,
+					datasourceOptions( arguments.datasource )
+				);
 			},
 			arguments,
 			arguments.transactional
@@ -1476,7 +1366,7 @@ component accessors="true" {
 	 * @entities      An array of entities to save
 	 * @forceInsert   Defaults to false, but if true, will insert as new record regardless
 	 * @flush         Do a flush after saving the entries, false by default since we use transactions
-	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @transactional Wrap it in a `transaction`, defaults to true
 	 */
 	BaseORMService function saveAll(
 		required entities,
@@ -1506,7 +1396,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					getOrm().flush( getDatasource() );
+					flushDatasource( getDatasource() );
 				}
 
 				return this;
@@ -1517,12 +1407,12 @@ component accessors="true" {
 	}
 
 	/**
-	 * Save an entity using hibernate transactions or not. You can optionally flush the session also
+	 * Save an entity using transactions or not. You can optionally flush the session also
 	 *
 	 * @entity        The entity to save
 	 * @forceInsert   Defaults to false, but if true, will insert as new record regardless
 	 * @flush         Do a flush after saving the entity, false by default since we use transactions
-	 * @transactional Wrap it in a `cftransaction`, defaults to true
+	 * @transactional Wrap it in a `transaction`, defaults to true
 	 *
 	 * @return saved entity or array of entities
 	 */
@@ -1547,7 +1437,7 @@ component accessors="true" {
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					getOrm().flush( getOrm().getEntityDatasource( arguments.entity ) );
+					flushDatasource( entityGetDatasource( arguments.entity ) );
 				}
 
 				// Event Handling? If enabled, call the postSave() interception
@@ -1575,10 +1465,10 @@ component accessors="true" {
 	boolean function exists( required entityName, required any id ){
 		// Do it DLM style
 		var count = ormExecuteQuery(
-			"select count( id ) from #arguments.entityName# where id = :id",
+			"select count(*) from #arguments.entityName# where #idPropertyName( arguments.entityName )# = :id",
 			{ id : arguments.id },
 			true,
-			{ datasource : getOrm().getEntityDatasource( arguments.entityName ) }
+			{ datasource : entityGetDatasource( arguments.entityName ) }
 		);
 
 		return ( count gt 0 );
@@ -1587,7 +1477,7 @@ component accessors="true" {
 	/**
 	 * Return the count of records in the DB for the given entity name. You can also pass an optional where statement
 	 * that can filter the count. Ex: <code>count( 'User','age > 40 AND name="joe"' )</code>. You can even use params with this method:
-	 * Ex: <code>count('User','age > ? AND name = ?',[40,"joe"])</code>
+	 * Ex: <code>count('User','age > ?1 AND name = ?2',[40,"joe"])</code>
 	 *
 	 * @entityName The name of the entity
 	 * @where      The HQL where statement
@@ -1598,9 +1488,8 @@ component accessors="true" {
 		string where = "",
 		any params   = structNew()
 	){
-		var buffer  = getStringBuilder();
-		var options = { "datasource" : getOrm().getEntityDatasource( arguments.entityName ) };
-
+		var hql     = "select count(*) from #arguments.entityName#";
+		var options = { "datasource" : entityGetDatasource( arguments.entityName ) };
 
 		// Caching?
 		if ( getUseQueryCaching() ) {
@@ -1608,29 +1497,13 @@ component accessors="true" {
 			options.cacheable = true;
 		}
 
-		// HQL
-		buffer.append( "select count( id ) from #arguments.entityName#" );
-
 		// build params
 		if ( len( trim( arguments.where ) ) ) {
-			buffer.append( " WHERE #trim( arguments.where )#" );
+			hql &= " WHERE #trim( arguments.where )#";
 		}
 
 		// execute query as unique for the count
-		try {
-			return ormExecuteQuery(
-				buffer.toString(),
-				arguments.params,
-				true,
-				options
-			);
-		} catch ( "java.lang.NullPointerException" e ) {
-			throw(
-				message = "A null pointer exception occurred when running the query",
-				detail  = "The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys	=#structKeyList( arguments.params )#",
-				type    = "ORMService.MaybeInvalidParamCaseException"
-			);
-		}
+		return ormExecuteQuery( hql, arguments.params, true, options );
 	}
 
 	/**
@@ -1641,28 +1514,21 @@ component accessors="true" {
 	 * @entityName The entity name to count on
 	 */
 	numeric function countWhere( required string entityName ){
-		var sqlBuffer = getStringBuilder( "select count(id) from #arguments.entityName#" );
-		var options   = { datasource : getOrm().getEntityDatasource( arguments.entityName ) };
+		var hql             = "select count(*) from #arguments.entityName#";
+		var options         = { datasource : entityGetDatasource( arguments.entityName ) };
+		var whereStatements = [];
+		var params          = {};
 
-		// Do we have arguments?
-		var params = {};
-		if ( structCount( arguments ) > 1 ) {
-			sqlBuffer.append( " WHERE" );
-
-			// Go over Params and incorporate them
-			params = arguments
-				// filter out reserved names
-				.filter( function( key, value ){
-					return ( !listFindNoCase( "entityName", arguments.key ) );
-				} )
-				.reduce( function( accumulator, key, value ){
-					accumulator[ key ] = value;
-					sqlBuffer.append( " #key# = :#key# AND" );
-					return accumulator;
-				}, {} );
-
-			// Finalize ANDs
-			sqlBuffer.append( " 1 = 1" );
+		// Go over the name-value pairs and incorporate them, filtering out reserved names
+		for ( var key in arguments ) {
+			if ( key == "entityName" || isNull( arguments[ key ] ) ) {
+				continue;
+			}
+			params[ key ] = arguments[ key ];
+			whereStatements.append( "#key# = :#key#" );
+		}
+		if ( whereStatements.len() ) {
+			hql &= " WHERE " & whereStatements.toList( " AND " );
 		}
 
 		// Caching?
@@ -1672,17 +1538,7 @@ component accessors="true" {
 		}
 
 		// execute query as unique for the count
-		try {
-			return ormExecuteQuery( sqlBuffer.toString(), params, true, options );
-		} catch ( "java.lang.NullPointerException" e ) {
-			throw(
-				message = "A null pointer exception occurred when running the query",
-				detail  = "The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList( arguments )#",
-				type    = "BaseORMService.MaybeInvalidParamCaseException"
-			);
-		} catch ( any e ) {
-			rethrow;
-		}
+		return ormExecuteQuery( hql, params, true, options );
 	}
 
 	/*****************************************************************************************/
@@ -1704,20 +1560,25 @@ component accessors="true" {
 	){
 		// With Relation
 		if ( !isNull( arguments.relationName ) ) {
-			if ( !isNull( arguments.id ) )
+			if ( !isNull( arguments.id ) ) {
 				ormEvictCollection(
 					arguments.entityName,
 					arguments.relationName,
 					arguments.id
 				);
-			else ormEvictCollection( arguments.entityName, arguments.relationName );
+			} else {
+				ormEvictCollection( arguments.entityName, arguments.relationName );
+			}
 
 			return this;
 		}
 
 		// Single Entity
-		if ( !isNull( arguments.id ) ) ormEvictEntity( arguments.entityName, arguments.id );
-		else ormEvictEntity( arguments.entityName );
+		if ( !isNull( arguments.id ) ) {
+			ormEvictEntity( arguments.entityName, arguments.id );
+		} else {
+			ormEvictEntity( arguments.entityName );
+		}
 
 		return this;
 	}
@@ -1731,13 +1592,11 @@ component accessors="true" {
 	 * @entities The argument can be one persistence entity or an array of entities to evict
 	 */
 	BaseORMService function evict( required any entities ){
-		if ( !isArray( arguments.entities ) ) {
-			arguments.entities = [ arguments.entities ];
-		}
+		var objects = isArray( arguments.entities ) ? arguments.entities : [ arguments.entities ];
 
-		arguments.entities.each( function( item ){
-			getOrm().getSession( getOrm().getEntityDatasource( item ) ).evict( item );
-		} );
+		for ( var item in objects ) {
+			entityEvict( item );
+		}
 
 		return this;
 	}
@@ -1749,7 +1608,11 @@ component accessors="true" {
 	 * @datasource The specific datasource to use or the default datasource
 	 */
 	BaseORMService function evictQueries( string cacheName, string datasource = getDatasource() ){
-		getOrm().evictQueries( argumentCollection = arguments );
+		if ( isNull( arguments.cacheName ) || !len( arguments.cacheName ) ) {
+			ormEvictQueries( datasource = arguments.datasource );
+		} else {
+			ormEvictQueries( arguments.cacheName, arguments.datasource );
+		}
 		return this;
 	}
 
@@ -1758,33 +1621,27 @@ component accessors="true" {
 	/*****************************************************************************************/
 
 	/**
-	 * Build a java proxy object using our Java Proxy Builder
-	 *
-	 * @type The type of Java Proxy class to build using our Java Proxy Builder
-	 */
-	function buildJavaProxy( required type ){
-		if ( isNull( variables.javaProxyBuilder ) ) {
-			variables.javaProxyBuilder = getWireBox().getInstance( "JavaProxyBuilder@cborm" );
-		}
-		return variables.javaProxyBuilder.build( arguments.type );
-	}
-
-	/**
 	 * Clear the session removes all the entities that are loaded or created in the session.
 	 * This clears the first level cache and removes the objects that are not yet saved to the database.
 	 *
 	 * @datasource The datasource to use
 	 */
 	BaseORMService function clear( string datasource = getDatasource() ){
-		getOrm().clearSession( arguments.datasource );
+		if ( len( arguments.datasource ) ) {
+			ormClearSession( arguments.datasource );
+		} else {
+			ormClearSession();
+		}
 		return this;
 	}
 
 	/**
 	 * Checks if the hibernate session contains dirty objects that are awaiting persistence
+	 *
+	 * @datasource The datasource to use
 	 */
 	boolean function isSessionDirty( string datasource = getDatasource() ){
-		return getOrm().getSession( arguments.datasource ).isDirty();
+		return len( arguments.datasource ) ? ormIsSessionDirty( arguments.datasource ) : ormIsSessionDirty();
 	}
 
 	/**
@@ -1793,28 +1650,17 @@ component accessors="true" {
 	 * @entity The entity object
 	 */
 	boolean function sessionContains( required any entity ){
-		var ormSession = getOrm().getSession( getOrm().getEntityDatasource( arguments.entity ) );
-		// Hibernate 5 Approach: left( getOrm().getHibernateVersion(), 1 ) > 5
-		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productVersion.listFirst() >= 2018 ) {
-			return ormSession.contains( getEntityGivenName( arguments.entity ), arguments.entity );
-		}
-		return ormSession.contains( arguments.entity );
+		return entityIsAttached( arguments.entity );
 	}
 
 	/**
-	 * Information about the first-level (session) cache for the current session
+	 * Information about the first-level (session) cache for the current session: collectionCount, collectionKeys,
+	 * entityCount and entityKeys
 	 *
 	 * @datasource The datasource to use
 	 */
 	struct function getSessionStatistics( string datasource = getDatasource() ){
-		var stats = getOrm().getSession( arguments.datasource ).getStatistics();
-
-		return {
-			"collectionCount" : stats.getCollectionCount(),
-			"collectionKeys"  : stats.getCollectionKeys().toString(),
-			"entityCount"     : stats.getEntityCount(),
-			"entityKeys"      : stats.getEntityKeys().toString()
-		};
+		return len( arguments.datasource ) ? ormGetSessionStatistics( arguments.datasource ) : ormGetSessionStatistics();
 	}
 
 	/**
@@ -1835,9 +1681,12 @@ component accessors="true" {
 	 * - timeout:numeric (0=no timeout)
 	 * - datasource:string (default datasource)
 	 * - sortBy:hql (empty)
-	 * - autoCast:boolean (true)
+	 * - asStream:boolean (false)
 	 *
 	 * Else it throws a method does not exist exception
+	 *
+	 * @missingMethodName      The method called
+	 * @missingMethodArguments The arguments it was called with
 	 *
 	 * @throws MissingMethodException
 	 */
@@ -1847,8 +1696,7 @@ component accessors="true" {
 
 		// Dynamic Find Unique Finders
 		if ( left( method, 6 ) eq "findBy" and len( method ) GT 6 ) {
-			return getDynamicProcessor().
-process(
+			return getDynamicProcessor().process(
 				method     = right( method, len( method ) - 6 ),
 				args       = args,
 				unique     = true,
@@ -1857,8 +1705,7 @@ process(
 		}
 		// Dynamic find All Finders
 		if ( left( method, 9 ) eq "findAllBy" and len( method ) GT 9 ) {
-			return getDynamicProcessor().
-process(
+			return getDynamicProcessor().process(
 				method     = right( method, len( method ) - 9 ),
 				args       = args,
 				unique     = false,
@@ -1867,8 +1714,7 @@ process(
 		}
 		// Dynamic countBy Finders
 		if ( left( method, 7 ) eq "countBy" and len( method ) GT 7 ) {
-			return getDynamicProcessor().
-process(
+			return getDynamicProcessor().process(
 				method     = right( method, len( method ) - 7 ),
 				args       = args,
 				unique     = true,
@@ -1890,24 +1736,36 @@ process(
 	/*****************************************************************************************/
 
 	/**
-	 * Get our hibernate org.hibernate.criterion.Restrictions proxy object
+	 * Get the restrictions builder: its methods build conditions (`isEq`, `like`, `or`, ...) to pass to a criteria's
+	 * `add()`, `or()`, `and()` and `not()`. It is the same object as a criteria's `c.restrictions`.
 	 *
-	 * @return cborm.models.criterion.Restrictions
+	 * @entityName The entity to take the restrictions from; any mapped entity works, they are not tied to it
+	 *
+	 * @return The bx-orm criteria restrictions helper
 	 */
-	function getRestrictions(){
-		return variables.wirebox.getInstance( "Restrictions@cborm" );
+	function getRestrictions( string entityName = "" ){
+		if ( !len( arguments.entityName ) ) {
+			var names = entityNameArray();
+			if ( !names.len() ) {
+				throw(
+					message = "There are no ORM entities to build restrictions for",
+					type    = "BaseORMService.NoEntitiesFound"
+				);
+			}
+			arguments.entityName = names[ 1 ];
+		}
+		return entityCriteria( arguments.entityName ).restrictions;
 	}
 
 	/**
-	 * Get a brand new criteria builder object
+	 * Get a brand new criteria builder object: a bx-orm `entityCriteria()`
 	 *
 	 * @entityName       The name of the entity to bind this criteria query to
 	 * @useQueryCaching  Activate query caching for the list operations
 	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
-	 * @defaultAsQuery   To return results as queries or array of objects or reports, default is array as results might not match entities precisely
-	 * @dataSource       The datasource to bind the criteria query on, defaults to the one in this ORM service
+	 * @datasource       Ignored: the criteria runs on the entity's own datasource
 	 *
-	 * @return cborm.models.criterion.CriteriaBuilder
+	 * @return The bx-orm criteria builder
 	 */
 	any function newCriteria(
 		required string entityName,
@@ -1915,42 +1773,57 @@ process(
 		string queryCacheRegion = "",
 		datasource              = getDatasource()
 	){
-		// mix in yourself as a dependency
-		arguments.ormService = this;
-		// create new criteria builder, it's a transient
-		return new criterion.CriteriaBuilder( argumentCollection = arguments );
-	}
+		var criteria = entityCriteria( arguments.entityName );
 
+		if ( arguments.useQueryCaching ) {
+			criteria.cache(
+				true,
+				len( trim( arguments.queryCacheRegion ) ) ? arguments.queryCacheRegion : "criterias.#arguments.entityName#"
+			);
+		}
+
+		return criteria;
+	}
 
 	/*****************************************************************************************/
 	/********************************* PRIVATE METHODS **************************************/
 	/*****************************************************************************************/
 
 	/**
-	 * Get property values for the given entity.
+	 * The name of an entity's id property, or `id` when the entity has a composite id
 	 *
-	 * @ormSession        the current ORM session. Will (probably) throw an exception if session is not open.
-	 * @hibernateMetadata a `ClassMetadata` Hibernate object populated with entity meta. See `getEntityMetadata`
-	 * @entity            The entity to retrieve property values on.
-	 * @see               https://docs.jboss.org/hibernate/orm/5.4/javadocs/org/hibernate/persister/entity/EntityPersister.html#getPropertyValues-java.lang.Object-
+	 * @entityName The entity name
 	 */
-	private function getPropertyValues(
-		required ormSession,
-		required hibernateMetadata,
-		required entity
-	){
-		if ( val( left( getOrm().getHibernateVersion(), 3 ) ) < 4.0 ) {
-			return arguments.hibernateMetadata.getPropertyValues(
-				arguments.entity,
-				getOrm().getSessionEntityMode( arguments.ormSession, arguments.entity )
-			);
+	private string function idPropertyName( required entityName ){
+		var key = getKey( arguments.entityName );
+		return isSimpleValue( key ) && len( key ) ? key : "id";
+	}
+
+	/**
+	 * Query options with the datasource, when one is given
+	 *
+	 * @datasource The datasource name or an empty string
+	 */
+	private struct function datasourceOptions( datasource = "" ){
+		return len( arguments.datasource ) ? { "datasource" : arguments.datasource } : {};
+	}
+
+	/**
+	 * Flush a datasource's session, or the default one
+	 *
+	 * @datasource The datasource name or an empty string
+	 */
+	private function flushDatasource( datasource = "" ){
+		if ( len( arguments.datasource ) ) {
+			ormFlush( arguments.datasource );
 		} else {
-			return arguments.hibernateMetadata.getPropertyValues( arguments.entity );
+			ormFlush();
 		}
 	}
 
 	/**
-	 * My hibernate safe transaction closure wrapper, Transactions are per request basis
+	 * Run a closure inside a BoxLang transaction, unless one is already running (the ORM rides the transaction's
+	 * connection, so ORM writes commit and roll back with it)
 	 *
 	 * @target        The closure or UDF to execute
 	 * @argCollection The arguments
@@ -1965,10 +1838,9 @@ process(
 		structDelete( arguments.argCollection, "transactional" );
 
 		// If in transaction, just execute the incoming target
-		if ( request.keyExists( "cbox_aop_transaction" ) OR !arguments.transactional ) {
+		if ( request.keyExists( "cbox_aop_transaction" ) OR isInTransaction() OR !arguments.transactional ) {
 			return arguments.target( argumentCollection = arguments.argCollection );
 		}
-		// transaction safe call, start one, so we can support nested transactions
 		// mark transaction began
 		request[ "cbox_aop_transaction" ] = true;
 
@@ -1986,22 +1858,10 @@ process(
 				request.delete( "cbox_aop_transaction" );
 			}
 		}
-		// end transaction
 
 		if ( !isNull( results ) ) {
 			return results;
 		}
-	}
-
-	/**
-	 * Build out a Java string builder
-	 *
-	 * @seed The string to seed the builder with
-	 *
-	 * @return java.lang.StringBuilder
-	 */
-	private function getStringBuilder( seed = "" ){
-		return createObject( "java", "java.lang.StringBuilder" ).init( arguments.seed );
 	}
 
 }

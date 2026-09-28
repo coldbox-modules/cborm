@@ -4,7 +4,7 @@
  * ---
  * Validates if the field has a unique value in the database, this only applies to ORM objects
  */
-component accessors="true" singleton {
+class accessors="true" singleton {
 
 	// Properties
 	property name="name";
