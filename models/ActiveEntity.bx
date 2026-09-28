@@ -339,7 +339,7 @@ class extends="cborm.models.VirtualEntityService" accessors="true" {
 		string profiles      = ""
 	){
 		// Get validation manager
-		var validationManager = variables.wirebox.getInstance( "ValidationManager@cbvalidation" )
+		var validationManager = getWireBox().getInstance( "ValidationManager@cbvalidation" )
 		// Get constraints from the entity if they exist, otherwise use the passed in constraints
 		var thisConstraints   = structKeyExists( this, "constraints" ) ? this.constraints : {}
 

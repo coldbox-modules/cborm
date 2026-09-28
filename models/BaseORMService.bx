@@ -106,10 +106,8 @@ class accessors="true" {
 		variables.eventHandling    = arguments.eventHandling;
 		variables.useTransactions  = arguments.useTransactions;
 		variables.defaultAsQuery   = arguments.defaultAsQuery;
-		// We go out to app scope due to the ORM loading at application startup time.
-		// This is on purpose
-		variables.wirebox          = application.wirebox;
-		variables.logger           = variables.wirebox.getLogBox().getLogger( this );
+		// WireBox and the logger are resolved on first use (getWireBox(), getLogger()): Hibernate creates entities
+		// (ActiveEntity) while the ORM starts, before ColdBox has put WireBox in the application scope.
 
 		// Datasource
 		if ( isNull( arguments.datasource ) ) {
@@ -129,6 +127,30 @@ class accessors="true" {
 	/*****************************************************************************************/
 	/************************************ UTILITY METHODS ************************************/
 	/*****************************************************************************************/
+
+	/**
+	 * The WireBox injector, taken from the application scope on first use
+	 *
+	 * @return coldbox.system.ioc.Injector
+	 */
+	function getWireBox(){
+		if ( isNull( variables.wirebox ) ) {
+			variables.wirebox = application.wirebox;
+		}
+		return variables.wirebox;
+	}
+
+	/**
+	 * A LogBox logger for this service, created on first use
+	 *
+	 * @return coldbox.system.logging.Logger
+	 */
+	function getLogger(){
+		if ( isNull( variables.logger ) ) {
+			variables.logger = getWireBox().getLogBox().getLogger( this );
+		}
+		return variables.logger;
+	}
 
 	/**
 	 * Functional construct for if statements operating over this service and family of services
@@ -176,7 +198,7 @@ class accessors="true" {
 	 */
 	function getDynamicProcessor(){
 		if ( !structKeyExists( variables, "dynamicProcessor" ) || isNull( variables.dynamicProcessor ) ) {
-			variables.dynamicProcessor = variables.wirebox.getInstance( "cborm.models.util.DynamicProcessor" );
+			variables.dynamicProcessor = getWireBox().getInstance( "cborm.models.util.DynamicProcessor" );
 		}
 
 		return variables.dynamicProcessor;
@@ -312,7 +334,7 @@ class accessors="true" {
 
 		// As Stream or Query
 		if ( arguments.asStream ) {
-			return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new( results );
+			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
 		} else if ( arguments.asQuery ) {
 			return entityToQuery( results );
 		}
@@ -413,7 +435,7 @@ class accessors="true" {
 		// Null Checks
 		if ( isNull( results ) ) {
 			if ( arguments.asStream ) {
-				return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new();
+				return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new();
 			} else if ( arguments.asQuery ) {
 				return queryNew( "" );
 			}
@@ -432,7 +454,7 @@ class accessors="true" {
 
 		// As Stream or Query
 		if ( arguments.asStream ) {
-			return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new( results );
+			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
 		} else if ( arguments.asQuery ) {
 			return entityToQuery( results );
 		}
@@ -557,7 +579,7 @@ class accessors="true" {
 
 		// Streams Support
 		if ( arguments.asStream ) {
-			return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new( results );
+			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
 		}
 
 		return results;
@@ -709,7 +731,7 @@ class accessors="true" {
 
 		// As stream
 		if ( arguments.asStream ) {
-			return variables.wirebox.getInstance( "StreamBuilder@cbStreams" ).new( results );
+			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
 		}
 
 		return results;
@@ -1000,7 +1022,7 @@ class accessors="true" {
 		if ( structKeyExists( variables, "objectPopulator" ) && !isNull( variables.objectPopulator ) ) {
 			return variables.objectPopulator;
 		}
-		variables.objectPopulator = variables.wirebox.getObjectPopulator();
+		variables.objectPopulator = getWireBox().getObjectPopulator();
 		return variables.objectPopulator;
 	}
 
