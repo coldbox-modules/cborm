@@ -53,7 +53,7 @@ jobs:
           cd "$RUNNER_TEMP/bx-orm"
           ./gradlew downloadBoxLang --console=plain
           ./gradlew build -x test -x javadoc --console=plain
-          BXORM_ZIP=$( ls build/distributions/bx-orm-*.zip | grep -v javadocs | head -n 1 )
+          BXORM_ZIP=$( ls "$PWD"/build/distributions/bx-orm-*.zip | grep -v javadocs | head -n 1 )
           echo "Built $BXORM_ZIP"
           echo "BXORM_PACKAGE=$BXORM_ZIP" >> "$GITHUB_ENV"
 
