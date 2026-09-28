@@ -1,41 +1,31 @@
 # CBORM Copilot Instructions
 
-CBORM is a ColdBox module that **enhances and abstracts Hibernate ORM** for BoxLang and Adobe ColdFusion engines. It extends Hibernate with service layers, Active Record patterns, fluent criteria queries, dynamic finders, RESTful resources, and AOP transaction management.
+CBORM is a ColdBox module that **enhances and abstracts the BoxLang ORM** (the `bx-orm` 2 module, Hibernate 7). It is pure BoxLang (all sources are `.bx` classes) and runs CFML applications through `bx-compat-cfml`. It adds service layers, Active Record patterns, fluent criteria queries, dynamic finders, RESTful resources, and AOP transaction management. Adobe ColdFusion is supported by the cborm 5.x series only.
 
 ## Core Architecture
 
-**Service Layer Pattern**: CBOrm uses three main service types:
-- `BaseORMService` - Base service for any entity operations with CRUD, dynamic finders, criteria queries (`models/BaseORMService.cfc`)
-- `VirtualEntityService` - Auto-generated entity-specific services via WireBox DSL, extends BaseORMService (`models/VirtualEntityService.cfc`)
-- `ActiveEntity` - Active Record pattern for entities with direct CRUD methods (`models/ActiveEntity.cfc`)
+Every service method delegates to the bx-orm built-in functions (`entityLoad()`, `ormExecuteQuery()`, `entityCriteria()`, `entityGetMetadata()`, ...). There is no engine abstraction layer.
 
-**Criteria Query System**: Fluent API wrapping Hibernate Criteria API
-- `models/criterion/BaseBuilder.cfc` - Base builder with projections, restrictions, ordering, grouping
-- `models/criterion/CriteriaBuilder.cfc` - Main criteria query builder for regular queries
-- `models/criterion/DetachedCriteriaBuilder.cfc` - Detached criteria for subqueries and projections
-- `models/criterion/Restrictions.cfc` - Proxy to Hibernate Restrictions (eq, gt, like, between, etc.)
-- `models/criterion/Subqueries.cfc` - Extends Restrictions for subquery support (subEq, subGt, etc.)
+**Service Layer Pattern**: CBOrm uses three main service types:
+- `BaseORMService` - Base service for any entity operations with CRUD, dynamic finders, criteria queries (`models/BaseORMService.bx`)
+- `VirtualEntityService` - Auto-generated entity-specific services via WireBox DSL, extends BaseORMService (`models/VirtualEntityService.bx`)
+- `ActiveEntity` - Active Record pattern for entities with direct CRUD methods (`models/ActiveEntity.bx`)
+
+**Criteria Queries**: `newCriteria()` returns the bx-orm `entityCriteria()` builder, which carries cborm's method names, `c.restrictions`, subqueries, projections and the SQL log (`startSqlLog()`, `logSQL()`, `getSqlLog()`).
 
 **Utilities & Helpers**:
-- `models/util/ORMUtilFactory.cfc` - Factory for cross-engine ORM utilities
-- `models/util/support/ORMUtilSupport.cfc` - Engine-agnostic ORM operations (session, transactions, metadata)
-- `models/util/support/AdobeORMUtil.cfc` - Adobe ColdFusion-specific ORM utilities
-- `models/util/support/LuceeORMUtil.cfc` - Lucee-specific ORM utilities
-- `models/util/support/BoxLangORMUtil.cfc` - BoxLang-specific ORM utilities
-- `models/util/DynamicProcessor.cfc` - Processes dynamic finders (findByName, countByStatus, etc.)
-- `models/util/JavaProxyBuilder.cfc` - Creates Java proxies for Hibernate classes
-- `models/sql/SQLHelper.cfc` - Extracts and formats SQL from criteria queries for debugging
+- `models/util/DynamicProcessor.bx` - Processes dynamic finders (findByName, countByStatus, etc.) into HQL
 
 **Event Handling**:
-- `models/EventHandler.cfc` - ORM lifecycle event handler (preLoad, postLoad, preInsert, postInsert, etc.)
-- `models/ACFEventHandler.cfc` - Adobe ColdFusion-specific event handler with CFIDE interface
+- `models/EventHandler.bx` - bx-orm global event handler: announces ORM events as ColdBox interception points (ORMPreLoad, ORMPostLoad, ..., ORMPostCommit) and autowires entities. `models/BXEventHandler.bx` is a deprecated alias.
+- `models/CriteriaEventBridge.bx` - Relays bx-orm's criteria events (announced on the BoxLang runtime) to ColdBox interceptors
 
 **Integration Components**:
-- `dsl/OrmDsl.cfc` - WireBox DSL for `entityService:{entityName}` injection
-- `aop/HibernateTransaction.cfc` - AOP aspect for @transactional annotation support
-- `interceptors/CriteriaBuilder.cfc` - ColdBox interceptor for SQL logging
-- `models/resources/BaseHandler.cfc` - RESTful base handler for automatic CRUD REST APIs
-- `models/validation/UniqueValidator.cfc` - Custom validator for unique entity properties
+- `dsl/OrmDsl.bx` - WireBox DSL for `entityService:{entityName}` injection
+- `aop/HibernateTransaction.bx` - AOP aspect for @transactional annotation support (wraps BoxLang `transaction{}`)
+- `interceptors/CriteriaBuilder.bx` - ColdBox interceptor for SQL logging
+- `models/resources/BaseHandler.bx` - RESTful base handler for automatic CRUD REST APIs
+- `models/validation/UniqueValidator.bx` - Custom validator for unique entity properties
 
 ## Essential Patterns
 
@@ -125,8 +115,8 @@ function saveUser(user) transactional="myDatasource" {
 
 ## Development Workflow
 
-**Multi-Engine Testing**: Project supports BoxLang, Lucee, and Adobe CF:
-- Start servers: `box start:boxlang`, `box start:lucee`, `box start:2023`
+**Testing**: BoxLang only, with and without `bx-compat-cfml`:
+- Start servers: `box server start serverConfigFile=server-boxlang@1.json` or `server-boxlang-cfml@1.json` (the harness specs stay `.cfc`)
 - Test harness at `/test-harness` with full ORM setup
 - Database via Docker: `box run-script startdbs` (MySQL with test data)
 
@@ -136,7 +126,7 @@ function saveUser(user) transactional="myDatasource" {
 - Build module: `box run-script build:module`
 
 **Key Configuration**:
-- Module settings in `ModuleConfig.cfc` define resources, injection, and event handling
+- Module settings in `ModuleConfig.bx` define resources, injection, and event handling
 - ORM configured in `test-harness/Application.cfc` with `cborm.models.EventHandler`
 - Must add mapping: `this.mappings["/cborm"] = COLDBOX_APP_ROOT_PATH & "modules/cborm";`
 
