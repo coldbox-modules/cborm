@@ -35,12 +35,4 @@ component
 		}
 	}
 
-	function notCF(){
-		return !isAdobe();
-	}
-
-	function notBoxLang(){
-		return !isBoxLang();
-	}
-
 }
