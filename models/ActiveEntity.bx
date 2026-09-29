@@ -48,7 +48,8 @@ class extends="cborm.models.VirtualEntityService" accessors="true" {
 	){
 		// Calculate name via metadata
 		var md               = getMetadata( this );
-		var annotations      = md.annotations;
+		// BoxLang metadata nests annotations; CFML-compat metadata (bx-compat-cfml) keeps them at the top level
+		var annotations      = md.keyExists( "annotations" ) ? md.annotations : md;
 		arguments.entityName = (
 			annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." )
 		);
