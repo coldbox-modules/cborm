@@ -126,7 +126,7 @@ component extends="tests.resources.BaseTest" {
 
 	function testCountWhereValidatesProperties(){
 		expect( ormService.countWhere( entityName = "Category", category = "Training" ) ).toBeGT( 0 );
-		expect( () => ormService.countWhere( entityName = "Category", bogus = 1 ) ).toThrow( "orm.property" );
+		expect( () => ormService.countWhere( entityName = "Category", bogus = 1 ) ).toThrow( "orm.property.unknown" );
 	}
 
 	function testFindAllByIdInList(){
