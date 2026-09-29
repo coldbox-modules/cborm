@@ -138,8 +138,28 @@ class extends="coldbox.system.remote.ColdboxProxy" {
 	}
 
 	/**
-	 * Called before the session is flushed. bx-orm does not fire flush events; kept so ColdBox listeners of
-	 * ORMPreFlush can be called by hand.
+	 * onFlush called by bx-orm when a session flush starts (an explicit flush, or the flush at the end of a
+	 * transaction), which in turn announces a coldbox interception: ORMPreFlush
+	 *
+	 * @event The Hibernate FlushEvent
+	 */
+	public void function onFlush( any event ){
+		announce( "ORMPreFlush", { "event" : arguments.event } );
+	}
+
+	/**
+	 * onAutoFlush called by bx-orm before a query runs, when Hibernate checks whether pending changes must be flushed
+	 * first, which in turn announces a coldbox interception: ORMPreFlush
+	 *
+	 * @event The Hibernate AutoFlushEvent
+	 */
+	public void function onAutoFlush( any event ){
+		announce( "ORMPreFlush", { "event" : arguments.event } );
+	}
+
+	/**
+	 * Announces ORMPreFlush by hand, for code that announced it itself in cborm 5. bx-orm announces it on every flush
+	 * through `onFlush()` and `onAutoFlush()`.
 	 *
 	 * @entities The entities
 	 */
@@ -148,8 +168,7 @@ class extends="coldbox.system.remote.ColdboxProxy" {
 	}
 
 	/**
-	 * Called after the session is flushed. bx-orm does not fire flush events; kept so ColdBox listeners of
-	 * ORMPostFlush can be called by hand.
+	 * Announces ORMPostFlush by hand: bx-orm has no after-flush event, so it is never announced automatically.
 	 *
 	 * @entities The entities
 	 */
@@ -158,16 +177,17 @@ class extends="coldbox.system.remote.ColdboxProxy" {
 	}
 
 	/**
-	 * postNew announces a coldbox interception: ORMPostNew. It is called by bx-orm's entityNew() and by the cborm
-	 * services' new(). While a service's new() is running, bx-orm's call is skipped: the service announces it itself
-	 * once the entity is autowired and populated.
+	 * postNew autowires the entity and announces a coldbox interception: ORMPostNew. It is called by bx-orm's
+	 * entityNew(), entityLoadOrNew() and entityLoadOrSave(), and by the cborm services' new(). While a service's new() is
+	 * running, bx-orm's call is skipped: the service autowires the entity and announces the event itself once it is
+	 * populated.
 	 *
 	 * @entity     The new entity
 	 * @entityName The entity name, looked up when not given
 	 */
 	public void function postNew( any entity, any entityName ){
-		// A cborm service new() is in progress: it announces ORMPostNew itself
-		if ( request.keyExists( "cbormEntityNewInProgress" ) ) {
+		// A cborm service new() is in progress: it autowires and announces ORMPostNew itself
+		if ( ( request.cbormEntityNewInProgress ?: 0 ) > 0 ) {
 			return;
 		}
 
@@ -182,6 +202,9 @@ class extends="coldbox.system.remote.ColdboxProxy" {
 		if ( !len( args.entityName ) ) {
 			args.entityName = entityGetName( arguments.entity );
 		}
+
+		// Autowire it, as postLoad() does for loaded entities
+		processEntityInjection( args.entityName, args.entity );
 
 		// Process the announcement
 		announce( "ORMPostNew", args );
@@ -214,9 +237,9 @@ class extends="coldbox.system.remote.ColdboxProxy" {
 
 		// Include,Exclude?
 		if (
-			( len( injectorInclude ) AND listContainsNoCase( injectorInclude, arguments.entityName ) )
+			( len( injectorInclude ) AND listFindNoCase( injectorInclude, arguments.entityName ) )
 			OR
-			( len( injectorExclude ) AND NOT listContainsNoCase( injectorExclude, arguments.entityName ) )
+			( len( injectorExclude ) AND NOT listFindNoCase( injectorExclude, arguments.entityName ) )
 			OR
 			( NOT len( injectorInclude ) AND NOT len( injectorExclude ) )
 		) {

@@ -28,6 +28,10 @@ component extends="tests.resources.BaseTest" {
 						expect( response.getData()[ 1 ] ).toHaveKey( "roleId" );
 						expect( response.getData()[ 1 ] ).toHaveKey( "role" );
 						expect( response.getPagination().totalRecords ).toBeGt( 0 );
+						expect( response.getPagination() ).toHaveKey( "totalPages" );
+						expect( response.getPagination() ).toHaveKey( "offset" );
+						expect( response.getPagination().page ).toBe( 1 );
+						expect( response.getPagination().offset ).toBe( 0 );
 					} );
 				} );
 			} );

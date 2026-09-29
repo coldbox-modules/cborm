@@ -13,12 +13,7 @@ class {
 	this.description    = "ColdBox ORM extensions for BoxLang and the bx-orm module";
 	this.modelNamespace = "cborm";
 	this.cfmapping      = "cborm";
-	this.dependencies   = [
-		"cbvalidation",
-		"cbPaginator",
-		"mementifier",
-		"cbstreams"
-	];
+	this.dependencies   = [ "cbvalidation", "mementifier" ];
 
 	// The criteria events bx-orm announces on the BoxLang runtime, re-announced to ColdBox interceptors
 	variables.CRITERIA_EVENTS = [

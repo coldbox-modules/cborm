@@ -30,75 +30,50 @@ class implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 	}
 
 	/**
-	 * The AOP method invocation: runs the method inside a transaction, unless one is already running
+	 * The AOP method invocation: runs the method inside a transaction, unless one is already running. BoxLang commits
+	 * the transaction at the end, and rolls it back and rethrows when the method throws.
 	 *
 	 * @invocation The method invocation
 	 */
 	any function invokeMethod( required invocation ){
-		// Are we already in a transaction?
-		if ( structKeyExists( request, "cbox_aop_transaction" ) || isInTransaction() ) {
-			// debug?
+		// Already in a transaction: it commits or rolls back this call too
+		if ( isInTransaction() ) {
 			if ( variables.log.canDebug() ) {
 				variables.log.debug(
 					"Call to '#arguments.invocation.getTargetName()#.#arguments.invocation.getMethod()#()' already transactioned, just executing it"
 				);
 			}
-			// Just execute and return;
 			return arguments.invocation.proceed();
 		}
 
 		// The transactional annotation can name the datasource
 		var datasource = getTransactionalDatasource( arguments.invocation.getMethodMetadata() );
+		var results    = null;
 
-		// mark transaction began
-		request[ "cbox_aop_transaction" ] = true;
+		if ( variables.log.canDebug() ) {
+			variables.log.debug(
+				"Call to '#arguments.invocation.getTargetName()#.#arguments.invocation.getMethod()#()' is now transactioned and begins execution"
+			);
+		}
 		try {
-			// debug?
-			if ( variables.log.canDebug() ) {
-				variables.log.debug(
-					"Call to '#arguments.invocation.getTargetName()#.#arguments.invocation.getMethod()#()' is now transactioned and begins execution"
-				);
-			}
 			if ( len( datasource ) ) {
 				transaction datasource=datasource {
-					var results = proceedOrRollback( arguments.invocation );
+					results = arguments.invocation.proceed();
 				}
 			} else {
 				transaction {
-					var results = proceedOrRollback( arguments.invocation );
+					results = arguments.invocation.proceed();
 				}
 			}
 		} catch ( Any e ) {
-			// Log Error
 			variables.log.error(
 				"An exception ocurred in the AOPed transaction for target: #arguments.invocation.getTargetName()#, method: #arguments.invocation.getMethod()#: #e.message# #e.detail#",
 				e
 			);
-			// throw it
-			rethrow;
-		} finally {
-			// remove pointer, out of transaction now.
-			structDelete( request, "cbox_aop_transaction" );
-		}
-
-		// Results? If found, return them.
-		if ( NOT isNull( results ) ) {
-			return results;
-		}
-	}
-
-	/**
-	 * Proceed with the invocation inside the current transaction, rolling it back when it fails
-	 *
-	 * @invocation The method invocation
-	 */
-	private any function proceedOrRollback( required invocation ){
-		try {
-			return arguments.invocation.proceed();
-		} catch ( Any e ) {
-			transactionRollback();
 			rethrow;
 		}
+
+		return results;
 	}
 
 	/**

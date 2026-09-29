@@ -99,7 +99,7 @@
 	}
 
 	function testFindByDynamicallyFailure(){
-		expectException( "HQLQueryException" );
+		expectException( "orm.query.parameter" );
 		t = activeUser.findByLastName();
 	}
 

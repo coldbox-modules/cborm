@@ -18,7 +18,7 @@ This module will enhance your experience when working with the BoxLang ORM (the 
 * Entity population from json, structs, xml, and queryies including building up their relationships
 * Entity validation
 * Includes the [Mementifier project](https://www.forgebox.io/view/mementifier) to produce memento states from any entity, great for producing JSON
-* Ability for finders and queries to be returned as Java streams using our [cbStreams](https://www.forgebox.io/view/cbstreams) project.
+* Finders and queries can return Java streams that read from the database as they are consumed
 * Automatic REST CRUD, stop wasting time building resources and just leverage our base resource: https://coldbox-orm.ortusbooks.com/orm-events/automatic-rest-crud
 
 ```js

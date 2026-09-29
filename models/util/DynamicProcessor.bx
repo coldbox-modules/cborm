@@ -8,14 +8,10 @@
 class accessors="true" singleton {
 
 	/**
-	 * The compiled dynamic finders and counters: HQL plus the params that bind as lists, keyed by entity and method
+	 * The compiled dynamic finders and counters: HQL plus the params that bind as lists, keyed by entity and method.
+	 * An entry that bx-orm rejects (for example after an `ormReload()` renamed a property) is compiled again.
 	 */
 	property name="HQLDynamicCache" type="struct";
-
-	/**
-	 * The entity property names cache
-	 */
-	property name="propertyNamesCache" type="struct";
 
 	/**
 	 * The logging object
@@ -41,18 +37,50 @@ class accessors="true" singleton {
 		"NotInList"         : "not in",
 		"InList"            : "in"
 	};
-	variables.OPTIONS_KEYS       = "ignoreCase,maxResults,offset,cacheable,cacheName,timeout,datasource,sortBy,asStream,autoCast";
+	variables.OPTIONS_KEYS       = "ignoreCase,maxResults,offset,cacheable,cacheName,timeout,datasource,sortBy,asStream,autoCast,readOnly,uniqueFirst,fetchSize";
 	// The options that shape the call itself and are not passed to ormExecuteQuery()
-	variables.CALL_OPTIONS_KEYS  = "sortBy,asStream,autoCast";
+	variables.CALL_OPTIONS_KEYS  = "sortBy,asStream,autoCast,ignoreCase";
 
 	/**
 	 * Constructor
 	 */
 	function init(){
-		variables.HQLDynamicCache    = {};
-		variables.propertyNamesCache = {};
+		variables.HQLDynamicCache = {};
 
 		return this;
+	}
+
+	/**
+	 * Forget every compiled dynamic finder, so the next calls compile them again from the current entity metadata
+	 *
+	 * @return The processor
+	 */
+	function clearCache(){
+		variables.HQLDynamicCache.clear();
+		return this;
+	}
+
+	/**
+	 * Check a sort order made of property names or paths, each with an optional `asc` or `desc`, so it can be written
+	 * into HQL without allowing anything else (functions, subqueries, injected clauses).
+	 *
+	 * @sortOrder The sort order, like "lastName desc, firstName"
+	 *
+	 * @return The same sort order
+	 *
+	 * @throws InvalidSortOrder
+	 */
+	string function validateSortOrder( required string sortOrder ){
+		for ( var item in listToArray( arguments.sortOrder ) ) {
+			if ( !reFindNoCase( "^\s*[a-z_][a-z0-9_.]*(\s+(asc|desc))?\s*$", item ) ) {
+				throw(
+					message = "Invalid sort order entry [#trim( item )#]",
+					detail  = "Use property names or paths, each with an optional asc or desc, e.g. 'lastName desc, firstName'.",
+					type    = "InvalidSortOrder"
+				);
+			}
+		}
+		return arguments.sortOrder;
 	}
 
 	/**
@@ -70,7 +98,7 @@ class accessors="true" singleton {
 	 * @isCounting Are finding or counting
 	 * @ormService The target orm service making the call
 	 *
-	 * @throws NonUniqueResultException , HQLQueryException
+	 * @throws NonUniqueResultException, InvalidSortOrder, InvalidMethodGrammar, orm.* (bx-orm query errors)
 	 */
 	any function process(
 		string method,
@@ -79,6 +107,9 @@ class accessors="true" singleton {
 		boolean isCounting = false,
 		any ormService
 	){
+		// The call as made, to compile again from when a cached grammar goes stale
+		var callArgs = structCopy( arguments.args );
+
 		// setup the params to bind from the arguments, and also distinguish the incoming query options
 		var params  = {};
 		var options = arguments.args.options ?: {};
@@ -119,12 +150,12 @@ class accessors="true" singleton {
 
 		// Compile the grammar once per entity and method
 		var dynamicCacheKey = "#entityName#.#arguments.method#.#arguments.isCounting#";
-		if ( !structKeyExists( variables.HQLDynamicCache, dynamicCacheKey ) ) {
+		var wasCached       = structKeyExists( variables.HQLDynamicCache, dynamicCacheKey );
+		if ( !wasCached ) {
 			variables.HQLDynamicCache[ dynamicCacheKey ] = compileHQLFromDynamicMethod(
 				method     = arguments.method,
 				isCounting = arguments.isCounting,
-				entityName = entityName,
-				ormService = arguments.ormService
+				entityName = entityName
 			);
 		}
 		var compiled = variables.HQLDynamicCache[ dynamicCacheKey ];
@@ -141,15 +172,19 @@ class accessors="true" singleton {
 			}
 		}
 
-		// Sorting Enabled
+		// Sorting Enabled: only property names with asc/desc, so it cannot inject HQL
 		if ( len( options.sortBy ) ) {
-			hql &= " ORDER BY #normalizeSortBy( options.sortBy, entityName, arguments.ormService )#";
+			hql &= " ORDER BY #validateSortOrder( options.sortBy )#";
 		}
 
 		// The query options ormExecuteQuery() understands
 		var queryOptions = options.filter( ( key, value ) => !listFindNoCase( variables.CALL_OPTIONS_KEYS, key ) );
 		if ( !len( queryOptions.datasource ?: "" ) ) {
 			queryOptions.delete( "datasource" );
+		}
+		// A findAllBy stream reads from the database as it is consumed
+		if ( options.asStream && !arguments.unique ) {
+			queryOptions.asStream = true;
 		}
 
 		var debugData = {
@@ -182,25 +217,28 @@ class accessors="true" singleton {
 				detail  = "If you do not want unique results then use 'FindAllBy' instead of 'FindBy'",
 				type    = "NonUniqueResultException"
 			);
-		} catch ( Any e ) {
-			throw(
-				message = e.message & " " & e.detail,
-				type    = "HQLQueryException",
-				detail  = "Dynamic compiled query: #debugData.toString()#"
-			);
+		} catch ( "orm" e ) {
+			// A cached grammar bx-orm no longer accepts (the entity changed on ormReload()): compile it once more
+			if ( wasCached && reFindNoCase( "^orm\.(property|entity)", e.type ) ) {
+				variables.HQLDynamicCache.delete( dynamicCacheKey );
+				return process(
+					method     = arguments.method,
+					args       = callArgs,
+					unique     = arguments.unique,
+					isCounting = arguments.isCounting,
+					ormService = arguments.ormService
+				);
+			}
+			// Keep bx-orm's typed error (orm.*), with its "Did you mean" hint
+			rethrow;
 		}
 
-		// Streams?
-		if ( options.asStream ) {
-			return arguments.ormService
-				.getWireBox()
-				.getInstance( "StreamBuilder@cbStreams" )
-				.new( results ?: [] );
+		// A findBy stream: zero or one entity
+		if ( options.asStream && arguments.unique ) {
+			return ( isNull( results ) ? [] : [ results ] ).stream();
 		}
 
-		if ( !isNull( results ) ) {
-			return results;
-		}
+		return results ?: null;
 	}
 
 	/**
@@ -209,18 +247,16 @@ class accessors="true" singleton {
 	 * @method     The method grammar, without the findBy/findAllBy/countBy prefix
 	 * @isCounting Are we counting or finding?
 	 * @entityName The entity name
-	 * @ormService The related orm service
 	 *
 	 * @return struct: { hql, listParams } where listParams are the param names that bind as lists
 	 */
 	private struct function compileHQLFromDynamicMethod(
 		required string method,
 		boolean isCounting = false,
-		required entityName,
-		required any ormService
+		required entityName
 	){
 		// Get all real property names
-		var realPropertyNames = getRealPropertyNames( arguments.entityName, arguments.ormService );
+		var realPropertyNames = getRealPropertyNames( arguments.entityName );
 
 		// Match our method grammars in the method string
 		var methodGrammars = reMatchNoCase(
@@ -366,54 +402,22 @@ class accessors="true" singleton {
 	}
 
 	/**
-	 * Get the real property names of an entity (cached)
+	 * The property names a dynamic finder can use: the id properties and the persistent properties, in declared case,
+	 * from bx-orm's entity metadata
 	 *
 	 * @entityName The entity name
-	 * @ormService The orm service to look them up with
+	 *
+	 * @return The property names
 	 */
-	private array function getRealPropertyNames( required entityName, required ormService ){
-		if ( !variables.propertyNamesCache.keyExists( arguments.entityName ) ) {
-			lock
-				name          ="orm.dynamic.propertycache.#arguments.entityName#"
-				type          ="exclusive"
-				throwOnTimeout="true"
-				timeout       ="10" {
-				if ( !variables.propertyNamesCache.keyExists( arguments.entityName ) ) {
-					variables.propertyNamesCache[ arguments.entityName ] = arguments.ormService.getPropertyNames(
-						arguments.entityName
-					);
-				}
+	private array function getRealPropertyNames( required entityName ){
+		var md    = entityGetMetadata( arguments.entityName );
+		var names = duplicate( md.idProperties );
+		for ( var name in md.propertyNames ) {
+			if ( !names.findNoCase( name ) ) {
+				names.append( name );
 			}
 		}
-		return variables.propertyNamesCache[ arguments.entityName ];
-	}
-
-	/**
-	 * Rewrite each sort property to its declared case, so the generated HQL uses the declared names directly.
-	 * A token that is not a known property is left as is.
-	 *
-	 * @sortBy     The sort list, like "lastName desc, firstName"
-	 * @entityName The entity being queried
-	 * @ormService The calling ORM service
-	 *
-	 * @return The sort list with property names in their declared case
-	 */
-	private string function normalizeSortBy(
-		required string sortBy,
-		required entityName,
-		required ormService
-	){
-		var realPropertyNames = getRealPropertyNames( arguments.entityName, arguments.ormService );
-		return listToArray( arguments.sortBy )
-			.map( ( item ) => {
-				var tokens = listToArray( trim( item ), " " );
-				var index  = arrayFindNoCase( realPropertyNames, tokens[ 1 ] );
-				if ( index ) {
-					tokens[ 1 ] = realPropertyNames[ index ];
-				}
-				return arrayToList( tokens, " " );
-			} )
-			.toList( ", " );
+		return names;
 	}
 
 	/**

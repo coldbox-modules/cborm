@@ -139,4 +139,4 @@ Tests in `/test-harness/tests/specs/` follow TestBox BDD style. Entity tests use
 
 ## Module Dependencies
 
-CBOrm depends on: `cbvalidation`, `mementifier`, `cbstreams`, `cbpaginator`. These provide validation, memento pattern, streaming, and pagination capabilities respectively.
+CBOrm depends on: `cbvalidation` and `mementifier`, for validation and the memento pattern. Streams are native Java streams from bx-orm, and the resource handler builds its own pagination block.

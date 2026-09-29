@@ -29,9 +29,10 @@ component extends="tests.resources.BaseTest" {
 				[]
 			);
 
-		// already in transaction
-		request.cbox_aop_transaction = true;
-		hTransaction.invokeMethod( mockInvocation );
+		// already in transaction: just proceeds
+		transaction {
+			hTransaction.invokeMethod( mockInvocation );
+		}
 		assertTrue( mockInvocation.$once( "proceed" ) );
 		assertTrue( mockLogger.$once( "canDebug" ) );
 	}
@@ -53,8 +54,7 @@ component extends="tests.resources.BaseTest" {
 				[]
 			);
 
-		// not in transaction
-		structDelete( request, "cbox_aop_transaction" );
+		// not in transaction: opens one
 		hTransaction.invokeMethod( mockInvocation );
 		assertTrue( mockInvocation.$once( "proceed" ) );
 		assertTrue( mockLogger.$once( "canDebug" ) );
@@ -81,8 +81,7 @@ component extends="tests.resources.BaseTest" {
 				[]
 			);
 
-		// not in transaction
-		structDelete( request, "cbox_aop_transaction" );
+		// not in transaction: opens one
 		hTransaction.invokeMethod( mockInvocation );
 		assertTrue( mockInvocation.$once( "proceed" ) );
 		assertTrue( mockLogger.$once( "canDebug" ) );

@@ -48,7 +48,7 @@ class extends="cborm.models.VirtualEntityService" accessors="true" {
 	){
 		// Calculate name via metadata
 		var md               = getMetadata( this );
-		var annotations      = md.keyExists( "annotations" ) ? md.annotations : md;
+		var annotations      = md.annotations;
 		arguments.entityName = (
 			annotations.keyExists( "entityName" ) ? annotations.entityName : listLast( md.name, "." )
 		);
@@ -121,6 +121,65 @@ class extends="cborm.models.VirtualEntityService" accessors="true" {
 	 */
 	boolean function isDirty( any entity = this ){
 		return super.isDirty( arguments.entity );
+	}
+
+	/**
+	 * Get an array of properties that are dirty in the entity, empty array if none or if the entity is not in session.
+	 *
+	 * @entity The entity to check, yourself by default
+	 */
+	array function getDirtyPropertyNames( any entity = this ){
+		return super.getDirtyPropertyNames( arguments.entity );
+	}
+
+	/**
+	 * Get the unique identifier value of the entity, or null if it has none yet
+	 *
+	 * @entity The entity to inspect for it's id, yourself by default
+	 */
+	any function getKeyValue( any entity = this ){
+		return super.getKeyValue( arguments.entity );
+	}
+
+	/**
+	 * Checks if the current hibernate session contains the entity
+	 *
+	 * @entity The entity object, yourself by default
+	 */
+	boolean function sessionContains( any entity = this ){
+		return super.sessionContains( arguments.entity );
+	}
+
+	/**
+	 * Lock the entity's row in the database until the current transaction ends. Must run inside a `transaction{}`.
+	 *
+	 * @mode    The lock mode: read, write or force
+	 * @options bx-orm `entityLock()` options: `timeout` (seconds) and `skipLocked`
+	 * @entity  The entity to lock, yourself by default
+	 *
+	 * @return The entity
+	 */
+	any function lock(
+		string mode    = "write",
+		struct options = {},
+		any entity     = this
+	){
+		return super.lock(
+			entity  = arguments.entity,
+			mode    = arguments.mode,
+			options = arguments.options
+		);
+	}
+
+	/**
+	 * The entity as a struct, via bx-orm's `entityToStruct()`: its `this.memento` defaults apply
+	 *
+	 * @options `entityToStruct()` options: includes, excludes, mappers, defaults, ignoreDefaults, profile
+	 *
+	 * @return The struct
+	 */
+	struct function toStruct( struct options = {} ){
+		return entityToStruct( this, arguments.options );
 	}
 
 	/**
@@ -348,18 +407,19 @@ class extends="cborm.models.VirtualEntityService" accessors="true" {
 			thisConstraints = arguments.constraints
 		}
 
-		// validate and save results in private scope
-		variables.validationResults = validationManager.validate(
+		// validate and save results in private scope (the validationResult property)
+		variables.validationResult = validationManager.validate(
 			target       : this,
 			fields       : arguments.fields,
 			constraints  : thisConstraints,
 			locale       : arguments.locale,
 			excludeFields: arguments.excludeFields,
+			includeFields: arguments.includeFields,
 			profiles     : arguments.profiles
 		)
 
 		// return it
-		return ( !variables.validationResults.hasErrors() )
+		return ( !variables.validationResult.hasErrors() )
 	}
 
 	/**
@@ -368,8 +428,8 @@ class extends="cborm.models.VirtualEntityService" accessors="true" {
 	 * @return cbvalidation.models.result.IValidationResult
 	 */
 	any function getValidationResults(){
-		if ( !isNull( variables.validationResults ) && isObject( variables.validationResults ) ) {
-			return variables.validationResults;
+		if ( !isNull( variables.validationResult ) && isObject( variables.validationResult ) ) {
+			return variables.validationResult;
 		}
 		return new cbvalidation.models.result.ValidationResult();
 	}
@@ -453,29 +513,6 @@ class extends="cborm.models.VirtualEntityService" accessors="true" {
 	 */
 	function peek( required target ){
 		arguments.target( this )
-		return this
-	}
-
-	/**
-	 * This function evaluates the target boolean expression and if `true` it will execute the `success` closure
-	 * else, if the `failure` closure is passed, it will execute it.
-	 *
-	 * @target  The boolean evaluator, this can be a boolean value
-	 * @success The closure/lambda to execute if the boolean value is true
-	 * @failure The closure/lambda to execute if the boolean value is false
-	 *
-	 * @return Returns itself
-	 */
-	function when(
-		required boolean target,
-		required success,
-		failure
-	){
-		if ( arguments.target ) {
-			arguments.success( this )
-		} else if ( !isNull( arguments.failure ) ) {
-			arguments.failure( this )
-		}
 		return this
 	}
 

@@ -281,9 +281,12 @@ class accessors="true" {
 	 * @offset     Used for pagination
 	 * @max        The max number of records to retrieve
 	 * @timeout    A DB timeout for this query
-	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @ignoreCase Sort text properties case-insensitively
 	 * @asQuery    The return format as either a query or array of objects
-	 * @asStream   The return format will be a cbStream
+	 * @asStream   Return a Java stream that reads the entities from the database as it is consumed
+	 * @options    More bx-orm `entityLoad()` options, e.g. `{ readOnly : true }`
+	 *
+	 * @return An array of entities, a query or a Java stream
 	 */
 	any function list(
 		required string entityName,
@@ -294,51 +297,30 @@ class accessors="true" {
 		numeric timeout    = 0,
 		boolean ignoreCase = false,
 		boolean asQuery    = getDefaultAsQuery(),
-		boolean asStream   = false
+		boolean asStream   = false,
+		struct options     = {}
 	){
-		var options = {};
-
-		// Setup listing options
-		if ( arguments.offset neq 0 ) {
-			options.offset = arguments.offset;
-		}
-		if ( arguments.max neq 0 ) {
-			options.maxresults = arguments.max;
-		}
-		if ( arguments.timeout neq 0 ) {
-			options.timeout = arguments.timeout;
-		}
-
-		// Caching?
-		if ( getUseQueryCaching() ) {
-			options.cacheName = getQueryCacheRegion();
-			options.cacheable = true;
-		}
+		var loadOptions = pagingOptions( arguments.offset, arguments.max, arguments.timeout );
 
 		// Sort Order Case
 		if ( len( trim( arguments.sortOrder ) ) ) {
-			options.ignoreCase = arguments.ignoreCase;
+			loadOptions.ignoreCase = arguments.ignoreCase;
 		}
+		if ( arguments.asStream ) {
+			loadOptions.asStream = true;
+		}
+		loadOptions.append( arguments.options, true );
 
 		var results = entityLoad(
 			arguments.entityName,
 			arguments.criteria,
 			arguments.sortOrder,
-			options
+			loadOptions
 		);
 
-		// Is it Null?
-		if ( isNull( results ) ) {
-			results = [];
-		}
-
-		// As Stream or Query
-		if ( arguments.asStream ) {
-			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
-		} else if ( arguments.asQuery ) {
+		if ( arguments.asQuery && !arguments.asStream ) {
 			return entityToQuery( results );
 		}
-
 		return results;
 	}
 
@@ -351,11 +333,14 @@ class accessors="true" {
 	 * @offset     Used for pagination
 	 * @max        The max number of records to retrieve
 	 * @timeout    A DB timeout for this query
-	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @ignoreCase Ignored, kept for compatibility: use `lower()` in the HQL for case-insensitive comparisons
 	 * @asQuery    The return format as either a query or array of objects
 	 * @unique     Return array or a unique record, defaults to array
 	 * @datasource The datasource to use
-	 * @asStream   The return format will be a cbStream
+	 * @asStream   Return a Java stream that reads the rows from the database as it is consumed
+	 * @options    More bx-orm `ormExecuteQuery()` options, e.g. `{ readOnly : true, lock : "write", uniqueFirst : true }`
+	 *
+	 * @return An array, a query, a Java stream, a single entity or value (unique), or the row count of an update/delete
 	 */
 	any function executeQuery(
 		required string query,
@@ -367,32 +352,20 @@ class accessors="true" {
 		boolean asQuery    = getDefaultAsQuery(),
 		boolean unique     = false,
 		string datasource  = "",
-		boolean asStream   = false
+		boolean asStream   = false,
+		struct options     = {}
 	){
-		var options = {};
+		var queryOptions = pagingOptions( arguments.offset, arguments.max, arguments.timeout );
 
-		// Setup listing options
-		if ( arguments.offset neq 0 ) {
-			options.offset = arguments.offset;
-		}
-		if ( arguments.max neq 0 ) {
-			options.maxresults = arguments.max;
-		}
-		if ( arguments.timeout neq 0 ) {
-			options.timeout = arguments.timeout;
-		}
 		if ( len( arguments.datasource ) ) {
-			options.datasource = arguments.datasource;
+			queryOptions.datasource = arguments.datasource;
 		} else if ( len( getDatasource() ) ) {
-			options.datasource = getDatasource();
+			queryOptions.datasource = getDatasource();
 		}
-		options.ignorecase = arguments.ignorecase;
-
-		// Caching?
-		if ( getUseQueryCaching() ) {
-			options.cacheName = getQueryCacheRegion();
-			options.cacheable = true;
+		if ( arguments.asStream ) {
+			queryOptions.asStream = true;
 		}
+		queryOptions.append( arguments.options, true );
 
 		// process interception
 		if ( getEventHandling() ) {
@@ -404,7 +377,7 @@ class accessors="true" {
 						"query"   : arguments.query,
 						"params"  : arguments.params,
 						"unique"  : arguments.unique,
-						"options" : options
+						"options" : queryOptions
 					}
 				);
 		}
@@ -413,7 +386,7 @@ class accessors="true" {
 			arguments.query,
 			arguments.params,
 			arguments.unique,
-			options
+			queryOptions
 		);
 
 		// process interception
@@ -426,40 +399,23 @@ class accessors="true" {
 						"query"   : arguments.query,
 						"params"  : arguments.params,
 						"unique"  : arguments.unique,
-						"options" : options,
-						"results" : isNull( results ) ? javacast( "null", "" ) : results
+						"options" : queryOptions,
+						"results" : results ?: null
 					}
 				);
 		}
 
-		// Null Checks
+		// A unique query found nothing
 		if ( isNull( results ) ) {
-			if ( arguments.asStream ) {
-				return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new();
-			} else if ( arguments.asQuery ) {
-				return queryNew( "" );
-			}
-
-			if ( arguments.unique ) {
-				return; // NULL
-			} else {
-				return [];
-			}
+			return arguments.asQuery ? queryNew( "" ) : null;
 		}
 
-		// Determine if we are in a UPDATE, INSERT or DELETE, if we do, just return the results, it is a numeric
-		if ( reFindNoCase( "(delete|insert|update)\s", arguments.query ) ) {
+		// Streams, counts, update/delete row counts and single values are returned as they are
+		if ( arguments.asStream || isSimpleValue( results ) ) {
 			return results;
 		}
 
-		// As Stream or Query
-		if ( arguments.asStream ) {
-			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
-		} else if ( arguments.asQuery ) {
-			return entityToQuery( results );
-		}
-
-		return results;
+		return arguments.asQuery ? entityToQuery( results ) : results;
 	}
 
 	/**
@@ -467,18 +423,24 @@ class accessors="true" {
 	 *
 	 * @entityName The name of the entity to retrieve
 	 * @id         The primary key
+	 * @options    bx-orm `entityLoadByPK()` options: `lock`, `timeout`, `skipLocked`, `readOnly`
 	 *
 	 * @throws EntityNotFound
 	 */
-	any function getOrFail( required string entityName, required any id ){
+	any function getOrFail(
+		required string entityName,
+		required any id,
+		struct options = {}
+	){
 		var result = this.get(
 			entityName = arguments.entityName,
 			id         = arguments.id,
-			returnNew  = false
+			returnNew  = false,
+			options    = arguments.options
 		);
 		if ( isNull( result ) ) {
 			throw(
-				message      = "No entity found for ID #arguments.id.toString()#",
+				message      = "No entity found for ID #isSimpleValue( arguments.id ) ? arguments.id : serializeJSON( arguments.id )#",
 				type         = "EntityNotFound",
 				extendedinfo = arguments.entityName
 			);
@@ -492,34 +454,31 @@ class accessors="true" {
 	 * @entityName The name of the entity to retrieve
 	 * @id         An optional primary key to use to retrieve the entity, if the id is `0` or `empty` it will return a new unloaded entity
 	 * @returnNew  By default if the primary key is 0 or empty it returns a new unloaded entity, if false, then always null
+	 * @options    bx-orm `entityLoadByPK()` options: `lock`, `timeout`, `skipLocked`, `readOnly`
 	 *
 	 * @return Requested entity, new entity or `null`
 	 */
 	any function get(
 		required string entityName,
 		required any id,
-		boolean returnNew = true
+		boolean returnNew = true,
+		struct options    = {}
 	){
 		// check if id exists so entityLoad does not throw error
-		if (
-			( isSimpleValue( arguments.id ) and len( arguments.id ) )
-			OR
-			NOT isSimpleValue( arguments.id )
-		) {
-			var oEntity = entityLoadByPK( arguments.entityName, arguments.id );
-			// Check if not null, then return it
+		if ( !isSimpleValue( arguments.id ) || len( arguments.id ) ) {
+			var oEntity = arguments.options.isEmpty()
+			 ? entityLoadByPK( arguments.entityName, arguments.id )
+			 : entityLoadByPK( arguments.entityName, arguments.id, arguments.options );
 			if ( !isNull( oEntity ) ) {
 				return oEntity;
 			}
 		}
 
-		// Check for return new?
-		if ( arguments.returnNew ) {
-			// Check if ID=0 or empty to do convenience new entity
-			if ( isSimpleValue( arguments.id ) and ( arguments.id eq 0 OR len( arguments.id ) eq 0 ) ) {
-				return this.new( entityName = arguments.entityName );
-			}
+		// Convenience new entity when the id is 0 or empty
+		if ( arguments.returnNew && isSimpleValue( arguments.id ) && ( arguments.id == 0 || !len( arguments.id ) ) ) {
+			return this.new( entityName = arguments.entityName );
 		}
+		return null;
 	}
 
 	/**
@@ -529,11 +488,13 @@ class accessors="true" {
 	 * Example: properties="catID as id, category as category, role as role"
 	 *
 	 * @entityName The entity to get
-	 * @id         The id or a list/array of Ids to retrieve
-	 * @sortOrder  The sorting of the returning array, defaults to natural sorting
+	 * @id         The id or a list/array of Ids to retrieve; a struct or array of structs for a composite id
+	 * @sortOrder  The sorting of the returning array, defaults to the entity's `defaultSort` or natural sorting
 	 * @readOnly   Return full or read only entities, defaults to false
 	 * @properties If passed, you can retrieve an array of properties of the entity instead of the entire entity.  Make sure you add aliases to the properties: Ex: 'catId as id'
-	 * @asStream   Return a stream if true
+	 * @asStream   Return a Java stream that reads the entities from the database as it is consumed
+	 *
+	 * @return An array of entities (or structs when `properties` is given), or a Java stream
 	 */
 	any function getAll(
 		required string entityName,
@@ -543,46 +504,43 @@ class accessors="true" {
 		string properties,
 		boolean asStream = false
 	){
-		var hql     = "FROM #arguments.entityName#";
-		var params  = {};
-		var options = {
-			"datasource" : entityGetDatasource( arguments.entityName ),
-			"readOnly"   : arguments.readOnly
-		};
-
-		// Properties
+		// Projections: select new map( ... ) with the ids bound and the sort order validated
 		if ( !isNull( arguments.properties ) ) {
-			hql = "SELECT new map( #arguments.properties# ) #hql#";
+			var hql     = "SELECT new map( #arguments.properties# ) FROM #arguments.entityName#";
+			var params  = {};
+			var options = { "readOnly" : arguments.readOnly, "asStream" : arguments.asStream };
+			if ( !isNull( arguments.id ) ) {
+				hql &= " WHERE #singleIdProperty( arguments.entityName, "getAll( properties )" )# in (:idlist)";
+				params[ "idlist" ] = { value : idArray( arguments.id ), list : true };
+			}
+			if ( len( arguments.sortOrder ) ) {
+				hql &= " ORDER BY #getDynamicProcessor().validateSortOrder( arguments.sortOrder )#";
+			}
+			if ( getUseQueryCaching() ) {
+				options.cacheName = getQueryCacheRegion();
+				options.cacheable = true;
+			}
+			return ormExecuteQuery( hql, params, false, options );
 		}
 
-		// ID
+		var c = entityCriteria( arguments.entityName );
 		if ( !isNull( arguments.id ) ) {
-			hql &= " WHERE #idPropertyName( arguments.entityName )# in (:idlist)";
-			params[ "idlist" ] = {
-				value : idCast( entity = arguments.entityName, id = arguments.id ),
-				list  : true
-			};
+			whereIds( c, arguments.entityName, arguments.id );
 		}
-
-		// Sorting
-		if ( len( arguments.sortOrder ) ) {
-			hql &= " ORDER BY #arguments.sortOrder#";
+		// order() validates each property, so the sort order cannot inject HQL
+		if ( len( trim( arguments.sortOrder ) ) ) {
+			c.order( arguments.sortOrder );
 		}
-
-		// Caching?
+		if ( arguments.readOnly ) {
+			c.readOnly( true );
+		}
 		if ( getUseQueryCaching() ) {
-			options.cacheName = getQueryCacheRegion();
-			options.cacheable = true;
+			c.cache( true, getQueryCacheRegion() );
 		}
-
-		var results = ormExecuteQuery( hql, params, false, options ) ?: [];
-
-		// Streams Support
 		if ( arguments.asStream ) {
-			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
+			c.asStream();
 		}
-
-		return results;
+		return c.list();
 	}
 
 	/**
@@ -592,8 +550,9 @@ class accessors="true" {
 	 * @query      The HQL Query to execute
 	 * @params     A struct or array of query params
 	 * @timeout    A DB timeout for this query
-	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @ignoreCase Ignored, kept for compatibility
 	 * @datasource The datasource to use
+	 * @options    More bx-orm `ormExecuteQuery()` options
 	 *
 	 * @throws EntityNotFound
 	 */
@@ -602,7 +561,8 @@ class accessors="true" {
 		any params         = structNew(),
 		numeric timeout    = 0,
 		boolean ignoreCase = false,
-		string datasource  = getDatasource()
+		string datasource  = getDatasource(),
+		struct options     = {}
 	){
 		var result = findIt( argumentCollection = arguments );
 		if ( isNull( result ) ) {
@@ -618,22 +578,25 @@ class accessors="true" {
 	 * @query      The HQL Query to execute
 	 * @params     A struct or array of query params
 	 * @timeout    A DB timeout for this query
-	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @ignoreCase Ignored, kept for compatibility
 	 * @datasource The datasource to use
+	 * @options    More bx-orm `ormExecuteQuery()` options
+	 *
+	 * @return The first result or null
 	 */
 	any function findIt(
 		required string query,
 		any params         = structNew(),
 		numeric timeout    = 0,
 		boolean ignoreCase = false,
-		string datasource  = getDatasource()
+		string datasource  = getDatasource(),
+		struct options     = {}
 	){
-		// One result
-		arguments.max     = 1;
+		// The first row, even when several match
 		arguments.unique  = true;
 		arguments.asQuery = false;
+		arguments.options = structCopy( arguments.options ).append( { "uniqueFirst" : true } );
 
-		// Delegate
 		return executeQuery( argumentCollection = arguments );
 	}
 
@@ -655,11 +618,12 @@ class accessors="true" {
 	 * @offset     Used for pagination
 	 * @max        The max number of records to retrieve
 	 * @timeout    A DB timeout for this query
-	 * @ignoreCase Case insensitive or case sensitive searches, we default to case sensitive filtering.
+	 * @ignoreCase Ignored, kept for compatibility
 	 * @datasource The datasource to use
-	 * @asStream   Return a stream if true
+	 * @asStream   Return a Java stream that reads the rows from the database as it is consumed
+	 * @options    More bx-orm `ormExecuteQuery()` options
 	 *
-	 * @return array of entities or a cbstream
+	 * @return An array of entities or a Java stream
 	 */
 	any function findAll(
 		string query,
@@ -669,28 +633,128 @@ class accessors="true" {
 		numeric timeout    = 0,
 		boolean ignoreCase = false,
 		string datasource,
-		boolean asStream = false
+		boolean asStream = false,
+		struct options   = {}
 	){
-		// Normal Execute Query
 		arguments.asQuery = false;
 		return executeQuery( argumentCollection = arguments );
 	}
 
 	/**
-	 * Find one entity (or null if not found) according to a criteria structure
+	 * Find one entity (or null if not found) according to a criteria structure. More than one match is an error
+	 * (`orm.query.nonUnique`); pass `{ uniqueFirst : true }` as options to take the first one instead.
 	 *
 	 * @entityName The entity to search for
 	 * @criteria   The filtering criteria to search for.
+	 * @options    More bx-orm `entityLoad()` options, e.g. `{ uniqueFirst : true, readOnly : true }`
+	 *
+	 * @return The entity or null
 	 */
-	any function findWhere( required string entityName, struct criteria = {} ){
-		// Caching?
+	any function findWhere(
+		required string entityName,
+		struct criteria = {},
+		struct options  = {}
+	){
+		var loadOptions = { "unique" : true };
 		if ( getUseQueryCaching() ) {
-			// if we are caching, we will use find all and return the first one
-			var aEntity = findAllWhere( argumentCollection = arguments );
-			return ( arrayLen( aEntity ) ? aEntity[ 1 ] : javacast( "null", "" ) );
-		} else {
-			return entityLoad( arguments.entityName, arguments.criteria, true );
+			loadOptions.cacheName = getQueryCacheRegion();
+			loadOptions.cacheable = true;
 		}
+		loadOptions.append( arguments.options, true );
+		return entityLoad( arguments.entityName, arguments.criteria, loadOptions );
+	}
+
+	/**
+	 * Find one entity according to a criteria structure, or throw an `EntityNotFound` exception when none matches
+	 *
+	 * @entityName The entity to search for
+	 * @criteria   The filtering criteria to search for.
+	 * @options    More bx-orm `entityLoad()` options, e.g. `{ uniqueFirst : true }`
+	 *
+	 * @return The entity
+	 *
+	 * @throws EntityNotFound
+	 */
+	any function findWhereOrFail(
+		required string entityName,
+		struct criteria = {},
+		struct options  = {}
+	){
+		var result = findWhere( argumentCollection = arguments );
+		if ( isNull( result ) ) {
+			throw(
+				message      = "No #arguments.entityName# entity found for the given criteria",
+				type         = "EntityNotFound",
+				extendedinfo = arguments.entityName
+			);
+		}
+		return result;
+	}
+
+	/**
+	 * The first entity matching a criteria structure, or a new (unsaved) one populated with the criteria and the extra
+	 * properties. The new entity is autowired and announces `ORMPostNew`, like `new()`.
+	 *
+	 * @entityName The entity to search for
+	 * @criteria   The filtering criteria to search for, also used to populate a new entity
+	 * @properties Extra properties to populate a new entity with; not used for the search
+	 *
+	 * @return The found or new entity
+	 */
+	any function firstOrNew(
+		required string entityName,
+		struct criteria   = {},
+		struct properties = {}
+	){
+		var entity = findWhere(
+			entityName = arguments.entityName,
+			criteria   = arguments.criteria,
+			options    = { "uniqueFirst" : true }
+		);
+		if ( !isNull( entity ) ) {
+			return entity;
+		}
+		return this.new(
+			entityName = arguments.entityName,
+			properties = structCopy( arguments.criteria ).append( arguments.properties, true )
+		);
+	}
+
+	/**
+	 * The first entity matching a criteria structure, or a new one populated with the criteria and the extra
+	 * properties and saved with `save()`.
+	 *
+	 * @entityName    The entity to search for
+	 * @criteria      The filtering criteria to search for, also used to populate a new entity
+	 * @properties    Extra properties to populate a new entity with; not used for the search
+	 * @flush         Flush the new entity right away
+	 * @transactional Wrap the save in a transaction, defaults to `useTransactions`
+	 *
+	 * @return The found or new, saved entity
+	 */
+	any function firstOrCreate(
+		required string entityName,
+		struct criteria       = {},
+		struct properties     = {},
+		boolean flush         = false,
+		boolean transactional = getUseTransactions()
+	){
+		var entity = findWhere(
+			entityName = arguments.entityName,
+			criteria   = arguments.criteria,
+			options    = { "uniqueFirst" : true }
+		);
+		if ( !isNull( entity ) ) {
+			return entity;
+		}
+		return save(
+			entity = this.new(
+				entityName = arguments.entityName,
+				properties = structCopy( arguments.criteria ).append( arguments.properties, true )
+			),
+			flush         = arguments.flush,
+			transactional = arguments.transactional
+		);
 	}
 
 	/**
@@ -699,9 +763,12 @@ class accessors="true" {
 	 * @entityName The entity to search for
 	 * @criteria   The filtering criteria to search for.
 	 * @sortOrder  The sorting order
-	 * @ignoreCase Case insensitive or case sensitive searches
+	 * @ignoreCase Sort text properties case-insensitively
 	 * @timeout    A DB timeout for this query
-	 * @asStream   Return a stream if true
+	 * @asStream   Return a Java stream that reads the entities from the database as it is consumed
+	 * @options    More bx-orm `entityLoad()` options
+	 *
+	 * @return An array of entities or a Java stream
 	 */
 	any function findAllWhere(
 		required string entityName,
@@ -709,32 +776,64 @@ class accessors="true" {
 		string sortOrder   = "",
 		boolean ignoreCase = false,
 		numeric timeout    = 0,
-		boolean asStream   = false
+		boolean asStream   = false,
+		struct options     = {}
 	){
-		var options = {
-			ignorecase : arguments.ignoreCase,
-			timeout    : arguments.timeout
-		};
-
-		// Caching?
-		if ( getUseQueryCaching() ) {
-			options.cacheName = getQueryCacheRegion();
-			options.cacheable = true;
+		var loadOptions = pagingOptions( 0, 0, arguments.timeout );
+		loadOptions.ignorecase = arguments.ignoreCase;
+		if ( arguments.asStream ) {
+			loadOptions.asStream = true;
 		}
+		loadOptions.append( arguments.options, true );
 
-		var results = entityLoad(
+		return entityLoad(
 			arguments.entityName,
 			arguments.criteria,
 			arguments.sortOrder,
-			options
+			loadOptions
 		);
+	}
 
-		// As stream
-		if ( arguments.asStream ) {
-			return getWireBox().getInstance( "StreamBuilder@cbStreams" ).new( results );
-		}
+	/**
+	 * Get a reference (proxy) to an entity by id without loading it: no SELECT runs until a property other than the id
+	 * is read. Great for setting associations.
+	 *
+	 * @entityName The entity name
+	 * @id         The id
+	 *
+	 * @return The entity reference
+	 */
+	any function getReference( required string entityName, required any id ){
+		return entityGetReference( arguments.entityName, arguments.id );
+	}
 
-		return results;
+	/**
+	 * Lock an entity's row in the database until the current transaction ends. Must run inside a `transaction{}`.
+	 *
+	 * @entity  The entity to lock
+	 * @mode    The lock mode: read, write or force
+	 * @options bx-orm `entityLock()` options: `timeout` (seconds) and `skipLocked`
+	 *
+	 * @return The entity
+	 */
+	any function lock(
+		required any entity,
+		string mode    = "write",
+		struct options = {}
+	){
+		entityLock( arguments.entity, arguments.mode, arguments.options );
+		return arguments.entity;
+	}
+
+	/**
+	 * Run a closure with every entity it loads read-only: they are not dirty-checked and their changes are never saved.
+	 *
+	 * @callback The closure to run
+	 *
+	 * @return What the closure returns
+	 */
+	any function readOnly( required callback ){
+		return ormReadOnly( arguments.callback );
 	}
 
 	/*****************************************************************************************/
@@ -745,7 +844,7 @@ class accessors="true" {
 	 * Return a null value
 	 */
 	function nullValue(){
-		return javacast( "null", "" );
+		return null;
 	}
 
 	/**
@@ -778,13 +877,17 @@ class accessors="true" {
 	){
 		var eventHandler = getORMEventHandler();
 
-		// entityNew() fires bx-orm's own postNew event; the cborm handler skips it while this flag is set so
-		// ORMPostNew is announced once, below, after the entity is autowired and populated.
-		request[ "cbormEntityNewInProgress" ] = true;
+		// entityNew() fires bx-orm's own postNew event; the cborm handler skips it while this counter is above zero so
+		// ORMPostNew is announced once, below, after the entity is autowired and populated. A counter, not a flag, so a
+		// new() nested in an entity's own postNew() does not end the outer one's skip early.
+		request[ "cbormEntityNewInProgress" ] = ( request.cbormEntityNewInProgress ?: 0 ) + 1;
 		try {
 			var newEntity = entityNew( arguments.entityName );
 		} finally {
-			request.delete( "cbormEntityNewInProgress" );
+			request.cbormEntityNewInProgress--;
+			if ( request.cbormEntityNewInProgress <= 0 ) {
+				request.delete( "cbormEntityNewInProgress" );
+			}
 		}
 
 		// Build and autowire
@@ -1187,17 +1290,8 @@ class accessors="true" {
 	){
 		return $transactioned(
 			function( entity, flush ){
-				var objects = isArray( arguments.entity ) ? arguments.entity : [ arguments.entity ];
-
-				for ( var item in objects ) {
-					entityDelete( item );
-				}
-
-				// Flush?
-				if ( arguments.flush ) {
-					flushDatasource( objects.len() ? entityGetDatasource( objects[ 1 ] ) : getDatasource() );
-				}
-
+				// bx-orm deletes an array too, and flushes every datasource it touched
+				entityDelete( arguments.entity, { "flush" : arguments.flush } );
 				return this;
 			},
 			arguments,
@@ -1220,18 +1314,12 @@ class accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush ){
-				var options = { "datasource" : entityGetDatasource( arguments.entityName ) };
-
-				var count = ormExecuteQuery(
-					"delete from #arguments.entityName#",
-					{},
-					false,
-					options
-				);
+				// A bulk delete: pending changes are flushed first, and a softDelete entity is marked deleted
+				var count = entityCriteria( arguments.entityName ).deleteAll();
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					flushDatasource( options.datasource );
+					flushDatasource( entityGetDatasource( arguments.entityName ) );
 				}
 
 				return count;
@@ -1262,23 +1350,12 @@ class accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, id, flush ){
-				var datasource = entityGetDatasource( arguments.entityName );
-				// Bulk Execute
-				var count      = ormExecuteQuery(
-					"delete FROM #arguments.entityName# where #idPropertyName( arguments.entityName )# in (:idlist)",
-					{
-						"idlist" : {
-							value : idCast( entity = arguments.entityName, id = arguments.id ),
-							list  : true
-						}
-					},
-					false,
-					{ "datasource" : datasource }
-				);
+				// A bulk delete: pending changes are flushed first; composite ids are matched on every key property
+				var count = whereIds( entityCriteria( arguments.entityName ), arguments.entityName, arguments.id ).deleteAll();
 
 				// Auto Flush
 				if ( arguments.flush ) {
-					flushDatasource( datasource );
+					flushDatasource( entityGetDatasource( arguments.entityName ) );
 				}
 
 				return count;
@@ -1351,19 +1428,11 @@ class accessors="true" {
 	){
 		return $transactioned(
 			function( entityName, flush, datasource ){
-				// Go over the name-value pairs and incorporate them, filtering out reserved names
-				var whereStatements = [];
-				var params          = {};
-				for ( var key in arguments ) {
-					if ( listFindNoCase( "entityName,flush,datasource", key ) || isNull( arguments[ key ] ) ) {
-						continue;
-					}
-					params[ key ] = arguments[ key ];
-					whereStatements.append( "#key# = :#key#" );
-				}
+				// The name-value pairs, without the reserved names
+				var filter = whereArguments( arguments, "entityName,flush,datasource" );
 
 				// Do we have arguments?
-				if ( !whereStatements.len() ) {
+				if ( filter.isEmpty() ) {
 					throw(
 						message = "No where arguments sent, aborting deletion",
 						detail  = "We will not do a full delete via this method, you need to pass in named value arguments.",
@@ -1371,12 +1440,54 @@ class accessors="true" {
 					);
 				}
 
-				return ormExecuteQuery(
-					"delete from #arguments.entityName# WHERE " & whereStatements.toList( " AND " ),
-					params,
-					false,
-					datasourceOptions( arguments.datasource )
-				);
+				// A bulk delete: each key is validated as a property, and pending changes are flushed first
+				var count = entityCriteria( arguments.entityName ).where( filter ).deleteAll();
+
+				// Auto Flush
+				if ( arguments.flush ) {
+					flushDatasource( entityGetDatasource( arguments.entityName ) );
+				}
+
+				return count;
+			},
+			arguments,
+			arguments.transactional
+		);
+	}
+
+	/**
+	 * Update the entities matching a criteria structure with one bulk HQL update, and return how many were updated.
+	 * It runs in the database only: no entity events, no cascades, and entities already in the session keep their old
+	 * values until reloaded.
+	 *
+	 * Ex:
+	 * <pre>
+	 * updateWhere( "User", { isActive : false }, { isArchived : true } );
+	 * </pre>
+	 *
+	 * @entityName    The entity name to target
+	 * @criteria      The property values to match; it cannot be empty
+	 * @values        The property values to set
+	 * @transactional Wrap it in a `transaction`, defaults to true
+	 *
+	 * @return The number of updated rows
+	 */
+	numeric function updateWhere(
+		required string entityName,
+		required struct criteria,
+		required struct values,
+		boolean transactional = getUseTransactions()
+	){
+		if ( arguments.criteria.isEmpty() ) {
+			throw(
+				message = "No criteria sent, aborting the update",
+				detail  = "We will not update every row via this method: pass the property values to match, or use entityCriteria().updateAll().",
+				type    = "BaseORMService.NoWhereArgumentsFound"
+			);
+		}
+		return $transactioned(
+			function( entityName, criteria, values ){
+				return entityCriteria( arguments.entityName ).where( arguments.criteria ).updateAll( arguments.values );
 			},
 			arguments,
 			arguments.transactional
@@ -1421,9 +1532,15 @@ class accessors="true" {
 					}
 				}
 
-				// Auto Flush
+				// Auto Flush: every datasource the entities belong to
 				if ( arguments.flush ) {
-					flushDatasource( getDatasource() );
+					var datasources = {};
+					for ( var thisEntity in arguments.entities ) {
+						datasources[ entityGetDatasource( thisEntity ) ] = true;
+					}
+					for ( var datasource in datasources ) {
+						flushDatasource( datasource );
+					}
 				}
 
 				return this;
@@ -1459,13 +1576,12 @@ class accessors="true" {
 					getORMEventHandler().preSave( arguments.entity );
 				}
 
-				// save
-				entitySave( arguments.entity, arguments.forceInsert );
-
-				// Auto Flush
-				if ( arguments.flush ) {
-					flushDatasource( entityGetDatasource( arguments.entity ) );
-				}
+				// save, flushing the entity's datasource when asked
+				entitySave(
+					arguments.entity,
+					arguments.forceInsert,
+					{ "flush" : arguments.flush }
+				);
 
 				// Event Handling? If enabled, call the postSave() interception
 				if ( eventHandling ) {
@@ -1487,18 +1603,11 @@ class accessors="true" {
 	 * Checks if the given entityName and id exists in the database, this method does not load the entity into session
 	 *
 	 * @entityName The name of the entity
-	 * @id         The id to lookup
+	 * @id         The id to lookup, or a struct of key values for a composite id
 	 */
 	boolean function exists( required entityName, required any id ){
-		// Do it DLM style
-		var count = ormExecuteQuery(
-			"select count(*) from #arguments.entityName# where #idPropertyName( arguments.entityName )# = :id",
-			{ id : arguments.id },
-			true,
-			{ datasource : entityGetDatasource( arguments.entityName ) }
-		);
-
-		return ( count gt 0 );
+		// An EXISTS query that stops at the first row; a composite id is a struct of its key values
+		return entityCriteria( arguments.entityName ).idEq( arguments.id ).exists();
 	}
 
 	/**
@@ -1541,31 +1650,15 @@ class accessors="true" {
 	 * @entityName The entity name to count on
 	 */
 	numeric function countWhere( required string entityName ){
-		var hql             = "select count(*) from #arguments.entityName#";
-		var options         = { datasource : entityGetDatasource( arguments.entityName ) };
-		var whereStatements = [];
-		var params          = {};
-
-		// Go over the name-value pairs and incorporate them, filtering out reserved names
-		for ( var key in arguments ) {
-			if ( key == "entityName" || isNull( arguments[ key ] ) ) {
-				continue;
-			}
-			params[ key ] = arguments[ key ];
-			whereStatements.append( "#key# = :#key#" );
-		}
-		if ( whereStatements.len() ) {
-			hql &= " WHERE " & whereStatements.toList( " AND " );
-		}
+		// Each key is validated as a property of the entity
+		var c = entityCriteria( arguments.entityName ).where( whereArguments( arguments, "entityName" ) );
 
 		// Caching?
 		if ( getUseQueryCaching() ) {
-			options.cacheName = getQueryCacheRegion();
-			options.cacheable = true;
+			c.cache( true, getQueryCacheRegion() );
 		}
 
-		// execute query as unique for the count
-		return ormExecuteQuery( hql, params, true, options );
+		return c.count();
 	}
 
 	/*****************************************************************************************/
@@ -1817,13 +1910,116 @@ class accessors="true" {
 	/*****************************************************************************************/
 
 	/**
-	 * The name of an entity's id property, or `id` when the entity has a composite id
+	 * The offset, max rows and timeout query options, leaving out the zero (unset) ones, plus query caching when the
+	 * service uses it
+	 *
+	 * @offset  Rows to skip
+	 * @max     Maximum rows, 0 for all
+	 * @timeout Timeout in seconds, 0 for none
+	 *
+	 * @return The options struct
+	 */
+	private struct function pagingOptions(
+		numeric offset  = 0,
+		numeric max     = 0,
+		numeric timeout = 0
+	){
+		var options = {};
+		if ( arguments.offset != 0 ) {
+			options.offset = arguments.offset;
+		}
+		if ( arguments.max != 0 ) {
+			options.maxresults = arguments.max;
+		}
+		if ( arguments.timeout != 0 ) {
+			options.timeout = arguments.timeout;
+		}
+		if ( getUseQueryCaching() ) {
+			options.cacheName = getQueryCacheRegion();
+			options.cacheable = true;
+		}
+		return options;
+	}
+
+	/**
+	 * Normalize an id, a list of ids or an array of ids into an array of ids
+	 *
+	 * @id The id, list of ids or array of ids
+	 *
+	 * @return An array of ids
+	 */
+	private array function idArray( required id ){
+		if ( isSimpleValue( arguments.id ) ) {
+			return listToArray( arguments.id );
+		}
+		return isArray( arguments.id ) ? arguments.id : [ arguments.id ];
+	}
+
+	/**
+	 * The name of an entity's id property; an entity with a composite id is an error for this operation
 	 *
 	 * @entityName The entity name
+	 * @operation  The operation, for the error message
+	 *
+	 * @return The id property name
 	 */
-	private string function idPropertyName( required entityName ){
-		var key = getKey( arguments.entityName );
-		return isSimpleValue( key ) && len( key ) ? key : "id";
+	private string function singleIdProperty( required entityName, required operation ){
+		var idProperties = entityGetMetadata( arguments.entityName ).idProperties;
+		if ( idProperties.len() != 1 ) {
+			throw(
+				message = "#arguments.operation# needs an entity with a single id property, but #arguments.entityName# has a composite id",
+				type    = "BaseORMService.CompositeIdNotSupported"
+			);
+		}
+		return idProperties[ 1 ];
+	}
+
+	/**
+	 * Match a criteria on one or more ids: an id, a list or array of ids, or, for a composite id, a struct or an array of
+	 * structs of key values
+	 *
+	 * @criteria   The bx-orm criteria
+	 * @entityName The entity name
+	 * @id         The id(s)
+	 *
+	 * @return The criteria
+	 */
+	private function whereIds(
+		required criteria,
+		required entityName,
+		required id
+	){
+		var idProperties = entityGetMetadata( arguments.entityName ).idProperties;
+		if ( idProperties.len() == 1 ) {
+			return arguments.criteria.isIn( idProperties[ 1 ], idArray( arguments.id ) );
+		}
+		// Composite id: any of the key-value structs
+		var ids = isArray( arguments.id ) ? arguments.id : [ arguments.id ];
+		return arguments.criteria.anyOf( ( c ) => {
+			for ( var thisId in ids ) {
+				c.idEq( thisId );
+			}
+		} );
+	}
+
+	/**
+	 * The name-value pairs passed to a method like `countWhere( entityName = "User", age = 20 )`: every argument except
+	 * the reserved ones and the ones not given
+	 *
+	 * @args     The method's arguments scope
+	 * @reserved The reserved argument names, as a list
+	 *
+	 * @return The property filter struct
+	 */
+	private struct function whereArguments( required args, required string reserved ){
+		var filter = {};
+		for ( var key in arguments.args ) {
+			if ( listFindNoCase( arguments.reserved, key ) || isNull( arguments.args[ key ] ) ) {
+				continue;
+			}
+			filter[ key ] = arguments.args[ key ];
+		}
+		return filter;
 	}
 
 	/**
@@ -1864,31 +2060,17 @@ class accessors="true" {
 		// Clean up the arg collection
 		structDelete( arguments.argCollection, "transactional" );
 
-		// If in transaction, just execute the incoming target
-		if ( request.keyExists( "cbox_aop_transaction" ) OR isInTransaction() OR !arguments.transactional ) {
+		// Already in a transaction (it commits or rolls back this work too), or not wanted: just run it
+		if ( !arguments.transactional || isInTransaction() ) {
 			return arguments.target( argumentCollection = arguments.argCollection );
 		}
-		// mark transaction began
-		request[ "cbox_aop_transaction" ] = true;
 
+		// BoxLang commits at the end, and rolls back and rethrows when the target throws
+		var results = null;
 		transaction {
-			try {
-				// Call method
-				var results = arguments.target( argumentCollection = arguments.argCollection );
-			} catch ( Any e ) {
-				// RollBack Transaction
-				transactionRollback();
-				// throw it back folks
-				rethrow;
-			} finally {
-				// remove pointer
-				request.delete( "cbox_aop_transaction" );
-			}
+			results = arguments.target( argumentCollection = arguments.argCollection );
 		}
-
-		if ( !isNull( results ) ) {
-			return results;
-		}
+		return results;
 	}
 
 }
