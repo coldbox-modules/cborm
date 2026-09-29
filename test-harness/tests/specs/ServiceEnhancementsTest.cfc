@@ -60,7 +60,11 @@ component extends="tests.resources.BaseTest" {
 
 	function testStreamTakesClosures(){
 		var names = ormService
-			.list( entityName = "Category", sortOrder = "category", asStream = true )
+			.list(
+				entityName = "Category",
+				sortOrder  = "category",
+				asStream   = true
+			)
 			.map( ( c ) => c.getCategory() )
 			.toList();
 		expect( names.size() ).toBe( ormService.count( "Category" ) );
@@ -103,9 +107,11 @@ component extends="tests.resources.BaseTest" {
 	}
 
 	function testDynamicFinderSortByCannotInjectHQL(){
-		expect( () => ormService.findAllByCategoryLike( "Category", "%", { sortBy : "category; delete from User" } ) ).toThrow(
-			"InvalidSortOrder"
-		);
+		expect( () => ormService.findAllByCategoryLike(
+			"Category",
+			"%",
+			{ sortBy : "category; delete from User" }
+		) ).toThrow( "InvalidSortOrder" );
 		expect( ormService.findAllByCategoryLike( "Category", "%", { sortBy : "category desc" } ) ).notToBeEmpty();
 	}
 
@@ -147,7 +153,11 @@ component extends="tests.resources.BaseTest" {
 		var found = ormService.firstOrNew( "Category", { catid : testCatID } );
 		expect( found.getCatid() ).toBe( testCatID );
 
-		var fresh = ormService.firstOrNew( "Category", { category : "unitTestNew" }, { description : "new one" } );
+		var fresh = ormService.firstOrNew(
+			"Category",
+			{ category : "unitTestNew" },
+			{ description : "new one" }
+		);
 		expect( isNull( fresh.getCatid() ) ).toBeTrue();
 		expect( fresh.getCategory() ).toBe( "unitTestNew" );
 		expect( fresh.getDescription() ).toBe( "new one" );
@@ -181,7 +191,12 @@ component extends="tests.resources.BaseTest" {
 	/********************************* bx-orm wrappers *********************************/
 
 	function testGetWithOptions(){
-		var cat = ormService.get( "Category", testCatID, true, { readOnly : true } );
+		var cat = ormService.get(
+			"Category",
+			testCatID,
+			true,
+			{ readOnly : true }
+		);
 		expect( cat.getCatid() ).toBe( testCatID );
 	}
 
@@ -203,7 +218,11 @@ component extends="tests.resources.BaseTest" {
 
 	function testUpdateWhere(){
 		withRollback( () => {
-			var count = ormService.updateWhere( "Category", { catid : testCatID }, { description : "updated" } );
+			var count = ormService.updateWhere(
+				"Category",
+				{ catid : testCatID },
+				{ description : "updated" }
+			);
 			expect( count ).toBe( 1 );
 			ormClearSession();
 			expect( ormService.get( "Category", testCatID ).getDescription() ).toBe( "updated" );
