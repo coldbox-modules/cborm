@@ -2070,7 +2070,10 @@ class accessors="true" {
 		transaction {
 			results = arguments.target( argumentCollection = arguments.argCollection );
 		}
-		return results;
+		// With CFML null semantics a null result removes the variable
+		if ( !isNull( results ) ) {
+			return results;
+		}
 	}
 
 }

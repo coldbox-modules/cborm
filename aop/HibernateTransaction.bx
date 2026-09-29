@@ -73,7 +73,10 @@ class implements="coldbox.system.aop.MethodInterceptor" accessors="true" {
 			rethrow;
 		}
 
-		return results;
+		// With CFML null semantics a null result removes the variable
+		if ( !isNull( results ) ) {
+			return results;
+		}
 	}
 
 	/**
