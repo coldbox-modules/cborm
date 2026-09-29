@@ -6,19 +6,19 @@
 
 <img src="https://forgebox.io/api/v1/entry/cborm/badges/version" />
 
-This module will enhance your experience when working with the ColdFusion (CFML) ORM powered by Hibernate.  It will not only enhance it with dynamic goodness but give you a fluent and human approach to working with Hibernate.  It will finally make working with ORM NOT SUCK!
+This module will enhance your experience when working with the BoxLang ORM (the `bx-orm` module) powered by Hibernate.  It will not only enhance it with dynamic goodness but give you a fluent and human approach to working with Hibernate.  It will finally make working with ORM NOT SUCK!
 
 ## Features
 
 * Service Layers with all the methods you could probably think off to help you get started in any project
 * Virtual service layers so you can create virtual services for any entity in your application
 * ActiveEntity our implementation of Active Record for ORM
-* Fluent queries via Hibernate's criteria and detached criteria queries with some Dynamic CFML goodness
+* Fluent criteria queries via the `bx-orm` `entityCriteria()` builder, with cborm's method names
 * Dynamic finders and counters
 * Entity population from json, structs, xml, and queryies including building up their relationships
 * Entity validation
 * Includes the [Mementifier project](https://www.forgebox.io/view/mementifier) to produce memento states from any entity, great for producing JSON
-* Ability for finders and queries to be returned as Java streams using our [cbStreams](https://www.forgebox.io/view/cbstreams) project.
+* Finders and queries can return Java streams that read from the database as they are consumed
 * Automatic REST CRUD, stop wasting time building resources and just leverage our base resource: https://coldbox-orm.ortusbooks.com/orm-events/automatic-rest-crud
 
 ```js
@@ -83,10 +83,11 @@ Apache License, Version 2.0.
 
 ## SYSTEM REQUIREMENTS
 
-* Boxlang 1+ (Preferred)
-  * Hibernate 5.6.15 via the `bx-orm` module
-* ColdFusion 2023, 2025 via their orm module
-  * Hibernate 5.x
+* BoxLang 1.17.5+ with the `bx-orm` 2 module (Hibernate 7)
+* CFML applications run through the `bx-compat-cfml` module
+* Adobe ColdFusion and `bx-orm` 1: use cborm 5.x
+
+Upgrading from cborm 5? Read [UPGRADING.md](UPGRADING.md).
 
 # INSTRUCTIONS
 
@@ -96,7 +97,7 @@ Use CommandBox cli to install:
 box install cborm
 ```
 
-Unfortunately, due to the way that ORM is loaded by ColdFusion, if you are using the ORM EventHandler or `ActiveEntity` or any ColdBox Proxies that require ORM, you must create an Application Mapping in the `Application.cfc` like this:
+Due to the way the ORM is loaded, if you are using the ORM EventHandler or `ActiveEntity` or any ColdBox Proxies that require ORM, you must create an Application Mapping in the `Application.cfc` like this:
 
 ```js
 this.mappings[ "/cborm" ] = COLDBOX_APP_ROOT_PATH & "modules/cborm";

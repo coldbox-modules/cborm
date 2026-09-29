@@ -19,7 +19,6 @@
 	this.mappings[ "/root" ]         = rootPath;
 	this.mappings[ "/cbvalidation" ] = rootPath & "/modules/cbvalidation";
 	this.mappings[ "/cbi18n" ]       = rootPath & "/modules/cbvalidation/modules/cbi18n";
-	this.mappings[ "/cbstreams" ]    = rootPath & "/modules/cbstreams";
 
 	// The module root path
 	moduleRootPath = reReplaceNoCase(
@@ -34,7 +33,7 @@
 	this.datasource  = "coolblog";
 	this.ormEnabled  = "true";
 	this.ormSettings = {
-		dialect               : "org.hibernate.dialect.MySQL5InnoDBDialect",
+		dialect               : "org.hibernate.dialect.MySQLDialect",
 		logSQL                : false,
 		dbcreate              : "update",
 		secondarycacheenabled : false,
@@ -44,16 +43,10 @@
 		skipcfcWithError      : false,
 		saveMapping           : false
 	}
-	// Engine specific settings for ORM
-	if ( server.keyExists( "boxlang" ) ) {
-		this.ormSettings.entityPaths        = [ "/root/models" ]
-		this.ormSettings.ingnoreParseErrors = false
-		this.ormSettings.eventHandler       = "cborm.models.BXEventHandler"
-	} else {
-		this.ormSettings.cfclocation      = [ "/root/models" ]
-		this.ormSettings.eventHandler     = "cborm.models.EventHandler"
-		this.ormSettings.skipcfcWithError = false
-	}
+	// BoxLang ORM (bx-orm) settings
+	this.ormSettings.entityPaths       = [ "/root/models" ]
+	this.ormSettings.ignoreParseErrors = false
+	this.ormSettings.eventHandler      = "cborm.models.EventHandler"
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){

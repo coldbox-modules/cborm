@@ -62,7 +62,7 @@
 	}
 
 	function testFindByDynamicallyFailure(){
-		expectException( "HQLQueryException" );
+		expectException( "orm.query.parameter" );
 		var t = ormservice.findByLastName();
 	}
 
@@ -144,7 +144,8 @@
 		var count = ormService.count();
 		assertTrue( count gt 0 );
 
-		var count = ormService.count( "firstname='luis'" );
+		// HQL property names are case-sensitive in Hibernate 6+
+		var count = ormService.count( "firstName='luis'" );
 		assertEquals( 1, count );
 	}
 
@@ -187,11 +188,22 @@
 	}
 
 	function testConvertIDValueToJavaType(){
+		// bx-orm converts ids itself: idCast() only normalizes to an array
 		var test = ormservice.convertIDValueToJavaType( id = 1 );
-		assertEquals( [ 1 ], test );
+		expect( test ).toBe( [ "1" ] );
 
 		var test = ormservice.convertIDValueToJavaType( id = [ "1", "2", "3" ] );
-		assertEquals( [ 1, 2, 3 ], test );
+		expect( test ).toBe( [ "1", "2", "3" ] );
+	}
+
+	function testGetRestrictions(){
+		var r = ormservice.getRestrictions();
+		expect(
+			ormservice
+				.newCriteria()
+				.add( r.isEq( "lastName", "majano" ) )
+				.count()
+		).toBe( 1 );
 	}
 
 	function testConvertValueToJavaType(){

@@ -18,14 +18,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "boxlang-cfml@1", "boxlang@1", "adobe@2023", "adobe@2025" ]
+        cfengine: [ "boxlang-cfml@1", "boxlang@1" ]
         coldboxVersion: [ "^8.0.0" ]
         experimental: [ false ]
-        # Experimental: ColdBox BE vs All Engines
+        # Experimental: ColdBox BE vs BoxLang engines
         include:
-          - coldboxVersion: "be"
-            cfengine: "adobe@2025"
-            experimental: true
           - coldboxVersion: "be"
             cfengine: "boxlang-cfml@1"
             experimental: true
@@ -47,6 +44,20 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
+
+      # TEMPORARY: cborm 6 needs bx-orm 2, which is not published yet. Build it from its migration branch and
+      # install that zip (the server configs read BXORM_PACKAGE). Remove this step once bx-orm 2 is on ForgeBox.
+      - name: Build bx-orm 2 (temporary, until it is published)
+        run: |
+          git clone --depth 1 --branch claude/hibernate-7.4-migration-q8zu9n https://github.com/ortus-boxlang/bx-orm.git "$RUNNER_TEMP/bx-orm"
+          cd "$RUNNER_TEMP/bx-orm"
+          # The Gradle plugin portal sometimes fails to serve a dependency: retry up to 3 times
+          retry() { for i in 1 2 3; do "$@" && return 0; echo "Attempt $i failed: $*"; sleep $(( i * 15 )); done; return 1; }
+          retry ./gradlew downloadBoxLang --console=plain
+          retry ./gradlew build -x test -x javadoc --console=plain
+          BXORM_ZIP=$( ls "$PWD"/build/distributions/bx-orm-*.zip | grep -v javadocs | head -n 1 )
+          echo "Built $BXORM_ZIP"
+          echo "BXORM_PACKAGE=$BXORM_ZIP" >> "$GITHUB_ENV"
 
       - name: Setup Database and Fixtures
         run: |
@@ -86,11 +97,6 @@ jobs:
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
           curl http://127.0.0.1:60299
 
-      - name: Run Adobe Full Null Regression
-        if: ${{ matrix.cfengine == 'adobe@2025' }}
-        run: |
-          curl --fail-with-body http://127.0.0.1:60299/tests/full-null/index.cfm
-
       - name: Run Tests
         run: |
           mkdir -p test-harness/tests/results
@@ -127,7 +133,6 @@ jobs:
           name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.coldboxVersion }}
           path: |
             .engine/**/logs/*
-            .engine/**/WEB-INF/cfusion/logs/*
 
       - name: Slack Notifications
         # Only on failures and NOT in pull requests

@@ -252,7 +252,7 @@ component {
 	}
 
 	/**
-	 * DirectoryCopy is broken in lucee
+	 * Copy a directory tree, skipping the build excludes
 	 */
 	private function copy( src, target, recurse = true ){
 		// process paths with excludes

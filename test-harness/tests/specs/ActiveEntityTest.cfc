@@ -99,7 +99,7 @@
 	}
 
 	function testFindByDynamicallyFailure(){
-		expectException( "HQLQueryException" );
+		expectException( "orm.query.parameter" );
 		t = activeUser.findByLastName();
 	}
 
@@ -166,11 +166,7 @@
 
 	function testSave(){
 		// mocks
-		if ( isBoxLang() ) {
-			mockEventHandler = getMockBox().createEmptyMock( "cborm.models.BXEventHandler" );
-		} else {
-			mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
-		}
+		mockEventHandler = getMockBox().createEmptyMock( "cborm.models.EventHandler" );
 
 		mockEventHandler.$( "preSave" );
 		mockEventHandler.$( "postSave" );

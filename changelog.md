@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+
+- cborm 6 is a pure BoxLang module: it requires BoxLang with the `bx-orm` 2 module (Hibernate 7). Adobe ColdFusion is no longer supported; use cborm 5.x. CFML applications run through `bx-compat-cfml`. See [UPGRADING.md](UPGRADING.md).
+- All module sources are BoxLang classes (`.bx`), including `ModuleConfig.bx`.
+- `newCriteria()` returns a bx-orm `entityCriteria()` builder. The Hibernate criteria API wrappers (`models/criterion/*`), `SQLHelper`, the ORM utilities (`ORMUtilFactory`, `getOrm()`) and `JavaProxyBuilder` are removed.
+- `getEntityMetadata()` returns the Hibernate 7 entity persister, which keeps the Hibernate 5 `ClassMetadata` methods mementifier and apps use.
+- `idCast()`/`autoCast()` (and the `convert...ToJavaType()` aliases) no longer cast: bx-orm converts values itself.
+- `cbstreams` and `cbpaginator` are no longer dependencies. `asStream = true` returns a Java `Stream` read from the database as it is consumed, and the resource handler builds its own pagination block.
+- `findWhere()` is always strict (more than one match is `orm.query.nonUnique`); pass `{ uniqueFirst : true }` for the first match.
+- `getAll( sortOrder )` and dynamic finder `sortBy` only accept property names with `asc`/`desc`.
+- Dynamic finders rethrow bx-orm's typed `orm.*` errors instead of wrapping them in `HQLQueryException`.
+
+### Features
+
+- New `ORMPostCommit` interception point, announced once an insert, update or delete is committed.
+- `c.restrictions`, quantified subqueries and the SQL log on criteria, through bx-orm 2.
+- bx-orm criteria events are relayed to ColdBox interceptors.
+- New service methods: `findWhereOrFail()`, `firstOrNew()`, `firstOrCreate()`, `updateWhere()`, `getReference()`, `lock()` and `readOnly()`.
+- `get()`, `getOrFail()`, `list()`, `executeQuery()`, `findAll()`, `findWhere()` and `findAllWhere()` take an `options` struct passed to bx-orm (`readOnly`, `lock`, `uniqueFirst`, ...).
+- `ActiveEntity` adds `lock()` and `toStruct()`; `getKeyValue()`, `getDirtyPropertyNames()` and `sessionContains()` default to the entity itself.
+- Composite ids work with `exists()`, `getAll( id )` and `deleteByID()`.
+- Dynamic finders accept id properties (`findAllByIdInList()`).
+- `ORMPreFlush` is announced on every flush through bx-orm's `onFlush`/`onAutoFlush` events.
+- Entities from `entityNew()`, `entityLoadOrNew()` and `entityLoadOrSave()` are autowired.
+- `DynamicProcessor.clearCache()` forgets the compiled dynamic finders.
+
+### Improvements
+
+- HQL entity and property names stay case-insensitive: bx-orm 2 resolves them to their declared case, and dynamic finders accept any case, including in `sortBy`.
+- One event handler: `cborm.models.EventHandler`. `BXEventHandler` is a deprecated alias.
+- `ORMPostNew` is announced once per `new()`, after the entity is autowired and populated.
+- The `HibernateTransaction` aspect and service transactions ride BoxLang `transaction{}`, and rely on it to roll back (no `request.cbox_aop_transaction` flag).
+- `exists()`, `countWhere()`, `deleteWhere()`, `deleteByID()`, `deleteAll()` and `getAll()` run on bx-orm criteria: properties are validated, and bulk deletes flush pending changes first.
+- `save()`, `delete()` and `saveAll()` flush every datasource their entities belong to.
+- `UniqueValidator` uses an EXISTS query and supports composite ids.
+- The dynamic finders' property-name cache and its named lock are gone: names come from bx-orm's metadata, and a compiled finder bx-orm rejects after `ormReload()` is compiled again.
+
+### Fixed
+
+- Dynamic finders with `InList` / `NotInList` bound the raw list string when the compiled HQL came from the cache.
+- HQL injection through `getAll( sortOrder )` and dynamic finder `sortBy`.
+- `deleteWhere()` missed unflushed entities.
+- `exists()` failed on composite ids.
+- `delete()` flushed only the first entity's datasource and `saveAll()` only the service's.
+- `VirtualEntityService.deleteAll()` dropped `transactional`, `evictCollection()` returned nothing, and `findAllWhere()`/`new()` were missing arguments of the base service.
+- Entity injection `include`/`exclude` matched parts of names (`UserRole` included `User`).
+- `executeQuery( asQuery = true )` returned an array when the HQL mentioned `update`, `insert` or `delete`.
+- `executeQuery()` passed `ignorecase` to `ormExecuteQuery()`.
+- `ActiveEntity.getValidationResult()` was always null, and `isValid( includeFields )` ignored `includeFields`.
+- A `new()` nested in an entity's `postNew()` announced `ORMPostNew` twice.
+
 ## [5.1.0] - 2026-09-08
 
 ## [5.0.0] - 2026-07-18

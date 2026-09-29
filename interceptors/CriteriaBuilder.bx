@@ -1,0 +1,30 @@
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Simple interceptor to process logging of proposed SQL strings from criteria Builder object
+ */
+class extends="coldbox.system.Interceptor" {
+
+	/**
+	 * Configuration method for interceptor
+	 */
+	function configure(){
+	}
+
+	/**
+	 * Listen to criteria additions: when the criteria's SQL log is on (`startSqlLog()`), log its SQL under the added
+	 * condition's name
+	 *
+	 * @event The request context
+	 * @data  The event data: `type` (the condition method) and `criteriaBuilder`
+	 */
+	function onCriteriaBuilderAddition( event, data = {} ){
+		if ( structKeyExists( arguments.data, "criteriaBuilder" ) ) {
+			if ( arguments.data.criteriaBuilder.canLogSql() ) {
+				arguments.data.criteriaBuilder.logSql( label = arguments.data.type );
+			}
+		}
+	}
+
+}

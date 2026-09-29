@@ -47,8 +47,8 @@ If you discover a security vulnerability, please send an email to the developmen
 
 Please make sure your code runs on the following Engines:
 
-- BoxLang 1.+ (Preferred)
-- Adobe ColdFusion 2023+
+- BoxLang 1.17.5+ with the `bx-orm` 2 module
+- BoxLang with `bx-compat-cfml` (CFML applications)
 
 ## Coding Styles & Formatting
 

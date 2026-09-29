@@ -1,0 +1,253 @@
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * The bx-orm global event handler that announces ORM events as ColdBox interception points (ORMPreLoad, ORMPostLoad,
+ * ORMPreInsert, ..., ORMPostCommit) and autowires loaded entities with WireBox.
+ *
+ * Register it in your ORM settings (and turn event handling on):
+ *
+ * <pre>
+ * this.ormSettings = {
+ *     eventHandling : true,
+ *     eventHandler  : "cborm.models.EventHandler"
+ * };
+ * </pre>
+ */
+class extends="coldbox.system.remote.ColdboxProxy" {
+
+	/**
+	 * preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
+	 *
+	 * @entity The entity being loaded
+	 */
+	public void function preLoad( any entity ){
+		announce( "ORMPreLoad", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * postLoad called by hibernate which in turn autowires the entity and announces a coldbox interception: ORMPostLoad
+	 *
+	 * @entity The entity loaded
+	 */
+	public void function postLoad( any entity ){
+		var args = {
+			"entity"     : arguments.entity,
+			"entityName" : entityGetName( arguments.entity )
+		};
+		processEntityInjection( args.entityName, args.entity );
+		announce( "ORMPostLoad", args );
+	}
+
+	/**
+	 * postDelete called by hibernate which in turn announces a coldbox interception: ORMPostDelete
+	 *
+	 * @entity The entity deleted
+	 */
+	public void function postDelete( any entity ){
+		announce( "ORMPostDelete", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * preDelete called by hibernate which in turn announces a coldbox interception: ORMPreDelete
+	 *
+	 * @entity The entity being deleted
+	 */
+	public void function preDelete( any entity ){
+		announce( "ORMPreDelete", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * preUpdate called by hibernate which in turn announces a coldbox interception: ORMPreUpdate
+	 *
+	 * @entity  The entity being updated
+	 * @oldData The property values before the update
+	 */
+	public void function preUpdate( any entity, struct oldData = {} ){
+		announce(
+			"ORMPreUpdate",
+			{
+				"entity"  : arguments.entity,
+				"oldData" : arguments.oldData
+			}
+		);
+	}
+
+	/**
+	 * postUpdate called by hibernate which in turn announces a coldbox interception: ORMPostUpdate
+	 *
+	 * @entity The entity updated
+	 */
+	public void function postUpdate( any entity ){
+		announce( "ORMPostUpdate", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * preInsert called by hibernate which in turn announces a coldbox interception: ORMPreInsert
+	 *
+	 * @entity The entity being inserted
+	 */
+	public void function preInsert( any entity ){
+		announce( "ORMPreInsert", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * postInsert called by hibernate which in turn announces a coldbox interception: ORMPostInsert
+	 *
+	 * @entity The entity inserted
+	 */
+	public void function postInsert( any entity ){
+		announce( "ORMPostInsert", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * postCommit called by bx-orm once an insert, update or delete is committed (right away outside a transaction), which
+	 * in turn announces a coldbox interception: ORMPostCommit
+	 *
+	 * @entity     The entity written
+	 * @entityName The entity name
+	 * @action     The write: insert, update or delete
+	 */
+	public void function postCommit( any entity, string entityName = "", string action = "" ){
+		announce(
+			"ORMPostCommit",
+			{
+				"entity"     : arguments.entity,
+				"entityName" : arguments.entityName,
+				"action"     : arguments.action
+			}
+		);
+	}
+
+	/**
+	 * preSave called by the cborm services before save() calls
+	 *
+	 * @entity The entity being saved
+	 */
+	public void function preSave( any entity ){
+		announce( "ORMPreSave", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * postSave called by the cborm services after save() calls
+	 *
+	 * @entity The entity saved
+	 */
+	public void function postSave( any entity ){
+		announce( "ORMPostSave", { "entity" : arguments.entity } );
+	}
+
+	/**
+	 * onFlush called by bx-orm when a session flush starts (an explicit flush, or the flush at the end of a
+	 * transaction), which in turn announces a coldbox interception: ORMPreFlush
+	 *
+	 * @event The Hibernate FlushEvent
+	 */
+	public void function onFlush( any event ){
+		announce( "ORMPreFlush", { "event" : arguments.event } );
+	}
+
+	/**
+	 * onAutoFlush called by bx-orm before a query runs, when Hibernate checks whether pending changes must be flushed
+	 * first, which in turn announces a coldbox interception: ORMPreFlush
+	 *
+	 * @event The Hibernate AutoFlushEvent
+	 */
+	public void function onAutoFlush( any event ){
+		announce( "ORMPreFlush", { "event" : arguments.event } );
+	}
+
+	/**
+	 * Announces ORMPreFlush by hand, for code that announced it itself in cborm 5. bx-orm announces it on every flush
+	 * through `onFlush()` and `onAutoFlush()`.
+	 *
+	 * @entities The entities
+	 */
+	public void function preFlush( any entities ){
+		announce( "ORMPreFlush", { "entities" : arguments.entities } );
+	}
+
+	/**
+	 * Announces ORMPostFlush by hand: bx-orm has no after-flush event, so it is never announced automatically.
+	 *
+	 * @entities The entities
+	 */
+	public void function postFlush( any entities ){
+		announce( "ORMPostFlush", { "entities" : arguments.entities } );
+	}
+
+	/**
+	 * postNew autowires the entity and announces a coldbox interception: ORMPostNew. It is called by bx-orm's
+	 * entityNew(), entityLoadOrNew() and entityLoadOrSave(), and by the cborm services' new(). While a service's new() is
+	 * running, bx-orm's call is skipped: the service autowires the entity and announces the event itself once it is
+	 * populated.
+	 *
+	 * @entity     The new entity
+	 * @entityName The entity name, looked up when not given
+	 */
+	public void function postNew( any entity, any entityName ){
+		// A cborm service new() is in progress: it autowires and announces ORMPostNew itself
+		if ( ( request.cbormEntityNewInProgress ?: 0 ) > 0 ) {
+			return;
+		}
+
+		var args = { "entity" : arguments.entity, "entityName" : "" };
+
+		// Do we have an incoming name
+		if ( !isNull( arguments.entityName ) && len( arguments.entityName ) ) {
+			args.entityName = arguments.entityName;
+		}
+
+		// If we don't have the entity name, then look it up
+		if ( !len( args.entityName ) ) {
+			args.entityName = entityGetName( arguments.entity );
+		}
+
+		// Autowire it, as postLoad() does for loaded entities
+		processEntityInjection( args.entityName, args.entity );
+
+		// Process the announcement
+		announce( "ORMPostNew", args );
+	}
+
+	/**
+	 * Get the system Event Manager
+	 */
+	public any function getEventManager(){
+		return getWireBox().getEventManager();
+	}
+
+	/**
+	 * Autowire an entity with WireBox, according to the cborm `injection` settings
+	 *
+	 * @entityName The entity name
+	 * @entity     The entity object
+	 *
+	 * @return The processed entity
+	 */
+	public function processEntityInjection( required entityName, required entity ){
+		var ormSettings     = getController().getConfigSettings().modules[ "cborm" ].settings;
+		var injectorInclude = ormSettings.injection.include;
+		var injectorExclude = ormSettings.injection.exclude;
+
+		// Enabled?
+		if ( NOT ormSettings.injection.enabled ) {
+			return arguments.entity;
+		}
+
+		// Include,Exclude?
+		if (
+			( len( injectorInclude ) AND listFindNoCase( injectorInclude, arguments.entityName ) )
+			OR
+			( len( injectorExclude ) AND NOT listFindNoCase( injectorExclude, arguments.entityName ) )
+			OR
+			( NOT len( injectorInclude ) AND NOT len( injectorExclude ) )
+		) {
+			// Process DI
+			getWireBox().autowire( target = arguments.entity, targetID = "ORMEntity-#arguments.entityName#" );
+		}
+
+		return arguments.entity;
+	}
+
+}
