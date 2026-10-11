@@ -1,0 +1,162 @@
+# Manual pre-release of the `next` branch (6.0.0-beta.1, 6.0.0-beta.2, ...) for external testing.
+# Run it from Actions > "Pre-Release (next)" > Run workflow, on the `next` branch.
+# It runs the tests, builds with the pre-release version, uploads to downloads.ortussolutions.com and ForgeBox,
+# tags the commit and creates a GitHub pre-release. It never touches the changelog, development or the stable release.
+name: Pre-Release (next)
+
+on:
+  workflow_dispatch:
+    inputs:
+      label:
+        description: "Pre-release label"
+        required: true
+        default: "beta"
+        type: choice
+        options:
+          - alpha
+          - beta
+          - rc
+
+# One pre-release at a time, so two runs can never pick the same number
+concurrency:
+  group: prerelease-${{ github.repository }}
+  cancel-in-progress: false
+
+env:
+  MODULE_ID: ${{ github.event.repository.name }}
+  JDK: 21
+  BUILD_ID: ${{ github.run_number }}
+
+jobs:
+  #############################################
+  # Only the next branch can be pre-released
+  #############################################
+  guard:
+    name: Check Branch
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require the next branch
+        if: github.ref != 'refs/heads/next'
+        run: |
+          echo "::error::Pre-releases are built from the next branch only (this run is on ${{ github.ref_name }})."
+          exit 1
+
+  #############################################
+  # Tests first: no green tests, no pre-release
+  #############################################
+  tests:
+    needs: guard
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+      issues: read
+
+  #############################################
+  # Build & publish the pre-release
+  #############################################
+  build:
+    name: Build & Publish Pre-Release
+    needs: tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Boxlang & CommandBox
+        uses: ortus-boxlang/setup-boxlang@main
+        with:
+          with-commandbox: true
+          forgeboxAPIKey: ${{ secrets.FORGEBOX_TOKEN }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: "temurin"
+          java-version: ${{ env.JDK }}
+
+      # The next free number for this label, from the existing tags: v6.0.0-beta.1, v6.0.0-beta.2 -> 6.0.0-beta.3
+      - name: Compute Pre-Release Version
+        run: |
+          BASE=$(jq -r '.version' box.json | sed 's/[-+].*$//')
+          LABEL="${{ inputs.label }}"
+          git fetch --tags --force --quiet
+          LAST=$(git tag -l "v${BASE}-${LABEL}.*" | sed -E "s/^v${BASE}-${LABEL}\.//" | grep -E '^[0-9]+$' | sort -n | tail -1)
+          NUMBER=$(( ${LAST:-0} + 1 ))
+          VERSION="${BASE}-${LABEL}.${NUMBER}"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "Pre-release version: ${VERSION}"
+          # The build replaces these tokens (not committed)
+          box package set version=@build.version@+@build.number@
+
+      - name: Build ${{ env.MODULE_ID }}
+        run: |
+          box install commandbox-docbox
+          box task run taskfile=Build target=run :version=${{ env.VERSION }} :projectName=${{ env.MODULE_ID }} :buildID=${{ env.BUILD_ID }} :branch=next
+
+      - name: Upload Binaries to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read
+        env:
+          AWS_S3_BUCKET: "downloads.ortussolutions.com"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
+          SOURCE_DIR: ".artifacts/${{ env.MODULE_ID }}"
+          DEST_DIR: "ortussolutions/coldbox-modules/${{ env.MODULE_ID }}"
+
+      - name: Upload API Docs to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read
+        env:
+          AWS_S3_BUCKET: "apidocs.ortussolutions.com"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
+          SOURCE_DIR: ".tmp/apidocs"
+          DEST_DIR: "coldbox-modules/${{ env.MODULE_ID }}/${{ env.VERSION }}"
+
+      - name: Publish To ForgeBox
+        run: |
+          cd .tmp/${{ env.MODULE_ID }}
+          cat box.json
+          box forgebox publish --force
+
+      - name: Tag the Pre-Release
+        run: |
+          git config user.name "Github Actions"
+          git config user.email "info@ortussolutions.com"
+          git tag -a "v${VERSION}" -m "Pre-release v${VERSION}" "$GITHUB_SHA"
+          git push origin "v${VERSION}"
+
+      # Release notes: the [Unreleased] section of the changelog, plus how to install
+      - name: Create GitHub Pre-Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "Pre-release of ${MODULE_ID} ${VERSION} for testing. Not for production."
+            echo ""
+            echo "Install: \`box install ${MODULE_ID}@${VERSION}\` (it needs a bx-orm 2.0.0 pre-release)."
+            echo ""
+            awk '/^## \[Unreleased\]/{found=1; next} found && /^## \[/{exit} found' changelog.md
+          } > .prerelease-notes.md
+          gh release create "v${VERSION}" --prerelease --title "${VERSION}" --notes-file .prerelease-notes.md
+
+      - name: Inform Slack
+        if: ${{ always() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: coding
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON_EMOJI: ":bell:"
+          SLACK_MESSAGE: "Module ${{ env.MODULE_ID }} pre-release v${{ env.VERSION }} built with ${{ job.status }}!"
+          SLACK_TITLE: "ColdBox Module ${{ env.MODULE_ID }}"
+          SLACK_USERNAME: CI
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
