@@ -83,7 +83,7 @@ Apache License, Version 2.0.
 
 ## SYSTEM REQUIREMENTS
 
-* BoxLang 1.17.5+ with the `bx-orm` 2 module (Hibernate 7)
+* BoxLang 1.18.0+ with the `bx-orm` 2 module (Hibernate 7)
 * CFML applications run through the `bx-compat-cfml` module
 * Adobe ColdFusion and `bx-orm` 1: use cborm 5.x
 
@@ -96,6 +96,17 @@ Use CommandBox cli to install:
 ```bash
 box install cborm
 ```
+
+### Trying the cborm 6 pre-release
+
+Until 6.0.0 is final, pre-releases (`6.0.0-beta.1`, `6.0.0-beta.2`, ...) are published for testing. Ask for one by version, with a bx-orm 2 pre-release:
+
+```bash
+box install cborm@6.0.0-beta.1
+box install bx-orm@2.0.0-beta.1
+```
+
+See the [releases page](https://github.com/coldbox-modules/cborm/releases) for the latest one and its notes. Pre-releases are for testing, not production.
 
 Due to the way the ORM is loaded, if you are using the ORM EventHandler or `ActiveEntity` or any ColdBox Proxies that require ORM, you must create an Application Mapping in the `Application.cfc` like this:
 

@@ -5,7 +5,7 @@ Adobe ColdFusion and `bx-orm` 1 (Hibernate 5).
 
 ## Requirements
 
-- BoxLang 1.17.5+ with the `bx-orm` 2 module. CFML applications run through `bx-compat-cfml`.
+- BoxLang 1.18.0+ with the `bx-orm` 2 module. CFML applications run through `bx-compat-cfml`.
 - ColdBox 8+.
 - cborm no longer depends on `cbstreams` or `cbpaginator`. Install them yourself if your app uses them directly.
 - Adobe ColdFusion and Lucee are no longer supported: stay on cborm 5.x.
