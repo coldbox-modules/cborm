@@ -49,7 +49,7 @@ jobs:
       # install that zip (the server configs read BXORM_PACKAGE). Remove this step once bx-orm 2 is on ForgeBox.
       - name: Build bx-orm 2 (temporary, until it is published)
         run: |
-          git clone --depth 1 --branch claude/hibernate-7.4-migration-q8zu9n https://github.com/ortus-boxlang/bx-orm.git "$RUNNER_TEMP/bx-orm"
+          git clone --depth 1 --branch next https://github.com/ortus-boxlang/bx-orm.git "$RUNNER_TEMP/bx-orm"
           cd "$RUNNER_TEMP/bx-orm"
           # The Gradle plugin portal sometimes fails to serve a dependency: retry up to 3 times
           retry() { for i in 1 2 3; do "$@" && return 0; echo "Attempt $i failed: $*"; sleep $(( i * 15 )); done; return 1; }
