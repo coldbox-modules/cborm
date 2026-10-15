@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `getBeanPopulator()`, the cborm 4/5 name of `getObjectPopulator()`, was missing, so code that still calls it (ContentBox) failed with `Invalid method call: getBeanPopulator`.
 - Dynamic finders with `InList` / `NotInList` bound the raw list string when the compiled HQL came from the cache.
 - HQL injection through `getAll( sortOrder )` and dynamic finder `sortBy`.
 - `deleteWhere()` missed unflushed entities.

@@ -52,6 +52,10 @@
 		expect( system.identityHashCode( service.getObjectPopulator() ) ).toBe(
 			system.identityHashCode( service.getObjectPopulator() )
 		);
+		// the cborm 4/5 name returns the same populator
+		expect( system.identityHashCode( service.getBeanPopulator() ) ).toBe(
+			system.identityHashCode( service.getObjectPopulator() )
+		);
 	}
 
 	function testFindAllByDynamically(){
