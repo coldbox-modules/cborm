@@ -7,9 +7,7 @@
     "dependencies":{
         "coldbox":"^8.0.0",
         "cbvalidation":"^4.0.0",
-        "mementifier":"^3.0.0",
-        "cbstreams":"^2.0.0",
-        "cbpaginator":"^2.0.0"
+        "mementifier":"^3.0.0"
     },
     "devDependencies":{
         "testbox":"*",
@@ -19,9 +17,7 @@
         "testbox":"testbox/",
         "cbvalidation":"modules/cbvalidation/",
         "mementifier":"modules/mementifier/",
-        "cbstreams":"modules/cbstreams/",
         "coldbox":"coldbox/",
-        "cbpaginator":"modules/cbpaginator/",
         "route-visualizer":"modules/route-visualizer/"
     },
     "scripts":{}

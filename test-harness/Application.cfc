@@ -56,7 +56,7 @@ component {
 	this.ormEnabled = "true"
 
 	this.ormSettings = {
-		dialect 			  : "org.hibernate.dialect.MySQL5InnoDBDialect",
+		dialect               : "org.hibernate.dialect.MySQLDialect",
 		logSQL                : true,
 		dbcreate              : "update",
 		secondarycacheenabled : false,
@@ -65,21 +65,13 @@ component {
 		flushAtRequestEnd     : false,
 		eventhandling         : true
 	}
-	// Engine specific settings for ORM
-	if( server.keyExists( "boxlang" ) ){
-		this.ormSettings.entityPaths = [ "models" ]
-		this.ormSettings.ingnoreParseErrors = false
-		this.ormSettings.eventHandler = "cborm.models.BXEventHandler"
-	} else {
-		this.ormSettings.cfclocation = [ "models" ]
-		this.ormSettings.eventHandler = "cborm.models.EventHandler"
-		this.ormSettings.skipcfcWithError = false
-	}
+	// BoxLang ORM (bx-orm) settings
+	this.ormSettings.entityPaths        = [ "models" ]
+	this.ormSettings.ignoreParseErrors  = false
+	this.ormSettings.eventHandler       = "cborm.models.EventHandler"
 
-	// application start
 	public boolean function onApplicationStart(){
 
-		//new cborm.models.util.ORMUtilSupport().setupHibernateLogging()
 
 		application.cbBootstrap = new coldbox.system.Bootstrap(
 			COLDBOX_CONFIG_FILE,

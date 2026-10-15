@@ -47,8 +47,15 @@ If you discover a security vulnerability, please send an email to the developmen
 
 Please make sure your code runs on the following Engines:
 
-- BoxLang 1.+ (Preferred)
-- Adobe ColdFusion 2023+
+- BoxLang 1.18.0+ with the `bx-orm` 2 module
+- BoxLang with `bx-compat-cfml` (CFML applications)
+
+## Branches and Pre-Releases
+
+- `next` is where cborm 6 is built and tested. Send pull requests for cborm 6 to `next`.
+- Maintainers publish pre-releases (`6.0.0-beta.N`) from `next` by hand: GitHub **Actions > Pre-Release (next) > Run workflow** on the `next` branch, choosing the label (`alpha`, `beta` or `rc`). The workflow runs the tests, picks the next free number from the existing tags, uploads the build to downloads.ortussolutions.com and ForgeBox, tags the commit and creates a GitHub pre-release. It never changes the changelog, `development` or the stable release.
+- Publish the matching bx-orm pre-release first: cborm 6 runs on bx-orm 2.
+- When 6.0.0 is final, `next` is merged into `development` through a pull request and released as usual.
 
 ## Coding Styles & Formatting
 

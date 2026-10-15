@@ -166,8 +166,9 @@ component {
 		command( "tokenReplace" )
 			.params(
 				path        = "/#variables.projectBuildDir#/**",
-				token       = ( arguments.branch == "master" ? "@build.number@" : "+@build.number@" ),
-				replacement = ( arguments.branch == "master" ? arguments.buildID : "-snapshot" )
+				// Only development builds are snapshots; master and next (pre-releases) keep their version + build number
+				token       = ( arguments.branch == "development" ? "+@build.number@" : "@build.number@" ),
+				replacement = ( arguments.branch == "development" ? "-snapshot" : arguments.buildID )
 			)
 			.run();
 
@@ -252,7 +253,7 @@ component {
 	}
 
 	/**
-	 * DirectoryCopy is broken in lucee
+	 * Copy a directory tree, skipping the build excludes
 	 */
 	private function copy( src, target, recurse = true ){
 		// process paths with excludes
