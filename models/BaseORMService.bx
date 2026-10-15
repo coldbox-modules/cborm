@@ -1117,6 +1117,16 @@ class accessors="true" {
 	}
 
 	/**
+	 * Get access to the object populator: the cborm 4/5 name of `getObjectPopulator()`, kept so existing code
+	 * (ContentBox, for example) keeps working
+	 *
+	 * @return coldbox.system.core.dynamic.ObjectPopulator
+	 */
+	function getBeanPopulator(){
+		return getObjectPopulator();
+	}
+
+	/**
 	 * Get access to the object populator objet
 	 *
 	 * @return coldbox.system.core.dynamic.ObjectPopulator
