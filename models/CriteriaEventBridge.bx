@@ -1,0 +1,94 @@
+/**
+ * Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * bx-orm announces the cborm criteria events (onCriteriaBuilderAddition, before/afterCriteriaBuilderList, ...) on the
+ * BoxLang runtime. This interceptor is registered on the runtime by ModuleConfig and re-announces each one to the
+ * ColdBox interceptor service, so ColdBox interceptors listening to them keep working.
+ */
+class {
+
+	/**
+	 * Constructor
+	 *
+	 * @controller The ColdBox controller whose interceptors receive the events
+	 */
+	function init( required controller ){
+		variables.controller = arguments.controller;
+		return this;
+	}
+
+	/**
+	 * A condition was added to a criteria: data has `type` (the method) and `criteriaBuilder`.
+	 *
+	 * @data The event data
+	 */
+	function onCriteriaBuilderAddition( data ){
+		relay( "onCriteriaBuilderAddition", arguments.data );
+	}
+
+	/**
+	 * Before a criteria list(): data has `criteriaBuilder`.
+	 *
+	 * @data The event data
+	 */
+	function beforeCriteriaBuilderList( data ){
+		relay( "beforeCriteriaBuilderList", arguments.data );
+	}
+
+	/**
+	 * After a criteria list(): data has `criteriaBuilder` and `results`.
+	 *
+	 * @data The event data
+	 */
+	function afterCriteriaBuilderList( data ){
+		relay( "afterCriteriaBuilderList", arguments.data );
+	}
+
+	/**
+	 * Before a criteria count(): data has `criteriaBuilder`.
+	 *
+	 * @data The event data
+	 */
+	function beforeCriteriaBuilderCount( data ){
+		relay( "beforeCriteriaBuilderCount", arguments.data );
+	}
+
+	/**
+	 * After a criteria count(): data has `criteriaBuilder` and `count`.
+	 *
+	 * @data The event data
+	 */
+	function afterCriteriaBuilderCount( data ){
+		relay( "afterCriteriaBuilderCount", arguments.data );
+	}
+
+	/**
+	 * Before a criteria get(): data has `criteriaBuilder`.
+	 *
+	 * @data The event data
+	 */
+	function beforeCriteriaBuilderGet( data ){
+		relay( "beforeCriteriaBuilderGet", arguments.data );
+	}
+
+	/**
+	 * After a criteria get(): data has `criteriaBuilder` and `result`.
+	 *
+	 * @data The event data
+	 */
+	function afterCriteriaBuilderGet( data ){
+		relay( "afterCriteriaBuilderGet", arguments.data );
+	}
+
+	/**
+	 * Re-announce an event to ColdBox.
+	 *
+	 * @state The interception point
+	 * @data  The event data
+	 */
+	private function relay( required state, data = {} ){
+		variables.controller.getInterceptorService().announce( arguments.state, arguments.data );
+	}
+
+}

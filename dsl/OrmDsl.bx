@@ -4,7 +4,7 @@
  * ---
  * The ORM WireBox DSL
  */
-component accessors="true" {
+class accessors="true" {
 
 	property name="injector";
 

@@ -31,7 +31,7 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-mysql,bx-derby,bx-orm --noSave"
+        "onServerInitialInstall":"install bx-mysql,bx-derby,${BXORM_PACKAGE:bx-orm@be} --noSave"
     },
     "-trace":true
 }

@@ -7,7 +7,7 @@
  * - You will be injecting Virtual Entity services
  * - Your entities need to inherit from ActiveEntity
  * - You will need to register the routes using ColdBox <code>resources()</code> method
- * - You will need mementifier active
+ * - Entities are marshalled with mementifier's `getMemento()` when it is installed, else with bx-orm's `entityToStruct()`
  *
  * ## Requirements
  *
@@ -32,14 +32,13 @@
  * That's it!  All resource methods: <code>index, create, show, update, delete</code> will be implemented for you.
  * You can create more actions or override them as needed.
  */
-component extends="coldbox.system.RestHandler" {
+class extends="coldbox.system.RestHandler" {
 
 	/* *********************************************************************
 	 **	DI
 	 ********************************************************************* */
 
-	property name="settings"    inject="coldbox:moduleSettings:cborm";
-	property name="cbpaginator" inject="Pagination@cbpaginator";
+	property name="settings" inject="coldbox:moduleSettings:cborm";
 
 	/* *********************************************************************
 	 **	Opearational Properties
@@ -153,21 +152,15 @@ component extends="coldbox.system.RestHandler" {
 		// Marshall out with Pagination information
 		prc.response
 			.setPagination(
-				argumentCollection = variables.cbpaginator.generate(
+				argumentCollection = paginationFor(
 					totalRecords = prc.recordCount,
 					page         = rc.page,
-					maxrows      = getMaxRows()
+					maxRows      = getMaxRows()
 				)
 			)
 			.setData(
 				// Use arrayMap just in case we get a java Array
-				arrayMap( prc.records, function( item ){
-					return arguments.item.getMemento(
-						includes       = rc.includes,
-						excludes       = rc.excludes,
-						ignoreDefaults = rc.ignoreDefaults
-					);
-				} )
+				arrayMap( prc.records, ( item ) => toMemento( item, rc ) )
 			);
 	}
 
@@ -240,13 +233,7 @@ component extends="coldbox.system.RestHandler" {
 		);
 
 		// Marshall it out
-		prc.response.setData(
-			prc.oEntity.getMemento(
-				includes       = rc.includes,
-				excludes       = rc.excludes,
-				ignoreDefaults = rc.ignoreDefaults
-			)
-		);
+		prc.response.setData( toMemento( prc.oEntity, rc ) );
 	}
 
 	/**
@@ -297,13 +284,7 @@ component extends="coldbox.system.RestHandler" {
 		);
 
 		// Marshall it
-		prc.response.setData(
-			prc.oEntity.getMemento(
-				includes       = rc.includes,
-				excludes       = rc.excludes,
-				ignoreDefaults = rc.ignoreDefaults
-			)
-		);
+		prc.response.setData( toMemento( prc.oEntity, rc ) );
 	}
 
 	/**
@@ -381,13 +362,7 @@ component extends="coldbox.system.RestHandler" {
 		);
 
 		// Marshall it out
-		prc.response.setData(
-			prc.oEntity.getMemento(
-				includes       = rc.includes,
-				excludes       = rc.excludes,
-				ignoreDefaults = rc.ignoreDefaults
-			)
-		);
+		prc.response.setData( toMemento( prc.oEntity, rc ) );
 	}
 
 	/**
@@ -435,6 +410,67 @@ component extends="coldbox.system.RestHandler" {
 	/******************************** PRIVATE FUNCTIONS ******************************/
 
 	/**
+	 * The pagination block for the response: totals, page size, offset and page number
+	 *
+	 * @totalRecords The total number of records
+	 * @page         The page number (1-based)
+	 * @maxRows      The rows per page
+	 *
+	 * @return struct: { totalRecords, totalPages, maxRows, offset, page }
+	 */
+	private struct function paginationFor(
+		required numeric totalRecords,
+		numeric page    = 1,
+		numeric maxRows = 25
+	){
+		var thisPage = max( 1, int( val( arguments.page ) ) );
+		var size     = max( 1, int( val( arguments.maxRows ) ) );
+		return {
+			"totalRecords" : arguments.totalRecords,
+			"totalPages"   : ceiling( arguments.totalRecords / size ),
+			"maxRows"      : size,
+			"offset"       : ( thisPage - 1 ) * size,
+			"page"         : thisPage
+		};
+	}
+
+	/**
+	 * Marshall an entity with the `includes`, `excludes` and `ignoreDefaults` request params: mementifier's
+	 * `getMemento()` when the entity has it, else bx-orm's `entityToStruct()` (which uses the entity's `this.memento`).
+	 * An unknown include is a client error, raised as a `ValidationException` (400).
+	 *
+	 * @entity The entity
+	 * @rc     The request collection
+	 *
+	 * @return The entity as a struct
+	 */
+	private struct function toMemento( required entity, required struct rc ){
+		if ( structKeyExists( arguments.entity, "getMemento" ) ) {
+			return arguments.entity.getMemento(
+				includes       = arguments.rc.includes,
+				excludes       = arguments.rc.excludes,
+				ignoreDefaults = arguments.rc.ignoreDefaults
+			);
+		}
+		try {
+			return entityToStruct(
+				arguments.entity,
+				{
+					"includes"       : arguments.rc.includes,
+					"excludes"       : arguments.rc.excludes,
+					"ignoreDefaults" : arguments.rc.ignoreDefaults
+				}
+			);
+		} catch ( "orm.property" e ) {
+			throw(
+				type         = "ValidationException",
+				message      = e.message,
+				extendedInfo = serializeJSON( [ { "message" : e.message, "field" : "includes" } ] )
+			);
+		}
+	}
+
+	/**
 	 * Calculate the starting offset for the incoming page
 	 *
 	 * @page The page to lookup on
@@ -480,7 +516,7 @@ component extends="coldbox.system.RestHandler" {
 	 * @queryCacheRegion The query cache region to use, which defaults to criterias.{entityName}
 	 * @defaultAsQuery   To return results as queries or array of objects or reports, default is array as results might not match entities precisely
 	 *
-	 * @return cborm.models.criterion.CriteriaBuilder
+	 * @return The bx-orm criteria builder (entityCriteria())
 	 */
 	private function newCriteria(
 		boolean useQueryCaching = false,
