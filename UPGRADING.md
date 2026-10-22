@@ -61,7 +61,6 @@ the quantified subqueries (`subGeAll`, `propertyLtSome`, ...) and the SQL log (`
 | `autoCast()` / `convertValueToJavaType()` | Return the value as is |
 | `buildJavaProxy()` | Removed |
 | `unique = true` queries | More than one matching row raises an error instead of returning the first; `findIt()` returns the first row |
-| `findWhere()` returned the first match when query caching was on | Always strict: more than one match raises `orm.query.nonUnique`. Pass `{ uniqueFirst : true }` as options for the first match |
 | `asStream = true` returned a cbStreams stream (`list`, `executeQuery`, `getAll`, `findAll`, `findAllWhere`, dynamic finders) | Returns a Java `Stream` read from the database as it is consumed. Use `.filter()`, `.map()`, `.toList()`, `.count()`; consume it in the same request |
 | `getAll( sortOrder )` and dynamic finder `sortBy` took any HQL | Only property names or paths, each with `asc` or `desc`: anything else raises an error |
 | `countWhere()` and `deleteWhere()` ignored unknown argument names as HQL | An unknown property raises `orm.property.unknown` |

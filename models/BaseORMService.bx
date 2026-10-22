@@ -641,12 +641,13 @@ class accessors="true" {
 	}
 
 	/**
-	 * Find one entity (or null if not found) according to a criteria structure. More than one match is an error
-	 * (`orm.query.nonUnique`); pass `{ uniqueFirst : true }` as options to take the first one instead.
+	 * Find one entity (or null if not found) according to a criteria structure. When more than one entity matches, the
+	 * first one is returned, as in cborm 5; pass `{ uniqueFirst : false }` as options to make more than one match an error
+	 * (`orm.query.nonUnique`) instead.
 	 *
 	 * @entityName The entity to search for
 	 * @criteria   The filtering criteria to search for.
-	 * @options    More bx-orm `entityLoad()` options, e.g. `{ uniqueFirst : true, readOnly : true }`
+	 * @options    More bx-orm `entityLoad()` options, e.g. `{ uniqueFirst : false, readOnly : true }`
 	 *
 	 * @return The entity or null
 	 */
@@ -655,7 +656,7 @@ class accessors="true" {
 		struct criteria = {},
 		struct options  = {}
 	){
-		var loadOptions = { "unique" : true };
+		var loadOptions = { "unique" : true, "uniqueFirst" : true };
 		if ( getUseQueryCaching() ) {
 			loadOptions.cacheName = getQueryCacheRegion();
 			loadOptions.cacheable = true;

@@ -155,10 +155,11 @@ class extends="cborm.models.BaseORMService" accessors="true" {
 	}
 
 	/**
-	 * Find one entity (or null if not found) according to a criteria structure
+	 * Find one entity (or null if not found) according to a criteria structure: the first one when more than one matches,
+	 * unless `{ uniqueFirst : false }` is passed (then more than one match is `orm.query.nonUnique`)
 	 *
 	 * @criteria The filtering criteria to search for.
-	 * @options  More bx-orm `entityLoad()` options, e.g. `{ uniqueFirst : true }`
+	 * @options  More bx-orm `entityLoad()` options, e.g. `{ uniqueFirst : false }`
 	 */
 	any function findWhere( required struct criteria, struct options = {} ){
 		arguments.entityName = this.getEntityName();

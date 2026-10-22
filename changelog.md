@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `getEntityMetadata()` returns the Hibernate 7 entity persister, which keeps the Hibernate 5 `ClassMetadata` methods mementifier and apps use.
 - `idCast()`/`autoCast()` (and the `convert...ToJavaType()` aliases) no longer cast: bx-orm converts values itself.
 - `cbstreams` and `cbpaginator` are no longer dependencies. `asStream = true` returns a Java `Stream` read from the database as it is consumed, and the resource handler builds its own pagination block.
-- `findWhere()` is always strict (more than one match is `orm.query.nonUnique`); pass `{ uniqueFirst : true }` for the first match.
 - `getAll( sortOrder )` and dynamic finder `sortBy` only accept property names with `asc`/`desc`.
 - Dynamic finders rethrow bx-orm's typed `orm.*` errors instead of wrapping them in `HQLQueryException`.
 
@@ -26,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - bx-orm criteria events are relayed to ColdBox interceptors.
 - New service methods: `findWhereOrFail()`, `firstOrNew()`, `firstOrCreate()`, `updateWhere()`, `getReference()`, `lock()` and `readOnly()`.
 - `get()`, `getOrFail()`, `list()`, `executeQuery()`, `findAll()`, `findWhere()` and `findAllWhere()` take an `options` struct passed to bx-orm (`readOnly`, `lock`, `uniqueFirst`, ...).
+- `findWhere()` still returns the first of several matches, as in cborm 5; pass `{ uniqueFirst : false }` to make more than one match an `orm.query.nonUnique` error.
 - `ActiveEntity` adds `lock()` and `toStruct()`; `getKeyValue()`, `getDirtyPropertyNames()` and `sessionContains()` default to the entity itself.
 - Composite ids work with `exists()`, `getAll( id )` and `deleteByID()`.
 - Dynamic finders accept id properties (`findAllByIdInList()`).
