@@ -135,9 +135,9 @@ component extends="tests.resources.BaseTest" {
 
 	/********************************* Finders *********************************/
 
-	function testFindWhereIsStrictUnlessUniqueFirst(){
-		expect( () => ormService.findWhere( "User", {} ) ).toThrow( "orm.query.nonUnique" );
-		expect( ormService.findWhere( "User", {}, { uniqueFirst : true } ) ).toBeComponent();
+	function testFindWhereTakesTheFirstMatchUnlessStrict(){
+		expect( ormService.findWhere( "User", {} ) ).toBeComponent();
+		expect( () => ormService.findWhere( "User", {}, { uniqueFirst : false } ) ).toThrow( "orm.query.nonUnique" );
 	}
 
 	function testFindWhereOrFail(){
